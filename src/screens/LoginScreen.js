@@ -95,6 +95,10 @@ const LoginScreen = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+  const handleLogin = () => {
+
+    navigation.navigate('Dashboard');
+  };
 
   return (
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
@@ -150,7 +154,7 @@ const LoginScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
 
