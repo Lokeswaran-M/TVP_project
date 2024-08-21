@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }) => {
   };
   const handleLogin = () => {
 
-    navigation.navigate('Dashboard');
+    navigation.navigate('DrawerNavigator');
   };
 
   return (
