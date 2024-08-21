@@ -10,6 +10,7 @@ const AppNavigator = () => {
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen  name="Splash"  component={SplashScreen} options={{ headerShown: false }} />
       <Stack.Screen  name="Auth" component={AuthNavigator} options={{ headerShown: false }}  />
+     
       <Stack.Screen 
         name="Dashboard" 
         component={Dashboard} 
