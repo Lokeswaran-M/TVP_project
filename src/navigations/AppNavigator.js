@@ -19,7 +19,7 @@ function DrawerNavigator () {
       drawerContent={(props) => <DrawerContent {...props} />} 
     >
       <Drawer.Screen 
-        name="Dashboard" 
+        name="Home" 
         component={TabNavigator} 
         options={{ 
           drawerLabel: 'Home',
