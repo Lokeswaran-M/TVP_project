@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Dashboard from '../screens/HomeScreen';
 import Members from '../screens/Members';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { LinearGradient } from 'react-native-linear-gradient';
 
 const Tab = createBottomTabNavigator();
 
@@ -10,7 +11,7 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false, 
+        headerShown: false,
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
@@ -21,6 +22,11 @@ const TabNavigator = () => {
           }
 
           return <Icon name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#888',
+        tabBarStyle: {
+          backgroundColor: '#ffbe4e',
         },
       })}
     >

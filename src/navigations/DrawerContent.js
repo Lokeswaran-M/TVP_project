@@ -2,11 +2,20 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
-      <View style={styles.profileContainer}>
+      <LinearGradient
+      colors={['#a3238f', '#ffbe4e']} 
+      style={styles.profileContainer}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+    >
+      {/* <View style={styles.profileContainer}> */}
+      
         <View style={styles.imageContainer}>
           <Image
             source={require('../../assets/images/DefaultProfile.jpg')} 
@@ -23,7 +32,9 @@ const CustomDrawerContent = (props) => {
         </View>
         <Text style={styles.nameText}>Your Name</Text>
         <Text style={styles.professionText}>Profession</Text>
-      </View>
+        
+      {/* </View> */}
+      </LinearGradient>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
@@ -40,6 +51,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 20,
     marginTop: 20,
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   profileImage: {
     width: 100,

@@ -6,9 +6,11 @@ import DrawerContent from './DrawerContent';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from 'react-native';
-import Dashboard from '../screens/HomeScreen';
+// import Dashboard from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import TabNavigator from './TabNavigator';
+import LinearGradient from 'react-native-linear-gradient';
+
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -19,17 +21,25 @@ function DrawerNavigator () {
       drawerContent={(props) => <DrawerContent {...props} />} 
     >
       <Drawer.Screen 
-        name="Home" 
-        component={TabNavigator} 
-        options={{ 
-          drawerLabel: 'Home',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="home" color={color} size={size} />
-          ),
-          headerStyle: { backgroundColor: '#a3238f' }, 
-          headerTintColor: '#fff',
-        }} 
+  name="Home" 
+  component={TabNavigator} 
+  options={{ 
+    drawerLabel: 'Home',
+    drawerIcon: ({ color, size }) => (
+      <Icon name="home" color={color} size={size} />
+    ),
+    headerBackground: () => (
+      <LinearGradient
+        colors={['#a3238f', '#ffbe4e']} 
+        style={{ flex: 1 }}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
       />
+    ),
+    headerTintColor: '#fff',
+  }} 
+/>
+
       <Drawer.Screen 
         name="Profile" 
         component={ProfileScreen} 
@@ -38,7 +48,14 @@ function DrawerNavigator () {
           drawerIcon: ({ color, size }) => (
             <Icon name="user" color={color} size={size} />
           ),
-          headerStyle: { backgroundColor: '#a3238f' }, 
+          headerBackground: () => (
+            <LinearGradient
+              colors={['#a3238f', '#ffbe4e']} 
+              style={{ flex: 1 }}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            />
+          ), 
           headerTintColor: '#fff',
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
