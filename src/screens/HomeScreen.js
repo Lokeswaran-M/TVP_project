@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text } from 'react-native'
 import { useNavigation } from '@react-navigation/native'; 
 
-const Dashboard = () => {
+const HomeScreen = () => {
 
   const navigation = useNavigation(); 
   return (
@@ -14,4 +14,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard 
+export default HomeScreen

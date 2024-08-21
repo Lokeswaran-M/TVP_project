@@ -6,7 +6,7 @@ import DrawerContent from './DrawerContent';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from 'react-native';
-import Dashboard from '../screens/Dashboard';
+import Dashboard from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import TabNavigator from './TabNavigator';
 const Stack = createStackNavigator();
@@ -22,9 +22,9 @@ function DrawerNavigator () {
         name="Dashboard" 
         component={TabNavigator} 
         options={{ 
-          drawerLabel: 'Dashboard',
+          drawerLabel: 'Home',
           drawerIcon: ({ color, size }) => (
-            <Icon name="dashboard" color={color} size={size} />
+            <Icon name="home" color={color} size={size} />
           ),
           headerStyle: { backgroundColor: '#a3238f' }, 
           headerTintColor: '#fff',

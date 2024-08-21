@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Dashboard from '../screens/Dashboard';
+import Dashboard from '../screens/HomeScreen';
 import Members from '../screens/Members';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -15,7 +15,7 @@ const TabNavigator = () => {
           let iconName;
 
           if (route.name === 'Dashboard') {
-            iconName = 'dashboard';
+            iconName = 'home';
           } else if (route.name === 'Members') {
             iconName = 'users';
           }
@@ -27,7 +27,7 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
-        options={{ title: 'Dashboard' }}
+        options={{ title: 'Home' }}
       />
       <Tab.Screen
         name="Members"
