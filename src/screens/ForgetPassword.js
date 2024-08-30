@@ -15,10 +15,7 @@ const ForgetPassword = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(60); 
   const [otpExpired, setOtpExpired] = useState(false);
-
-    // Ref to access the OTPTextInput component directly
     const otpInputRef = useRef(null);
-
   useEffect(() => {
     let interval;
     if (otpSent && timer > 0) {
@@ -34,9 +31,9 @@ const ForgetPassword = ({ navigation }) => {
   }, [otpSent, timer]);
 
   const clearOtpInput = () => {
-    setOtp('');  // Clear the OTP state
+    setOtp(''); 
     if (otpInputRef.current) {
-      otpInputRef.current.clear();  // Clear the input using ref
+      otpInputRef.current.clear();  
     }
   };
 
@@ -53,7 +50,6 @@ const ForgetPassword = ({ navigation }) => {
         position: 'top',
         config: toastConfig,
       });
-      
       return;
     }
     setLoading(true);
@@ -71,9 +67,7 @@ const ForgetPassword = ({ navigation }) => {
           message,
         }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         setOtpSent(true);
         setOtpExpired(false);
@@ -106,7 +100,6 @@ const ForgetPassword = ({ navigation }) => {
       setLoading(false);
     }
   };
-
   const handleOtpVerification = async () => {
     if (otpExpired) {
       Toast.show({
@@ -117,10 +110,8 @@ const ForgetPassword = ({ navigation }) => {
         config: toastConfig,
       });
       // clearOtpInput();
-      
       return;
     }
-  
     if (phoneNumber.length < 10 || otp.length < 4) {
       Toast.show({
         type: 'error',
@@ -130,7 +121,6 @@ const ForgetPassword = ({ navigation }) => {
         config: toastConfig,
       });
       // clearOtpInput();
-    
       return;
     }
     setLoading(true);
@@ -170,7 +160,6 @@ const ForgetPassword = ({ navigation }) => {
           config: toastConfig,
         });
         // clearOtpInput();
-   
       }
     } catch (error) {
       Toast.show({
@@ -181,12 +170,10 @@ const ForgetPassword = ({ navigation }) => {
         config: toastConfig,
       });
       // clearOtpInput();
-
     } finally {
       setLoading(false);
     }
   };  
-
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>
@@ -204,7 +191,6 @@ const ForgetPassword = ({ navigation }) => {
             keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
-    
           />
         </View>
         {!otpSent && (
@@ -225,7 +211,7 @@ const ForgetPassword = ({ navigation }) => {
             <View style={styles.otpContainer}>
               <Text style={styles.otpTitle}>Enter the OTP sent to your phone</Text>
               <OTPTextInput
-                ref={otpInputRef}  // Attach the ref to OTPTextInput
+                ref={otpInputRef} 
                handleTextChange={(text) => setOtp(text)}
               inputCount={4}
               containerStyle={styles.otpTextInputContainer}
@@ -258,5 +244,4 @@ const ForgetPassword = ({ navigation }) => {
     </ScrollView>
   );
 };
-
 export default ForgetPassword;
