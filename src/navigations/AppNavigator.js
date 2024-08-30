@@ -16,16 +16,8 @@ const Drawer = createDrawerNavigator();
 
 function DrawerNavigator () {
   return (
-    <Drawer.Navigator
-      initialRouteName="Dashboard"
-      drawerContent={(props) => <DrawerContent {...props} />} 
-    >
-      <Drawer.Screen 
-  name="Home" 
-  component={TabNavigator} 
-  options={{ 
-    drawerLabel: 'Home',
-    drawerIcon: ({ color, size }) => (
+    <Drawer.Navigator initialRouteName="Dashboard" drawerContent={(props) => <DrawerContent {...props} />}  >
+      <Drawer.Screen name="Home"  component={TabNavigator}  options={{  drawerLabel: 'Home', drawerIcon: ({ color, size }) => (
       <Icon name="home" color={color} size={size} />
     ),
     headerBackground: () => (
@@ -77,6 +69,8 @@ function AppNavigator () {
         component={SplashScreen}
         options={{ headerShown: false }}
       />
+
+      
       <Stack.Screen
         name="Auth"
         component={AuthNavigator}
