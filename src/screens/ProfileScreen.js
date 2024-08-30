@@ -21,7 +21,7 @@ const Profile = () => {
         throw new Error('Failed to fetch image');
       }
       const data = await response.json();
-      const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;  // Add timestamp to avoid caching
+      const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`; 
       setImageUrl(uniqueImageUrl);
     } catch (error) {
       console.error('Error fetching profile image:', error);
@@ -38,17 +38,21 @@ const Profile = () => {
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        imageUrl && (
-          <Image
-            source={{ uri: imageUrl }}
-            style={styles.image}
-          />
-        )
-      )}
-      <Text style={styles.text}>Profile</Text>
+      <View style={styles.topSection}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          imageUrl && (
+            <Image
+              source={{ uri: imageUrl }}
+              style={styles.image}
+            />
+          )
+        )}
+      </View>
+      <View style={styles.bottomSection}>
+        <Text style={styles.text}>Name</Text>
+      </View>
     </View>
   );
 };
@@ -56,17 +60,32 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: '#fff',
+  },
+  topSection: {
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginBottom: 10,
+    marginTop: 60,
+  },
+  bottomSection: {
+    flex: 3,
+    marginTop: 20,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 50,
   },
   image: {
     width: 420,
     height: 400,
-    marginBottom: 20,
+    resizeMode: 'cover',
   },
   text: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: 'black',
   },
 });
 

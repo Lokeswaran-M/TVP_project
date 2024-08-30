@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: width * 0.05, 
     fontWeight: 'bold',
-    marginBottom: height * 0.025,
+    marginBottom: height * 0.035,
     color: 'black',
   },
   inputContainer: {

@@ -20,10 +20,6 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
 
 
-
-
-
-
     </Stack.Navigator>
     
   );
