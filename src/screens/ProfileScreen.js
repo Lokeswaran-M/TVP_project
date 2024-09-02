@@ -62,6 +62,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  topSection: {
+    flex: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginBottom: 10,
+    marginTop: 50,
+  },
+  bottomSection: {
+    flex: 3,
+    marginTop: 20,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 50,
+  },
   image: {
     width: 420,
     height: 400,
