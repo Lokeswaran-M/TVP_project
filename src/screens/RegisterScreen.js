@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Icon,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text } from 'react-native';
+import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text } from 'react-native';
 import CustomInput from './Custom_input';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
@@ -8,6 +7,8 @@ import {API_BASE_URL} from '../constants/Config'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import AnimatedTextInput from './AnimatedTextInput';
+import Icon from 'react-native-vector-icons/FontAwesome';
+// import Newteam from '../../assets/images/Newteam.png';
 
   const RegisterScreen = () => {
   const [userId, setUserId] = useState('');
@@ -43,6 +44,10 @@ import AnimatedTextInput from './AnimatedTextInput';
 
   const navigation = useNavigation();
 
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible1, setPasswordVisible1] = useState(false);
+
+
  // Validation error messages
  const [usernameError, setUsernameError] = useState('');
  const [passwordError, setPasswordError] = useState('');
@@ -57,6 +62,14 @@ import AnimatedTextInput from './AnimatedTextInput';
  const [dateError,setSelecteddateError]= useState('');
  const [referredByError, setReferredByError] = useState('');
 
+
+ const togglePasswordVisibility = () => {
+  setPasswordVisible(!passwordVisible);
+};
+
+const togglePasswordVisibility1 = () => {
+  setPasswordVisible1(!passwordVisible1);
+};
 
   useEffect(() => {
     fetchData();
@@ -265,61 +278,92 @@ import AnimatedTextInput from './AnimatedTextInput';
   return (
 
     <ScrollView>
-      <View style={styles.container}>
+    <View style={styles.container}>
+    {/* <View style={styles.container1}>
+    <Image source={Newteam} style={styles.image} />
+    </View> */}
+      {/* Username Field */}
+      <View>
+        <Icon name="user" size={24} color="gray" style={styles.iconStyle} />
+        <AnimatedTextInput
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+        />
+      </View>
       {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
-      
-        <AnimatedTextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-      />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-        <AnimatedTextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-       
 
-        {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+      {/* Password Field */}
+      <View>
+      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconStyle}>
+              <Icon name={passwordVisible ? "eye" : "eye-slash"} size={24} color="#888" />
+            </TouchableOpacity>
         <AnimatedTextInput
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-          />
-           
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!passwordVisible}
+        />
+      </View>
+      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
+      {/* Confirm Password Field */}
+      <View>
+      <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.iconStyle}>
+              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="#888" />
+            </TouchableOpacity>
+        <AnimatedTextInput
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry={!passwordVisible1}
+        />
+      </View>
+      {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+
+      {/* Mobile Number Field */}
+      <View>
+        <Icon name="phone" size={24} color="gray" style={styles.iconStyle} />
+        <AnimatedTextInput
+          placeholder="Mobile Number"
+          value={mobileNo}
+          onChangeText={setMobileNo}
+        />
+      </View>
       {mobileNoError ? <Text style={styles.errorText}>{mobileNoError}</Text> : null}
-      <AnimatedTextInput
-        placeholder="Mobile Number"
-        value={mobileNo}
-        onChangeText={setMobileNo}
-      />
-       
-       {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-       
-          <AnimatedTextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-       {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
+      {/* Email Field */}
+      <View>
+        <Icon name="envelope" size={24} color="gray" style={styles.iconStyle} />
+        <AnimatedTextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+      </View>
+      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-       <AnimatedTextInput
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-      />
+      {/* Address Field */}
+      <View style={styles.inputContainer}>
+        <Icon name="home" size={24} color="gray" style={styles.iconStyle} />
+        <AnimatedTextInput
+          placeholder="Address"
+          value={address}
+          onChangeText={setAddress}
+          
+        />
+      </View>
+      {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
        
-     {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
+      <View style={styles.inputContainer}>
+      <Icon name="briefcase" size={24} color="gray" style={styles.iconStyle} />
      <AnimatedTextInput
         placeholder="Business Name"
         value={businessName}
         onChangeText={setBusinessName}
       />
+      </View>
+      {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
        
       {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
 
@@ -366,12 +410,15 @@ import AnimatedTextInput from './AnimatedTextInput';
            </Picker>
         </View>
         
-          {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+        <View style={styles.inputContainer}>
+        <Icon name="user-plus" size={24} color="gray" style={styles.iconStyle} />
           <AnimatedTextInput
         placeholder="Referred By"
         value={referredBy}
         onChangeText={setReferredBy}
       />
+      </View>
+      {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
        
 
         {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
@@ -420,7 +467,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  container1: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -452,7 +505,7 @@ const styles = StyleSheet.create({
   },
     selectList: {
       borderWidth: 1,
-      borderColor: '#4b5059',
+      borderColor: '#ccc',
       borderRadius:10,
       overflow: 'hidden',
       marginVertical: 10,
@@ -488,14 +541,29 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
     },
+    iconStyle: {
+      marginRight: 10,
+      // marginLeft: 'auto',
+      marginTop: 30,
+      position: 'absolute',
+      zIndex: 1,
+      // justifyContent: 'right',
+      // display : 'flex',
+      // float: 'right',
+      marginLeft: 325,
+    },
+    input: {
+      flex: 1,
+    },
+    errorText: {
+      color: 'red',
+      marginBottom: 8,
+    },
+    // image: {
+    //   width: 300,
+    //   height: 250, 
+    //   resizeMode: 'contain',
+    // },
 });
 
 export default RegisterScreen;
-
-
-
-
-
-
-
-
