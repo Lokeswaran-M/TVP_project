@@ -1,236 +1,243 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Animated, ScrollView, Picker, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../components/layout/RegisterStyle'; // Make sure to create this style or reuse the LoginStyle if applicable
+import React, { useState, useEffect, useRef } from 'react';
+import { View, TextInput, Animated, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const RegisterScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [mobileNo, setMobileNo] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [selectedProfession, setSelectedProfession] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [selectedSlot, setSelectedSlot] = useState('');
-  const [referredBy, setReferredBy] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+const AnimatedTextInput = ({ placeholder, value, onChangeText, secureTextEntry }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const animatedIsFocused = useRef(new Animated.Value(value ? 1 : 0)).current;
 
+  useEffect(() => {
+    Animated.timing(animatedIsFocused, {
+      toValue: isFocused || value ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [isFocused, value]);
 
-// ANimated 
-
-  const [inputFocus, setInputFocus] = useState({
-    username: false,
-    password: false,
-    confirmPassword: false,
-    mobileNo: false,
-    email: false,
-    address: false,
-    businessName: false,
-    referredBy: false,
-  });
-
-  const [inputAnimatedValues] = useState({
-    username: new Animated.Value(11),
-    password: new Animated.Value(11),
-    confirmPassword: new Animated.Value(11),
-    mobileNo: new Animated.Value(11),
-    email: new Animated.Value(11),
-    address: new Animated.Value(11),
-    businessName: new Animated.Value(11),
-    referredBy: new Animated.Value(11),
-  });
-
-  const [labelScaleValues] = useState({
-    username: new Animated.Value(1),
-    password: new Animated.Value(1),
-    confirmPassword: new Animated.Value(1),
-    mobileNo: new Animated.Value(1),
-    email: new Animated.Value(1),
-    address: new Animated.Value(1),
-    businessName: new Animated.Value(1),
-    referredBy: new Animated.Value(1),
-  });
-
-  const handleFocus = (field) => {
-    setInputFocus({ ...inputFocus, [field]: true });
-    Animated.parallel([
-      Animated.timing(inputAnimatedValues[field], {
-        toValue: -15,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(labelScaleValues[field], {
-        toValue: 0.8,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
-
-  const handleBlur = (field, value) => {
-    if (value.trim() === '') {
-      Animated.parallel([
-        Animated.timing(inputAnimatedValues[field], {
-          toValue: 11,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-        Animated.timing(labelScaleValues[field], {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: false,
-        }),
-      ]).start();
-    }
-    setInputFocus({ ...inputFocus, [field]: false });
-  };
-
-  const handleTouchOutside = () => {
-    Keyboard.dismiss();
-    Object.keys(inputFocus).forEach((field) => {
-      handleBlur(field, eval(field));
-    });
-  };
-
-  const handleRegister = () => {
-    // Handle the register logic here
+  const labelStyle = {
+    position: 'absolute',
+    left: 12,
+    top: animatedIsFocused.interpolate({
+      inputRange: [0, 1],
+      outputRange: [18, -6],
+    }),
+    fontSize: animatedIsFocused.interpolate({
+      inputRange: [0, 1],
+      outputRange: [18, 14],
+    }),
+    color: '#aaa',
+    backgroundColor: '#fff', // To hide the overlap of text with border
+    paddingHorizontal: 5, // Adds padding to the background to make it smooth
   };
 
   return (
-    <TouchableWithoutFeedback onPress={handleTouchOutside}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          {/* Repeat the below block for each input field */}
-          <View style={styles.inputContainer}>
-            <Animated.Text
-              style={[
-                styles.placeholder,
-                { top: inputAnimatedValues.username, transform: [{ scale: labelScaleValues.username }] },
-              ]}
-            >
-              Username
-            </Animated.Text>
-            <TextInput
-              value={username}
-              onChangeText={setUsername}
-              placeholder=""
-              placeholderTextColor="transparent"
-              style={styles.input}
-              onFocus={() => handleFocus('username')}
-              onBlur={() => handleBlur('username', username)}
-            />
-            <Icon name="user" size={20} color="#888" style={styles.icon} />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Animated.Text
-              style={[
-                styles.placeholder,
-                { top: inputAnimatedValues.password, transform: [{ scale: labelScaleValues.password }] },
-              ]}
-            >
-              Password
-            </Animated.Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder=""
-              placeholderTextColor="transparent"
-              secureTextEntry
-              style={styles.input}
-              onFocus={() => handleFocus('password')}
-              onBlur={() => handleBlur('password', password)}
-            />
-            <Icon name="lock" size={20} color="#888" style={styles.icon} />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Animated.Text
-              style={[
-                styles.placeholder,
-                { top: inputAnimatedValues.confirmPassword, transform: [{ scale: labelScaleValues.confirmPassword }] },
-              ]}
-            >
-              Confirm Password
-            </Animated.Text>
-            <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder=""
-              placeholderTextColor="transparent"
-              secureTextEntry
-              style={styles.input}
-              onFocus={() => handleFocus('confirmPassword')}
-              onBlur={() => handleBlur('confirmPassword', confirmPassword)}
-            />
-            <Icon name="lock" size={20} color="#888" style={styles.icon} />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Animated.Text
-              style={[
-                styles.placeholder,
-                { top: inputAnimatedValues.mobileNo, transform: [{ scale: labelScaleValues.mobileNo }] },
-              ]}
-            >
-              Mobile No
-            </Animated.Text>
-            <TextInput
-              value={mobileNo}
-              onChangeText={setMobileNo}
-              placeholder=""
-              placeholderTextColor="transparent"
-              style={styles.input}
-              onFocus={() => handleFocus('mobileNo')}
-              onBlur={() => handleBlur('mobileNo', mobileNo)}
-            />
-            <Icon name="phone" size={20} color="#888" style={styles.icon} />
-          </View>
-
-          {/* Add similar blocks for Email, Address, Business Name, Referred By */}
-          
-          {/* Profession Picker */}
-          <Text style={styles.label}>Select Profession</Text>
-          <View style={styles.selectList}>
-            <Picker
-              selectedValue={selectedProfession}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSelectedProfession(itemValue)}
-            >
-              {profession.map((profession, index) => (
-                <Picker.Item key={index} label={profession.ProfessionName} value={profession.ProfessionName} />
-              ))}
-            </Picker>
-          </View>
-
-          {/* Location Picker */}
-          <Text style={styles.label}>Select Location</Text>
-          <View style={styles.selectList}>
-            <Picker
-              selectedValue={selectedLocation}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSelectedLocation(itemValue)}
-            >
-              {chapterNo.map((chapterNo, index) => (
-                <Picker.Item key={index} label={chapterNo.location} value={chapterNo.location} />
-              ))}
-            </Picker>
-          </View>
-
-          {/* Similar for Slot Picker */}
-
-          {/* Date Pickers for Start Date and End Date */}
-
-          <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-            <Text style={styles.registerButtonText}>Register</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </TouchableWithoutFeedback>
+    <View style={styles.container}>
+      <View style={[styles.inputContainer, isFocused && styles.focusedBorder]}>
+        <Animated.Text style={labelStyle}>
+          {placeholder}
+        </Animated.Text>
+        <TextInput
+          style={styles.textInput}
+          value={value}
+          onChangeText={onChangeText}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          secureTextEntry={secureTextEntry}
+        />
+        <MaterialCommunityIcons name="account" size={24} color="gray" style={styles.iconStyle} />
+      </View>
+    </View>
   );
 };
 
-export default RegisterScreen;
+const styles = StyleSheet.create({
+  container: {
+    marginVertical: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    paddingLeft: 15,
+  },
+  focusedBorder: {
+    borderColor: '#ffa500', // Change border color on focus (optional)
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 18,
+    color: '#000',
+  },
+  iconStyle: {
+    marginLeft: 10,
+  },
+});
+
+export default AnimatedTextInput;
+
+
+
+
+
+    
+    // <ScrollView>
+    //   <View style={styles.container}>
+    //   {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+    //     <CustomInput
+    //       placeholder="Username"
+    //       iconName="account"
+    //       value={username}
+    //       onChangeText={setUsername}
+    //     />
+    //     {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+    //     <CustomInput
+    //       placeholder="Password"
+    //       iconName="lock"
+    //       value={password}
+    //       onChangeText={setPassword}
+    //       secureTextEntry
+    //     />
+
+    // {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+
+    //     <CustomInput
+    //       placeholder="Confirm Password"
+    //       iconName="lock"
+    //       value={confirmPassword}
+    //       onChangeText={setConfirmPassword}
+    //       secureTextEntry
+    //     />
+
+    //   {mobileNoError ? <Text style={styles.errorText}>{mobileNoError}</Text> : null}
+
+    //     <CustomInput
+    //       placeholder="Mobile No"
+    //       iconName="phone"
+    //       value={mobileNo}
+    //       onChangeText={setMobileNo}
+    //     />
+    //    {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
+    //     <CustomInput
+    //       placeholder="Email"
+    //       iconName="email"
+    //       value={email}
+    //       onChangeText={setEmail}
+    //     />
+    //    {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
+
+
+    //     <CustomInput
+    //       placeholder="Address"
+    //       iconName="home"
+    //       value={address}
+    //       onChangeText={setAddress}
+    //     />
+    //  {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
+
+    //     <CustomInput
+    //       placeholder="Business Name"
+    //       iconName="briefcase"
+    //       value={businessName}
+    //       onChangeText={setBusinessName}
+    //     />
+
+
+    //   {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
+
+    //     {/* <Text style={styles.label}>User ID: {userId}</Text> */}
+
+    //     <Text style={styles.label}>Select Profession</Text>
+    //     <View style={styles.selectList}>
+    //     <Picker borderBottomWidth='1'
+    //       selectedValue={selectedProfession}
+    //       style={styles.picker}
+    //       onValueChange={(itemValue) => setSelectedProfession(itemValue)}
+    //     >
+    //       {profession.map((profession, index) => (
+    //         <Picker.Item key={index} label={profession.ProfessionName} value={profession.ProfessionName} />
+    //       ))}
+    //     </Picker>
+    //     </View>
+    //     {selectedLocationError ? <Text style={styles.errorText}>{selectedLocationError}</Text> : null}
+
+    //     <Text style={styles.label}>Select Location</Text>
+    //     <View style={styles.selectList}>
+    //     <Picker borderBottomWidth='1'
+    //       selectedValue={selectedLocation}
+    //       style={styles.picker}
+    //       onValueChange={(itemValue) => setSelectedLocation(itemValue)}
+    //       >
+    //       {chapterNo.map((chapterNo, index) => (
+    //         <Picker.Item key={index} label={chapterNo.location} value={chapterNo.location} />
+    //       ))}
+    //     </Picker>
+    //     </View>
+    //     {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
+
+    //     <Text style={styles.label}>Select Slot</Text>
+    //     <View style={styles.selectList}>
+    //        <Picker borderBottomWidth='1'
+    //       selectedValue={selectedChapterType}
+    //       style={styles.picker}
+    //       onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
+    //         >
+    //       {chapterType.map((type, index) => (
+    //         <Picker.Item key={index} label={type.id.toString()} value={type.id} />
+    //       ))}
+    //        </Picker>
+    //     </View>
+        
+    //       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+
+    //     <CustomInput
+    //       placeholder="Referred By"
+    //       iconName="account-group"
+    //       value={referredBy}
+    //       onChangeText={setReferredBy}
+    //     />
+
+
+
+    //     {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
+    //    {/* Start Date */}
+    //   <Text style={styles.label}>Start Date</Text>
+    //   <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
+    //     <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
+    //   </TouchableOpacity>
+
+    //   {showStartPicker && (
+    //     <DateTimePicker
+    //       value={startDate ? new Date(startDate) : new Date()}
+    //       mode="date"
+    //       display="default"
+    //       onChange={onChangeStartDate}
+    //     />
+    //   )}
+
+    //   {/* End Date */}
+    //   <Text style={styles.label}>End Date</Text>
+    //   <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton}>
+    //     <Text style={styles.datePickerText}>{endDate ? endDate : 'Select End Date'}</Text>
+    //   </TouchableOpacity>
+
+    //   {showEndPicker && (
+    //     <DateTimePicker
+    //       value={endDate ? new Date(endDate) : new Date()}
+    //       mode="date"
+    //       display="default"
+    //       onChange={onChangeEndDate}
+    //     />
+    //   )}
+
+
+    //     <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+    //     <Text style={styles.registerButtonText}>Register</Text>
+    //   </TouchableOpacity>
+   
+    //     {/* <Button title="Register" onPress={handleRegister} /> */}
+    //   </View>
+    // </ScrollView>

@@ -99,7 +99,6 @@ const LoginScreen = ({ navigation }) => {
 
     navigation.navigate('DrawerNavigator');
   };
-
   return (
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -137,7 +136,7 @@ const LoginScreen = ({ navigation }) => {
                 { top: passwordPlaceholderTop, transform: [{ scale: passwordLabelScale }] },
               ]}
             >
-              Password
+            Password
             </Animated.Text>
             <TextInput
               value={password}
@@ -172,5 +171,4 @@ const LoginScreen = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
-
 export default LoginScreen;

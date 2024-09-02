@@ -7,23 +7,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import SplashScreen from '../components/common/SplashScreen';
 import AuthNavigator from '../navigations/AuthNavigator'; 
 import DrawerContent from './DrawerContent';
-<<<<<<< HEAD
 import ProfileScreen from '../screens/ProfileScreen';
 import TabNavigator from './TabNavigator';
 import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
 import Subscription from '../screens/Subscription';
 import LoginScreen from '../screens/LoginScreen';
-=======
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { TouchableOpacity } from 'react-native';
-// import Dashboard from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import TabNavigator from './TabNavigator';
-import LinearGradient from 'react-native-linear-gradient';
-
->>>>>>> da99c39b62c29d90e8aaae9f3a9cf92daeeb2546
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const HeaderImage = () => (
@@ -62,7 +51,6 @@ const HeaderWithoutImage = ({ navigation }) => ({
 });
 function DrawerNavigator() {
   return (
-<<<<<<< HEAD
     <Drawer.Navigator
       initialRouteName="Home"
       drawerContent={(props) => <DrawerContent {...props} />} 
@@ -84,49 +72,14 @@ function DrawerNavigator() {
           ),
           ...HeaderWithImage(),
         }} 
-=======
-    <Drawer.Navigator initialRouteName="Dashboard" drawerContent={(props) => <DrawerContent {...props} />}  >
-      <Drawer.Screen name="Home"  component={TabNavigator}  options={{  drawerLabel: 'Home', drawerIcon: ({ color, size }) => (
-      <Icon name="home" color={color} size={size} />
-    ),
-    headerBackground: () => (
-      <LinearGradient
-        colors={['#a3238f', '#ffbe4e']} 
-        style={{ flex: 1 }}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
->>>>>>> da99c39b62c29d90e8aaae9f3a9cf92daeeb2546
       />
-    ),
-    headerTintColor: '#fff',
-  }} 
-/>
-
       <Drawer.Screen 
         name="Profile" 
         component={ProfileScreen} 
         options={({ navigation }) => ({
           drawerLabel: 'View Profile',
           drawerIcon: ({ color, size }) => (
-<<<<<<< HEAD
             <Icon name="user-circle" color={color} size={size} />
-=======
-            <Icon name="user" color={color} size={size} />
-          ),
-          headerBackground: () => (
-            <LinearGradient
-              colors={['#a3238f', '#ffbe4e']} 
-              style={{ flex: 1 }}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            />
-          ), 
-          headerTintColor: '#fff',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
-              <Icon name="arrow-left" size={20} color="#fff" style={{ marginLeft: 15 }} />
-            </TouchableOpacity>
->>>>>>> da99c39b62c29d90e8aaae9f3a9cf92daeeb2546
           ),
           ...HeaderWithoutImage({ navigation }),
         })} 
@@ -186,8 +139,6 @@ function AppNavigator() {
         component={SplashScreen}
         options={{ headerShown: false }}
       />
-
-      
       <Stack.Screen
         name="Auth"
         component={AuthNavigator}
