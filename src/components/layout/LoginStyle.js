@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: height * 0.035,
     color: 'black',
+    textAlign:'center',
   },
   inputContainer: {
     width: '100%',
@@ -88,6 +89,16 @@ const styles = StyleSheet.create({
     color: '#a3238f',
     fontWeight: 'bold',
   },
+  errorText: {
+    color: 'red',
+    marginBottom:10,
+    marginLeft:0,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+
+  
+  },
+
 });
 
 export default styles;

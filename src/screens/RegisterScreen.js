@@ -327,6 +327,7 @@ const togglePasswordVisibility1 = () => {
         <AnimatedTextInput
           placeholder="Mobile Number"
           value={mobileNo}
+          keyboardType="phone-pad"
           onChangeText={setMobileNo}
         />
       </View>

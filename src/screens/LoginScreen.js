@@ -16,6 +16,12 @@ const LoginScreen = ({ navigation }) => {
   const [passwordPlaceholderTop] = useState(new Animated.Value(11));
   const [passwordLabelScale] = useState(new Animated.Value(1));
 
+
+  //  Validation error messages
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+
   const handleFocusUsername = () => {
     setUsernameFocused(true);
     Animated.parallel([
@@ -95,10 +101,49 @@ const LoginScreen = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-  const handleLogin = () => {
 
-    navigation.navigate('DrawerNavigator');
+  const handleLogin = async () => {
+
+       // Reset error messages
+       setUsernameError('');
+       setPasswordError('');
+
+
+       if (!username) {
+        setUsernameError('Username is required');
+        isValid = false;
+      }
+      if (!password) {
+        setPasswordError('Password is required');
+        isValid = false;
+      }
+
+    try {
+      const response = await fetch('http://192.168.29.10:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        console.log('Login successful:', result);
+        navigation.navigate('DrawerNavigator');
+      } 
+      // else {
+      //   // Handle login failure (e.g., show error message)
+      //   alert(result.error || 'Login failed');
+      // }
+    } catch (error) {
+      alert('An error occurred. Please try again.');
+      console.error(error);
+    }
   };
+  
+ 
   return (
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -129,6 +174,10 @@ const LoginScreen = ({ navigation }) => {
             <Icon name="user" size={20} color="#888" style={styles.icon} />
           </View>
 
+          <View >
+          {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+          </View>
+
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
@@ -148,11 +197,14 @@ const LoginScreen = ({ navigation }) => {
               onFocus={handleFocusPassword}
               onBlur={handleBlurPassword}
             />
+            
             <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
               <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#888" />
             </TouchableOpacity>
           </View>
-
+          <View style={styles.errorcontainer}>
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+          </View>
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
