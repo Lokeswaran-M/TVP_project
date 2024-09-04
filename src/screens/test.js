@@ -1,30 +1,225 @@
-const handleLogin = async () => {
-  if (username === '' || password === '') {
-    alert('Please enter both username and password');
-    return;
-  }
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import styles from '../components/layout/LoginStyle';
 
-  try {
-    const response = await fetch('http://your-backend-url/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username, password }),
-    });
+const LoginScreen = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [usernameFocused, setUsernameFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
-    const result = await response.json();
+  const [usernamePlaceholderTop] = useState(new Animated.Value(11));
+  const [usernameLabelScale] = useState(new Animated.Value(1));
 
-    if (response.ok) {
-      // Handle successful login (e.g., navigate to another screen, save user data)
-      console.log('Login successful:', result);
-      navigation.navigate('DrawerNavigator');
-    } else {
-      // Handle login failure (e.g., show error message)
-      alert(result.error || 'Login failed');
+  const [passwordPlaceholderTop] = useState(new Animated.Value(11));
+  const [passwordLabelScale] = useState(new Animated.Value(1));
+
+  // Validation error messages
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState(''); // New state for login error
+
+  const handleFocusUsername = () => {
+    setUsernameFocused(true);
+    Animated.parallel([
+      Animated.timing(usernamePlaceholderTop, {
+        toValue: -15,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(usernameLabelScale, {
+        toValue: 0.8,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  };
+
+  const handleBlurUsername = () => {
+    if (passwordFocused) return;
+    if (username.trim() === '') {
+      Animated.parallel([
+        Animated.timing(usernamePlaceholderTop, {
+          toValue: 11,
+          duration: 200,
+          useNativeDriver: false,
+        }),
+        Animated.timing(usernameLabelScale, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: false,
+        }),
+      ]).start();
     }
-  } catch (error) {
-    alert('An error occurred. Please try again.');
-    console.error(error);
-  }
+    setUsernameFocused(false);
+  };
+
+  const handleFocusPassword = () => {
+    setPasswordFocused(true);
+    Animated.parallel([
+      Animated.timing(passwordPlaceholderTop, {
+        toValue: -15,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+      Animated.timing(passwordLabelScale, {
+        toValue: 0.8,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start();
+  };
+
+  const handleBlurPassword = () => {
+    if (usernameFocused) return;
+    if (password.trim() === '') {
+      Animated.parallel([
+        Animated.timing(passwordPlaceholderTop, {
+          toValue: 11,
+          duration: 200,
+          useNativeDriver: false,
+        }),
+        Animated.timing(passwordLabelScale, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    }
+    setPasswordFocused(false);
+  };
+
+  const handleTouchOutside = () => {
+    Keyboard.dismiss();
+    handleBlurUsername();
+    handleBlurPassword();
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const handleLogin = async () => {
+    // Reset error messages
+    setUsernameError('');
+    setPasswordError('');
+    setLoginError(''); // Reset login error
+
+    let isValid = true;
+
+    if (!username) {
+      setUsernameError('Username is required');
+      isValid = false;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    try {
+      const response = await fetch('http://192.168.29.10:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', result);
+        navigation.navigate('DrawerNavigator');
+      } else {
+        setLoginError(result.error || 'Incorrect username or password'); // Show login error
+      }
+    } catch (error) {
+      setLoginError('An error occurred. Please try again.'); // Show error message
+      console.error(error);
+    }
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={handleTouchOutside}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.container}>
+          <Image 
+            source={require('../../assets/images/Login.png')} 
+            style={styles.logo} 
+          />
+          <Text style={styles.title}>Hello, Welcome Back!</Text>
+          <View style={styles.inputContainer}>
+            <Animated.Text
+              style={[
+                styles.placeholder,
+                { top: usernamePlaceholderTop, transform: [{ scale: usernameLabelScale }] },
+              ]}
+            >
+              Username
+            </Animated.Text>
+            <TextInput
+              value={username}
+              onChangeText={setUsername}
+              placeholder=""
+              placeholderTextColor="transparent"
+              style={styles.input}
+              onFocus={handleFocusUsername}
+              onBlur={handleBlurUsername}
+            />
+            <Icon name="user" size={20} color="#888" style={styles.icon} />
+          </View>
+
+          <View>
+            {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Animated.Text
+              style={[
+                styles.placeholder,
+                { top: passwordPlaceholderTop, transform: [{ scale: passwordLabelScale }] },
+              ]}
+            >
+              Password
+            </Animated.Text>
+            <TextInput
+              value={password}
+              onChangeText={setPassword}
+              placeholder=""
+              placeholderTextColor="transparent"
+              secureTextEntry={!passwordVisible}
+              style={styles.input}
+              onFocus={handleFocusPassword}
+              onBlur={handleBlurPassword}
+            />
+            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
+              <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#888" />
+            </TouchableOpacity>
+          </View>
+          <View>
+            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+          </View>
+          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} {/* Login error message */}
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Log In</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('ForgetPassword')}>
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
+            <Text style={styles.registerText}>
+              Don't have an account? <Text style={styles.signUpText}>Sign up.</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </TouchableWithoutFeedback>
+  );
 };
+export default LoginScreen;

@@ -20,6 +20,7 @@ const LoginScreen = ({ navigation }) => {
   //  Validation error messages
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [loginError, setLoginError] = useState(''); 
 
 
   const handleFocusUsername = () => {
@@ -107,7 +108,9 @@ const LoginScreen = ({ navigation }) => {
        // Reset error messages
        setUsernameError('');
        setPasswordError('');
+       setLoginError(''); 
 
+       let isValid = true;// Flag to track validation status
 
        if (!username) {
         setUsernameError('Username is required');
@@ -116,8 +119,9 @@ const LoginScreen = ({ navigation }) => {
       if (!password) {
         setPasswordError('Password is required');
         isValid = false;
-      }
 
+      }
+  if (!isValid) return; // If not valid, do not proceed with the API call
     try {
       const response = await fetch('http://192.168.29.10:3000/login', {
         method: 'POST',
@@ -132,13 +136,11 @@ const LoginScreen = ({ navigation }) => {
       if (response.ok) {
         console.log('Login successful:', result);
         navigation.navigate('DrawerNavigator');
-      } 
-      // else {
-      //   // Handle login failure (e.g., show error message)
-      //   alert(result.error || 'Login failed');
-      // }
+      } else {
+        setLoginError(result.error || 'Incorrect username or password'); // Show login error
+      }
     } catch (error) {
-      alert('An error occurred. Please try again.');
+      setLoginError('An error occurred. Please try again.'); // Show error message
       console.error(error);
     }
   };
@@ -205,6 +207,7 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.errorcontainer}>
           {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
           </View>
+          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>

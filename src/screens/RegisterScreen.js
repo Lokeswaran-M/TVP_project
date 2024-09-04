@@ -3,11 +3,11 @@ import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpaci
 import CustomInput from './Custom_input';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
-import {API_BASE_URL} from '../constants/Config'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import AnimatedTextInput from './AnimatedTextInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {API_BASE_URL} from '../constants/Config'
 // import Newteam from '../../assets/images/Newteam.png';
 
   const RegisterScreen = () => {
@@ -87,7 +87,9 @@ const togglePasswordVisibility1 = () => {
     try {
    
       // Fetch userId
-      const userIdResponse = await fetch('http://192.168.29.10:3000/execute-getuserid');
+      // const userIdResponse = await fetch('http://192.168.29.10:3000/execute-getuserid');
+      const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+
       const userIdData = await userIdResponse.json();
       console.log('UserId response:', userIdData); 
 
@@ -102,13 +104,13 @@ const togglePasswordVisibility1 = () => {
 
 
       // Fetch professions
-      const professionResponse = await fetch('http://192.168.29.10:3000/execute-profession');
+      const professionResponse = await fetch(`${API_BASE_URL}/execute-profession`);
       const professionData = await professionResponse.json();
       console.log('Professions:', professionData);
       setProfession(professionData);    
 
       // Fetch locations
-      const locationResponse = await fetch('http://192.168.29.10:3000/available-location');
+      const locationResponse = await fetch(`${API_BASE_URL}/available-location`);
 
       const locationData = await locationResponse.json();
       console.log('Locations:', locationData);
@@ -129,7 +131,7 @@ const togglePasswordVisibility1 = () => {
   };
  const fetchChapterTypes = async () => {
     try {
-      const chapterTypeResponse = await fetch(`http://192.168.29.10:3000/execute-getslot?Location=${selectedLocation}`); 
+      const chapterTypeResponse = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}`); 
       const chapterTypeData = await chapterTypeResponse.json();
       console.log('Chapter Types:', chapterTypeData);
       setChapterType(chapterTypeData);
@@ -193,6 +195,10 @@ const togglePasswordVisibility1 = () => {
       setMobileNoError('Mobile number is required');
       isValid = false;
     }
+    else if (mobileNo.length !== 10) {
+      setMobileNoError('Mobile number must be 10 digits');
+      isValid = false;
+    }
     if (!email) {
       setEmailError('Email is required');
       isValid = false;
@@ -230,7 +236,7 @@ const togglePasswordVisibility1 = () => {
     }
     if (isValid) {
     try {
-      const response = await fetch('http://192.168.29.10:3000/RegisterAlldata', {
+      const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
