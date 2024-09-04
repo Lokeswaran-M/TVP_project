@@ -24,28 +24,28 @@ const HeaderImage = () => (
 const HeaderWithImage = () => ({
   headerBackground: () => (
     <LinearGradient
-      colors={['#a3238f', '#ffbe4e']}
+      colors={['#fff', '#fff']}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
     />
   ),
-  headerTintColor: '#fff',
+  headerTintColor: '#000',
   headerTitle: () => <HeaderImage />,
 });
 const HeaderWithoutImage = ({ navigation }) => ({
   headerBackground: () => (
     <LinearGradient
-      colors={['#a3238f', '#ffbe4e']}
+      colors={['#fff', '#fff']}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
     />
   ),
-  headerTintColor: '#fff',
+  headerTintColor: '#000',
   headerLeft: () => (
     <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
-      <Icon name="arrow-left" size={20} color="#fff" style={{ marginLeft: 15 }} />
+      <Icon name="arrow-left" size={20} color="#000" style={{ marginLeft: 15 }} />
     </TouchableOpacity>
   ),
 });

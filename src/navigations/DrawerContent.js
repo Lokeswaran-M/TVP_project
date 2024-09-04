@@ -64,17 +64,20 @@ const CustomDrawerContent = (props) => {
         quality: 1,
       });
     }
-
+  
+    console.log('Image Picker Result:', result);
+  
     if (result && result.assets && !result.didCancel) {
       const { uri, type: fileType } = result.assets[0];
       setProfileImage({ uri });
       console.log('Selected image URI:', uri);
       uploadImage(uri, fileType);
     } else {
-      console.log('Image selection cancelled');
+      console.log('Image selection cancelled or failed');
     }
     setModalVisible(false);
   };
+  
 
   const uploadImage = async (uri, fileType) => {
     setLoading(true);
@@ -93,12 +96,15 @@ const CustomDrawerContent = (props) => {
         },
         body: formData,
       });
+  
       const data = await response.json();
-      console.log('Profile picture updated successfully:', data);
+      console.log('Server response:', data); 
   
       if (data.newFilePath) {
         setProfileImage({ uri: `${API_BASE_URL}/${data.newFilePath}` });
         setPreviousProfileImageUri(`${API_BASE_URL}/${data.newFilePath}`);
+      } else {
+        console.warn('No new file path returned from server');
       }
     } catch (error) {
       console.error('Profile picture update failed:', error);
@@ -111,7 +117,8 @@ const CustomDrawerContent = (props) => {
     } finally {
       setLoading(false);
     }
-  };  
+  };
+  ;  
 
   const handleRemoveProfilePicture = () => {
     setProfileImage(require('../../assets/images/DefaultProfile.jpg'));
@@ -123,7 +130,7 @@ const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <LinearGradient
-        colors={['#a3238f', '#ffbe4e']}
+        colors={['#fff', '#fff']}
         style={styles.profileContainer}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -148,7 +155,7 @@ const CustomDrawerContent = (props) => {
         <Text style={styles.professionText}>Profession</Text>
         <View style={styles.iconContainer}>
           <Icon name="sun-o" size={20} color="#FDB813" style={styles.icon} />
-          <Icon name="moon-o" size={20} color="#F6F1D5" style={styles.icon} />
+          <Icon name="moon-o" size={20} color="gray" style={styles.icon} />
         </View>
       </LinearGradient>
       <View style={styles.container}>
@@ -216,7 +223,7 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
   },
   professionText: {
     fontSize: 14,
