@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { RadioButton } from 'react-native-paper';  // Import RadioButton component from react-native-paper
 import styles from '../components/layout/LoginStyle';
 
 const LoginScreen = ({ navigation }) => {
@@ -9,6 +10,7 @@ const LoginScreen = ({ navigation }) => {
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [selectedLoginType, setSelectedLoginType] = useState('member'); // State for radio button selection
 
   const [usernamePlaceholderTop] = useState(new Animated.Value(11));
   const [usernameLabelScale] = useState(new Animated.Value(1));
@@ -16,11 +18,12 @@ const LoginScreen = ({ navigation }) => {
   const [passwordPlaceholderTop] = useState(new Animated.Value(11));
   const [passwordLabelScale] = useState(new Animated.Value(1));
 
-  // Validation error messages
+  //  Validation error messages
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [loginError, setLoginError] = useState(''); // New state for login error
+  const [loginError, setLoginError] = useState(''); 
 
+  // Handle focus and blur for animations (same as before)
   const handleFocusUsername = () => {
     setUsernameFocused(true);
     Animated.parallel([
@@ -105,9 +108,9 @@ const LoginScreen = ({ navigation }) => {
     // Reset error messages
     setUsernameError('');
     setPasswordError('');
-    setLoginError(''); // Reset login error
+    setLoginError(''); 
 
-    let isValid = true;
+    let isValid = true; // Flag to track validation status
 
     if (!username) {
       setUsernameError('Username is required');
@@ -117,8 +120,7 @@ const LoginScreen = ({ navigation }) => {
       setPasswordError('Password is required');
       isValid = false;
     }
-
-    if (!isValid) return;
+    if (!isValid) return; // If not valid, do not proceed with the API call
 
     try {
       const response = await fetch('http://192.168.29.10:3000/login', {
@@ -128,12 +130,19 @@ const LoginScreen = ({ navigation }) => {
         },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const result = await response.json();
-
+  
       if (response.ok) {
         console.log('Login successful:', result);
-        navigation.navigate('DrawerNavigator');
+
+        // Navigate based on the selected login type
+        if (selectedLoginType === 'member') {
+          navigation.navigate('DrawerNavigator');
+        } else if (selectedLoginType === 'substitute') {
+          navigation.navigate('SubstitutePage');
+        }
+
       } else {
         setLoginError(result.error || 'Incorrect username or password'); // Show login error
       }
@@ -152,6 +161,24 @@ const LoginScreen = ({ navigation }) => {
             style={styles.logo} 
           />
           <Text style={styles.title}>Hello, Welcome Back!</Text>
+
+          {/* Radio Buttons for Login Type */}
+          <View style={styles.radioButtonContainer}>
+            <RadioButton.Group
+              onValueChange={newValue => setSelectedLoginType(newValue)}
+              value={selectedLoginType}
+            >
+              <View style={styles.radioButtonItem}>
+                <RadioButton value="member" />
+                <Text style={styles.radioButtonLabel}>Member Login</Text>
+              </View>
+              <View style={styles.radioButtonItem}>
+                <RadioButton value="substitute" />
+                <Text style={styles.radioButtonLabel}>Substitute Login</Text>
+              </View>
+            </RadioButton.Group>
+          </View>
+
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
@@ -173,9 +200,7 @@ const LoginScreen = ({ navigation }) => {
             <Icon name="user" size={20} color="#888" style={styles.icon} />
           </View>
 
-          <View>
-            {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
-          </View>
+          {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
 
           <View style={styles.inputContainer}>
             <Animated.Text
@@ -184,7 +209,7 @@ const LoginScreen = ({ navigation }) => {
                 { top: passwordPlaceholderTop, transform: [{ scale: passwordLabelScale }] },
               ]}
             >
-              Password
+            Password
             </Animated.Text>
             <TextInput
               value={password}
@@ -200,10 +225,10 @@ const LoginScreen = ({ navigation }) => {
               <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#888" />
             </TouchableOpacity>
           </View>
-          <View>
-            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-          </View>
-          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} {/* Login error message */}
+
+          {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} 
+
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
@@ -222,4 +247,5 @@ const LoginScreen = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
+
 export default LoginScreen;

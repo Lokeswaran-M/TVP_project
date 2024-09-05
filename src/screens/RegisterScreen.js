@@ -235,6 +235,9 @@ const togglePasswordVisibility1 = () => {
       isValid = false;
     }
     if (isValid) {
+
+
+      
     try {
       const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
         method: 'POST',

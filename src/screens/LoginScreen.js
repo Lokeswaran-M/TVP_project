@@ -5,12 +5,19 @@ import styles from '../components/layout/LoginStyle';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../Redux/action';
 
+import { RadioButton } from 'react-native-paper';  // Import RadioButton component from react-native-paper
+
+
+
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const [selectedLoginType, setSelectedLoginType] = useState('member'); // State for radio button selection
+
 
   const [usernamePlaceholderTop] = useState(new Animated.Value(11));
   const [usernameLabelScale] = useState(new Animated.Value(1));
@@ -140,13 +147,25 @@ const LoginScreen = ({ navigation }) => {
   
       if (response.ok) {
         console.log('Login successful:', result);
+
         dispatch(setUser(result));
         navigation.navigate('DrawerNavigator');
+
+
+          // Navigate based on the selected login type
+          if (selectedLoginType == 'member') {
+            navigation.navigate('DrawerNavigator');
+          } else if (selectedLoginType == 'substitute') {
+            navigation.navigate('SubstitutePage');
+          }
+  
+      
+
       } else {
-        setLoginError(result.error || 'Incorrect username or password'); // Show login error
+        setLoginError(result.error || 'Incorrect username or password'); 
       }
     } catch (error) {
-      setLoginError('An error occurred. Please try again.'); // Show error message
+      setLoginError('An error occurred. Please try again.'); 
       console.error(error);
     }
   };
@@ -159,11 +178,33 @@ const LoginScreen = ({ navigation }) => {
             style={styles.logo} 
           />
           <Text style={styles.title}>Hello, Welcome Back!</Text>
+          
+          
+           {/* Radio Buttons for Login Type */}
+           <View style={styles.radioButtonContainer}>
+            <RadioButton.Group
+              onValueChange={newValue => setSelectedLoginType(newValue)}
+              value={selectedLoginType}
+            >
+              <View style={styles.radioButtonItem}>
+                <RadioButton value="member" />
+                <Text style={styles.radioButtonLabel}>Member Login</Text>
+              </View>
+              <View style={styles.radioButtonItem}>
+                <RadioButton value="substitute" />
+                <Text style={styles.radioButtonLabel}>Substitute Login</Text>
+              </View>
+            </RadioButton.Group>
+          </View>
+          
+          
+          
+          
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
                 styles.placeholder,
-                { top: usernamePlaceholderTop, transform: [{ scale: usernameLabelScale }] },
+                {top: usernamePlaceholderTop, transform: [{ scale: usernameLabelScale }] },
               ]}
             >
               Username

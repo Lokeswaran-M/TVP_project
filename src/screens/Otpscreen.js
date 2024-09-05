@@ -53,7 +53,7 @@ const Otpscreen = ({ navigation }) => {
         text2: 'Please enter a valid phone number.',
         position: 'top',
         config: toastConfig,
-      });
+      }); 
       return;
     }
     setLoading(true);
@@ -149,7 +149,6 @@ const Otpscreen = ({ navigation }) => {
           config: toastConfig,
         });
         // clearOtpInput();
-
         // Wait for the toast to disappear, then navigate
         setTimeout(() => {
           navigation.navigate('Login');
@@ -230,7 +229,7 @@ const Otpscreen = ({ navigation }) => {
             <TouchableOpacity 
               style={styles.button} 
               onPress={handleOtpVerification}
-            >
+              >
               <Text style={styles.buttonText}>Verify</Text>
             </TouchableOpacity>
             <TouchableOpacity 
