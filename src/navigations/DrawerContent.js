@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { API_BASE_URL } from '../constants/Config';
+import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
@@ -9,10 +10,13 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { PERMISSIONS, request } from 'react-native-permissions';
 
 const CustomDrawerContent = (props) => {
+  const user = useSelector((state) => state.user);
   const [isModalVisible, setModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  console.log("user------------",user);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -151,8 +155,8 @@ const CustomDrawerContent = (props) => {
             <Icon name="pencil" size={20} color="#a3238f" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.nameText}>Your Name</Text>
-        <Text style={styles.professionText}>Profession</Text>
+        <Text style={styles.profileName}>{user?.username || 'Guest'}</Text>
+        <Text style={styles.professionText}>{user?.profession || 'Not provided'}</Text>
         <View style={styles.iconContainer}>
           <Icon name="sun-o" size={20} color="#FDB813" style={styles.icon} />
           <Icon name="moon-o" size={20} color="gray" style={styles.icon} />
@@ -220,10 +224,14 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 5,
   },
-  nameText: {
+  // nameText: {
+  //   fontSize: 18,
+  //   fontWeight: 'bold',
+  //   color: '#000',
+  // },
+  profileName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
   },
   professionText: {
     fontSize: 14,

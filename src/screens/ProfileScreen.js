@@ -2,10 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, Image, ActivityIndicator, StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
+import { useSelector } from 'react-redux';
 
 const Profile = () => {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const user = useSelector((state) => state.user);  
 
   const fetchProfileImage = async () => {
     setLoading(true);
@@ -51,7 +54,7 @@ const Profile = () => {
         )}
       </View>
       <View style={styles.bottomSection}>
-        <Text style={styles.text}>Name</Text>
+        <Text style={styles.text}>{user?.username}</Text>
       </View>
     </View>
   );

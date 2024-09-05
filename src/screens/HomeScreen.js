@@ -1,17 +1,16 @@
-import React from 'react'
-import { View, Text } from 'react-native'
-import { useNavigation } from '@react-navigation/native'; 
+import React from 'react';
+import { View, Text } from 'react-native';
+import { useSelector } from 'react-redux';
 
 const HomeScreen = () => {
+  const user = useSelector((state) => state.user);  
 
-  const navigation = useNavigation(); 
   return (
     <View>
-        <Text>
-            Home Screen
-        </Text>
+      <Text>Welcome, {user?.username}!</Text>
+      <Text>Profession: {user?.profession || 'Not provided'}</Text>
     </View>
-  )
-}
+  );
+};
 
-export default HomeScreen
+export default HomeScreen;

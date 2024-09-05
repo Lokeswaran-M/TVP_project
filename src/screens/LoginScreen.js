@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/LoginStyle';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../Redux/action';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -103,6 +105,8 @@ const LoginScreen = ({ navigation }) => {
     setPasswordVisible(!passwordVisible);
   };
 
+  const dispatch = useDispatch();
+
   const handleLogin = async () => {
 
        // Reset error messages
@@ -132,9 +136,11 @@ const LoginScreen = ({ navigation }) => {
       });
   
       const result = await response.json();
+      // console.log("Result-------------",result);
   
       if (response.ok) {
         console.log('Login successful:', result);
+        dispatch(setUser(result));
         navigation.navigate('DrawerNavigator');
       } else {
         setLoginError(result.error || 'Incorrect username or password'); // Show login error
@@ -144,8 +150,6 @@ const LoginScreen = ({ navigation }) => {
       console.error(error);
     }
   };
-  
- 
   return (
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
