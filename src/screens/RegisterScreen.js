@@ -27,7 +27,7 @@ import {API_BASE_URL} from '../constants/Config'
   const [chapterType, setChapterType] = useState([]); 
   const [selectedChapterType, setSelectedChapterType] = useState('');
 
-  const [chapterNo, setChapterNo] = useState([]); 
+  const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
 
   // const [availabledata, setAvailableData] = useState([]);
@@ -114,7 +114,7 @@ const togglePasswordVisibility1 = () => {
 
       const locationData = await locationResponse.json();
       console.log('Locations:', locationData);
-      setChapterNo(locationData.availableLocations);
+      setLocationID(locationData.availableLocations);
 
 
       //  // Fetch chapter types (slots)
@@ -254,7 +254,7 @@ const togglePasswordVisibility1 = () => {
             businessName,
             profession: selectedProfession,
             chapterType: selectedChapterType,
-            chapterNo: selectedLocation,
+            LocationID: selectedLocation,
             referredBy,
             startDate,
             endDate
@@ -397,8 +397,8 @@ const togglePasswordVisibility1 = () => {
           style={styles.picker}
           onValueChange={(itemValue) => setSelectedLocation(itemValue)}
           >
-          {chapterNo.map((chapterNo, index) => (
-            <Picker.Item key={index} label={chapterNo.location} value={chapterNo.location} />
+          {LocationID.map((LocationID, index) => (
+            <Picker.Item key={index} label={LocationID.location} value={LocationID.location} />
           ))}
         </Picker>
         </View>
