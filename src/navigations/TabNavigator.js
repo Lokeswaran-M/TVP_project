@@ -3,16 +3,33 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Dashboard from '../screens/HomeScreen';
 import Members from '../screens/Members';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Animated, Easing, Alert } from 'react-native';
+import { API_BASE_URL } from '../constants/Config';
 import { launchCamera } from 'react-native-image-picker';
-import { Animated, Easing } from 'react-native';
-const Tab = createBottomTabNavigator();
+import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { useSelector } from 'react-redux';
+
+
 const CameraScreen = ({ navigation }) => {
+
+  const user = useSelector((state) => state.user);
+
+  const requestCameraPermission = async () => {
+    const result = await request(PERMISSIONS.ANDROID.CAMERA);
+    if (result === RESULTS.GRANTED) {
+      openCamera();
+    } else {
+      Alert.alert('Permission Denied', 'Camera access is required to take photos.');
+      navigation.navigate('Dashboard');
+    }
+  };
+
   const openCamera = () => {
     const options = {
       mediaType: 'photo',
       cameraType: 'front',
     };
-    launchCamera(options, (response) => {
+    launchCamera(options, async (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
         navigation.navigate('Dashboard');
@@ -20,16 +37,56 @@ const CameraScreen = ({ navigation }) => {
         console.log('ImagePicker Error: ', response.errorCode);
         navigation.navigate('Dashboard');
       } else if (response.assets && response.assets.length > 0) {
-        console.log('Photo taken: ', response.assets[0].uri);
+        const photoUri = response.assets[0].uri;
+        const userId = user?.userId;
+        console.log('User ID---------------------', userId); 
+  
+        const currentDateTime = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 12);
+        const fileName = `${userId}_${currentDateTime}.jpeg`;
+  
+        try {
+          const formData = new FormData();
+          formData.append('image', {
+            uri: photoUri,
+            type: 'image/jpeg',
+            name: fileName,
+          });
+  
+          const uploadResponse = await fetch(`${API_BASE_URL}/upload-meeting-photo?userId=${userId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+  
+          const result = await uploadResponse.json();
+          if (uploadResponse.ok) {
+            console.log('Upload successful:', result.newFilePath);
+            Alert.alert('Success', 'Photo uploaded successfully');
+          } else {
+            console.error('Upload failed:', result.error);
+            Alert.alert('Error', 'Photo upload failed');
+          }
+        } catch (error) {
+          console.error('Error uploading photo:', error);
+          Alert.alert('Error', 'Something went wrong during the upload');
+        }
+  
         navigation.navigate('Dashboard');
       }
     });
-  };
+  };       
+
   useEffect(() => {
-    openCamera();
+    requestCameraPermission();
   }, []);
+
   return null;
 };
+
+const Tab = createBottomTabNavigator();
+
 const TabNavigator = () => {
   return (
     <Tab.Navigator
@@ -100,4 +157,5 @@ const TabNavigator = () => {
     </Tab.Navigator>
   );
 };
+
 export default TabNavigator;
