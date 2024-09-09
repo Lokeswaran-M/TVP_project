@@ -249,3 +249,78 @@ const LoginScreen = ({ navigation }) => {
 };
 
 export default LoginScreen;
+
+
+
+
+
+
+
+const handleLogin = async () => {
+  // Reset error messages
+  setUsernameError('');
+  setPasswordError('');
+  setLoginError('');
+
+  let isValid = true; // Flag to track validation status
+
+  if (!username) {
+    setUsernameError('Username is required');
+    isValid = false;
+  }
+  if (!password) {
+    setPasswordError('Password is required');
+    isValid = false;
+  }
+
+  if (!isValid) return; // If not valid, do not proceed with the API call
+
+  try {
+    const response = await fetch('http://192.168.29.10:3000/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      console.log('Login successful:', result);
+
+      dispatch(setUser(result));
+      
+      const { rollId } = result; // Get the rollId from the result
+
+      // Navigate based on the rollId
+      if (rollId === 1) {
+        navigation.navigate('AdminPage');
+      } else if (rollId === 2) {
+        navigation.navigate('ChapterAdministratorPage');
+      } else if (rollId === 3) {
+        navigation.navigate('MemberPage');
+      } else {
+        // Handle other roles if needed
+        setLoginError('Invalid role ID');
+      }
+
+    } else {
+      setLoginError(result.error || 'Incorrect username or password');
+    }
+  } catch (error) {
+    setLoginError('An error occurred. Please try again.');
+    console.error(error);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
