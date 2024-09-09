@@ -149,17 +149,30 @@ const LoginScreen = ({ navigation }) => {
         console.log('Login successful:', result);
 
         dispatch(setUser(result));
-        navigation.navigate('DrawerNavigator');
+        const { rollId } = result.user; // Get the rollId from the result
+        console.log('rollId====================',result.user)
+        // navigation.navigate('DrawerNavigator');
 
 
-          // Navigate based on the selected login type
-          if (selectedLoginType == 'member') {
-            navigation.navigate('DrawerNavigator');
-          } else if (selectedLoginType == 'substitute') {
-            navigation.navigate('SubstitutePage');
-          }
+          // // Navigate based on the selected login type
+          // if (selectedLoginType == 'member') {
+          //   navigation.navigate('DrawerNavigator');
+          // } else if (selectedLoginType == 'substitute') {
+          //   navigation.navigate('SubstitutePage');
+          // }
   
-      
+        // Navigate based on the rollId
+
+        if (rollId === 1) {
+          navigation.navigate('AdminPage');
+        } else if (rollId === 2) {
+          navigation.navigate('ChapterAdministratorPage');
+        } else if (rollId === 3) {
+          navigation.navigate('DrawerNavigator');
+        } else {
+          // Handle other roles if needed
+          setLoginError('Invalid role ID');
+        }
 
       } else {
         setLoginError(result.error || 'Incorrect username or password'); 
@@ -196,10 +209,7 @@ const LoginScreen = ({ navigation }) => {
               </View>
             </RadioButton.Group>
           </View>
-          
-          
-          
-          
+         
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
