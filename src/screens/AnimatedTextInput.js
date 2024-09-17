@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, TextInput, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -71,10 +69,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#ccc',
+    borderColor: '#A3238F',
     borderRadius: 10,
-    padding: 10,
-    paddingLeft: 15,
+    padding: 2,
+    paddingLeft: 10,
     position: 'relative',
   },
   focusedBorder: {

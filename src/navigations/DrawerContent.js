@@ -4,10 +4,13 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { PERMISSIONS, request } from 'react-native-permissions';
+import sunmoon from '../../assets/images/sunandmoon-icon.png';
+
 
 const CustomDrawerContent = (props) => {
   const user = useSelector((state) => state.user);
@@ -153,7 +156,15 @@ const CustomDrawerContent = (props) => {
             onPress={() => setModalVisible(true)}
           >
             <Icon name="pencil" size={20} color="#a3238f" />
+            <Text style={styles.editText}>Change Image</Text>
+
           </TouchableOpacity>
+          <View style={styles.editIconWrapper}>
+          <Image 
+                  source={sunmoon} 
+                  style={{ width: 25, height: 25 }} 
+                />
+          </View>
         </View>
         <Text style={styles.profileName}>{user?.username || 'Guest'}</Text>
         <Text style={styles.professionText}>{user?.profession || 'Not provided'}</Text>
@@ -209,7 +220,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
     marginBottom: 20,
-    marginTop: 20,
+    marginTop: 40,
   },
   profileImage: {
     width: 100,
@@ -218,9 +229,19 @@ const styles = StyleSheet.create({
   },
   pencilIcon: {
     position: 'absolute',
-    bottom: 0,
-    right: 0,
+    bottom: 110,
+    right: -80,
     backgroundColor: '#fff',
+    borderRadius: 50,
+    padding: 5,
+    flexDirection: 'row',   
+    alignItems: 'center',
+  },  
+  editIconWrapper: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    // backgroundColor: '#fff',
     borderRadius: 50,
     padding: 5,
   },
@@ -232,6 +253,11 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  editText: {
+    marginLeft: 5,
+    fontSize: 12,
+    color: '#C23A8A',
   },
   professionText: {
     fontSize: 14,
