@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 const Members = () => {
   const user = useSelector((state) => state.user); 
+  console.log("User-----------------",user);
   const [members, setMembers] = useState([]);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ const Members = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            chapterNo: user?.chapterNo,
+            LocationID: user?.LocationID,
             chapterType: user?.chapterType,
           }),
         });
@@ -31,17 +32,17 @@ const Members = () => {
       }
     };
 
-    if (user?.chapterNo && user?.chapterType) {
+    if (user?.LocationID && user?.chapterType) {
       fetchMembers();
     }
-  }, [user?.chapterNo, user?.chapterType]);
+  }, [user?.LocationID, user?.chapterType]);
 
   return (
     <View>
       <Text>Members Page</Text>
       <Text>{user?.username}</Text>
       <Text>{user?.chapterType}</Text> 
-      <Text>{user?.chapterNo}</Text>  
+      <Text>{user?.LocationID}</Text>  
 
       <Text>Members in the same chapter:</Text>
       {members.length > 0 ? (

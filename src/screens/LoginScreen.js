@@ -4,8 +4,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/LoginStyle';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../Redux/action';
+import { API_BASE_URL } from '../constants/Config';
 
-import { RadioButton } from 'react-native-paper';  // Import RadioButton component from react-native-paper
+import { RadioButton } from 'react-native-paper'; 
 
 
 
@@ -16,7 +17,7 @@ const LoginScreen = ({ navigation }) => {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const [selectedLoginType, setSelectedLoginType] = useState('member'); // State for radio button selection
+  const [selectedLoginType, setSelectedLoginType] = useState('member'); 
 
 
   const [usernamePlaceholderTop] = useState(new Animated.Value(11));
@@ -134,7 +135,7 @@ const LoginScreen = ({ navigation }) => {
       }
   if (!isValid) return; // If not valid, do not proceed with the API call
     try {
-      const response = await fetch('http://192.168.29.10:3000/login', {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
