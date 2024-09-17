@@ -95,9 +95,10 @@ const styles = StyleSheet.create({
     marginLeft:0,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-
-  
   },
+  // radioButtonItem:{
+
+  // }
 
 });
 

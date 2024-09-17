@@ -12,6 +12,9 @@ import { RadioButton } from 'react-native-paper';  // Import RadioButton compone
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [logintype, setLogintype] = useState('member');
+
+
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -139,17 +142,18 @@ const LoginScreen = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password ,T}),
       });
   
       const result = await response.json();
+
       // console.log("Result-------------",result);
-  
+
       if (response.ok) {
         console.log('Login successful:', result);
 
         dispatch(setUser(result));
-        const { rollId } = result.user; // Get the rollId from the result
+        const { rollId } = result.user; 
         console.log('rollId====================',result.user)
         // navigation.navigate('DrawerNavigator');
 
@@ -162,18 +166,16 @@ const LoginScreen = ({ navigation }) => {
           // }
   
         // Navigate based on the rollId
-
         if (rollId === 1) {
           navigation.navigate('AdminPage');
         } else if (rollId === 2) {
           navigation.navigate('ChapterAdministratorPage');
-        } else if (rollId === 3) {
+        } else if (rollId === 3 ) {
           navigation.navigate('DrawerNavigator');
         } else {
           // Handle other roles if needed
           setLoginError('Invalid role ID');
         }
-
       } else {
         setLoginError(result.error || 'Incorrect username or password'); 
       }
@@ -182,7 +184,8 @@ const LoginScreen = ({ navigation }) => {
       console.error(error);
     }
   };
-  return (
+
+  return ( 
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
@@ -192,20 +195,20 @@ const LoginScreen = ({ navigation }) => {
           />
           <Text style={styles.title}>Hello, Welcome Back!</Text>
           
-          
+         
            {/* Radio Buttons for Login Type */}
            <View style={styles.radioButtonContainer}>
             <RadioButton.Group
-              onValueChange={newValue => setSelectedLoginType(newValue)}
-              value={selectedLoginType}
+              onValueChange={newValue => setLogintype(newValue)}
+              value={logintype}
             >
-              <View style={styles.radioButtonItem}>
-                <RadioButton value="member" />
-                <Text style={styles.radioButtonLabel}>Member Login</Text>
-              </View>
-              <View style={styles.radioButtonItem}>
-                <RadioButton value="substitute" />
-                <Text style={styles.radioButtonLabel}>Substitute Login</Text>
+                <View style={styles.radioButtonItem}>
+                  <RadioButton value="member" />
+                  <Text style={styles.radioButtonLabel}>Member Login</Text>
+                </View>
+                <View style={styles.radioButtonItem}>
+                  <RadioButton value="substitute" />
+                  <Text style={styles.radioButtonLabel}>Substitute Login</Text>
               </View>
             </RadioButton.Group>
           </View>
@@ -282,3 +285,8 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 export default LoginScreen;
+
+
+
+
+

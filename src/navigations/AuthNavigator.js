@@ -8,6 +8,7 @@ import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
+import UnauthorizedScreen from '../screens/UnauthorizedScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'AdminPage',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="UnauthorizedScreen"  component={UnauthorizedScreen}  options={{ headerShown: false }}  />
 
     </Stack.Navigator>
     

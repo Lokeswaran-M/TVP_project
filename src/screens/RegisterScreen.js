@@ -16,7 +16,7 @@ import {API_BASE_URL} from '../constants/Config'
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState(''); 
 
-  const [mobileNo, setMobileNo] = useState('');
+  const [Mobileno, setMobileno] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [businessName, setBusinessName] = useState('');
@@ -52,7 +52,7 @@ import {API_BASE_URL} from '../constants/Config'
  const [usernameError, setUsernameError] = useState('');
  const [passwordError, setPasswordError] = useState('');
  const [confirmPasswordError, setConfirmPasswordError] = useState('');
- const [mobileNoError, setMobileNoError] = useState('');
+ const [MobilenoError, setMobilenoError] = useState('');
  const [emailError, setEmailError] = useState('');
  const [addressError, setAddressError] = useState('');
  const [businessNameError, setBusinessNameError] = useState('');
@@ -75,70 +75,196 @@ const togglePasswordVisibility1 = () => {
     fetchData();
   }, []);
 
+
+
+
+  // useEffect(() => {
+  //   if (selectedProfession) {
+  //     fetchLocations();
+  //   }
+  // }, [selectedProfession]);
+
+
+  // useEffect(() => {
+  //   if (selectedLocation) {
+  //     fetchChapterTypes();
+  //   }
+  // }, [selectedLocation]); 
+
+
+ // Fetch professions on mount
+//  useEffect(() => {
+//   fetchProfession();
+// }, []);
+
+
+
+
+
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+  //     const userIdData = await userIdResponse.json();
+  //     if (userIdData.length > 0) {
+  //       setUserId(userIdData[0].UserId);
+  //     } else {
+  //       console.error('No UserId found in the response!');
+  //     }
+
+  //     // const professionResponse = await fetch(`${API_BASE_URL}/execute-profession`);
+  //     // const professionData = await professionResponse.json();
+  //     // setProfession(professionData);
+  //     fetchProfession();  // Fetch professions
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  // const fetchProfession = async () => {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/execute-profession`);
+  //     const data = await response.json();
+  //     console.log('data-------profes-------',data)
+  //     setProfession(data);
+  //   } catch (error) {
+  //     console.error('Error fetching professions:', error);
+  //   }
+  // };
+  
+  
+
+  // const fetchLocations = async () => {
+  //   try {
+  //     const locationResponse = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
+  //     const locationData = await locationResponse.json();
+  //     setLocationID(locationData.availableLocations);
+  //   } catch (error) {
+  //     console.error('Error fetching locations:', error);
+  //   }
+  // };
+
+  // // const fetchChapterTypes = async () => {
+  // //   try {
+  // //     const chapterTypeResponse = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&${selectedProfession}`);
+  // //     const chapterTypeData = await chapterTypeResponse.json();
+  // //     setChapterType(chapterTypeData);
+  // //   } catch (error) {
+  // //     console.error('Error fetching chapter types:', error);
+  // //   }
+  // // };
+
+//   const fetchChapterTypes = async () => {
+//     try {
+//       const chapterTypeResponse = await fetch(
+//    `${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`
+//         // `${API_BASE_URL}/execute-getslot?Location=100001&Profession=consultant office`
+
+// );
+//       const chapterTypeData = await chapterTypeResponse.json();
+//       setChapterType(chapterTypeData);
+//     } catch (error) {
+//       console.error('Error fetching chapter types:', error);
+//     }
+//   };
+  
+// const fetchLocations = async (selectedProfession) => {
+//   try {
+//     // const response = await fetch(`http://your-api-url/available-location?profession=${profession}`);
+//    const response = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
+
+//     const data = await response.json();
+//     console.log('data------location--------',data)
+//     setLocationID(data.availableLocations);
+//   } catch (error) {
+//     console.error('Error fetching locations:', error);
+//   }
+// };
+
+// const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
+//   try {
+//  const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&${selectedProfession}`);
+ 
+
+//  const data = await response.json();
+//   console.log('data--------slot------',data)
+//   setChapterType(data);
+//   } catch (error) {
+//     console.error('Error fetching slots:', error);
+//   }
+// };
+
+
+// const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
+//       headers: {
+//         'Cache-Control': 'no-cache',
+//       },
+//     });
+//     const data = await response.json();
+    
+//     // Update to handle specific details from the response
+//     setChapterType(data.getslot); 
+//     console.log('Fetched slot details:=========', data);
+//   } catch (error) {
+//     console.error('Error fetching slots:', error);
+//   }
+// };
+
+
+  // Fetch initial profession list from API
   useEffect(() => {
-    if (selectedLocation) {
-      fetchChapterTypes();
+    fetch(`${API_BASE_URL}/execute-profession`) // Replace with your actual API endpoint
+      .then((response) => response.json())
+      .then((data) => setProfession(data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  // Fetch locations based on selected profession
+  useEffect(() => {
+    if (selectedProfession) {
+      fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`)
+      //  `${API_BASE_URL}/available-location?profession=${selectedProfession}
+      .then((response) => response.json())
+        .then((data) => setLocationID(data))
+        .catch((error) => console.error(error));
+
+      // Reset location and slot when profession changes
+      setSelectedLocation(null);
+      setChapterType([]); // Reset slots
     }
-  }, [selectedLocation]); // Trigger fetch when selectedLocation changes
+  }, [selectedProfession]);
 
-  const fetchData = async () => {
-    setLoading(true);
+  // Fetch slots based on both selected profession and location
+  useEffect(() => {
+    if (selectedProfession && selectedLocation) {
+      fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`)
+        .then((response) => response.json())
+        .then((data) => setChapterType(data))
+        .catch((error) => console.error(error));
 
-    try {
-   
-      // Fetch userId
-      // const userIdResponse = await fetch('http://192.168.29.10:3000/execute-getuserid');
-      const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
-
-      const userIdData = await userIdResponse.json();
-      console.log('UserId response:', userIdData); 
-
-      // Extract UserId from the first object in the array
-      if (userIdData.length > 0) {
-        const userId = userIdData[0].UserId;
-        setUserId(userId);
-        console.log('Extracted UserId:', userId); 
-      } else {
-        console.error('No UserId found in the response!');
-      }
-
-
-      // Fetch professions
-      const professionResponse = await fetch(`${API_BASE_URL}/execute-profession`);
-      const professionData = await professionResponse.json();
-      console.log('Professions:', professionData);
-      setProfession(professionData);    
-
-      // Fetch locations
-      const locationResponse = await fetch(`${API_BASE_URL}/available-location`);
-
-      const locationData = await locationResponse.json();
-      console.log('Locations:', locationData);
-      setLocationID(locationData.availableLocations);
-
-
-      //  // Fetch chapter types (slots)
-      //  const chapterTypeResponse = await fetch(`http://192.168.29.81:3000/execute-getslot?Location=${chapterNo}`); 
-      //  const chapterTypeData = await chapterTypeResponse.json();
-      //  console.log('Chapter Types:', chapterTypeData);
-      //  setChapterType(chapterTypeData);
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
+      // Reset slot when location changes
+      setSelectedChapterType(null);
     }
-  };
- const fetchChapterTypes = async () => {
-    try {
-      const chapterTypeResponse = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}`); 
-      const chapterTypeData = await chapterTypeResponse.json();
-      console.log('Chapter Types:', chapterTypeData);
-      setChapterType(chapterTypeData);
-    } catch (error) {
-      console.error('Error fetching chapter types:', error);
-    }
-  };
+  }, [selectedProfession, selectedLocation]);
+
+// // When profession is selected
+// const handleProfessionChange = (itemValue) => {
+//   setSelectedProfession(itemValue);
+//   fetchLocations(itemValue);  // Fetch locations for the selected profession
+// };
+
+// // When location is selected
+// const handleLocationChange = (itemValue) => {
+//   setSelectedLocation(itemValue);
+//   console.log('itemValue============location is selected=======================',itemValue)
+//   fetchChapterTypes(itemValue, selectedProfession);  // Fetch slots based on location and profession
+ 
+// };
 
 // choose date 
   const onChangeStartDate = (event, selectedDate) => {
@@ -167,7 +293,7 @@ const togglePasswordVisibility1 = () => {
     setUsernameError('');
     setPasswordError('');
     setConfirmPasswordError('');
-    setMobileNoError('');
+    setMobilenoError('');
     setEmailError('');
     setAddressError('');
     setBusinessNameError('');
@@ -191,12 +317,12 @@ const togglePasswordVisibility1 = () => {
       setConfirmPasswordError('Passwords do not match');
       isValid = false;
     }
-    if (!mobileNo) {
-      setMobileNoError('Mobile number is required');
+    if (!Mobileno) {
+      setMobilenoError('Mobile number is required');
       isValid = false;
     }
-    else if (mobileNo.length !== 10) {
-      setMobileNoError('Mobile number must be 10 digits');
+    else if (Mobileno.length !== 10) {
+      setMobilenoError('Mobile number must be 10 digits');
       isValid = false;
     }
     if (!email) {
@@ -249,7 +375,7 @@ const togglePasswordVisibility1 = () => {
             userId:userId,
             username,
             Password: password,
-            mobileNo,
+            Mobileno,
             email
           },
           business: {
@@ -266,9 +392,10 @@ const togglePasswordVisibility1 = () => {
       });
     
       const data = await response.json();
+      console.log('data=================',data)
       console.log('response user =====',data.user)
       console.log('response business-----',data.business)
-      navigation.navigate('Otpscreen',{ mobileNo });
+      navigation.navigate('Otpscreen',{ Mobileno });
 
       console.log('Registration successful:', data);
     } catch (error) {
@@ -335,12 +462,12 @@ const togglePasswordVisibility1 = () => {
         <Icon name="phone" size={24} color="gray" style={styles.iconStyle} />
         <AnimatedTextInput
           placeholder="Mobile Number"
-          value={mobileNo}
+          value={Mobileno}
           keyboardType="phone-pad"
-          onChangeText={setMobileNo}
+          onChangeText={setMobileno}
         />
       </View>
-      {mobileNoError ? <Text style={styles.errorText}>{mobileNoError}</Text> : null}
+      {MobilenoError ? <Text style={styles.errorText}>{MobilenoError}</Text> : null}
 
       {/* Email Field */}
       <View>
@@ -381,15 +508,26 @@ const togglePasswordVisibility1 = () => {
 
         <Text style={styles.label}>Select Profession</Text>
         <View style={styles.selectList}>
-        <Picker borderBottomWidth='1'
+        {/* <Picker borderBottomWidth='1'
           selectedValue={selectedProfession}
           style={styles.picker}
-          onValueChange={(itemValue) => setSelectedProfession(itemValue)}
+          onValueChange={(itemValue) => handleProfessionChange(itemValue)}
         >
           {profession.map((profession, index) => (
             <Picker.Item key={index} label={profession.ProfessionName} value={profession.ProfessionName} />
           ))}
-        </Picker>
+        </Picker> */}
+         <Picker
+            selectedValue={selectedProfession}
+            onValueChange={setSelectedProfession}
+            style={styles.picker}
+          >
+            {profession.map((prof) => (
+              <Picker.Item key={prof.Id} label={prof.ProfessionName} value={prof.ProfessionName} />
+            ))}
+          </Picker>
+
+
         </View>
         {selectedLocationError ? <Text style={styles.errorText}>{selectedLocationError}</Text> : null}
 
@@ -397,27 +535,47 @@ const togglePasswordVisibility1 = () => {
         <View style={styles.selectList}>
         <Picker borderBottomWidth='1'
           selectedValue={selectedLocation}
+          enabled={!!selectedProfession}  // Enable only if profession is selected
           style={styles.picker}
-          onValueChange={(itemValue) => setSelectedLocation(itemValue)}
+          onValueChange={(itemValue) => handleLocationChange(itemValue)}
           >
           {LocationID.map((LocationID, index) => (
-            <Picker.Item key={index} label={LocationID.location} value={LocationID.location} />
+            <Picker.Item key={index} label={LocationID.location} value={LocationID.value} />
           ))}
         </Picker>
+        {/* <Picker
+            selectedValue={selectedLocation}
+            onValueChange={handleLocationChange}
+            style={styles.picker}
+          >
+            {LocationID.map((loc) => (
+              <Picker.Item key={loc.location} label={loc.location} value={loc.location} />
+            ))}
+          </Picker> */}
         </View>
         {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
 
         <Text style={styles.label}>Select Slot</Text>
         <View style={styles.selectList}>
-           <Picker borderBottomWidth='1'
+           {/* <Picker borderBottomWidth='1'
           selectedValue={selectedChapterType}
           style={styles.picker}
           onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
             >
-          {chapterType.map((type, index) => (
-            <Picker.Item key={index} label={type.id.toString()} value={type.id} />
+          {chapterType.map((chapterType, index) => (
+            <Picker.Item key={index} label={chapterType.id.toString()} value={chapterType.id} />
           ))}
-           </Picker>
+           </Picker> */}
+          <Picker
+            selectedValue={selectedChapterType}
+            onValueChange={(itemValue) => setSelectedSlot(itemValue)}
+            style={styles.picker}
+            >
+            {chapterType.map((slot) => (
+              <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
+            ))}
+          </Picker>
+
         </View>
         
         <View style={styles.inputContainer}>
@@ -430,7 +588,6 @@ const togglePasswordVisibility1 = () => {
       </View>
       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
        
-
         {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
        {/* Start Date */}
       <Text style={styles.label}>Start Date</Text>
@@ -462,7 +619,6 @@ const togglePasswordVisibility1 = () => {
         />
       )}
 
-
         <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
@@ -472,6 +628,8 @@ const togglePasswordVisibility1 = () => {
     </ScrollView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -577,3 +735,7 @@ const styles = StyleSheet.create({
 });
 
 export default RegisterScreen;
+
+
+
+

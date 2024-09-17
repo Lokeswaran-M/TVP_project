@@ -11,7 +11,7 @@ import { useRoute } from '@react-navigation/native';
 
 const Otpscreen = ({ navigation }) => {
   const route = useRoute();
-  const { mobileNo } = route.params || {}; 
+  const { Mobileno } = route.params || {}; 
 
   // const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
@@ -46,7 +46,7 @@ const Otpscreen = ({ navigation }) => {
   };
 
   const handlePasswordReset = async () => {
-    if (mobileNo.length < 10) {
+    if (Mobileno.length < 10) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -67,7 +67,7 @@ const Otpscreen = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mobileNo,
+          Mobileno,
           message,
         }),
       });
@@ -79,7 +79,7 @@ const Otpscreen = ({ navigation }) => {
         Toast.show({
           type: 'success',
           text1: 'Success',
-          text2: `OTP sent successfully to ${mobileNo}.`,
+          text2: `OTP sent successfully to ${Mobileno}.`,
           position: 'top',
           config: toastConfig,
         });
@@ -116,7 +116,7 @@ const Otpscreen = ({ navigation }) => {
       // clearOtpInput();
       return;
     }
-    if (mobileNo.length < 10 || otp.length < 4) {
+    if (Mobileno.length < 10 || otp.length < 4) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -135,7 +135,7 @@ const Otpscreen = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mobileNo,
+          Mobileno,
           enteredOtp: otp,
         }),
       });
@@ -190,7 +190,7 @@ const Otpscreen = ({ navigation }) => {
             style={styles.input}
             placeholder="Enter your Phone Number"
             keyboardType="phone-pad"
-            value={mobileNo}
+            value={Mobileno}
             // onChangeText={setPhoneNumber}
           />
         </View>

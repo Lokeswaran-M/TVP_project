@@ -9,7 +9,7 @@ import { toastConfig } from '../utils/toastConfig';
 import OTPTextInput from 'react-native-otp-textinput';
 
 const ForgetPassword = ({ navigation }) => {
-  const [mobileNo, setPhoneNumber] = useState('');
+  const [Mobileno, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ const ForgetPassword = ({ navigation }) => {
   };
 
   const handlePasswordReset = async () => {
-    if (mobileNo.length < 10) {
+    if (Mobileno.length < 10) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -63,7 +63,7 @@ const ForgetPassword = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mobileNo,
+          Mobileno,
           message,
         }),
       });
@@ -75,7 +75,7 @@ const ForgetPassword = ({ navigation }) => {
         Toast.show({
           type: 'success',
           text1: 'Success',
-          text2: `OTP sent successfully to ${mobileNo}.`,
+          text2: `OTP sent successfully to ${Mobileno}.`,
           position: 'top',
           config: toastConfig,
         });
@@ -112,7 +112,7 @@ const ForgetPassword = ({ navigation }) => {
       // clearOtpInput();
       return;
     }
-    if (mobileNo.length < 10 || otp.length < 4) {
+    if (Mobileno.length < 10 || otp.length < 4) {
       Toast.show({
         type: 'error',
         text1: 'Error',
@@ -131,7 +131,7 @@ const ForgetPassword = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mobileNo,
+          Mobileno,
           enteredOtp: otp,
         }),
       });
@@ -148,7 +148,7 @@ const ForgetPassword = ({ navigation }) => {
 
         // Wait for the toast to disappear, then navigate
         setTimeout(() => {
-          navigation.navigate('ResetPassword', { mobileNo });
+          navigation.navigate('ResetPassword', { Mobileno });
         }, 2000); // Adjust this delay as needed (2000ms = 2 seconds)
   
       } else {
@@ -189,7 +189,7 @@ const ForgetPassword = ({ navigation }) => {
             style={styles.input}
             placeholder="Enter your Phone Number"
             keyboardType="phone-pad"
-            value={mobileNo}
+            value={Mobileno}
             onChangeText={setPhoneNumber}
           />
         </View>
