@@ -24,10 +24,13 @@ const AuthNavigator = () => {
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'AdminPage',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="UnauthorizedScreen"  component={UnauthorizedScreen}  options={{ headerShown: false }}  />
+<<<<<<< HEAD
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
 
+=======
+>>>>>>> c2caac2929663795a757c9c93b8abb27ad6827f8
     </Stack.Navigator>
     
   );

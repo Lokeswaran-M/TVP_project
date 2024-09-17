@@ -1,24 +1,24 @@
 import React from 'react';
 // import { View, Text } from 'react-native';
+<<<<<<< HEAD
 
 import { View, Text, StyleSheet } from 'react-native';
+=======
+import { View, Text, StyleSheet } from 'react-native';
+
+>>>>>>> c2caac2929663795a757c9c93b8abb27ad6827f8
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const user = useSelector((state) => state.user);
   const navigation = useNavigation();
-
   const handleGoBack = () => {
     navigation.goBack();
   };
-  
-  // If user is not authorized, navigate to the Unauthorized screen
   if (user.rollId !== 3) {
     navigation.navigate('UnauthorizedScreen');
     
-   
-        // <Text>Sorry!!! You are not authorized to view this page.</Text>
       
          
 
@@ -96,7 +96,10 @@ export default HomeScreen;
 // };
 
 // export default HomeScreen;
+<<<<<<< HEAD
 
+=======
+>>>>>>> c2caac2929663795a757c9c93b8abb27ad6827f8
 const styles = StyleSheet.create({
   textBold: {
     fontWeight: 'bold',
@@ -112,4 +115,7 @@ const styles = StyleSheet.create({
 });
 
 // export default HomeScreen;
+<<<<<<< HEAD
 
+=======
+>>>>>>> c2caac2929663795a757c9c93b8abb27ad6827f8
