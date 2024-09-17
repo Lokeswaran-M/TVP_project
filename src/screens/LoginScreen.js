@@ -13,14 +13,14 @@ import { RadioButton } from 'react-native-paper';
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [logintype, setLogintype] = useState('member');
+  const [logintype, setLogintype] = useState('1');
 
 
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const [selectedLoginType, setSelectedLoginType] = useState('member'); 
+  // const [selectedLoginType, setSelectedLoginType] = useState('member'); 
 
 
   const [usernamePlaceholderTop] = useState(new Animated.Value(11));
@@ -139,16 +139,17 @@ const LoginScreen = ({ navigation }) => {
   if (!isValid) return; // If not valid, do not proceed with the API call
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
+        
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password ,T}),
+        body: JSON.stringify({ username, password ,logintype}),
       });
-  
+      console.log('response------------------------',response)
       const result = await response.json();
 
-      // console.log("Result-------------",result);
+      console.log("Result-------------",result);
 
       if (response.ok) {
         console.log('Login successful:', result);
@@ -204,11 +205,11 @@ const LoginScreen = ({ navigation }) => {
               value={logintype}
             >
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value="member" />
+                  <RadioButton value="1" />
                   <Text style={styles.radioButtonLabel}>Member Login</Text>
                 </View>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value="substitute" />
+                  <RadioButton value="2" />
                   <Text style={styles.radioButtonLabel}>Substitute Login</Text>
               </View>
             </RadioButton.Group>

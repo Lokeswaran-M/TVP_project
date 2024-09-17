@@ -1,16 +1,12 @@
 import React from 'react';
-<<<<<<< HEAD
 // import { View, Text } from 'react-native';
-import { View, Text, TouchableOpacity } from 'react-native';
-=======
+
 import { View, Text, StyleSheet } from 'react-native';
->>>>>>> 7f44280b37f14d7d87844034d95572ea831d3634
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const user = useSelector((state) => state.user);
-<<<<<<< HEAD
   const navigation = useNavigation();
 
   const handleGoBack = () => {
@@ -32,23 +28,20 @@ const HomeScreen = () => {
   }
 
 
-  return (
-    <View>
-      <Text>Welcome, {user?.username} {user?.rollId}!</Text>
-      <Text>Profession: {user?.profession || 'Not provided'}</Text>
-=======
+  // return (
+  //   <View>
+  //     <Text>Welcome, {user?.username} {user?.rollId}!</Text>
+  //     <Text>Profession: {user?.profession || 'Not provided'}</Text>
 
   return (
     <View>
       <Text style={styles.textBold}>ID {user?.userId}</Text>
       <Text style={styles.textLargeBold}>Welcome, {user?.username}!</Text>
       <Text style={styles.textNormal}>Profession: {user?.profession || 'Not provided'}</Text>
->>>>>>> 7f44280b37f14d7d87844034d95572ea831d3634
     </View>
   );
 };
 
-<<<<<<< HEAD
 export default HomeScreen;
 
 
@@ -103,7 +96,7 @@ export default HomeScreen;
 // };
 
 // export default HomeScreen;
-=======
+
 const styles = StyleSheet.create({
   textBold: {
     fontWeight: 'bold',
@@ -118,5 +111,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
->>>>>>> 7f44280b37f14d7d87844034d95572ea831d3634
+// export default HomeScreen;
+
