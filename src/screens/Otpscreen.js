@@ -113,9 +113,9 @@ const Otpscreen = ({ navigation }) => {
         position: 'top',
         config: toastConfig,
       });
-      // clearOtpInput();
       return;
     }
+  
     if (Mobileno.length < 10 || otp.length < 4) {
       Toast.show({
         type: 'error',
@@ -124,9 +124,9 @@ const Otpscreen = ({ navigation }) => {
         position: 'top',
         config: toastConfig,
       });
-      // clearOtpInput();
       return;
     }
+  
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/verifyOtp`, {
@@ -139,8 +139,10 @@ const Otpscreen = ({ navigation }) => {
           enteredOtp: otp,
         }),
       });
+  
       const data = await response.json();
       if (response.ok) {
+        // OTP Verified successfully
         Toast.show({
           type: 'success',
           text1: 'Success',
@@ -148,11 +150,20 @@ const Otpscreen = ({ navigation }) => {
           position: 'top',
           config: toastConfig,
         });
-        // clearOtpInput();
+  
+        // Call the activateUser API after successful OTP verification
+        await fetch(`${API_BASE_URL}/activateUser`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ Mobileno }),
+        });
+  
         // Wait for the toast to disappear, then navigate
         setTimeout(() => {
           navigation.navigate('Login');
-        }, 2000); // Adjust this delay as needed (2000ms = 2 seconds)
+        }, 2000);
   
       } else {
         Toast.show({
@@ -162,7 +173,6 @@ const Otpscreen = ({ navigation }) => {
           position: 'top',
           config: toastConfig,
         });
-        // clearOtpInput();
       }
     } catch (error) {
       Toast.show({
@@ -172,11 +182,10 @@ const Otpscreen = ({ navigation }) => {
         position: 'top',
         config: toastConfig,
       });
-      // clearOtpInput();
     } finally {
       setLoading(false);
     }
-  };  
+  };   
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.container}>

@@ -37,7 +37,7 @@ const ResetPassword = () => {
       return;
     }
     setErrorMessage('');
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/updatePassword`, {
         method: 'POST',
