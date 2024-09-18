@@ -1,17 +1,45 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 const EditProfile = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.user);
-  const [username, setName] = useState(user?.username);
-  const [profession, setProfession] = useState(user?.profession);
-  const [BusinessName, setBusinessName] = useState(user?.BusinessName);
-  const [Description, setDescription] = useState(user?.Description || 'None');
-  const [Address, setAddress] = useState(user?.Address);
+  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState({});
+  const userId = useSelector((state) => state.user?.userId);
+  const [username, setName] = useState('');
+  const [profession, setProfession] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [description, setDescription] = useState('');
+  const [address, setAddress] = useState('');
+
+  const fetchProfileData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile data');
+      }
+      const data = await response.json();
+      if (response.status === 404) {
+        setProfileData({});
+      } else {
+        setProfileData(data);
+        setName(data.Name || '');
+        setProfession(data.Profession || '');
+        setBusinessName(data.BusinessName || '');
+        setDescription(data.Description || '');
+        setAddress(data.Address || '');
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleSave = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/update-profile`, {
@@ -23,9 +51,9 @@ const EditProfile = () => {
           userId: user.userId,
           username,
           profession,
-          businessName: BusinessName,
-          description: Description,
-          address: Address,
+          businessName,
+          description,
+          address,
         }),
       });
       const result = await response.json();
@@ -40,49 +68,54 @@ const EditProfile = () => {
       alert('An error occurred while updating profile');
     }
   };
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [userId])
+  );
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.label}>Name</Text>
       </View>
-      <TextInput 
-        style={styles.input} 
-        value={username} 
-        onChangeText={setName} 
+      <TextInput
+        style={styles.input}
+        value={username}
+        onChangeText={setName}
       />
       <View style={styles.row}>
         <Text style={styles.label}>Profession</Text>
       </View>
-      <TextInput 
-        style={styles.input} 
-        value={profession} 
-        onChangeText={setProfession} 
+      <TextInput
+        style={styles.input}
+        value={profession}
+        onChangeText={setProfession}
       />
       <View style={styles.row}>
         <Text style={styles.label}>Business Name</Text>
       </View>
-      <TextInput 
-        style={styles.input} 
-        value={BusinessName} 
-        onChangeText={setBusinessName} 
+      <TextInput
+        style={styles.input}
+        value={businessName}
+        onChangeText={setBusinessName}
       />
       <View style={styles.row}>
-        <Text style={styles.label}>Description  (250 words)</Text>
+        <Text style={styles.label}>Description (250 words)</Text>
       </View>
-      <TextInput 
-        style={styles.input} 
-        multiline 
-        value={Description} 
-        onChangeText={setDescription} 
+      <TextInput
+        style={styles.input}
+        multiline
+        value={description}
+        onChangeText={setDescription}
       />
       <View style={styles.row}>
         <Text style={styles.label}>Business Address</Text>
       </View>
-      <TextInput 
-        style={styles.input} 
-        multiline 
-        value={Address} 
-        onChangeText={setAddress} 
+      <TextInput
+        style={styles.input}
+        multiline
+        value={address}
+        onChangeText={setAddress}
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -97,10 +130,9 @@ const EditProfile = () => {
           <Text style={[styles.buttonText, { color: '#C23A8A' }]}> Exit</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -1,8 +1,12 @@
 import React from 'react';
+<<<<<<< Updated upstream
 // import { View, Text } from 'react-native';
 
 import { View, Text, StyleSheet } from 'react-native';
 
+=======
+import { View, Text, StyleSheet } from 'react-native';
+>>>>>>> Stashed changes
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
@@ -14,11 +18,6 @@ const HomeScreen = () => {
   };
   if (user.rollId !== 3) {
     navigation.navigate('UnauthorizedScreen');
-    
-      
-         
-
-    
     return null;
 
   }
@@ -106,6 +105,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
 // export default HomeScreen;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes

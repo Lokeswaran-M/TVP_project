@@ -10,23 +10,27 @@ import Modal from 'react-native-modal';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import sunmoon from '../../assets/images/sunandmoon-icon.png';
+import sun from '../../assets/images/sun.png';
+import moon from '../../assets/images/moon.png';
 
 
 const CustomDrawerContent = (props) => {
   const user = useSelector((state) => state.user);
+  const userId = useSelector((state) => state.user?.userId);
+  console.log("UserID----------",userId);
   const [isModalVisible, setModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  console.log("user------------",user);
+  // console.log("user------------",user);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/profile-image`);
         const data = await response.json();
-
+        console.log('data-----------', data);
         if (data.imageUrl) {
           setProfileImage({ uri: data.imageUrl });
           setPreviousProfileImageUri(data.imageUrl);
@@ -38,7 +42,28 @@ const CustomDrawerContent = (props) => {
       }
     };
 
+    // const fetchCategory = async () => {
+    //   try {
+    //     const response = await fetch(`${API_BASE_URL}/categoryIdfetch/${userId}`, {
+    //       method: 'GET',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //     });
+    
+    //     if (response.ok) {
+    //       const data = await response.json();
+    //       console.log('Category ID:', data.categoryId);
+    //     } else {
+    //       console.error('Failed to fetch Category ID, status:', response.status);
+    //     }
+    //   } catch (error) {
+    //     console.error('Failed to fetch the Category ID:', error);
+    //   }
+    // };
+               
     fetchProfileImage();
+    // fetchCategory();
   }, []);
 
   const requestCameraPermission = async () => {
@@ -137,7 +162,7 @@ const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <LinearGradient
-        colors={['#fff', '#fff']}
+        colors={['#fff', '#F3ECF3']}
         style={styles.profileContainer}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -162,16 +187,16 @@ const CustomDrawerContent = (props) => {
           <View style={styles.editIconWrapper}>
           <Image 
                   source={sunmoon} 
-                  style={{ width: 25, height: 25 }} 
+                  style={{ width: 30, height: 30 }} 
                 />
           </View>
         </View>
         <Text style={styles.profileName}>{user?.username || 'Guest'}</Text>
         <Text style={styles.professionText}>{user?.profession || 'Not provided'}</Text>
-        <View style={styles.iconContainer}>
+        {/* <View style={styles.iconContainer}>
           <Icon name="sun-o" size={20} color="#FDB813" style={styles.icon} />
           <Icon name="moon-o" size={20} color="gray" style={styles.icon} />
-        </View>
+        </View> */}
       </LinearGradient>
       <View style={styles.container}>
         <DrawerItemList {...props} />
@@ -221,17 +246,20 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 20,
     marginTop: 40,
+    borderColor: '#e4dfe4',
+    borderWidth: 10,
+    borderRadius: 90,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 90,
   },
   pencilIcon: {
     position: 'absolute',
-    bottom: 110,
-    right: -80,
-    backgroundColor: '#fff',
+    bottom: 140,
+    right: -70,
+    backgroundColor: 'transparent',
     borderRadius: 50,
     padding: 5,
     flexDirection: 'row',   
@@ -239,7 +267,7 @@ const styles = StyleSheet.create({
   },  
   editIconWrapper: {
     position: 'absolute',
-    right: 0,
+    right: -4,
     bottom: 0,
     // backgroundColor: '#fff',
     borderRadius: 50,
@@ -253,6 +281,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
   },
   editText: {
     marginLeft: 5,
@@ -284,11 +313,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: '#a3238f',
   },
-  iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-  },
+  // iconContainer: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   padding: 10,
+  // },
   icon: {
     marginHorizontal: 10,
   },
