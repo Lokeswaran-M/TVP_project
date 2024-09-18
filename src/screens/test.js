@@ -372,6 +372,19 @@ export default YourComponent;
 
 
 
+// app.get('/execute-getuserid', async (req, res) => {
+//   try {
+//     const [rows] = await connection.query(CALL sp_registration(?, NULL,NULL), ['GetuserID']);
+//     // res.json(rows[0]);
+//     res.json({ NextuserId: rows[0]});
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ ErrorMessage: 'An error occurred' });
+//   }
+// });
+
+
+
 
 //   // useEffect(() => {
 //   //   if (selectedProfession) {
@@ -392,7 +405,32 @@ export default YourComponent;
 // //   fetchProfession();
 // // }, []);
 
+const fetchData = async () => {
+  try {
+    const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+    const userIdData = await userIdResponse.json();
+    
+    console.log('userIdData====================', userIdData);
+    
+    if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
+      const userId = userIdData.NextuserId[0].UserId; // Extract the UserId from the array
+      console.log('Extracted UserId:', userId);
+      setUserId(userId); // Set the UserId in the state
+    } else {
+      console.error('No UserId found in the response!');
+    }
+  } catch (error) {
+    console.error('Error fetching UserId:', error);
+  }
+};
 
+useEffect(() => {
+  fetchData();
+}, []);
+
+{userId ? `User ID: ${userId}` : 'No User ID found'}
+
+const [userId, setUserId] = useState(''); // Ensure userId is a string or number, depending on the format
 
 
 
