@@ -96,9 +96,24 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
   },
-  // radioButtonItem:{
+  radioButtonContainer: {
+    marginBottom: 20,
+  },
+  radioButtonRow: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+  },
+  radioButtonItem: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginRight: 20, 
+  },
+  radioButtonLabel: {
+    fontSize: 16,
+    marginLeft: 8, 
+  },
 
-  // }
+
 
 });
 

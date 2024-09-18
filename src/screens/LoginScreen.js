@@ -168,15 +168,21 @@ const LoginScreen = ({ navigation }) => {
           // }
   
         // Navigate based on the rollId
+        if (logintype === '1') { // Member login
         if (rollId === 1) {
           navigation.navigate('AdminPage');
         } else if (rollId === 2) {
           navigation.navigate('ChapterAdministratorPage');
         } else if (rollId === 3 ) {
           navigation.navigate('DrawerNavigator');
-        } else {
+        } 
+        else {
           // Handle other roles if needed
           setLoginError('Invalid role ID');
+        }
+      }
+       else if (logintype === '2') {
+        navigation.navigate('SubstitutePage'); 
         }
       } else {
         setLoginError(result.error || 'Incorrect username or password'); 
@@ -199,7 +205,7 @@ const LoginScreen = ({ navigation }) => {
           
          
            {/* Radio Buttons for Login Type */}
-           <View style={styles.radioButtonContainer}>
+           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <RadioButton.Group
               onValueChange={newValue => setLogintype(newValue)}
               value={logintype}

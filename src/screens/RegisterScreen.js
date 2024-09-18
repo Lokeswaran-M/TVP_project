@@ -40,7 +40,7 @@ import {API_BASE_URL} from '../constants/Config'
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation();
 
@@ -71,200 +71,63 @@ const togglePasswordVisibility1 = () => {
   setPasswordVisible1(!passwordVisible1);
 };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
-
-
-  // useEffect(() => {
-  //   if (selectedProfession) {
-  //     fetchLocations();
-  //   }
-  // }, [selectedProfession]);
-
-
-  // useEffect(() => {
-  //   if (selectedLocation) {
-  //     fetchChapterTypes();
-  //   }
-  // }, [selectedLocation]); 
-
-
- // Fetch professions on mount
-//  useEffect(() => {
-//   fetchProfession();
-// }, []);
-
-
-
-
-
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
-  //     const userIdData = await userIdResponse.json();
-  //     if (userIdData.length > 0) {
-  //       setUserId(userIdData[0].UserId);
-  //     } else {
-  //       console.error('No UserId found in the response!');
-  //     }
-
-  //     // const professionResponse = await fetch(`${API_BASE_URL}/execute-profession`);
-  //     // const professionData = await professionResponse.json();
-  //     // setProfession(professionData);
-  //     fetchProfession();  // Fetch professions
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
-  // const fetchProfession = async () => {
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/execute-profession`);
-  //     const data = await response.json();
-  //     console.log('data-------profes-------',data)
-  //     setProfession(data);
-  //   } catch (error) {
-  //     console.error('Error fetching professions:', error);
-  //   }
-  // };
-  
-  
-
-  // const fetchLocations = async () => {
-  //   try {
-  //     const locationResponse = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
-  //     const locationData = await locationResponse.json();
-  //     setLocationID(locationData.availableLocations);
-  //   } catch (error) {
-  //     console.error('Error fetching locations:', error);
-  //   }
-  // };
-
-  // // const fetchChapterTypes = async () => {
-  // //   try {
-  // //     const chapterTypeResponse = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&${selectedProfession}`);
-  // //     const chapterTypeData = await chapterTypeResponse.json();
-  // //     setChapterType(chapterTypeData);
-  // //   } catch (error) {
-  // //     console.error('Error fetching chapter types:', error);
-  // //   }
-  // // };
-
-//   const fetchChapterTypes = async () => {
-//     try {
-//       const chapterTypeResponse = await fetch(
-//    `${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`
-//         // `${API_BASE_URL}/execute-getslot?Location=100001&Profession=consultant office`
-
-// );
-//       const chapterTypeData = await chapterTypeResponse.json();
-//       setChapterType(chapterTypeData);
-//     } catch (error) {
-//       console.error('Error fetching chapter types:', error);
-//     }
-//   };
-  
-// const fetchLocations = async (selectedProfession) => {
-//   try {
-//     // const response = await fetch(`http://your-api-url/available-location?profession=${profession}`);
-//    const response = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
-
-//     const data = await response.json();
-//     console.log('data------location--------',data)
-//     setLocationID(data.availableLocations);
-//   } catch (error) {
-//     console.error('Error fetching locations:', error);
-//   }
-// };
-
-// const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
-//   try {
-//  const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&${selectedProfession}`);
- 
-
-//  const data = await response.json();
-//   console.log('data--------slot------',data)
-//   setChapterType(data);
-//   } catch (error) {
-//     console.error('Error fetching slots:', error);
-//   }
-// };
-
-
-// const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
-//   try {
-//     const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
-//       headers: {
-//         'Cache-Control': 'no-cache',
-//       },
-//     });
-//     const data = await response.json();
-    
-//     // Update to handle specific details from the response
-//     setChapterType(data.getslot); 
-//     console.log('Fetched slot details:=========', data);
-//   } catch (error) {
-//     console.error('Error fetching slots:', error);
-//   }
-// };
-
 
   // Fetch initial profession list from API
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`) // Replace with your actual API endpoint
       .then((response) => response.json())
-      .then((data) => setProfession(data))
+      .then((data) => setProfession(data.executeprofession))
       .catch((error) => console.error(error));
   }, []);
 
-  // Fetch locations based on selected profession
-  useEffect(() => {
-    if (selectedProfession) {
-      fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`)
-      //  `${API_BASE_URL}/available-location?profession=${selectedProfession}
-      .then((response) => response.json())
-        .then((data) => setLocationID(data))
-        .catch((error) => console.error(error));
+// Fetch the list location value based on the profession
+     const fetchLocationsByProfession = async (selectedProfession) => {
+      console.log('Selected Profession:', selectedProfession);
+  
+      try {
+        const response = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
+        const data = await response.json();
+      
+        setLocationID(data.availableLocations); 
 
-      // Reset location and slot when profession changes
-      setSelectedLocation(null);
-      setChapterType([]); // Reset slots
-    }
-  }, [selectedProfession]);
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    
+  };
 
-  // Fetch slots based on both selected profession and location
-  useEffect(() => {
-    if (selectedProfession && selectedLocation) {
-      fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`)
-        .then((response) => response.json())
-        .then((data) => setChapterType(data))
-        .catch((error) => console.error(error));
+  const handleProfessionChange = (profession) => {
+    setSelectedProfession(profession); 
+    setSelectedLocation(null);
+    setSelectedChapterType(null);
+    fetchLocationsByProfession(profession);
+  };
 
-      // Reset slot when location changes
-      setSelectedChapterType(null);
-    }
-  }, [selectedProfession, selectedLocation]);
 
-// // When profession is selected
-// const handleProfessionChange = (itemValue) => {
-//   setSelectedProfession(itemValue);
-//   fetchLocations(itemValue);  // Fetch locations for the selected profession
-// };
+const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
+      // headers: {
+      //   'Cache-Control': 'no-cache',
+      // },
+    });
+    const data = await response.json();
+    
+    // Update to handle specific details from the response
+    setChapterType(data.getslot); 
+    console.log('Fetched slot details:=========', data);
+  } catch (error) {
+    console.error('Error fetching slots:', error);
+  }
+};
 
-// // When location is selected
-// const handleLocationChange = (itemValue) => {
-//   setSelectedLocation(itemValue);
-//   console.log('itemValue============location is selected=======================',itemValue)
-//   fetchChapterTypes(itemValue, selectedProfession);  // Fetch slots based on location and profession
+const handlelocationChange = (selectedLocation) => {
+  setSelectedLocation(selectedLocation);
+  if(selectedProfession && selectedLocation){
+    fetchChapterTypes(selectedLocation, selectedProfession);
+  }
  
-// };
+};
 
 // choose date 
   const onChangeStartDate = (event, selectedDate) => {
@@ -378,6 +241,7 @@ const togglePasswordVisibility1 = () => {
             Mobileno,
             email
           },
+
           business: {
             address,
             businessName,
@@ -404,13 +268,13 @@ const togglePasswordVisibility1 = () => {
   }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading data...</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.loadingContainer}>
+  //       <Text>Loading data...</Text>
+  //     </View>
+  //   );
+  // }
   return (
 
     <ScrollView>
@@ -504,71 +368,47 @@ const togglePasswordVisibility1 = () => {
        
       {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
 
-        {/* <Text style={styles.label}>User ID: {userId}</Text> */}
-
-        <Text style={styles.label}>Select Profession</Text>
-        <View style={styles.selectList}>
-        {/* <Picker borderBottomWidth='1'
-          selectedValue={selectedProfession}
-          style={styles.picker}
-          onValueChange={(itemValue) => handleProfessionChange(itemValue)}
-        >
-          {profession.map((profession, index) => (
-            <Picker.Item key={index} label={profession.ProfessionName} value={profession.ProfessionName} />
-          ))}
-        </Picker> */}
-         <Picker
+     
+     <View style={styles.selectList}>
+          <Picker
             selectedValue={selectedProfession}
-            onValueChange={setSelectedProfession}
-            style={styles.picker}
-          >
-            {profession.map((prof) => (
-              <Picker.Item key={prof.Id} label={prof.ProfessionName} value={prof.ProfessionName} />
+            onValueChange={(itemValue) =>handleProfessionChange(itemValue)}
+             >
+            <Picker.Item label="Select Profession" value="" />
+            {profession.map((item) => (
+              <Picker.Item key={item.Id} label={item.ProfessionName} value={item.ProfessionName} />
             ))}
           </Picker>
 
-
+          {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
         </View>
+
         {selectedLocationError ? <Text style={styles.errorText}>{selectedLocationError}</Text> : null}
 
-        <Text style={styles.label}>Select Location</Text>
+   
+
         <View style={styles.selectList}>
-        <Picker borderBottomWidth='1'
-          selectedValue={selectedLocation}
-          enabled={!!selectedProfession}  // Enable only if profession is selected
-          style={styles.picker}
-          onValueChange={(itemValue) => handleLocationChange(itemValue)}
-          >
-          {LocationID.map((LocationID, index) => (
-            <Picker.Item key={index} label={LocationID.location} value={LocationID.value} />
-          ))}
-        </Picker>
-        {/* <Picker
+          <Picker borderBottomWidth='1'
             selectedValue={selectedLocation}
-            onValueChange={handleLocationChange}
-            style={styles.picker}
+            onValueChange={(itemValue) => handlelocationChange(itemValue)}
           >
-            {LocationID.map((loc) => (
-              <Picker.Item key={loc.location} label={loc.location} value={loc.location} />
+            <Picker.Item label="Select Location" value="" />
+            {LocationID.map((item,index) => (
+              <Picker.Item  key={index} label={item.location} value={item.value} />
             ))}
-          </Picker> */}
+          </Picker>
+          {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
         </View>
+
+
         {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
 
-        <Text style={styles.label}>Select Slot</Text>
+        {/* <Text style={styles.label}>Select Slot</Text> */}
         <View style={styles.selectList}>
-           {/* <Picker borderBottomWidth='1'
-          selectedValue={selectedChapterType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
-            >
-          {chapterType.map((chapterType, index) => (
-            <Picker.Item key={index} label={chapterType.id.toString()} value={chapterType.id} />
-          ))}
-           </Picker> */}
-          <Picker
+        
+          <Picker label="Select slot" value=""
             selectedValue={selectedChapterType}
-            onValueChange={(itemValue) => setSelectedSlot(itemValue)}
+            onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
             style={styles.picker}
             >
             {chapterType.map((slot) => (
