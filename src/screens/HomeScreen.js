@@ -1,5 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+// import { View, Text } from 'react-native';
+
+// import { View, Text, StyleSheet } from 'react-native';
+
+// >>>>>>> 65a3d8b83bd5f7bd4228c293eb7248010d4a6486
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 const HomeScreen = () => {
@@ -90,3 +95,4 @@ const styles = StyleSheet.create({
   },
 });
 export default HomeScreen;
+// export default HomeScreen;

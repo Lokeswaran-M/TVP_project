@@ -72,6 +72,30 @@ const togglePasswordVisibility1 = () => {
 };
 
 
+const fetchData = async () => {
+  try {
+    const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+    const userIdData = await userIdResponse.json();
+    
+    console.log('userIdData====================', userIdData);
+    
+    if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
+      const userId = userIdData.NextuserId[0].UserId; // Extract the UserId from the array
+      console.log('Extracted UserId:', userId);
+      setUserId(userId); // Set the UserId in the state
+    } else {
+      console.error('No UserId found in the response!');
+    }
+  } catch (error) {
+    console.error('Error fetching UserId:', error);
+  }
+};
+
+useEffect(() => {
+  fetchData();
+}, []);
+
+
   // Fetch initial profession list from API
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`) // Replace with your actual API endpoint
@@ -292,6 +316,14 @@ const handlelocationChange = (selectedLocation) => {
         />
       </View>
       {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+
+
+      <View>
+      <Text >
+        {userId ? `User ID: ${userId}` : 'No User ID found'} 
+      </Text>
+    </View>
+
 
       {/* Password Field */}
       <View>
