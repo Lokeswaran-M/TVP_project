@@ -7,10 +7,15 @@ import { setUser } from '../Redux/action';
 import { API_BASE_URL } from '../constants/Config';
 
 import { RadioButton } from 'react-native-paper'; 
-
+// import AuthContext from '../api/Auth';
 
 
 const LoginScreen = ({ navigation }) => {
+  // const { userRoleId, setRoleId } = useContext(AuthContext);
+  
+
+
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logintype, setLogintype] = useState('1');
@@ -157,6 +162,9 @@ const LoginScreen = ({ navigation }) => {
         dispatch(setUser(result));
         const { rollId } = result.user; 
         console.log('rollId====================',result.user)
+        console.log('rollId====================',result.user.rollId)
+
+
         // navigation.navigate('DrawerNavigator');
 
 
@@ -172,7 +180,9 @@ const LoginScreen = ({ navigation }) => {
         if (rollId === 1) {
           navigation.navigate('AdminPage');
         } else if (rollId === 2) {
-          navigation.navigate('ChapterAdministratorPage');
+          // navigation.navigate('ChapterAdministratorPage');
+          navigation.navigate('DrawerNavigator');
+
         } else if (rollId === 3 ) {
           navigation.navigate('DrawerNavigator');
         } 

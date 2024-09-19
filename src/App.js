@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState,useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from '../src/navigations/AppNavigator';
 import Toast from 'react-native-toast-message';
@@ -6,14 +7,17 @@ import { toastConfig } from './utils/toastConfig';
 import { Provider } from 'react-redux';
 import store from './Redux/store';
 
+
 const App = () => {
   return (
+
     <Provider store={store}>
       <NavigationContainer>
         <AppNavigator />
         <Toast config={toastConfig} />
       </NavigationContainer>
     </Provider>
+
   );
 };
 
