@@ -22,6 +22,10 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: false,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'AdminPage',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
+
     </Stack.Navigator>
     
   );

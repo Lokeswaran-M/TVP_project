@@ -8,7 +8,7 @@ import { API_BASE_URL } from '../constants/Config';
 import { toastConfig } from '../utils/toastConfig';
 import OTPTextInput from 'react-native-otp-textinput';
 import { useRoute } from '@react-navigation/native';
-
+ 
 const Otpscreen = ({ navigation }) => {
   const route = useRoute();
   const { Mobileno } = route.params || {}; 

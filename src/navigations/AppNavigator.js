@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useState} from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Image, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
@@ -16,6 +16,15 @@ import Subscription from '../screens/Subscription';
 import LoginScreen from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
+import Creatingmeeting from '../screens/Creatingmeeting';
+import CreateQR from '../screens/CreateQR';
+import Attendance from '../screens/Attendance';
+
+import { useSelector } from 'react-redux';
+// import { setUser } from '../Redux/action';
+// import { useState } from 'react';
+
+
 
 const ProfileStack = createStackNavigator();
 
@@ -85,8 +94,18 @@ const HeaderWithoutImage = ({ navigation }) => ({
   // ),
 });
 
+
+
+
 function DrawerNavigator() {
+  // const dispatch = useDispatch();
+  // dispatch(setUser(result));
+  const user = useSelector((state) => state.user);
+  console.log('rollId====================',user?.rollId)
+
+  // console.log('rollId====================',rollId)
   return (
+    
     <Drawer.Navigator
       initialRouteName="Home"
       drawerContent={(props) => <DrawerContent {...props} />} 
@@ -121,68 +140,115 @@ function DrawerNavigator() {
           ...HeaderWithoutImage({ navigation }),
         })} 
       />
-      <Drawer.Screen 
-  name="Substitute Login" 
-  component={SubstituteLogin} 
-  options={({ navigation }) => ({
-    drawerLabel: 'Substitute Login',
-    drawerIcon: ({ color, size }) => (
-      <Icon name="user-plus" color={color} size={size} />
-    ),
-    header: () => (
-      <View style={styles.topNav}>
-        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-          <Icon name="navicon" size={20} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <Icon name="user" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
-        </TouchableOpacity>
-      </View>
-    ),
-  })}
-/>
 
-      <Drawer.Screen 
-        name="Payment" 
-        component={Payment} 
+
+{user?.rollId === 2 && (
+        <>
+
+          <Drawer.Screen
+            name="Creatingmeeting"
+            component={Creatingmeeting}
+            options={({ navigation }) => ({
+              drawerLabel: 'Creatingmeeting',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="ticket" color={color} size={size} />
+              ),
+              ...HeaderWithoutImage({ navigation }),
+            })}
+          />
+
+          <Drawer.Screen
+            name="CreateQR"
+            component={CreateQR}
+            options={({ navigation }) => ({
+              drawerLabel: 'CreateQR',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="ticket" color={color} size={size} />
+              ),
+              ...HeaderWithoutImage({ navigation }),
+            })}
+          />
+
+          <Drawer.Screen
+            name="Attendance"
+            component={Attendance}
+            options={({ navigation }) => ({
+              drawerLabel: 'Attendance',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="ticket" color={color} size={size} />
+              ),
+              ...HeaderWithoutImage({ navigation }),
+            })}
+          />
+      
+      </>
+      )}
+
+      <Drawer.Screen
+        name="Substitute Login"
+        component={SubstituteLogin}
+        options={({ navigation }) => ({
+          drawerLabel: 'Substitute Login',
+          drawerIcon: ({ color, size }) => (
+            <Icon name="user-plus" color={color} size={size} />
+          ),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="user" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
+              </TouchableOpacity>
+            </View>
+          ),
+        })}
+      />
+
+      <Drawer.Screen
+        name="Payment"
+        component={Payment}
         options={({ navigation }) => ({
           drawerLabel: 'Payment',
           drawerIcon: ({ color, size }) => (
             <Icon name="money" color={color} size={size} />
           ),
           ...HeaderWithoutImage({ navigation }),
-        })} 
+        })}
       />
-      <Drawer.Screen 
-        name="Subscription" 
-        component={Subscription} 
+
+      <Drawer.Screen
+        name="Subscription"
+        component={Subscription}
         options={({ navigation }) => ({
           drawerLabel: 'Subscription',
           drawerIcon: ({ color, size }) => (
             <Icon name="ticket" color={color} size={size} />
           ),
           ...HeaderWithoutImage({ navigation }),
-        })} 
+        })}
       />
-      <Drawer.Screen 
-        name="Logout" 
-        component={LoginScreen} 
+
+      <Drawer.Screen
+        name="Logout"
+        component={LoginScreen}
         options={({ navigation }) => ({
           drawerLabel: 'Logout',
           drawerIcon: ({ color, size }) => (
             <Icon name="sign-out" color={color} size={size} />
           ),
-          headerShown: false, 
-        })} 
+          headerShown: false,
+        })}
       />
     </Drawer.Navigator>
   );
 }
 
 function AppNavigator() {
+
   return (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen

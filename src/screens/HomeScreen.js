@@ -1,32 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-// import { View, Text } from 'react-native';
-
-// import { View, Text, StyleSheet } from 'react-native';
-
-// >>>>>>> 65a3d8b83bd5f7bd4228c293eb7248010d4a6486
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 const HomeScreen = () => {
   const user = useSelector((state) => state.user);
   const navigation = useNavigation();
   
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
-
-
-  if (user.rollId !== 3) {
-  
-    return null;
-
-  }
-
-
-  // return (
-  //   <View>
-  //     <Text>Welcome, {user?.username} {user?.rollId}!</Text>
-  //     <Text>Profession: {user?.profession || 'Not provided'}</Text>
 
   return (
     <View>

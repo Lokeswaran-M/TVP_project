@@ -1,0 +1,14 @@
+import React from 'react'
+import { View, Text } from 'react-native'
+
+const Attendance = () => {
+  return (
+    <View>
+        <Text>
+           welcome to Attendance
+        </Text>
+    </View>
+  )
+}
+
+export default Attendance
