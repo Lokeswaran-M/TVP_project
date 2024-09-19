@@ -10,11 +10,14 @@ import { useNavigation } from '@react-navigation/native';
 const HomeScreen = () => {
   const user = useSelector((state) => state.user);
   const navigation = useNavigation();
+  
   const handleGoBack = () => {
     navigation.goBack();
   };
+
+
   if (user.rollId !== 3) {
-    navigation.navigate('UnauthorizedScreen');
+  
     return null;
 
   }

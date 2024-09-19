@@ -10,7 +10,7 @@ import styles from '../components/layout/ProfileStyles';
 const Profile = () => {
   const [profileData, setProfileData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const userId = useSelector((state) => state.user?.userId);
   console.log("UserID----------",userId);
   const navigation = useNavigation();

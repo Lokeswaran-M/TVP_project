@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -25,20 +26,43 @@ const CustomDrawerContent = (props) => {
 
   // console.log("user------------",user);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const fetchProfileImage = async () => {
+  //     try {
+  //       const response = await fetch(`${API_BASE_URL}/profile-image`);
+  //       const data = await response.json();
+  //       console.log('data-----------', data);
+  //       if (data.imageUrl) {
+  //         setProfileImage({ uri: data.imageUrl });
+  //         setPreviousProfileImageUri(data.imageUrl);
+  //       } else {
+  //         console.warn('No profile image found');
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to load profile image from API:', error);
+  //     }
+  //   };
+  // useEffect(() => {
     const fetchProfileImage = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/profile-image`);
-        const data = await response.json();
-        console.log('data-----------', data);
-        if (data.imageUrl) {
-          setProfileImage({ uri: data.imageUrl });
-          setPreviousProfileImageUri(data.imageUrl);
-        } else {
-          console.warn('No profile image found');
+        const response = await fetch(`${API_BASE_URL}/profile-image`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch image');
         }
+        const data = await response.json();
+        const imageUrlWithTimestamp = `${data.imageUrl}?t=${new Date().getTime()}`;
+        setProfileImage({ uri: imageUrlWithTimestamp });
+        setPreviousProfileImageUri({ uri: imageUrlWithTimestamp });
       } catch (error) {
-        console.error('Failed to load profile image from API:', error);
+        console.error('Error fetching profile image:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -62,9 +86,9 @@ const CustomDrawerContent = (props) => {
     //   }
     // };
                
-    fetchProfileImage();
-    // fetchCategory();
-  }, []);
+  //   fetchProfileImage();
+  //   // fetchCategory();
+  // }, []);
 
   const requestCameraPermission = async () => {
     try {
@@ -96,16 +120,12 @@ const CustomDrawerContent = (props) => {
         quality: 1,
       });
     }
-  
-    console.log('Image Picker Result:', result);
-  
+
     if (result && result.assets && !result.didCancel) {
       const { uri, type: fileType } = result.assets[0];
+      setPreviousProfileImageUri(profileImage); // Save current image as previous before setting a new one
       setProfileImage({ uri });
-      console.log('Selected image URI:', uri);
       uploadImage(uri, fileType);
-    } else {
-      console.log('Image selection cancelled or failed');
     }
     setModalVisible(false);
   };
@@ -119,28 +139,26 @@ const CustomDrawerContent = (props) => {
       type: fileType,
       name: `photo.${fileType.split('/')[1]}`,
     });
-  
+
     try {
-      const response = await fetch(`${API_BASE_URL}/upload-profile`, {
+      const response = await fetch(`${API_BASE_URL}/upload-profile?userId=${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });
-  
+
       const data = await response.json();
-      console.log('Server response:', data); 
-  
       if (data.newFilePath) {
-        setProfileImage({ uri: `${API_BASE_URL}/${data.newFilePath}` });
-        setPreviousProfileImageUri(`${API_BASE_URL}/${data.newFilePath}`);
+        fetchProfileImage(); // Fetch the new profile image on success
       } else {
         console.warn('No new file path returned from server');
       }
     } catch (error) {
       console.error('Profile picture update failed:', error);
-      setProfileImage(previousProfileImageUri ? { uri: previousProfileImageUri } : require('../../assets/images/DefaultProfile.jpg'));
+      // Revert to the previous profile image if upload fails
+      setProfileImage(previousProfileImageUri);
       Alert.alert(
         'Update Failed',
         'Failed to update profile picture due to network issues. Please try again later.',
@@ -149,15 +167,40 @@ const CustomDrawerContent = (props) => {
     } finally {
       setLoading(false);
     }
-  };
-  ;  
+  };   
 
-  const handleRemoveProfilePicture = () => {
-    setProfileImage(require('../../assets/images/DefaultProfile.jpg'));
-    setPreviousProfileImageUri(null);
+  const handleRemoveProfilePicture = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/delete-profile-image?userId=${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        setProfileImage(require('../../assets/images/DefaultProfile.jpg'));
+        setPreviousProfileImageUri(null);
+        Alert.alert('Success', 'Profile picture deleted successfully.');
+      } else {
+        Alert.alert('Error', 'Failed to delete profile picture.');
+      }
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+      Alert.alert('Error', 'Failed to delete profile picture. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
     setModalVisible(false);
-    console.log('Profile picture removed');
   };
+  
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileImage();
+    }, [userId])
+  );
 
   return (
     <DrawerContentScrollView {...props}>
