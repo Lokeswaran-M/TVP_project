@@ -19,13 +19,9 @@ import EditProfile from '../screens/EditProfile';
 import Creatingmeeting from '../screens/Creatingmeeting';
 import CreateQR from '../screens/CreateQR';
 import Attendance from '../screens/Attendance';
-
+import CreatingMeeting from '../screens/Creatingmeeting';
+import NewMeeting from '../screens/NewMeeting';
 import { useSelector } from 'react-redux';
-// import { setUser } from '../Redux/action';
-// import { useState } from 'react';
-
-
-
 const ProfileStack = createStackNavigator();
 
 function ProfileStackNavigator() {
@@ -51,6 +47,43 @@ function ProfileStackNavigator() {
         options={{ headerShown: true,title: 'Edit Profile' }}
       />
     </ProfileStack.Navigator>
+  );
+}
+const StackMeeting = createStackNavigator();
+
+function StackMeetingNavigator() {
+  return (
+    <StackMeeting.Navigator
+      screenOptions={{
+        headerTintColor: '#000',
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+      }}
+    >
+      <StackMeeting.Screen
+        name="Createmeeting"
+        component={CreatingMeeting}
+        options={{ headerShown: true, title: 'Create meeting' , header: () => (
+          <View style={styles.topNav}>
+            {/* <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="arrow-left" size={20} color="black" />
+              </TouchableOpacity> */}
+            <View style={styles.buttonNavtop}>
+              <View style={styles.topNavlogo}>
+                <Icon name="comments" size={28} color="#FFFFFF" />
+              </View>
+              <Text style={styles.NavbuttonText}>CREATE MEETING</Text>
+            </View>
+          </View>
+        ),}} 
+      />
+      <StackMeeting.Screen
+        name="NewMeeting"
+        component={NewMeeting}
+        options={{ headerShown: true, title: 'New Meeting'}}
+      />
+    </StackMeeting.Navigator>
   );
 }
 
@@ -137,53 +170,21 @@ function DrawerNavigator() {
             <Icon name="user-circle" color={color} size={size} />
           ),
           headerShown: false,
-          ...HeaderWithoutImage({ navigation }),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="user" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>PROFILE</Text>
+              </TouchableOpacity>
+            </View>
+          ),
         })} 
       />
-
-
-{user?.rollId === 2 && (
-        <>
-
-          <Drawer.Screen
-            name="Creatingmeeting"
-            component={Creatingmeeting}
-            options={({ navigation }) => ({
-              drawerLabel: 'Creatingmeeting',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-
-          <Drawer.Screen
-            name="CreateQR"
-            component={CreateQR}
-            options={({ navigation }) => ({
-              drawerLabel: 'CreateQR',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-
-          <Drawer.Screen
-            name="Attendance"
-            component={Attendance}
-            options={({ navigation }) => ({
-              drawerLabel: 'Attendance',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-      
-      </>
-      )}
-
       <Drawer.Screen
         name="Substitute Login"
         component={SubstituteLogin}
@@ -216,7 +217,19 @@ function DrawerNavigator() {
           drawerIcon: ({ color, size }) => (
             <Icon name="money" color={color} size={size} />
           ),
-          ...HeaderWithoutImage({ navigation }),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="user" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>PAYMENT</Text>
+              </TouchableOpacity>
+            </View>
+          ),
         })}
       />
 
@@ -228,9 +241,98 @@ function DrawerNavigator() {
           drawerIcon: ({ color, size }) => (
             <Icon name="ticket" color={color} size={size} />
           ),
-          ...HeaderWithoutImage({ navigation }),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="user" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>SUBSCRIPTION</Text>
+              </TouchableOpacity>
+            </View>
+          ),
         })}
       />
+      {user?.rollId === 2 && (
+        <>
+
+          <Drawer.Screen
+            name="Creatingmeeting"
+            component={StackMeetingNavigator}
+            options={({ navigation }) => ({
+              drawerLabel: 'Creating meeting',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="comments" color={color} size={size} />
+              ),
+              headerShown: false,
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="user" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>CREATE MEETING</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+          <Drawer.Screen
+            name="CreateQR"
+            component={CreateQR}
+            options={({ navigation }) => ({
+              drawerLabel: 'Create QR',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="qrcode" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="user" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>CREATE QR</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+
+          <Drawer.Screen
+            name="Attendance"
+            component={Attendance}
+            options={({ navigation }) => ({
+              drawerLabel: 'Attendance',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="calendar-check-o" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="user" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>ATTENDANCE</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+      
+      </>
+      )}
 
       <Drawer.Screen
         name="Logout"
@@ -286,11 +388,14 @@ const styles = StyleSheet.create({
     justifyContent:'flex-start',
     borderBottomEndRadius: 15,
     borderBottomStartRadius: 15,
+    // marginLeft: 10,
   },
   buttonNavtop:{
     borderRadius: 25,
     alignItems: 'center',
-    marginLeft:80,
+    justifyContent: 'center',
+    // marginLeft:80,
+    margin: 'auto',
     borderColor:'#A3238F',
     borderWidth:2,
     flexDirection:'row',
