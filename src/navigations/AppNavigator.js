@@ -128,8 +128,6 @@ const HeaderWithoutImage = ({ navigation }) => ({
 });
 
 
-
-
 function DrawerNavigator() {
   // const dispatch = useDispatch();
   // dispatch(setUser(result));

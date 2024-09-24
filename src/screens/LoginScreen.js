@@ -14,8 +14,6 @@ const LoginScreen = ({ navigation }) => {
   // const { userRoleId, setRoleId } = useContext(AuthContext);
   
 
-
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logintype, setLogintype] = useState('1');
