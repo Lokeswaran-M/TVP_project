@@ -58,76 +58,6 @@ const LoginScreen = () => {
           <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
         </TouchableOpacity>
       </View>
-
-      {/* <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <View style={styles.content}>
-          <Text style={styles.Blabel}>Create Substitute</Text>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
-            <TextInput
-              style={styles.input}
-              value={username}
-              onChangeText={setUsername}
-              placeholder="Enter your username"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>New Password</Text>
-            <TextInput
-              style={[styles.input, styles.passwordInput]}
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter new password"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={[styles.input, styles.passwordInput]}
-              secureTextEntry
-              value={conPassword}
-              onChangeText={setConPassword}
-              placeholder="Confirm your password"
-            />
-          </View>
-
-          <TouchableOpacity style={styles.button} onPress={handleSignup}>
-            <Text style={styles.buttonText}>Generate</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.bottomNav}>
-          <BottomNavItem
-            icon="home"
-            text="Home"
-            isActive={selectedNav === 'home'}
-            onPress={() => handleNavPress('home')}
-          />
-          <BottomNavItem
-            icon="qr-code-scanner"
-            text="Scanner"
-            isActive={selectedNav === 'scanner'}
-            onPress={() => handleNavPress('scanner')}
-          />
-          <BottomNavItem
-            icon="local-see"
-            text="Camera"
-            isActive={selectedNav === 'camera'}
-            onPress={() => handleNavPress('camera')}
-          />
-          <BottomNavItem
-            icon="group"
-            text="Members"
-            isActive={selectedNav === 'members'}
-            onPress={() => handleNavPress('members')}
-          />
-        </View>
-      </ScrollView> */}
-
       <Modal
         transparent={true}
         animationType='fade'
@@ -183,15 +113,6 @@ const Sidebar = ({ visible, onClose, onLogout }) => (
       </View>
     </Pressable>
   </Modal>
-);
-
-const BottomNavItem = ({ icon, text, isActive, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
-    <View style={styles.bottomNavicon}>
-      <MaterialIcons name={icon} size={30} color={isActive ? '#A3238F' : 'black'} />
-      <Text style={[styles.bottomNavtext, { color: isActive ? '#A3238F' : 'black' }]}>{text}</Text>
-    </View>
-  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({

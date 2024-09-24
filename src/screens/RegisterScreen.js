@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text } from 'react-native';
+import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text, Alert } from 'react-native';
 import CustomInput from './Custom_input';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
@@ -186,6 +186,7 @@ const handlelocationChange = (selectedLocation) => {
         console.log("Data----------", data[0].count);
         if (data[0].count > 1) {
           setUsernameError('Username already taken');
+          Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
