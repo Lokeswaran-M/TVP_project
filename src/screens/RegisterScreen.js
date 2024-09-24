@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text } from 'react-native';
 import CustomInput from './Custom_input';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -46,9 +46,9 @@ import {API_BASE_URL} from '../constants/Config'
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
-
-
- // Validation error messages
+  
+  const scrollViewRef = useRef(null);
+  const usernameInputRef = useRef(null);
  const [usernameError, setUsernameError] = useState('');
  const [passwordError, setPasswordError] = useState('');
  const [confirmPasswordError, setConfirmPasswordError] = useState('');
@@ -61,8 +61,7 @@ import {API_BASE_URL} from '../constants/Config'
  const [selectedSlotError,setSelectedslotError] =useState('');
  const [dateError,setSelecteddateError]= useState('');
  const [referredByError, setReferredByError] = useState('');
-
-
+ const [isUsernameValid, setIsUsernameValid] = useState(false);
  const togglePasswordVisibility = () => {
   setPasswordVisible(!passwordVisible);
 };
@@ -70,19 +69,15 @@ import {API_BASE_URL} from '../constants/Config'
 const togglePasswordVisibility1 = () => {
   setPasswordVisible1(!passwordVisible1);
 };
-
-
 const fetchData = async () => {
   try {
     const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
     const userIdData = await userIdResponse.json();
-    
     console.log('userIdData====================', userIdData);
-    
     if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
-      const userId = userIdData.NextuserId[0].UserId; // Extract the UserId from the array
+      const userId = userIdData.NextuserId[0].UserId;
       console.log('Extracted UserId:', userId);
-      setUserId(userId); // Set the UserId in the state
+      setUserId(userId);
     } else {
       console.error('No UserId found in the response!');
     }
@@ -90,21 +85,15 @@ const fetchData = async () => {
     console.error('Error fetching UserId:', error);
   }
 };
-
 useEffect(() => {
   fetchData();
 }, []);
-
-
-  // Fetch initial profession list from API
   useEffect(() => {
-    fetch(`${API_BASE_URL}/execute-profession`) // Replace with your actual API endpoint
+    fetch(`${API_BASE_URL}/execute-profession`)
       .then((response) => response.json())
       .then((data) => setProfession(data.executeprofession))
       .catch((error) => console.error(error));
   }, []);
-
-// Fetch the list location value based on the profession
      const fetchLocationsByProfession = async (selectedProfession) => {
       console.log('Selected Profession:', selectedProfession);
   
@@ -113,38 +102,27 @@ useEffect(() => {
         const data = await response.json();
       
         setLocationID(data.availableLocations); 
-
       } catch (error) {
         console.error('Error fetching locations:', error);
       }
-    
   };
-
   const handleProfessionChange = (profession) => {
     setSelectedProfession(profession); 
     setSelectedLocation(null);
     setSelectedChapterType(null);
     fetchLocationsByProfession(profession);
   };
-
-
 const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
   try {
     const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
-      // headers: {
-      //   'Cache-Control': 'no-cache',
-      // },
     });
     const data = await response.json();
-    
-    // Update to handle specific details from the response
     setChapterType(data.getslot); 
     console.log('Fetched slot details:=========', data);
   } catch (error) {
     console.error('Error fetching slots:', error);
   }
 };
-
 const handlelocationChange = (selectedLocation) => {
   setSelectedLocation(selectedLocation);
   if(selectedProfession && selectedLocation){
@@ -153,7 +131,6 @@ const handlelocationChange = (selectedLocation) => {
  
 };
 
-// choose date 
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
     if (selectedDate) {
@@ -175,8 +152,6 @@ const handlelocationChange = (selectedLocation) => {
     }
   };
   const handleRegister = async () => { 
-
-    // Reset error messages
     setUsernameError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -200,6 +175,33 @@ const handlelocationChange = (selectedLocation) => {
       setPasswordError('Password is required');
       isValid = false;
     }
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user-count?username=${username}`);
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Full Response:", data);
+      if (data.length > 0 && data[0].count !== undefined) {
+        console.log("Data----------", data[0].count);
+        if (data[0].count > 1) {
+          setUsernameError('Username already taken');
+          setIsUsernameValid(false);
+          usernameInputRef.current?.focus();
+          scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+          isValid = false;
+        } else {
+          setUsernameError('');
+          setIsUsernameValid(true);
+        }
+      } else {
+        setUsernameError('Invalid response from server');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setUsernameError('Error validating username');
+      isValid = false;
+    }       
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       isValid = false;
@@ -207,8 +209,7 @@ const handlelocationChange = (selectedLocation) => {
     if (!Mobileno) {
       setMobilenoError('Mobile number is required');
       isValid = false;
-    }
-    else if (Mobileno.length !== 10) {
+    } else if (Mobileno.length !== 10) {
       setMobilenoError('Mobile number must be 10 digits');
       isValid = false;
     }
@@ -236,7 +237,7 @@ const handlelocationChange = (selectedLocation) => {
       isValid = false;
     }
     if (!chapterType) {
-      setSelectedslotError('slot is required');
+      setSelectedslotError('Slot is required');
       isValid = false;
     }
     if (!referredBy) {
@@ -244,88 +245,65 @@ const handlelocationChange = (selectedLocation) => {
       isValid = false;
     }
     if (!startDate) {
-      setSelecteddateError('date By is required');
+      setSelecteddateError('Date is required');
       isValid = false;
     }
     if (isValid) {
-
-
-      
-    try {
-      const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user: {
-            userId:userId,
-            username,
-            Password: password,
-            Mobileno,
-            email
+      try {
+        const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            user: {
+              userId,
+              username,
+              Password: password,
+              Mobileno,
+              email
+            },
+            business: {
+              address,
+              businessName,
+              profession: selectedProfession,
+              chapterType: selectedChapterType,
+              LocationID: selectedLocation,
+              referredBy,
+              startDate,
+              endDate
+            }
+          }),
+        });
 
-          business: {
-            address,
-            businessName,
-            profession: selectedProfession,
-            chapterType: selectedChapterType,
-            LocationID: selectedLocation,
-            referredBy,
-            startDate,
-            endDate
-          }
-        }),
-      });
-    
-      const data = await response.json();
-      console.log('data=================',data)
-      console.log('response user =====',data.user)
-      console.log('response business-----',data.business)
-      navigation.navigate('Otpscreen',{ Mobileno });
+        const data = await response.json();
+        console.log('data=================', data);
+        navigation.navigate('Otpscreen', { Mobileno });
 
-      console.log('Registration successful:', data);
-    } catch (error) {
-      console.error('Error registering data:', error);
+        console.log('Registration successful:', data);
+      } catch (error) {
+        console.error('Error registering data:', error);
+      }
     }
-  }
-  };
-
-  // if (loading) {
-  //   return (
-  //     <View style={styles.loadingContainer}>
-  //       <Text>Loading data...</Text>
-  //     </View>
-  //   );
-  // }
+};
   return (
-
     <ScrollView>
     <View style={styles.container}>
-    {/* <View style={styles.container1}>
-    <Image source={Newteam} style={styles.image} />
-    </View> */}
-      {/* Username Field */}
       <View>
         <Icon name="user" size={24} color="gray" style={styles.iconStyle} />
         <AnimatedTextInput
+        ref={usernameInputRef}
           placeholder="Username"
           value={username}
           onChangeText={setUsername}
         />
       </View>
       {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
-
-
       <View>
       <Text >
         {userId ? `User ID: ${userId}` : 'No User ID found'} 
       </Text>
     </View>
-
-
-      {/* Password Field */}
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconStyle}>
               <Icon name={passwordVisible ? "eye" : "eye-slash"} size={24} color="#888" />
@@ -338,8 +316,6 @@ const handlelocationChange = (selectedLocation) => {
         />
       </View>
       {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-
-      {/* Confirm Password Field */}
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.iconStyle}>
               <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="#888" />
@@ -352,8 +328,6 @@ const handlelocationChange = (selectedLocation) => {
         />
       </View>
       {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
-
-      {/* Mobile Number Field */}
       <View>
         <Icon name="phone" size={24} color="gray" style={styles.iconStyle} />
         <AnimatedTextInput
@@ -364,8 +338,6 @@ const handlelocationChange = (selectedLocation) => {
         />
       </View>
       {MobilenoError ? <Text style={styles.errorText}>{MobilenoError}</Text> : null}
-
-      {/* Email Field */}
       <View>
         <Icon name="envelope" size={24} color="gray" style={styles.iconStyle} />
         <AnimatedTextInput
@@ -375,19 +347,15 @@ const handlelocationChange = (selectedLocation) => {
         />
       </View>
       {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-
-      {/* Address Field */}
       <View style={styles.inputContainer}>
         <Icon name="home" size={24} color="gray" style={styles.iconStyle} />
         <AnimatedTextInput
           placeholder="Address"
           value={address}
           onChangeText={setAddress}
-          
         />
       </View>
       {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
-       
       <View style={styles.inputContainer}>
       <Icon name="briefcase" size={24} color="gray" style={styles.iconStyle} />
      <AnimatedTextInput
@@ -605,9 +573,4 @@ const styles = StyleSheet.create({
     //   resizeMode: 'contain',
     // },
 });
-
 export default RegisterScreen;
-
-
-
-

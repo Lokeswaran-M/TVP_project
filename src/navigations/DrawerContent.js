@@ -44,26 +44,29 @@ const CustomDrawerContent = (props) => {
   //   };
   // useEffect(() => {
     const fetchProfileImage = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${API_BASE_URL}/profile-image`, {
+      // setLoading(true);
+      // try {
+        const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
+
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         });
-        if (!response.ok) {
-          throw new Error('Failed to fetch image');
-        }
+
+        // if (!response.ok) {
+        //   throw new Error('Failed to fetch image');
+        // }
         const data = await response.json();
+        console.log("data---------------",data);
         const imageUrlWithTimestamp = `${data.imageUrl}?t=${new Date().getTime()}`;
         setProfileImage({ uri: imageUrlWithTimestamp });
         setPreviousProfileImageUri({ uri: imageUrlWithTimestamp });
-      } catch (error) {
-        console.error('Error fetching profile image:', error);
-      } finally {
-        setLoading(false);
-      }
+      // } catch (error) {
+      //   console.error('Error fetching profile image:', error);
+      // } finally {
+      //   setLoading(false);
+      // }
     };
 
     // const fetchCategory = async () => {

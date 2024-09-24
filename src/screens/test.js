@@ -1,606 +1,98 @@
-function DrawerNavigator() {
-  const dispatch = useDispatch();
-  dispatch(setUser(result));
-  const { rollId } = result.user; 
-  console.log('rollId====================', result.user);
-  console.log('rollId====================', rollId);
+import React, { useState } from 'react';
+import { View, TextInput, Text, Button, StyleSheet } from 'react-native';
+
+const UsernameValidation = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
+
+  // Function to call API to check username availability
+  const validateUsername = async () => {
+    if (!username.trim()) {
+      setUsernameError('Username is required');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://your-server-address/api/user-count?username=${username}`);
+      const data = await response.json();
+
+      if (data.count > 0) {
+        setUsernameError('Username already taken');
+        setIsUsernameValid(false);
+      } else {
+        setUsernameError(''); // Clear the error if no issue
+        setIsUsernameValid(true);
+      }
+    } catch (err) {
+      setUsernameError('Error validating username');
+    }
+  };
+
+  // Function to submit username and password to the server when password is entered
+  const handlePasswordSubmit = async () => {
+    if (!isUsernameValid) {
+      setUsernameError('Please enter a valid username');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://your-server-address/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await response.json();
+      console.log('Server Response:', data);
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  };
 
   return (
-    <Drawer.Navigator
-      initialRouteName="Home"
-      drawerContent={(props) => <DrawerContent {...props} />} 
-      screenOptions={{
-        drawerActiveTintColor: '#a3238f', 
-        drawerInactiveTintColor: 'black', 
-        drawerStyle: {
-          backgroundColor: 'white', 
-        },
-      }}
-    >
-      <Drawer.Screen 
-        name="Home" 
-        component={TabNavigator} 
-        options={{
-          drawerLabel: 'Home',
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="home" color={color} size={size} />
-          ),
-          ...HeaderWithImage(),
-        }} 
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter username"
+        value={username}
+        onChangeText={setUsername}
+        onBlur={validateUsername} // Check the username when the user leaves the field
+        placeholderTextColor="#888"
       />
-      <Drawer.Screen 
-        name="Profile screen" 
-        component={ProfileStackNavigator}
-        options={({ navigation }) => ({
-          drawerLabel: 'View Profile',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="user-circle" color={color} size={size} />
-          ),
-          headerShown: false,
-          ...HeaderWithoutImage({ navigation }),
-        })} 
+      {usernameError ? <Text style={styles.error}>{usernameError}</Text> : null}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Enter password"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        onBlur={handlePasswordSubmit} // Submit when the user leaves the password field
+        placeholderTextColor="#888"
       />
 
-      {rollId === 2 && (
-        <>
-          <Drawer.Screen
-            name="Creatingmeeting"
-            component={Creatingmeeting}
-            options={({ navigation }) => ({
-              drawerLabel: 'Creatingmeeting',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-
-          <Drawer.Screen
-            name="CreateQR"
-            component={CreateQR}
-            options={({ navigation }) => ({
-              drawerLabel: 'CreateQR',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-
-          <Drawer.Screen
-            name="Attendance"
-            component={Attendance}
-            options={({ navigation }) => ({
-              drawerLabel: 'Attendance',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="ticket" color={color} size={size} />
-              ),
-              ...HeaderWithoutImage({ navigation }),
-            })}
-          />
-        </>
-      )}
-
-      <Drawer.Screen
-        name="Substitute Login"
-        component={SubstituteLogin}
-        options={({ navigation }) => ({
-          drawerLabel: 'Substitute Login',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="user-plus" color={color} size={size} />
-          ),
-          header: () => (
-            <View style={styles.topNav}>
-              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Icon name="navicon" size={20} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonNavtop}>
-                <View style={styles.topNavlogo}>
-                  <Icon name="user" size={28} color="#FFFFFF" />
-                </View>
-                <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
-              </TouchableOpacity>
-            </View>
-          ),
-        })}
-      />
-
-      <Drawer.Screen
-        name="Payment"
-        component={Payment}
-        options={({ navigation }) => ({
-          drawerLabel: 'Payment',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="money" color={color} size={size} />
-          ),
-          ...HeaderWithoutImage({ navigation }),
-        })}
-      />
-
-      <Drawer.Screen
-        name="Subscription"
-        component={Subscription}
-        options={({ navigation }) => ({
-          drawerLabel: 'Subscription',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="ticket" color={color} size={size} />
-          ),
-          ...HeaderWithoutImage({ navigation }),
-        })}
-      />
-
-      <Drawer.Screen
-        name="Logout"
-        component={LoginScreen}
-        options={({ navigation }) => ({
-          drawerLabel: 'Logout',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="sign-out" color={color} size={size} />
-          ),
-          headerShown: false,
-        })}
-      />
-    </Drawer.Navigator>
-  );
-}
-
-
-
-app.put('/api/eventcreation/:id', async (req, res) => {
-  const{ userID, LocationID, Date, Time} = req.params;
-  console.log("UserID for Event Creation-----",userID);
-  console.log("LocationID for Event Creation-----",LocationID);
-  console.log("Date for event Creation------------",Date);
-  console.log("Time for event Creation------------",Time);
-  try{
-    await connection.beginTransaction();
-    const eventQuery = ` UPDATE tblevent 
-    SET Date = ?, Time = ? , LocationID = ?
-    WHERE UserId = ?`;
-    const eventValues = [userID, LocationID, Date, Time];
-    const [result] = await connection.query(eventQuery, eventValues);
-    if (result.affectedRows === 0) {
-      await connection.rollback();
-      return res.status(404).json({ error: 'User ID not found' });
-    }
-    await connection.commit();
-    res.status(200).json({ message: 'Event updated successfully!' });
-  } catch (error) {
-    await connection.rollback();
-    res.status(500).json({ error: 'Event update failed. Please try again later.' });
-  }
-});
-
-
-// import React, { useState, useCallback } from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import { useFocusEffect, useNavigation } from '@react-navigation/native';
-// import Icon from 'react-native-vector-icons/FontAwesome';
-// import { API_BASE_URL } from '../constants/Config';
-// import { useSelector } from 'react-redux';
-
-// const CreatingMeeting = () => {
-//   const navigation = useNavigation();
-//   const [showOptions, setShowOptions] = useState(false);
-//   const [loading, setLoading] = useState(true);
-//   const [meetingData, setMeetingData] = useState({});
-//   const userId = useSelector((state) => state.user?.userId);
-
-//   const handleCreateMeeting = () => {
-//     navigation.navigate('NewMeeting');
-//   };
-
-//   const toggleOptions = () => {
-//     setShowOptions(!showOptions);
-//   };
-
-//   const fetchMeetingData = async () => {
-//     setLoading(true);
-//     try {
-//       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`);
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch meeting data');
-//       }
-//       const data = await response.json();
-//       setMeetingData(data);
-//     } catch (error) {
-//       console.error('Error fetching meeting data:', error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useFocusEffect(
-//     useCallback(() => {
-//       fetchMeetingData();
-//     }, [userId])
-//   );
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
-//         <Text style={styles.buttonText}>Create New Meeting</Text>
-//       </TouchableOpacity>
-//       <Text style={styles.title}>Upcoming Business Meetup</Text>
-
-//       {!loading && meetingData ? (
-//         <View style={styles.meetingCard}>
-//           <View style={styles.meetingDetails}>
-//             <Text style={styles.meetingTitle}>
-//               <Icon name="calendar" size={18} /> {new Date(meetingData.DateTime).toLocaleDateString()} {'   '}
-//               <Icon name="clock-o" size={18} /> {new Date(meetingData.DateTime).toLocaleTimeString()}
-//             </Text>
-//             <Text style={styles.meetingInfo}>
-//               <Icon name="map-marker" size={14} /> Location ID: {meetingData.LocationID}
-//             </Text>
-//           </View>
-//           <TouchableOpacity style={styles.optionsButton} onPress={toggleOptions}>
-//             <Icon name="ellipsis-h" size={20} color="#a3238f" />
-//           </TouchableOpacity>
-//           {showOptions && (
-//             <View style={styles.optionsMenu}>
-//               <TouchableOpacity style={styles.optionButton}>
-//                 <Text style={styles.optionText}>Edit</Text>
-//               </TouchableOpacity>
-//               <TouchableOpacity style={styles.optionButton}>
-//                 <Text style={styles.optionText}>Delete</Text>
-//               </TouchableOpacity>
-//             </View>
-//           )}
-//         </View>
-//       ) : (
-//         <Text>Loading...</Text>
-//       )}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     paddingTop: 60,
-//     paddingHorizontal: 20,
-//   },
-//   title: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     marginBottom: 10,
-//     color: 'black',
-//   },
-//   button: {
-//     backgroundColor: '#a3238f',
-//     paddingVertical: 15,
-//     borderRadius: 10,
-//     alignItems: 'center',
-//     marginBottom: 30,
-//   },
-//   buttonText: {
-//     color: 'white',
-//     fontSize: 16,
-//     fontWeight: '600',
-//   },
-//   meetingCard: {
-//     backgroundColor: '#f9f3fb',
-//     borderRadius: 10,
-//     borderWidth: 1,
-//     borderColor: 'black',
-//     padding: 15,
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginBottom: 20,
-//     position: 'relative',
-//   },
-//   meetingDetails: {
-//     flex: 1,
-//   },
-//   meetingTitle: {
-//     fontSize: 18,
-//     fontWeight: '600',
-//     marginBottom: 8,
-//     color: '#a3238f',
-//   },
-//   meetingInfo: {
-//     fontSize: 14,
-//     color: '#a3238f',
-//     marginBottom: 4,
-//   },
-//   optionsButton: {
-//     padding: 10,
-//     bottom: 15,
-//     right: 10,
-//   },
-//   optionsMenu: {
-//     position: 'absolute',
-//     top: 35,
-//     right: 10,
-//     backgroundColor: '#a3238f',
-//     borderRadius: 8,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.8,
-//     shadowRadius: 2,
-//     elevation: 5,
-//     zIndex: 1,
-//   },
-//   optionButton: {
-//     padding: 10,
-//     borderBottomWidth: 1,
-//     borderColor: '#ddd',
-//   },
-//   optionText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default CreatingMeeting;
-
-import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { API_BASE_URL } from '../constants/Config';
-import { useSelector } from 'react-redux';
-import { ScrollView } from 'react-native-gesture-handler';
-
-const CreatingMeeting = () => {
-  const navigation = useNavigation();
-  const [activeIndex, setActiveIndex] = useState(null); 
-  const [loading, setLoading] = useState(true);
-  const [profileData, setProfileData] = useState({});
-  const [meetingData, setMeetingData] = useState([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // State for modal visibility
-  const userId = useSelector((state) => state.user?.userId);
-
-  const handleCreateMeeting = () => {
-    navigation.navigate('NewMeeting');
-  };
-
-  const toggleOptions = (index) => {
-    setActiveIndex(activeIndex === index ? null : index); 
-  };
-
-  const closeOptions = () => {
-    setActiveIndex(null);
-  };
-
-  const fetchProfileData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}api/user/business-info/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile data');
-      }
-      const data = await response.json();
-      setProfileData(data);
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchMeetingData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch meeting data');
-      }
-      const data = await response.json();
-      setMeetingData(data);
-    } catch (error) {
-      console.error('Error fetching meeting data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = () => {
-    console.log('Meeting deleted');
-    setShowDeleteModal(false);
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      closeOptions();
-      fetchProfileData();
-      fetchMeetingData();
-    }, [userId])
-  );
-
-  return (
-    <ScrollView>
-      <TouchableWithoutFeedback onPress={closeOptions}>
-        <View style={styles.container}>
-          <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
-            <Text style={styles.buttonText}>Create New Meeting</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Upcoming Business Meetup</Text>
-          {meetingData.length > 0 ? (
-            meetingData.map((meeting, index) => (
-              <View key={index} style={styles.meetingCard}>
-                <View style={styles.meetingDetails}>
-                  <Text style={styles.meetingTitle}>
-                    <Icon name="calendar" size={18} /> {new Date(meeting.DateTime).toLocaleDateString()} {'   '}
-                    <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
-                  </Text>
-                  <Text style={styles.meetingInfo}>
-                    <Icon name="map-marker" size={14} /> {meeting.LocationID}
-                  </Text>
-                </View>
-                <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
-                  <Icon name="ellipsis-h" size={20} color="#a3238f" />
-                </TouchableOpacity>
-                {activeIndex === index && (
-                  <View style={styles.optionsMenu}>
-                    <TouchableOpacity style={styles.optionButton}>
-                      <Text style={styles.optionText}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={styles.optionButton} 
-                      onPress={() => setShowDeleteModal(true)} // Open the delete modal
-                    >
-                      <Text style={styles.optionText}>Delete</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            ))
-          ) : (
-            <Text>No meetings found</Text>
-          )}
-        </View>
-      </TouchableWithoutFeedback>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        visible={showDeleteModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowDeleteModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Are You Sure?</Text>
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity 
-                style={styles.modalButtonYes} 
-                onPress={handleDelete}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.modalButtonNo} 
-                onPress={() => setShowDeleteModal(false)}
-              >
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+      <Button title="Submit" onPress={handlePasswordSubmit} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: 'black',
-  },
-  button: {
-    backgroundColor: '#a3238f',
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  meetingCard: {
-    backgroundColor: '#f9f3fb',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    padding: 15,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    position: 'relative',
-  },
-  meetingDetails: {
-    flex: 1,
-  },
-  meetingTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#a3238f',
-  },
-  meetingInfo: {
-    fontSize: 14,
-    color: '#a3238f',
-    marginBottom: 4,
-  },
-  optionsButton: {
-    padding: 10,
-    bottom: 15,
-    right: 10,
-  },
-  optionsMenu: {
-    position: 'absolute',
-    top: 35,
-    right: 11,
-    backgroundColor: '#a3238f',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  optionButton: {
-    padding: 5,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ddd',
-  },
-  optionText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContainer: {
-    width: 250,
     padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+  input: {
+    height: 50,
+    borderColor: '#888',
+    borderBottomWidth: 1,
     marginBottom: 20,
-    color: '#a3238f',
+    color: 'black',
+    paddingHorizontal: 10,
   },
-  modalButtonContainer: {
-    flexDirection: 'row',
-  },
-  modalButtonYes: {
-    backgroundColor: '#a3238f',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
-  modalButtonNo: {
-    backgroundColor: '#f3c4e4',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
-  modalButtonText: {
-    color: 'white',
-    fontWeight: '600',
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 
-export default CreatingMeeting;
+export default UsernameValidation;

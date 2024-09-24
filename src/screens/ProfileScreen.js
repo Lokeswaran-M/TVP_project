@@ -16,25 +16,25 @@ const Profile = () => {
   const navigation = useNavigation();
 
   const fetchProfileImage = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/profile-image`, {
+    // setLoading(true);
+    // try {
+      const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch image');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to fetch image');
+      // }
       const data = await response.json();
       const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
       setImageUrl(uniqueImageUrl);
-    } catch (error) {
-      console.error('Error fetching profile image:', error);
-    } finally {
-      setLoading(false);
-    }
+    // } catch (error) {
+    //   console.error('Error fetching profile image:', error);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const fetchProfileData = async () => {

@@ -14,11 +14,12 @@ const NewMeeting = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
+  const [SlotID, setSlotID] = useState(null);
   const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user?.userId);
-  
+
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
   };
@@ -45,20 +46,19 @@ const NewMeeting = () => {
   };
 
   const createMeeting = async () => {
-    if (!selectedDate || !date || !profileData?.LocationID) {
-      Alert.alert('Error', 'Please select a date, time, and location.');
+    if (!selectedDate || !date || !profileData?.LocationID || SlotID === null) {
+      Alert.alert('Error', 'Please select a date, time, location, and slot.');
       return;
     }
-
+  
     const meetingData = {
-      EventId: '3001',
       UserId: userId,
       LocationID: profileData.LocationID,
       DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
       ConfirmationStatus: 1,
-      SlotID: 1
+      SlotID,
     };
-
+  
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings`, {
         method: 'POST',
@@ -67,7 +67,7 @@ const NewMeeting = () => {
         },
         body: JSON.stringify(meetingData),
       });
-
+  
       if (response.ok) {
         Alert.alert('Success', 'Meeting created successfully!');
         navigation.goBack();
@@ -78,8 +78,7 @@ const NewMeeting = () => {
       console.error('Error creating meeting:', error);
       Alert.alert('Error', 'Failed to create meeting. Please try again.');
     }
-  };
-
+  };  
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
@@ -90,16 +89,28 @@ const NewMeeting = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Create :</Text>
       <View style={styles.row}>
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity
+          style={[
+            styles.iconContainer,
+            SlotID === 1 && { backgroundColor: '#f5af33' },
+          ]}
+          onPress={() => setSlotID(1)}
+        >
           <Image source={sun} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity
+          style={[
+            styles.iconContainer,
+            SlotID === 2 && { backgroundColor: '#326b93' },
+          ]}
+          onPress={() => setSlotID(2)}
+        >
           <Image source={moon} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={toggleCalendar}>
         <View style={styles.section}>
-          <Text style={styles.label}>{selectedDate ? selectedDate : "Date"}</Text>
+          <Text style={styles.label}>{selectedDate ? selectedDate : 'Date'}</Text>
           <Icon name="calendar" size={30} color="#C23A8A" />
         </View>
       </TouchableOpacity>
@@ -114,7 +125,7 @@ const NewMeeting = () => {
       <TouchableOpacity onPress={() => setOpen(true)}>
         <View style={styles.section}>
           <Text style={styles.label}>
-            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Time"}
+            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time'}
           </Text>
           <Icon name="clock-o" size={30} color="#C23A8A" />
         </View>
@@ -126,13 +137,13 @@ const NewMeeting = () => {
         date={date || new Date()}
         onConfirm={(selectedTime) => {
           setOpen(false);
-          setDate(selectedTime); 
+          setDate(selectedTime);
         }}
         onCancel={() => setOpen(false)}
       />
       <View style={styles.section}>
         <Text style={styles.label}>
-          {profileData?.LocationID ? profileData.LocationID : "Location"}
+          {profileData?.LocationID ? profileData.LocationID : 'Location'}
         </Text>
         <Icon name="map-marker" size={30} color="#C23A8A" />
       </View>
