@@ -94,7 +94,7 @@ const CreatingMeeting = () => {
                     <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
                   </Text>
                   <Text style={styles.meetingInfo}>
-                    <Icon name="map-marker" size={14} /> {meeting.Location}
+                    <Icon name="map-marker" size={14} /> {meeting.Location}               Slot ID - {meeting.SlotID}
                   </Text>
                 </View>
                 <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
