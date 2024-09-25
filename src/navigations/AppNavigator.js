@@ -21,6 +21,7 @@ import CreateQR from '../screens/CreateQR';
 import Attendance from '../screens/Attendance';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
+import EditMeeting from '../screens/EditMeeting';
 import { useSelector } from 'react-redux';
 const ProfileStack = createStackNavigator();
 
@@ -82,6 +83,11 @@ function StackMeetingNavigator() {
         name="NewMeeting"
         component={NewMeeting}
         options={{ headerShown: true, title: 'New Meeting'}}
+      />
+      <StackMeeting.Screen
+        name="EditMeeting"
+        component={EditMeeting}
+        options={{ headerShown: true, title: 'Edit Meeting'}}
       />
     </StackMeeting.Navigator>
   );

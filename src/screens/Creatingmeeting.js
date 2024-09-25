@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
-
 const CreatingMeeting = () => {
   const navigation = useNavigation();
   const [activeIndex, setActiveIndex] = useState(null); 
@@ -14,23 +13,19 @@ const CreatingMeeting = () => {
   const [meetingData, setMeetingData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const userId = useSelector((state) => state.user?.userId);
-
   const handleCreateMeeting = () => {
     navigation.navigate('NewMeeting');
   };
-
   const toggleOptions = (index) => {
     setActiveIndex(activeIndex === index ? null : index); 
   };
-
   const closeOptions = () => {
     setActiveIndex(null);
   };
-
   const fetchProfileData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
+      const response = await fetch(`${API_BASE_URL}/api/user/business-infos/${userId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch profile data');
       }
@@ -42,7 +37,6 @@ const CreatingMeeting = () => {
       setLoading(false);
     }
   };
-
   const fetchMeetingData = async () => {
     setLoading(true);
     try {
@@ -51,6 +45,7 @@ const CreatingMeeting = () => {
         throw new Error('Failed to fetch meeting data');
       }
       const data = await response.json();
+      console.log("MeetingData--------------", data);
       setMeetingData(data);
     } catch (error) {
       console.error('Error fetching meeting data:', error);
@@ -58,11 +53,22 @@ const CreatingMeeting = () => {
       setLoading(false);
     }
   };
-  const handleDelete = () => {
-    console.log('Meeting deleted');
-    setShowDeleteModal(false);
+  const handleDelete = async (eventId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete the meeting');
+      }
+      const data = await response.json();
+      console.log('Meeting deleted:', data);
+      setShowDeleteModal(false);
+      fetchMeetingData();
+    } catch (error) {
+      console.error('Error deleting meeting:', error);
+    }
   };
-
   useFocusEffect(
     useCallback(() => {
 
@@ -71,7 +77,6 @@ const CreatingMeeting = () => {
       fetchMeetingData();
     }, [userId])
   );
-
   return (
     <ScrollView>
       <TouchableWithoutFeedback onPress={closeOptions}>
@@ -89,25 +94,37 @@ const CreatingMeeting = () => {
                     <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
                   </Text>
                   <Text style={styles.meetingInfo}>
-                    <Icon name="map-marker" size={14} /> {meeting.LocationID}
+                    <Icon name="map-marker" size={14} /> {meeting.Location}
                   </Text>
                 </View>
                 <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
                   <Icon name="ellipsis-h" size={20} color="#a3238f" />
                 </TouchableOpacity>
                 {activeIndex === index && (
-                  <View style={styles.optionsMenu}>
-                    <TouchableOpacity style={styles.optionButton}>
-                      <Text style={styles.optionText}>Edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={styles.optionButton} 
-                      onPress={() => setShowDeleteModal(true)}
-                    >
-                      <Text style={styles.optionText}>Delete</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
+  <View style={styles.optionsMenu}>
+    <TouchableOpacity 
+  style={styles.optionButton} 
+  onPress={() => navigation.navigate('EditMeeting', { 
+    eventId: meeting.EventId, 
+    date: new Date(meeting.DateTime).toLocaleDateString(), 
+    time: new Date(meeting.DateTime).toLocaleTimeString(), 
+    location: meeting.Location, 
+    locationId: meeting.LocationID
+  })}
+>
+  <Text style={styles.optionText}>Edit</Text>
+</TouchableOpacity>
+    <TouchableOpacity 
+      style={styles.optionButton} 
+      onPress={() => {
+        setShowDeleteModal(true);
+        setActiveIndex(index);
+      }}
+    >
+      <Text style={styles.optionText}>Delete</Text>
+    </TouchableOpacity>
+  </View>
+)}
               </View>
             ))
           ) : (
@@ -125,12 +142,12 @@ const CreatingMeeting = () => {
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Are You Sure?</Text>
             <View style={styles.modalButtonContainer}>
-              <TouchableOpacity 
-                style={styles.modalButtonYes} 
-                onPress={handleDelete}
-              >
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
+            <TouchableOpacity 
+  style={styles.modalButtonYes} 
+  onPress={() => handleDelete(meetingData[activeIndex]?.EventId)}
+>
+  <Text style={styles.modalButtonText}>Yes</Text>
+</TouchableOpacity>
               <TouchableOpacity 
                 style={styles.modalButtonNo} 
                 onPress={() => setShowDeleteModal(false)}
@@ -144,7 +161,6 @@ const CreatingMeeting = () => {
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -260,5 +276,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
 export default CreatingMeeting;

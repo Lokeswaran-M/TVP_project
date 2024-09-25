@@ -8,89 +8,68 @@ import DatePicker from 'react-native-date-picker';
 import { API_BASE_URL } from '../constants/Config';
 import sun from '../../assets/images/sun.png';
 import moon from '../../assets/images/moon.png';
-
-const NewMeeting = () => {
+const EditMeeting = ({ route }) => {
+    const { eventId, date, time, location, locationId } = route.params;
+    console.log("Event Details--------------",eventId, date, time, location, locationId);
   const navigation = useNavigation();
   const [showCalendar, setShowCalendar] = useState(false);
   const [profileData, setProfileData] = useState({});
+  const [dates, setDate] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [SlotID, setSlotID] = useState(null);
-  const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user?.userId);
-
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
   };
-
   const onDaySelect = (day) => {
     setSelectedDate(day.dateString);
     setShowCalendar(false);
   };
-
-  const fetchProfileData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/user/business-infos/${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile data');
-      }
-      const data = await response.json();
-      console.log("Location-----------",data);
-      setProfileData(data);
-    } catch (error) {
-      console.error('Error fetching profile data:', error);
-    } finally {
-      setLoading(false);
+  const updateMeeting = async () => {
+    console.log("LocationID--------------", locationId, selectedDate, dates, SlotID);
+    if (!selectedDate || !dates || !locationId || SlotID === null) {
+        Alert.alert('Error', 'Please select a date, time, location, and slot.');
+        return;
     }
-  };
+    const formattedDateTime = `${selectedDate} ${dates instanceof Date 
+      ? dates.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) 
+      : time}`;
 
-  const createMeeting = async () => {
-    console.log("LocationID--------------",profileData.LocationID,selectedDate,date,SlotID);
-    if (!selectedDate || !date || !profileData.LocationID || SlotID === null) {
-      Alert.alert('Error', 'Please select a date, time, location, and slot.');
-      return;
-    }
-  
     const meetingData = {
-      CreatedBy: userId,
-      LocationID: profileData.LocationID,
-      DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-      ConfirmationStatus: 1,
-      SlotID,
+        EventId: eventId,
+        LocationID: locationId,
+        DateTime: formattedDateTime,
+        ConfirmationStatus: 1,
+        SlotID,
     };
-    console.log("meetingData----------------",meetingData);
-  
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(meetingData),
-      });
-  
-      if (response.ok) {
-        Alert.alert('Success', 'Meeting created successfully!');
-        navigation.goBack();
-      } else {
-        throw new Error('Failed to create meeting');
-      }
-    } catch (error) {
-      console.error('Error creating meeting:', error);
-      Alert.alert('Error', 'Failed to create meeting. Please try again.');
-    }
-  };  
-  useFocusEffect(
-    useCallback(() => {
-      fetchProfileData();
-    }, [userId])
-  );
+    console.log("meetingData----------------", meetingData);
 
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`, { 
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(meetingData),
+        });
+
+        if (response.ok) {
+            Alert.alert('Success', 'Meeting updated successfully!');
+            navigation.goBack();
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to update meeting');
+        }
+    } catch (error) {
+        console.error('Error updating meeting:', error);
+        Alert.alert('Error', error.message || 'Failed to update meeting. Please try again.');
+    }
+};
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Create :</Text>
+      <Text style={styles.title}>Create</Text>
       <View style={styles.row}>
         <TouchableOpacity
           style={[styles.iconContainer, SlotID === 1 && { backgroundColor: '#C23A8A' }]}
@@ -107,7 +86,7 @@ const NewMeeting = () => {
       </View>
       <TouchableOpacity onPress={toggleCalendar}>
         <View style={styles.section}>
-          <Text style={styles.label}>{selectedDate ? selectedDate : 'Date'}</Text>
+          <Text style={styles.label}>{selectedDate ? selectedDate : date}</Text>
           <Icon name="calendar" size={30} color="#C23A8A" />
         </View>
       </TouchableOpacity>
@@ -121,36 +100,37 @@ const NewMeeting = () => {
       )}
       <TouchableOpacity onPress={() => setOpen(true)}>
         <View style={styles.section}>
-          <Text style={styles.label}>
-            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time'}
-          </Text>
+        <Text style={styles.label}>
+  {dates instanceof Date
+    ? dates.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : time}
+</Text>
           <Icon name="clock-o" size={30} color="#C23A8A" />
         </View>
       </TouchableOpacity>
       <DatePicker
-        modal
-        mode="time"
-        open={open}
-        date={date || new Date()}
-        onConfirm={(selectedTime) => {
-          setOpen(false);
-          setDate(selectedTime);
-        }}
-        onCancel={() => setOpen(false)}
-      />
+  modal
+  mode="time"
+  open={open}
+  date={date instanceof Date ? date : new Date()}
+  onConfirm={(selectedTime) => {
+    setOpen(false);
+    setDate(selectedTime);
+  }}
+  onCancel={() => setOpen(false)}
+/>
       <View style={styles.section}>
         <Text style={styles.label}>
-          {profileData?.Location ? `${profileData.Location}` : 'Location'}
+          {profileData?.Location ? `${profileData.Location}` : location}
         </Text>
         <Icon name="map-marker" size={30} color="#C23A8A" />
       </View>
-      <TouchableOpacity style={styles.button} onPress={createMeeting}>
-        <Text style={styles.buttonText}>Create Meeting</Text>
+      <TouchableOpacity style={styles.button} onPress={updateMeeting}>
+        <Text style={styles.buttonText}>Update Meeting</Text>
       </TouchableOpacity>
     </ScrollView>
   );  
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -200,5 +180,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default NewMeeting;
+export default EditMeeting;
