@@ -262,9 +262,10 @@ const handlelocationChange = (selectedLocation) => {
               username,
               Password: password,
               Mobileno,
-              email
+              
             },
             business: {
+              email,
               address,
               businessName,
               profession: selectedProfession,

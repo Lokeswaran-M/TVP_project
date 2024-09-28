@@ -22,6 +22,7 @@ import Attendance from '../screens/Attendance';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
+import AddBusiness from '../screens/AddBusiness';
 import { useSelector } from 'react-redux';
 const ProfileStack = createStackNavigator();
 
@@ -142,7 +143,6 @@ function DrawerNavigator() {
 
   // console.log('rollId====================',rollId)
   return (
-    
     <Drawer.Navigator
       initialRouteName="Home"
       drawerContent={(props) => <DrawerContent {...props} />} 
@@ -181,7 +181,7 @@ function DrawerNavigator() {
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonNavtop}>
                 <View style={styles.topNavlogo}>
-                  <Icon name="user" size={28} color="#FFFFFF" />
+                  <Icon name="user-circle" size={28} color="#FFFFFF" />
                 </View>
                 <Text style={styles.NavbuttonText}>PROFILE</Text>
               </TouchableOpacity>
@@ -189,6 +189,8 @@ function DrawerNavigator() {
           ),
         })} 
       />
+      {user?.rollId === 3 && (
+        <>
       <Drawer.Screen
         name="Substitute Login"
         component={SubstituteLogin}
@@ -204,7 +206,7 @@ function DrawerNavigator() {
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonNavtop}>
                 <View style={styles.topNavlogo}>
-                  <Icon name="user" size={28} color="#FFFFFF" />
+                  <Icon name="user-plus" size={28} color="#FFFFFF" />
                 </View>
                 <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
               </TouchableOpacity>
@@ -212,7 +214,8 @@ function DrawerNavigator() {
           ),
         })}
       />
-
+      </>
+      )}
       <Drawer.Screen
         name="Payment"
         component={Payment}
@@ -228,7 +231,7 @@ function DrawerNavigator() {
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonNavtop}>
                 <View style={styles.topNavlogo}>
-                  <Icon name="user" size={28} color="#FFFFFF" />
+                  <Icon name="money" size={28} color="#FFFFFF" />
                 </View>
                 <Text style={styles.NavbuttonText}>PAYMENT</Text>
               </TouchableOpacity>
@@ -252,7 +255,7 @@ function DrawerNavigator() {
               </TouchableOpacity>
               <TouchableOpacity style={styles.buttonNavtop}>
                 <View style={styles.topNavlogo}>
-                  <Icon name="user" size={28} color="#FFFFFF" />
+                  <Icon name="ticket" size={28} color="#FFFFFF" />
                 </View>
                 <Text style={styles.NavbuttonText}>SUBSCRIPTION</Text>
               </TouchableOpacity>
@@ -260,6 +263,34 @@ function DrawerNavigator() {
           ),
         })}
       />
+      {user?.CategoryId === 1 && (
+        <>
+      <Drawer.Screen
+        name="AddBusiness"
+        component={AddBusiness}
+        options={({ navigation }) => ({
+          drawerLabel: 'Add Business',
+          drawerIcon: ({ color, size }) => (
+            <Icon name="plus" color={color} size={size} />
+          ),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="plus" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>ADD BUSINESS</Text>
+              </View>
+            </View>
+          ),
+        })}
+      />
+      </>
+      )}
+      
       {user?.rollId === 2 && (
         <>
 
@@ -279,7 +310,7 @@ function DrawerNavigator() {
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.buttonNavtop}>
                     <View style={styles.topNavlogo}>
-                      <Icon name="user" size={28} color="#FFFFFF" />
+                      <Icon name="comments" size={28} color="#FFFFFF" />
                     </View>
                     <Text style={styles.NavbuttonText}>CREATE MEETING</Text>
                   </TouchableOpacity>
@@ -302,7 +333,7 @@ function DrawerNavigator() {
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.buttonNavtop}>
                     <View style={styles.topNavlogo}>
-                      <Icon name="user" size={28} color="#FFFFFF" />
+                      <Icon name="qrcode" size={28} color="#FFFFFF" />
                     </View>
                     <Text style={styles.NavbuttonText}>CREATE QR</Text>
                   </TouchableOpacity>
@@ -326,7 +357,7 @@ function DrawerNavigator() {
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.buttonNavtop}>
                     <View style={styles.topNavlogo}>
-                      <Icon name="user" size={28} color="#FFFFFF" />
+                      <Icon name="calendar-check-o" size={28} color="#FFFFFF" />
                     </View>
                     <Text style={styles.NavbuttonText}>ATTENDANCE</Text>
                   </TouchableOpacity>

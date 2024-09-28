@@ -8,7 +8,6 @@ import reset_password from '../../assets/images/reset_password.png';
 import { toastConfig } from '../utils/toastConfig';
 import { API_BASE_URL } from '../constants/Config';
 
-
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -52,7 +51,6 @@ const ResetPassword = () => {
   
       const result = await response.json();
       if (response.ok) {
-        // Handle success response
         Toast.show({
           type: 'success',
           text1: 'Success',
@@ -64,7 +62,6 @@ const ResetPassword = () => {
           navigation.navigate('Login');
         }, 1000);
       } else {
-        // Handle API error response
         Toast.show({
           type: 'error',
           text1: 'Error',
@@ -74,7 +71,6 @@ const ResetPassword = () => {
         });
       }
     } catch (error) {
-      // Handle network or server errors
       Toast.show({
         type: 'error',
         text1: 'Error',

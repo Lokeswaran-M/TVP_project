@@ -9,11 +9,8 @@ import { launchCamera } from 'react-native-image-picker';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 
-
 const CameraScreen = ({ navigation }) => {
-
   const user = useSelector((state) => state.user);
-
   const requestCameraPermission = async () => {
     const result = await request(PERMISSIONS.ANDROID.CAMERA);
     if (result === RESULTS.GRANTED) {
@@ -23,7 +20,6 @@ const CameraScreen = ({ navigation }) => {
       navigation.navigate('Dashboard');
     }
   };
-
   const openCamera = () => {
     const options = {
       mediaType: 'photo',
@@ -40,10 +36,8 @@ const CameraScreen = ({ navigation }) => {
         const photoUri = response.assets[0].uri;
         const userId = user?.userId;
         console.log('User ID---------------------', userId); 
-  
         const currentDateTime = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 12);
         const fileName = `${userId}_${currentDateTime}.jpeg`;
-  
         try {
           const formData = new FormData();
           formData.append('image', {
@@ -77,16 +71,13 @@ const CameraScreen = ({ navigation }) => {
       }
     });
   };       
-
   useEffect(() => {
     requestCameraPermission();
   }, []);
 
   return null;
 };
-
 const Tab = createBottomTabNavigator();
-
 const TabNavigator = () => {
   return (
     <Tab.Navigator
