@@ -41,6 +41,7 @@ const CreatingMeeting = () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`);
+      console.log('response===========================',response)
       if (!response.ok) {
         throw new Error('Failed to fetch meeting data');
       }
