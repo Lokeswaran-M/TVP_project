@@ -85,4 +85,11 @@ export default StyleSheet.create({
           color: 'red',
           marginBottom: 8,
         },
+        textInput: {
+          height: 50,
+          borderColor: '#888',
+          borderWidth: 0.4,
+          paddingHorizontal: 10,
+          color: 'black',
+        },
 });

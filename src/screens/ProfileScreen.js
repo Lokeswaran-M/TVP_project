@@ -9,6 +9,8 @@ import styles from '../components/layout/ProfileStyles';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({});
+  console.log("Profile data in Profile Screen--------------",profileData);
+  console.log("Location in Profile---------------",profileData?.LocationID)
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const userId = useSelector((state) => state.user?.userId);
@@ -88,7 +90,7 @@ const Profile = () => {
           <View style={styles.detailsSection}>
             <Text style={styles.label}>Name</Text>
             <View style={styles.nameRow}>
-              <Text style={styles.info}>{profileData?.Name || 'None'}</Text>
+              <Text style={styles.info}>{profileData?.Username || 'None'}</Text>
               <TouchableOpacity 
                 style={styles.editButton} 
                 onPress={() => navigation.navigate('EditProfile')}
