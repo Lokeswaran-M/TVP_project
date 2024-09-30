@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import AnimatedTextInput from './AnimatedTextInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {API_BASE_URL} from '../constants/Config'
-// import Newteam from '../../assets/images/Newteam.png';
+// import Newteam from '../../assets/images/Newteam.png'; 
 
   const RegisterScreen = () => {
   const [userId, setUserId] = useState('');
