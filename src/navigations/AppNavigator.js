@@ -169,10 +169,9 @@ function DrawerNavigator() {
         name="Profile screen" 
         component={ProfileStackNavigator}
         options={({ navigation }) => ({
-          drawerLabel: 'View Profile',
+          drawerLabel: 'View Profile', 
           drawerIcon: ({ color, size }) => (
-            <Icon name="user-circle" color={color} size={size} />
-          ),
+            <Icon name="user-circle" color={color} size={size}/>),
           headerShown: false,
           header: () => (
             <View style={styles.topNav}>
