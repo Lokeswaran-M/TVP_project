@@ -2,9 +2,12 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 const EditProfile = () => {
+  const route = useRoute();
+  const categoryID = route.params?.CategoryId;
+  console.log('CATEGORY id IN EDIT PROFILE SCREEN-------------------', categoryID);
   const navigation = useNavigation();
   const user = useSelector((state) => state.user);
   const [loading, setLoading] = useState(true);
@@ -15,7 +18,6 @@ const EditProfile = () => {
   const [businessName, setBusinessName] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
-
   const fetchProfileData = async () => {
     setLoading(true);
     try {
@@ -24,11 +26,12 @@ const EditProfile = () => {
         throw new Error('Failed to fetch profile data');
       }
       const data = await response.json();
+      console.log("Name in Edit Profile-----------------------------------------------------------",data);
       if (response.status === 404) {
         setProfileData({});
       } else {
         setProfileData(data);
-        setName(data.Name || '');
+        setName(data.Username || '');
         setProfession(data.Profession || '');
         setBusinessName(data.BusinessName || '');
         setDescription(data.Description || '');
