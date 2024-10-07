@@ -82,7 +82,6 @@ const LoginScreen = () => {
     </View>
   );
 };
-
 const Sidebar = ({ visible, onClose, onLogout }) => (
   <Modal
     transparent={true}
@@ -114,7 +113,6 @@ const Sidebar = ({ visible, onClose, onLogout }) => (
     </Pressable>
   </Modal>
 );
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#CCC',
@@ -307,5 +305,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 export default LoginScreen;

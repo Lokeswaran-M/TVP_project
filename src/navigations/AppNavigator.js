@@ -224,6 +224,7 @@ function DrawerNavigator() {
       <Drawer.Screen 
         name="Profile screen" 
         component={ProfileStackNavigator}
+        initialParams={{ Profession: profileData?.Profession }}
         options={({ navigation }) => ({
           drawerLabel: 'View Profile', 
           drawerIcon: ({ color, size }) => (
@@ -376,13 +377,13 @@ function DrawerNavigator() {
       />
       </>
       )}
-      {profileData?.RollId && (
+      {profileData?.RollId === 2 && (
         <>
           <Drawer.Screen
             name="Creatingmeeting"
             component={StackMeetingNavigator}
             options={({ navigation }) => ({
-              drawerLabel: 'Creating meeting',
+              drawerLabel: 'Create meeting',
               drawerIcon: ({ color, size }) => (
                 <Icon name="comments" color={color} size={size} />
               ),

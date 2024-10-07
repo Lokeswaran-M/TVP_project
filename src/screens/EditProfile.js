@@ -84,7 +84,7 @@ const EditProfile = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user.userId,
+          userId: userId,
           username,
           professionForm: profession,
           businessName,

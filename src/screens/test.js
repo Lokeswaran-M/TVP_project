@@ -96,3 +96,37 @@ const styles = StyleSheet.create({
 });
 
 export default UsernameValidation;
+
+
+
+
+
+
+
+
+// const fetchRatings = async () => {
+//   try {
+//     let response;
+//     if (categoryID === 2) {
+//       response = await fetch(`${API_BASE_URL}/api/MultiRatings/${userId}/profession/${profession}`);
+//     } else {
+//       response = await fetch(`${API_BASE_URL}/api/Ratings/${userId}`);
+//     }
+//     if (!response.ok) {
+//       console.error('Response failed:', response.statusText);
+//       throw new Error('Failed to fetch Rating data');
+//     }
+//     const data = await response.json();
+//     console.log("RATING STARS TOTAL AND AVERAGE IN THE PROFILE SCREEN----------------------------", data);
+//     if (categoryID === 2) {
+//       setMultiProfile(data[0] || {});
+//       console.log('MultiProfile:', data[0]);
+//     } else {
+//       setRatingdata(data);
+//     }
+//   } catch (error) {
+//     console.error('Fetch error:', error);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
