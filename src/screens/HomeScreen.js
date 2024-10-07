@@ -1,222 +1,312 @@
-
-
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Button, TouchableOpacity } from 'react-native';
+import React, { useState ,useEffect} from 'react';
+import { View, Text, TouchableOpacity, Alert,ActivityIndicator,ScrollView,Image, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'; 
+import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+
 
 const HomeScreen = () => {
-    const user = useSelector((state) => state.user);
-  const navigation = useNavigation();
+  const userId = useSelector((state) => state.user?.userId);
+  console.log('userId================dfgdfgf===================',userId);
+  const [eventData, setEventData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=2002`;
+
+  const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
+  console.log('API_URL----------------------------',API_URL)
+  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/attendance`;
+
+  console.log(API_URL)
+
+  useEffect(() => { 
+    const fetchEventData = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        if (response.ok) {
+          setEventData(data.events[0]); 
+        } else {
+          setError(data.error);
+        }
+      } catch (err) {
+        setError('Failed to fetch data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEventData();
+  },[]);
+
+  const handleConfirmClick = async () => {
+    if (!eventData) {
+      Alert.alert('Error', 'No event data available');
+      return;
+    }
+    try {
+      const response = await fetch(ATTENDANCE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          UserId: userId, 
+          LocationID: eventData.LocationID || '100003', 
+          EventId: eventData.EventId, 
+        }),
+      });  
+
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', 'Attendance confirmed successfully');
+      } else {
+        Alert.alert('Error', data.error || 'Failed to confirm attendance');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Network or server issue');
+    }
+  };
+
+
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
   return (
-    <ScrollView style={styles.container}>
-      {/* Banner Section */}
-      <View style={styles.bannerContainer}>
-        <Image 
-          // source={require('./path-to-your-image.jpg')} // Replace with actual image
-          style={styles.bannerImage}
-        />
-        <Text style={styles.bannerText}>EMPOWERING GLOBAL BUSINESS CONNECTIONS</Text>
-      </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Image
+            source={require('../../assets/images/Homepage_BMW.jpg')}
+            style={styles.image}
+          />
+        </View>    
+        <View style={styles.cards}>
+            <Text style={styles.dashboardTitle}>Dashboard</Text>
 
-      {/* Upcoming Meetup Section */}
-      <View style={styles.meetupContainer}>
-        <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
-        <Text style={styles.meetupDetails}>07/09/2024 | 8:30am to 10:30am</Text>
-        <Text style={styles.meetupLocation}>Upalakorn, Chennai</Text>
-        <View style={styles.meetupButtons}>
-          <TouchableOpacity style={styles.confirmButton}>
-            <Text style={styles.buttonText}>Click to Confirm</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.declineButton}>
-            <Text style={styles.buttonText}>Click to Decline</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            {eventData && (
+        <View style={styles.meetupCard}>
+          <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
 
-      {/* Requirements Section */}
-      <View style={styles.requirementsContainer}>
-        <Text style={styles.sectionTitle}>Requirements</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add Requirement</Text>
-        </TouchableOpacity>
-        <View style={styles.requirementItem}>
-          <Image source={{uri: 'https://example.com/avatar.jpg'}} style={styles.avatar} />
-          <View>
-            <Text style={styles.requirementName}>Chandru</Text>
-            <Text style={styles.requirementDetails}>Description of the requirement goes here...</Text>
+          <View style={styles.row}>
+            <Icon name="calendar" size={18} color="#6C757D" />
+            <Text style={styles.meetupInfo}>{new Date(eventData.DateTime).toLocaleDateString()}</Text>
+            <Icon name="clock-o" size={18} color="#6C757D" />
+            <Text style={styles.meetupInfo}>
+              {new Date(eventData.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
+            </Text>
           </View>
-          <TouchableOpacity style={styles.removeButton}>
-            <Text style={styles.removeButtonText}>Acknowledge</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
 
-      {/* Reviews Section */}
-      <View style={styles.reviewsContainer}>
-        <Text style={styles.sectionTitle}>Reviews</Text>
-        <TouchableOpacity style={styles.writeReviewButton}>
-          <Text style={styles.writeReviewButtonText}>Write a Review</Text>
-        </TouchableOpacity>
-        <View style={styles.reviewItem}>
-          <Image source={{uri: 'https://example.com/review-avatar.jpg'}} style={styles.avatar} />
-          <View>
-            <Text style={styles.reviewName}>Sathish</Text>
-            <Text style={styles.rating}>Rating: ★★★★★</Text>
-            <Text style={styles.reviewDetails}>Review details go here...</Text>
+          <View style={styles.row}>
+            <Icon name="map-marker" size={18} color="#6C757D" />
+            <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
+              <Icon name="check-circle" size={24} color="white" />
+              <Text style={styles.buttonText}>Click to Confirm</Text>
+            </TouchableOpacity>
           </View>
         </View>
+      )}
+    </View>
+
+        <View style={styles.card}>
+          <Image
+            source={require('../../assets/images/Homepage_BMW.jpg')}
+            style={styles.image}
+          />
+        </View>
+        
+        <View style={styles.card}>
+          <Image
+            source={require('../../assets/images/Homepage_BMW.jpg')}
+            style={styles.image}
+          />
+        </View>
+      
       </View>
     </ScrollView>
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 10,
+  },
+  card: {
     backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 5,
   },
-  bannerContainer: {
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f0eef9',
-  },
-  bannerImage: {
+  image: {
     width: '100%',
-    height: 150,
+    height: 130, 
     borderRadius: 10,
   },
-  bannerText: {
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  meetupContainer: {
-    padding: 20,
-    backgroundColor: '#f8f0fb',
-    marginTop: 20,
+  cards: {
+    backgroundColor: 'white',
     borderRadius: 10,
+    padding: 15,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  meetupTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  meetupDetails: {
-    marginTop: 5,
-    fontSize: 14,
-  },
-  meetupLocation: {
-    marginTop: 5,
-    fontSize: 14,
-    color: '#6c757d',
-  },
-  meetupButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 10,
-  },
-  confirmButton: {
-    backgroundColor: '#a3238f',
-    padding: 10,
-    borderRadius: 5,
-  },
-  declineButton: {
-    backgroundColor: '#a3238f',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-  },
-  requirementsContainer: {
-    padding: 20,
-    marginTop: 20,
-    backgroundColor: '#fff0f6',
-    borderRadius: 10,
-  },
-  sectionTitle: {
+  dashboardTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  addButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#a3238f',
-    padding: 10,
-    borderRadius: 5,
+  meetupCard: {
+    backgroundColor: '#f0e1eb',
+    borderRadius: 10,
+    padding: 15,
   },
-  addButtonText: {
-    color: '#fff',
+  meetupTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#6C757D',
+    marginBottom: 10,
   },
-  requirementItem: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#f7f7f7',
-    borderRadius: 10,
+    marginBottom: 5,
   },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  requirementName: {
+  meetupInfo: {
+    marginLeft: 5,
+    marginRight: 15,
+    color: '#6C757D',
     fontSize: 14,
-    fontWeight: 'bold',
   },
-  requirementDetails: {
-    fontSize: 12,
-    color: '#6c757d',
+  locationText: {
+    marginLeft: 5,
+    color: '#6C757D',
+    fontSize: 14,
   },
-  removeButton: {
-    backgroundColor: '#a3238f',
-    padding: 5,
-    borderRadius: 5,
-    marginLeft: 'auto',
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
   },
-  removeButtonText: {
-    color: '#fff',
-  },
-  reviewsContainer: {
-    padding: 20,
-    marginTop: 20,
-    backgroundColor: '#f7f7f7',
-    borderRadius: 10,
-  },
-  writeReviewButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#a3238f',
-    padding: 10,
-    borderRadius: 5,
-  },
-  writeReviewButtonText: {
-    color: '#fff',
-  },
-  reviewItem: {
+  confirmButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    backgroundColor: '#28A745',
     padding: 10,
-    backgroundColor: '#f7f7f7',
-    borderRadius: 10,
+    borderRadius: 5,
   },
-  reviewName: {
+  declineButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#DC3545',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    marginLeft: 5,
     fontSize: 14,
-    fontWeight: 'bold',
-  },
-  rating: {
-    fontSize: 12,
-    color: '#f1c40f',
-  },
-  reviewDetails: {
-    fontSize: 12,
-    color: '#6c757d',
   },
 });
 
 export default HomeScreen;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React from 'react';
+// import { View, Text, StyleSheet, Button } from 'react-native';
+// import Icon from 'react-native-vector-icons/FontAwesome'; // You can use other icon libraries
+
+// const UpcomingMeetupCard = () => {
+//   return (
+//     <View style={styles.card}>
+//       <Text style={styles.cardTitle}>Upcoming Business Meetup</Text>
+//       <Text style={styles.meetupTime}>
+//         <Icon name="calendar" size={16} color="#6A1B9A" /> 07/09/2024, 8:30 AM to 10:30 AM
+//       </Text>
+//       <Text style={styles.meetupLocation}>
+//         <Icon name="map-marker" size={16} color="#6A1B9A" /> Urapakkam, Chennai
+//       </Text>
+//       <View style={styles.buttonContainer}>
+//         <Button title="Click to Confirm" color="#28A745" />
+//         <Button title="Click to Decline" color="#DC3545" />
+//       </View>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   card: {
+//     backgroundColor: '#f3e5f5',
+//     padding: 15,
+//     borderRadius: 10,
+//     margin: 10,
+//   },
+//   cardTitle: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     marginBottom: 5,
+//   },
+//   meetupTime: {
+//     fontSize: 14,
+//     marginVertical: 5,
+//     color: '#6A1B9A',
+//   },
+//   meetupLocation: {
+//     fontSize: 14,
+//     marginVertical: 5,
+//     color: '#6A1B9A',
+//   },
+//   buttonContainer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//     marginTop: 10,
+//   },
+// });
+
+// export default UpcomingMeetupCard;
+
+
+
+
+
+
+
 
 
 
