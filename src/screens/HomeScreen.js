@@ -114,7 +114,7 @@ const HomeScreen = () => {
 
           <View style={styles.buttonRow}>
             <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
-              <Icon name="check-circle" size={24} color="white" />
+              <Icon name="check-circle" size={24} color="#28A745" />
               <Text style={styles.buttonText}>Click to Confirm</Text>
             </TouchableOpacity>
           </View>
@@ -167,7 +167,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 15,
-    margin: 10,
+    margin: 0,
+    marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -214,9 +215,10 @@ const styles = StyleSheet.create({
   confirmButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#28A745',
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: 'white',
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 50,
   },
   declineButton: {
     flexDirection: 'row',
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#a3238f',
     marginLeft: 5,
     fontSize: 14,
   },
