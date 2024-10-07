@@ -1,4 +1,5 @@
-import React ,{useState} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Image, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
@@ -10,6 +11,7 @@ import SplashScreen from '../components/common/SplashScreen';
 import AuthNavigator from '../navigations/AuthNavigator'; 
 import DrawerContent from './DrawerContent';
 import TabNavigator from './TabNavigator';
+import ProfileDrawerLabel  from './ProfileDrawerLabel';
 import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
 import Subscription from '../screens/Subscription';
@@ -24,9 +26,40 @@ import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
 import { useSelector } from 'react-redux';
+import { API_BASE_URL } from '../constants/Config';
 const ProfileStack = createStackNavigator();
-
 function ProfileStackNavigator() {
+  const user = useSelector((state) => state.user);
+  const userId = useSelector((state) => state.user?.userId);
+  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState({});
+
+  const fetchProfileData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile data');
+      }
+      const data = await response.json();
+      if (response.status === 404) {
+        setProfileData({});
+      } else {
+        setProfileData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };  
+  
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [userId])
+  );
+
   return (
     <ProfileStack.Navigator
       screenOptions={{
@@ -40,13 +73,14 @@ function ProfileStackNavigator() {
       <ProfileStack.Screen
         name="Profile"
         component={ProfileScreen}
-        options={{ headerShown: false,title: 'Profile' }}
-        
+        initialParams={{ CategoryId: profileData?.CategoryId }}
+        options={{ headerShown: false, title: 'Profile' }}
       />
       <ProfileStack.Screen
         name="EditProfile"
         component={EditProfile}
-        options={{ headerShown: true,title: 'Edit Profile' }}
+        initialParams={{ CategoryId: profileData?.CategoryId }}
+        options={{ headerShown: true, title: 'Edit Profile' }}
       />
     </ProfileStack.Navigator>
   );
@@ -127,21 +161,41 @@ const HeaderWithoutImage = ({ navigation }) => ({
     />
   ),
   headerTintColor: '#000',
-  // headerLeft: () => (
-  //   <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
-  //     <Icon name="arrow-left" size={20} color="#000" style={{ marginLeft: 15 }} />
-  //   </TouchableOpacity>
-  // ),
 });
-
-
 function DrawerNavigator() {
-  // const dispatch = useDispatch();
-  // dispatch(setUser(result));
   const user = useSelector((state) => state.user);
+  const userId = useSelector((state) => state.user?.userId);
   console.log('rollId====================',user?.rollId)
+  const [loading, setLoading] = useState(true);
+  const [profileData, setProfileData] = useState({});
+  console.log('CATEGORY ID INSIDE THE DRAWER NAVIGATION----------',profileData?.CategoryId);
+  console.log('PROFESSION INSIDE DRAWER FUNCTION-----------------',profileData?.Profession);
+  const fetchProfileData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch profile data');
+      }
+      const data = await response.json();
+      console.log('DATA INSIDE THE DRAWER NAVIGATOR FUNCTION-------------------',data);
+      if (response.status === 404) {
+        setProfileData({});
+      } else {
+        setProfileData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };  
 
-  // console.log('rollId====================',rollId)
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [userId])
+  );
   return (
     <Drawer.Navigator
       initialRouteName="Home"
@@ -165,9 +219,12 @@ function DrawerNavigator() {
           ...HeaderWithImage(),
         }} 
       />
+      {profileData?.CategoryId === 1 && (
+        <>
       <Drawer.Screen 
         name="Profile screen" 
         component={ProfileStackNavigator}
+        initialParams={{ Profession: profileData?.Profession }}
         options={({ navigation }) => ({
           drawerLabel: 'View Profile', 
           drawerIcon: ({ color, size }) => (
@@ -188,7 +245,39 @@ function DrawerNavigator() {
           ),
         })} 
       />
-      {user?.rollId === 3 && (
+      </>
+      )}
+{profileData?.CategoryId === 2 && (
+        <>
+<Drawer.Screen 
+  name="Profile screen" 
+  component={ProfileStackNavigator}
+  // initialParams={{ CategoryId: profileData?.CategoryId }}
+  options={({ navigation }) => ({
+    drawerLabel: () => <ProfileDrawerLabel />,
+    drawerIcon: ({ color, size }) => (
+      <Icon name="user-circle" color={color} size={size} />
+    ),
+    headerShown: false,
+    header: () => (
+      <View style={styles.topNav}>
+        <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+          <Icon name="navicon" size={20} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonNavtop}>
+          <View style={styles.topNavlogo}>
+            <Icon name="user-circle" size={28} color="#FFFFFF" />
+          </View>
+          <Text style={styles.NavbuttonText}>PROFILE</Text>
+        </TouchableOpacity>
+      </View>
+    ),
+    
+  })}
+/>
+</>
+      )}
+      {profileData?.RollId === 3 && (
         <>
       <Drawer.Screen
         name="Substitute Login"
@@ -238,7 +327,6 @@ function DrawerNavigator() {
           ),
         })}
       />
-
       <Drawer.Screen
         name="Subscription"
         component={Subscription}
@@ -262,7 +350,7 @@ function DrawerNavigator() {
           ),
         })}
       />
-      {user?.CategoryId === 1 && (
+      {profileData?.CategoryId === 1 && (
         <>
       <Drawer.Screen
         name="AddBusiness"
@@ -289,15 +377,13 @@ function DrawerNavigator() {
       />
       </>
       )}
-      
-      {user?.rollId === 2 && (
+      {profileData?.RollId === 2 && (
         <>
-
           <Drawer.Screen
             name="Creatingmeeting"
             component={StackMeetingNavigator}
             options={({ navigation }) => ({
-              drawerLabel: 'Creating meeting',
+              drawerLabel: 'Create meeting',
               drawerIcon: ({ color, size }) => (
                 <Icon name="comments" color={color} size={size} />
               ),
@@ -340,7 +426,6 @@ function DrawerNavigator() {
               ),
             })}
           />
-
           <Drawer.Screen
             name="Attendance"
             component={Attendance}
@@ -364,10 +449,8 @@ function DrawerNavigator() {
               ),
             })}
           />
-      
       </>
       )}
-
       <Drawer.Screen
         name="Logout"
         component={LoginScreen}
@@ -383,8 +466,8 @@ function DrawerNavigator() {
   );
 }
 
-function AppNavigator() {
 
+function AppNavigator() {
   return (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen
@@ -448,6 +531,21 @@ const styles = StyleSheet.create({
     marginLeft:10,
     paddingRight:10,
   },
+  drawerLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  drawerLabelText: {
+    color: 'black',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  arrowIcon: {
+    marginLeft: 10,
+  },
+  
 });
 
 export default AppNavigator;
