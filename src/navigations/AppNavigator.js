@@ -470,6 +470,7 @@ function DrawerNavigator() {
 function AppNavigator() {
   return (
     <Stack.Navigator initialRouteName="Splash">
+      
       <Stack.Screen
         name="Splash"
         component={SplashScreen}
