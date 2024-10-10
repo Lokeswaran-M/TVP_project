@@ -8,13 +8,15 @@ import sunmoon from '../../assets/images/sunandmoon-icon.png';
 import styles from '../components/layout/ProfileStyles';
 const Profile = () => {
   const route = useRoute();
-  const categoryID = route.params?.CategoryId;
-  console.log('CATEGORY id IN PROFILE SCREEN:', categoryID);
+  const { categoryID, Profession } = route.params;
+  console.log("CategoryId in Profile Screen:", categoryID);
+  console.log("Profession in Profile Screen:", Profession);
   const profession = categoryID === 2 ? route.params?.profession : route.params?.Profession; 
   console.log('Received Profession:', profession);
   const [profileData, setProfileData] = useState({});
+  console.log('Profile data in PROFILE SCREEN------------------',profileData);
   const [multiProfile, setMultiProfile] = useState({});
-  const [Ratingdata, setRatingdata] = useState({});
+  const [overallAverage, setOverallAverage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const userId = useSelector((state) => state.user?.userId);
@@ -30,49 +32,47 @@ const Profile = () => {
     const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
     setImageUrl(uniqueImageUrl);
   };
-  const fetchRatings = async () => {
-    try {
-      
-        const response = await fetch(`${API_BASE_URL}/api/Ratings/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        const data = await response.json();
-        if (response.ok) {
-            console.log("RATING STARS TOTAL AND AVERAGE IN THE PROFILE SCREEN----------------------------", data);
-            setRatingdata(data);
-        } else {
-            console.error('Error fetching ratings:', data.error);
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
-    }
-};
   const fetchProfileData = async () => {
     setLoading(true);
     try {
         let response;
-        if (categoryID === 2) {
-            response = await fetch(`${API_BASE_URL}/api/user/Multibusiness-info/${userId}/profession/${profession}`);
-        } else {
-            response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
-        }
+        const url = categoryID === 2 
+            ? `${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${profession}` 
+            : `${API_BASE_URL}/api/info_with_star_rating/${userId}`;
+        console.log('Fetching URL:', url);
+        response = await fetch(url);
         if (!response.ok) {
-            console.error('Response failed:', response.statusText);
+            const textResponse = await response.text();
+            console.error('Error response text:', textResponse);
             throw new Error('Failed to fetch profile data');
         }
         const data = await response.json();
-        console.log('Data in Profile Screen------------------------------', data);
         if (categoryID === 2) {
-            setMultiProfile(data[0] || {});
-            console.log('MultiProfile:', data[0]);
+            setMultiProfile(data || {});
+            console.log("Data%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", data);
+            if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
+              const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
+              const overallAverage = totalAverage / data.ratings.length;
+              setOverallAverage(overallAverage.toFixed(1));
+              console.log("Total Average----------------------------------", totalAverage);
+              console.log("Overall Average---------------------------------", overallAverage);
+          } else {
+              console.log("No ratings available.");
+          }
         } else {
             setProfileData(data);
+            if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
+                const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
+                const overallAverage = totalAverage / data.ratings.length;
+                setOverallAverage(overallAverage.toFixed(1));
+                console.log("Total Average----------------------------------", totalAverage);
+                console.log("Overall Average---------------------------------", overallAverage);
+            } else {
+                console.log("No ratings available.");
+            }
         }
     } catch (error) {
-        console.error('Error fetching profile data:', error);
+        console.error('Error fetching profile data:', error.message);
     } finally {
         setLoading(false);
     }
@@ -81,7 +81,6 @@ const Profile = () => {
     useCallback(() => {
       fetchProfileImage();
       fetchProfileData();
-      fetchRatings();
     }, [userId, categoryID, profession])
   );
   return (
@@ -106,10 +105,15 @@ const Profile = () => {
           )}
           <Text style={styles.userId}>User ID: {userId} </Text>
           <View style={styles.starsWrapper}>
-            {Array.from({ length: 5 }).map((_, index) => (
-              <FontAwesome key={index} name="star" size={20} color="#FFD700" />
-            ))}
-          </View>
+    {Array.from({ length: 5 }).map((_, index) => (
+        <FontAwesome 
+            key={index} 
+            name={index < Math.floor(overallAverage) ? "star" : "star-o"}
+            size={25} 
+            color="#FFD700"
+        />
+    ))}
+</View>
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#C23A8A" />
@@ -119,7 +123,7 @@ const Profile = () => {
               <>
             <Text style={styles.label}>Name</Text>
             <View style={styles.nameRow}>
-              <Text style={styles.info}>{multiProfile?.Username || 'None'}</Text>
+              <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Username || 'None'}</Text>
               <TouchableOpacity 
                 style={styles.editButton} 
                 onPress={() => navigation.navigate('EditProfile', { profession: multiProfile?.Profession })}
@@ -129,55 +133,83 @@ const Profile = () => {
               </TouchableOpacity>
             </View>
             <Text style={styles.label}>Profession</Text>
-            <Text style={styles.info}>{multiProfile?.Profession || 'None'}</Text>
+            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Profession || 'None'}</Text>
             <Text style={styles.label}>Business Name</Text>
-            <Text style={styles.info}>{multiProfile?.BusinessName || 'None'}</Text>
+            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.BusinessName || 'None'}</Text>
             <Text style={styles.label}>Description</Text>
-            <Text style={styles.description}>{multiProfile?.Description || 'None'}</Text>
+            <Text style={styles.description}>{multiProfile?.businessInfo?.[0]?.Description || 'None'}</Text>
             <Text style={styles.label}>Business Address</Text>
-            <Text style={styles.info}>{multiProfile?.Address || 'None'}</Text>
+            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Address || 'None'}</Text>
             </>
             ) : (
               <>
               <Text style={styles.label}>Name</Text>
             <View style={styles.nameRow}>
-              <Text style={styles.info}>{profileData?.Username || 'None'}</Text>
+              <Text style={styles.info}>{profileData?.businessInfo?.Username || 'None'}</Text>
               <TouchableOpacity 
                 style={styles.editButton} 
-                onPress={() => navigation.navigate('EditProfile', { profession: profileData?.Profession })}
+                onPress={() => navigation.navigate('EditProfile', { profession: profileData?.businessInfo?.Profession })}
               >
                 <FontAwesome name="edit" size={15} color="#C23A8A" />
                 <Text style={styles.editText}>Edit Profile</Text>
               </TouchableOpacity>
             </View>
             <Text style={styles.label}>Profession</Text>
-            <Text style={styles.info}>{profileData?.Profession || 'None'}</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.Profession || 'None'}</Text>
             <Text style={styles.label}>Business Name</Text>
-            <Text style={styles.info}>{profileData?.BusinessName || 'None'}</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.BusinessName || 'None'}</Text>
             <Text style={styles.label}>Description</Text>
-            <Text style={styles.description}>{profileData?.Description || 'None'}</Text>
+            <Text style={styles.description}>{profileData?.businessInfo?.Description || 'None'}</Text>
             <Text style={styles.label}>Business Address</Text>
-            <Text style={styles.info}>{profileData?.Address || 'None'}</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.Address || 'None'}</Text>
             </>
             )}
+            {categoryID === 2 ? (
+              <>
             <View style={styles.performanceSection}>
   <Text style={styles.performanceTitle}>Your Performance Score:</Text>
-  {Ratingdata.length > 0 && Ratingdata.map((rating, index) => (
+  {multiProfile?.ratings?.length > 0 && multiProfile.ratings.map((rating, index) => (
+    <View key={index} style={styles.performanceRow}>
+      <Text style={styles.performanceLabel}>{rating.RatingName.trim()}</Text>
+      <View style={styles.stars}>
+        {Array.from({ length: 5 }).map((_, i) => {
+          const average = parseFloat(rating.average);
+          return (
+            <FontAwesome
+              key={i}
+              name="star"
+              size={25}
+              color={i < Math.floor(average) ? "#FFD700" : "#D3D3D3"}
+            />
+          );
+        })}
+      </View>
+    </View>
+  ))}
+</View>
+</>
+) : (
+  <>
+<View style={styles.performanceSection}>
+  <Text style={styles.performanceTitle}>Your Performance Score:</Text>
+  {profileData?.ratings?.length > 0 && profileData.ratings.map((rating, index) => (
     <View key={index} style={styles.performanceRow}>
       <Text style={styles.performanceLabel}>{rating.RatingName.trim()}</Text>
       <View style={styles.stars}>
         {Array.from({ length: 5 }).map((_, i) => (
           <FontAwesome
             key={i}
-            name="star"
-            size={16}
-            color={i < Math.floor(rating.average) ? "#FFD700" : "#D3D3D3"}
+            name={i < Math.floor(rating.average) ? "star" : "star-o"}
+            size={25}
+            color= "#FFD700"
           />
         ))}
       </View>
     </View>
   ))}
 </View>
+</>
+            )}
           </View>
         )}
       </View>

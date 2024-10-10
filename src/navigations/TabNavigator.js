@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from '../screens/HomeScreen';
-import Members from '../screens/Members';
+import Members from '../screens/MembersList';
+import MemberDetails from '../screens/MemberDetails';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Animated, Easing, Alert } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
@@ -77,6 +79,15 @@ const CameraScreen = ({ navigation }) => {
 
   return null;
 };
+const Stack = createNativeStackNavigator();
+const Memberstack = () => {
+  return (
+      <Stack.Navigator>
+          <Stack.Screen name="Members" component={Members} options={{ headerShown: false}} />
+          <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: false}} />
+      </Stack.Navigator>
+  );
+};
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   return (
@@ -104,7 +115,7 @@ const TabNavigator = () => {
           let iconName;
           if (route.name === 'Dashboard') {
             iconName = 'home';
-          } else if (route.name === 'Members') {
+          } else if (route.name === 'Member') {
             iconName = 'users';
           } else if (route.name === 'Scanner') {
             iconName = 'qrcode';
@@ -141,8 +152,8 @@ const TabNavigator = () => {
         options={{ title: 'Camera' }}
       />
       <Tab.Screen
-        name="Members"
-        component={Members}
+        name="Member"
+        component={Memberstack}
         options={{ title: 'Members' }}
       />
     </Tab.Navigator>

@@ -33,6 +33,7 @@ function ProfileStackNavigator() {
   const userId = useSelector((state) => state.user?.userId);
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
+  console.log("PROFESSION IN PROFILE SCREEN-----------------",profileData?.Profession)
 
   const fetchProfileData = async () => {
     setLoading(true);
@@ -71,11 +72,15 @@ function ProfileStackNavigator() {
       }}
     >
       <ProfileStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        initialParams={{ CategoryId: profileData?.CategoryId }}
-        options={{ headerShown: false, title: 'Profile' }}
-      />
+  name="Profile"
+  component={ProfileScreen}
+  initialParams={{ 
+    categoryID: profileData?.CategoryId || null, // Ensure this has a value
+    Profession: profileData?.Profession || 'None', // Default if not provided
+  }}
+  options={{ headerShown: false, title: 'Profile' }}
+/>
+
       <ProfileStack.Screen
         name="EditProfile"
         component={EditProfile}
