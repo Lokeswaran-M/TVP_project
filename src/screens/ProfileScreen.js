@@ -53,7 +53,7 @@ const Profile = () => {
             if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
               const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
               const overallAverage = totalAverage / data.ratings.length;
-              setOverallAverage(overallAverage);
+              setOverallAverage(overallAverage.toFixed(1));
               console.log("Total Average----------------------------------", totalAverage);
               console.log("Overall Average---------------------------------", overallAverage);
           } else {
@@ -64,7 +64,7 @@ const Profile = () => {
             if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
                 const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
                 const overallAverage = totalAverage / data.ratings.length;
-                setOverallAverage(overallAverage);
+                setOverallAverage(overallAverage.toFixed(1));
                 console.log("Total Average----------------------------------", totalAverage);
                 console.log("Overall Average---------------------------------", overallAverage);
             } else {
@@ -77,9 +77,6 @@ const Profile = () => {
         setLoading(false);
     }
 };
-
-  
-    
   useFocusEffect(
     useCallback(() => {
       fetchProfileImage();
@@ -111,9 +108,9 @@ const Profile = () => {
     {Array.from({ length: 5 }).map((_, index) => (
         <FontAwesome 
             key={index} 
-            name="star" 
-            size={20} 
-            color={index < Math.floor(overallAverage) ? "#FFD700" : "#D3D3D3"}
+            name={index < Math.floor(overallAverage) ? "star" : "star-o"}
+            size={25} 
+            color="#FFD700"
         />
     ))}
 </View>
@@ -181,7 +178,7 @@ const Profile = () => {
             <FontAwesome
               key={i}
               name="star"
-              size={16}
+              size={25}
               color={i < Math.floor(average) ? "#FFD700" : "#D3D3D3"}
             />
           );
@@ -193,7 +190,6 @@ const Profile = () => {
 </>
 ) : (
   <>
-
 <View style={styles.performanceSection}>
   <Text style={styles.performanceTitle}>Your Performance Score:</Text>
   {profileData?.ratings?.length > 0 && profileData.ratings.map((rating, index) => (
@@ -203,9 +199,9 @@ const Profile = () => {
         {Array.from({ length: 5 }).map((_, i) => (
           <FontAwesome
             key={i}
-            name="star"
-            size={16}
-            color={i < Math.floor(rating.average) ? "#FFD700" : "#D3D3D3"}
+            name={i < Math.floor(rating.average) ? "star" : "star-o"}
+            size={25}
+            color= "#FFD700"
           />
         ))}
       </View>
@@ -214,7 +210,6 @@ const Profile = () => {
 </View>
 </>
             )}
-
           </View>
         )}
       </View>
