@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TouchableOpacity, Alert,ActivityIndicator,ScrollView,Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert,ActivityIndicator,ScrollView,Image, StyleSheet ,Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
@@ -122,13 +122,39 @@ const HomeScreen = () => {
       )}
     </View>
 
-        <View style={styles.card}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Requirements</Text>
+        <TouchableOpacity style={styles.addButton}>
+          <Text style={styles.addButtonText}>+ Add Requirement</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.profileSection}>
           <Image
-            source={require('../../assets/images/Homepage_BMW.jpg')}
-            style={styles.image}
+            source={{ uri: 'https://via.placeholder.com/50' }} // Replace with actual image link
+            style={styles.profileImage}
           />
+          <Text style={styles.profileName}>Chandru</Text>
         </View>
-        
+
+        <View style={styles.requirementSection}>
+          <Text style={styles.requirementText}>
+            X XXXXX XXX X XXXXX XXXXXXXXXXXX XXX XXXXXXXXXXXXXX XXXXX X XXXXX
+          </Text>
+          <TouchableOpacity style={styles.acknowledgeButton}>
+            <Text style={styles.acknowledgeText}>Acknowledge</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* <View style={styles.pagination}>
+        <View style={styles.activeDot} />
+        <View style={styles.inactiveDot} />
+        <View style={styles.inactiveDot} />
+      </View> */}
+    </View>
+
         <View style={styles.card}>
           <Image
             source={require('../../assets/images/Homepage_BMW.jpg')}
@@ -136,7 +162,7 @@ const HomeScreen = () => {
           />
         </View>
       
-      </View>
+
     </ScrollView>
   );
 };
@@ -146,6 +172,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: '#F5F5F5',
   },
   card: {
     backgroundColor: '#fff',
@@ -232,6 +259,135 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontSize: 14,
   },
+
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  requirementCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  requirementContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  requirementText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#7E3F8F',
+  },
+  card: {
+    backgroundColor: '#F6EDF7',
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: '#A83893',
+    top: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+
+  acknowledgeButton: {
+    position: 'absolute',
+    top: -30,
+    right: 0,
+    backgroundColor: '#A83893',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    
+  },
+  acknowledgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activeDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#A83893',
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  inactiveDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#D8D8D8',
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 export default HomeScreen;
