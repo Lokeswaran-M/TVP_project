@@ -12,6 +12,7 @@ import { API_BASE_URL } from '../constants/Config';
 import { launchCamera } from 'react-native-image-picker';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
+import Scanner from '../screens/Scanner';
 import { TabView, SceneMap } from 'react-native-tab-view';
 const CameraScreen = ({ navigation, profileData }) => {
   const userId = useSelector((state) => state.user?.userId);
@@ -146,7 +147,7 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="Dashboard" component={Dashboard} options={{ title: 'Home' }} />
-      <Tab.Screen name="Scanner" component={Members} options={{ title: 'Scanner' }} />
+      <Tab.Screen name="Scanner" component={Scanner} options={{ title: 'Scanner' }} />
       <Tab.Screen
         name="Camera"
         component={CameraScreen}
