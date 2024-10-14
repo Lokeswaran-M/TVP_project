@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#CCC',
+        backgroundColor: '#DDDDDD',
         flex: 1,
     },
     searchContainer: {
@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
         color: '#A3238F',
         borderRadius: 10,
         margin: 20,
-        marginLeft: 40,
-        marginRight: 40,
+        marginLeft: 30,
+        marginRight: 30,
         marginBottom: 0,
     },
     searchInput: {
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
+        // marginLeft: 10,
     },
     profilePicContainer: {
         width: 50,
@@ -64,8 +65,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    profilePicImage: {
+        width: 50, 
+        height: 50,
+        borderRadius: 25, 
+    },
     memberText: {
         flex: 1,
+        marginLeft: 15,
     },
     memberName: {
         fontSize: 18,
@@ -74,7 +81,7 @@ const styles = StyleSheet.create({
     },
     memberRole: {
         fontSize: 14,
-        color: '#555',
+        color: 'black',
     },
     ratingContainer: {
         flexDirection: 'row',
