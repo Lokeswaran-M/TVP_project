@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     },
     memberRole: {
         fontSize: 14,
-        color: '#555',
+        color: 'black',
     },
     ratingContainer: {
         flexDirection: 'row',
