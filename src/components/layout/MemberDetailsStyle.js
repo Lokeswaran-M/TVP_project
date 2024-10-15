@@ -45,6 +45,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginBottom: 40,
     },
+    profileImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      resizeMode: 'cover',
+    },    
     profilePic: {
       width: 90,
       height: 90,
@@ -128,6 +134,23 @@ const styles = StyleSheet.create({
     },
     stars: {
       flexDirection: 'row',
+    },
+    promoteButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#7c1a7c',
+      padding: 10,
+      borderRadius: 15,
+      width: '65%',
+      justifyContent: 'center',
+      marginTop: 30,
+      marginLeft: 10,
+      marginBottom: 10,
+    },
+    promoteButtonText: {
+      color: '#fff',
+      marginLeft: 5,
+      fontWeight: 'bold',
     },
   });
 

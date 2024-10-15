@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, useWindowDimensions, ActivityIndicator, Text } from 'react-native';
+import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { TabView, TabBar } from 'react-native-tab-view';
+import Stars from './Stars';
 import styles from '../components/layout/MembersStyle';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
-const TabContent = ({ title, chapterType, locationId, userId }) => {
+const TabContent = ({ chapterType, locationId, userId }) => {
+  const navigation = useNavigation();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/list-members`, {
+        const membersResponse = await fetch(`${API_BASE_URL}/list-members`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -24,14 +29,40 @@ const TabContent = ({ title, chapterType, locationId, userId }) => {
           }),
         });
 
-        const data = await response.json();
-        if (response.ok) {
-          setMembers(data.members);
-        } else {
-          console.error('Error fetching members:', data.message);
+        if (!membersResponse.ok) {
+          throw new Error('Failed to fetch members');
         }
+
+        const data = await membersResponse.json();
+        console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
+
+        const updatedMembers = await Promise.all(data.members.map(async (member) => {
+          let totalStars = 0;
+          if (member.ratings && member.ratings.length > 0) {
+            member.ratings.forEach(rating => {
+              totalStars += parseFloat(rating.average) || 0;
+            });
+            const totalAverage = totalStars / member.ratings.length;
+            member.totalAverage = totalAverage || 0;
+          } else {
+            member.totalAverage = 0;
+          }
+          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            member.profileImage = imageData.imageUrl;
+            console.log("Fetched profile image URL:", imageData.imageUrl);
+          } else {
+            console.error('Failed to fetch profile image:', member.UserId);
+            member.profileImage = null;
+          }
+        
+          return member;
+        }));        
+
+        setMembers(updatedMembers);
       } catch (error) {
-        console.error('API call error:', error);
+        console.error('Error fetching members:', error);
       } finally {
         setLoading(false);
       }
@@ -40,29 +71,69 @@ const TabContent = ({ title, chapterType, locationId, userId }) => {
     fetchMembers();
   }, [chapterType, locationId, userId]);
 
+  const filteredMembers = members.filter(member =>
+    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const renderMember = ({ item }) => (
+    <View style={styles.memberItem}>
+      <TouchableOpacity
+        style={styles.memberDetails}
+        onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId })}
+      >
+        <View style={styles.profileCircle}>
+          {item.profileImage ? (
+            <Image
+              source={{ uri: item.profileImage }}
+              style={styles.profileImage}
+              onError={() => console.log('Image load error for UserId:', item.UserId)}
+            />
+          ) : (
+            <Text style={styles.profileLetter}>{item.Username.charAt(0).toUpperCase()}</Text>
+          )}
+        </View>
+        <View style={styles.memberText}>
+          <Text style={styles.memberName}>{item.Username}</Text>
+          <Text style={styles.memberRole}>{item.Profession}</Text>
+        </View>
+        <View style={styles.ratingContainer}>
+          <Stars averageRating={item.totalAverage} />
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <View style={styles.memberText}>
-      {members.length > 0 ? (
-        members.map((member) => (
-          <Text key={member.UserId}>
-            <Text style={styles.memberName}>{member.Username}</Text>
-            <Text style={styles.memberRole}>{member.Profession}</Text>
-            </Text>
-        ))
-      ) : (
-        <Text>No members found.</Text>
-      )}
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search members..."
+          placeholderTextColor="black"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          color="#A3238F"
+        />
+        <View style={styles.searchIconContainer}>
+          <Icon name="search" size={23} color="#A3238F" />
+        </View>
+      </View>
+      <FlatList
+        data={filteredMembers}
+        renderItem={renderMember}
+        keyExtractor={(item) => item.UserId.toString()}
+        contentContainerStyle={styles.memberList}
+      />
+      <View style={styles.memberCountContainer}>
+        <Text style={styles.memberCountText}>
+          Count: {members.length}
+        </Text>
+      </View>
     </View>
-    </View>
-  );
+  );  
 };
-
-export default function TabViewExample() {
+export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([]);
@@ -75,6 +146,7 @@ export default function TabViewExample() {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
         const data = await response.json();
+
         if (response.ok) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
@@ -93,8 +165,9 @@ export default function TabViewExample() {
         setLoading(false);
       }
     };
+
     fetchBusinessInfo();
-  }, []);
+  }, [userId]);
 
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
@@ -104,10 +177,10 @@ export default function TabViewExample() {
         chapterType={business?.CT}
         locationId={business?.L}
         userId={userId}
+        navigation={navigation}
       />
     );
   };
-
   const renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -118,11 +191,9 @@ export default function TabViewExample() {
       labelStyle={{ fontSize: 14 }}
     />
   );
-
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-
   return (
     <TabView
       navigationState={{ index, routes }}

@@ -6,14 +6,13 @@ import styles from '../components/layout/MembersStyle';
 import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { useNavigation } from '@react-navigation/native';
-
+import Stars from '../screens/Stars';
 const Members = () => {
     const navigation = useNavigation();
     const userId = useSelector((state) => state.user?.userId);
     const [profileData, setProfileData] = useState({});
     const [members, setMembers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-
     const fetchData = async () => {
         try {
             const profileResponse = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
@@ -45,23 +44,35 @@ const Members = () => {
                     chapterType: profileData.ChapterType,
                 }),
             });
+            
             if (!membersResponse.ok) {
                 throw new Error('Failed to fetch members');
             }
+    
             const data = await membersResponse.json();
             console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
+    
+            // Loop through the members and log the RollId
+            data.members.forEach(member => {
+                console.log("ROLLID IN MEMBERS LIST SCREEN---------------------------------", member.RollId);
+            });
+    
             const updatedMembers = await Promise.all(data.members.map(async member => {
                 let totalStars = 0;
+                
+                // Calculate average rating
                 if (member.ratings.length > 0) {
                     member.ratings.forEach(rating => {
                         totalStars += parseFloat(rating.average) || 0;
                     });
                     const totalAverage = totalStars / member.ratings.length;
-                    member.totalAverage = Math.round(totalAverage) || 0;
+                    console.log("Total Average in Member List------------------------", totalAverage);
+                    member.totalAverage = totalAverage || 0;
                 } else {
                     member.totalAverage = 0;
                 }
-                
+    
+                // Fetch profile image
                 const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
                 if (imageResponse.ok) {
                     const imageData = await imageResponse.json();
@@ -72,12 +83,13 @@ const Members = () => {
                 }
                 return member;
             }));
-            
+    
             setMembers(updatedMembers);
         } catch (error) {
             console.error('Error fetching members:', error);
         }
     };
+    
 
     useFocusEffect(
         useCallback(() => {
@@ -108,13 +120,11 @@ const Members = () => {
                     <Text style={styles.memberRole}>{item.Profession}</Text>
                 </View>
                 <View style={styles.ratingContainer}>
-    {[...Array(Math.max(0, item.totalAverage))].map((_, index) => (
-        <Icon key={index} name="star" size={16} color="#FFD700" />
-    ))}
-</View>
+                    <Stars averageRating={item.totalAverage} />
+                </View>
             </TouchableOpacity>
         </View>
-    );
+    );    
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
