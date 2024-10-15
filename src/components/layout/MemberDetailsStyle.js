@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
     },
     valuetop: {
       transform: [{ translateY: -10}],
+      bottom: 6,
       marginTop: 10,
       color: 'black',
     },
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     },
     star: {
       color: 'gold',
-      fontSize: 20,
+      fontSize: 22,
     },
     buttonContainer: {
       flexDirection: 'row',

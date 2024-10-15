@@ -59,8 +59,6 @@ const Members = () => {
     
             const updatedMembers = await Promise.all(data.members.map(async member => {
                 let totalStars = 0;
-                
-                // Calculate average rating
                 if (member.ratings.length > 0) {
                     member.ratings.forEach(rating => {
                         totalStars += parseFloat(rating.average) || 0;
@@ -71,8 +69,6 @@ const Members = () => {
                 } else {
                     member.totalAverage = 0;
                 }
-    
-                // Fetch profile image
                 const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
                 if (imageResponse.ok) {
                     const imageData = await imageResponse.json();

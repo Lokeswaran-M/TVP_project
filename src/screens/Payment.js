@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
-const Payment = () => {
+const Payment = ({ navigation }) => {
   const [isOffMonth, setIsOffMonth] = useState(false);
 
   const handleContinue = () => {
-    alert(`Proceeding with payment of ₹${isOffMonth ? 1500 : 3000}`);
+    // Navigate to the Pay component
+    navigation.navigate('Pay');
   };  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Business Meeting Entry Payment</Text>
       <View style={styles.topcon}>
-      <Text style={styles.headertocon}>Business Meeting Entry Fees</Text>
+        <Text style={styles.headertocon}>Business Meeting Entry Fees</Text>
         <Text style={styles.toppaymentText}>₹3000</Text>
         <Text style={styles.MonthText}>₹4500</Text>
         <Text style={styles.upeventtext}>MAKE A PAYMENT FOR UPCOMING EVENTS</Text>
       </View>
       
       <View style={styles.toggleContainer}>
-      <Text style={styles.botpaymentText}>₹1500</Text>
-      <Text style={styles.offbotpaymentText}>₹2000</Text>
+        <Text style={styles.botpaymentText}>₹1500</Text>
+        <Text style={styles.offbotpaymentText}>₹2000</Text>
         <Text style={styles.toggleLabel}>Amount To Pay</Text>
         <TouchableOpacity style={styles.button} onPress={handleContinue}>
-        <Text style={styles.buttonText}>Continue</Text>
-      </TouchableOpacity>
+          <Text style={styles.buttonText}>Continue</Text>
+        </TouchableOpacity>
       </View>
      
       <View style={styles.bottumcon}>

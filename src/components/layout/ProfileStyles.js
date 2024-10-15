@@ -35,6 +35,11 @@ export default StyleSheet.create({
         color: '#C23A8A',
         marginVertical: 5,
       },
+      RatingValue: {
+        fontSize: 14,
+        color: '#C23A8A',
+        marginVertical: 5,
+      },
       starsWrapper: {
         flexDirection: 'row',
         marginTop: 5,
