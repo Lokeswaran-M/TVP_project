@@ -8,6 +8,7 @@ import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
+// import PaymentWebView from '../screens/PaymentWebview';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,8 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: false,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown: false }}/>
+      {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
+
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
