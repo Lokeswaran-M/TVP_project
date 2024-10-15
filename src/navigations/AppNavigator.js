@@ -14,12 +14,11 @@ import TabNavigator from './TabNavigator';
 import ProfileDrawerLabel  from './ProfileDrawerLabel';
 import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
-import PaymentWebView from '../screens/PaymentWebview';
+import Pay from '../screens/Pay';
 import Subscription from '../screens/Subscription';
 import LoginScreen from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
-import Creatingmeeting from '../screens/Creatingmeeting';
 import CreateQR from '../screens/CreateQR';
 import Attendance from '../screens/Attendance';
 import CreatingMeeting from '../screens/Creatingmeeting';
@@ -111,9 +110,6 @@ function StackMeetingNavigator() {
         component={CreatingMeeting}
         options={{ headerShown: true, title: 'Create meeting' , header: () => (
           <View style={styles.topNav}>
-            {/* <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Icon name="arrow-left" size={20} color="black" />
-              </TouchableOpacity> */}
             <View style={styles.buttonNavtop}>
               <View style={styles.topNavlogo}>
                 <Icon name="comments" size={28} color="#FFFFFF" />
@@ -134,6 +130,32 @@ function StackMeetingNavigator() {
         options={{ headerShown: true, title: 'Edit Meeting'}}
       />
     </StackMeeting.Navigator>
+  );
+}
+
+const StackPayment = createStackNavigator();
+
+function StackPaymentNavigator() {
+  return (
+    <StackPayment.Navigator
+      screenOptions={{
+        headerTintColor: '#000',
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+      }}
+    >
+      <StackPayment.Screen
+        name="Payment"
+        component={Payment}
+        options={{ headerShown: true, title: 'Payment'}}
+      />
+      <StackPayment.Screen
+        name="Pay"
+        component={Pay}
+        options={{ headerShown: false, title: 'Pay'}}
+      />
+    </StackPayment.Navigator>
   );
 }
 
@@ -316,12 +338,13 @@ function DrawerNavigator() {
       )}
       <Drawer.Screen
         name="Payment"
-        component={Payment}
+        component={StackPaymentNavigator}
         options={({ navigation }) => ({
           drawerLabel: 'Payment',
           drawerIcon: ({ color, size }) => (
             <Icon name="money" color={color} size={size} />
           ),
+          headerShown: false,
           header: () => (
             <View style={styles.topNav}>
               <TouchableOpacity onPress={() => navigation.toggleDrawer()}>

@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 
 
-const Payment = () => {
+const Payment = ({ navigation }) => {
   const [isOffMonth, setIsOffMonth] = useState(false);
   const navigation = useNavigation();
   // const { userID } = useContext(AuthContext); // Assume you're using user context
@@ -27,6 +27,10 @@ const Payment = () => {
       Alert.alert('Payment Error', 'An error occurred during the payment initiation. Please try again.');
     }
   };
+  const handleContinue = () => {
+    // Navigate to the Pay component
+    navigation.navigate('Pay');
+  };  
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -42,7 +46,8 @@ const Payment = () => {
         <Text style={styles.botpaymentText}>₹1500</Text>
         <Text style={styles.offbotpaymentText}>₹2000</Text>
         <Text style={styles.toggleLabel}>Amount To Pay</Text>
-        <TouchableOpacity style={styles.button} onPress={handlePayment}>
+
+        <TouchableOpacity style={styles.button} onPress={handleContinue}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>

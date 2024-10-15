@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flex: 1,
-        // marginLeft: 10,
     },
     profilePicContainer: {
         width: 50,
@@ -70,6 +69,31 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 25, 
     },
+    profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+      },
+    profileCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#A3238F',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      profileLetter: {
+        color: '#FFF',
+        fontSize: 20,
+        fontWeight: 'bold', 
+      },
+      memberItem: {
+        flexDirection: 'row',
+        marginVertical: 10,
+        padding: 10,
+        backgroundColor: '#f3f3f3',
+        borderRadius: 8,
+      },
     memberText: {
         flex: 1,
         marginLeft: 15,
