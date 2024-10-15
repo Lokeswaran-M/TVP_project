@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     valuetop: {
       transform: [{ translateY: -10}],
       marginTop: 10,
+      color: 'black',
     },
     value: {
       fontSize: 14,
