@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { Image, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { createDrawerNavigator, DrawerItem, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { Image, Text, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import SplashScreen from '../components/common/SplashScreen';
@@ -16,7 +15,7 @@ import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
 import PaymentWebview from '../screens/PaymentWebview';
 import Subscription from '../screens/Subscription';
-import LoginScreen from '../screens/LoginScreen';
+import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import CreateQR from '../screens/CreateQR';
@@ -25,10 +24,9 @@ import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
-
-
+import { setUser, logoutUser } from '../Redux/action';
 const ProfileStack = createStackNavigator();
 
 function ProfileStackNavigator() {
@@ -195,8 +193,41 @@ const HeaderWithoutImage = ({ navigation }) => ({
 });
 
 function DrawerNavigator() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const userId = useSelector((state) => state.user?.userId);
+  const navigation = useNavigation();
+  // useEffect(() => {
+  //   if (user === null) { 
+  //     console.log("User has logged out:", user);
+  //     // navigation.navigate('Auth');
+  //   }
+  // }, [user, navigation]);
+  const handleLogout = () => {
+    // Show a confirmation dialog before logging out
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Yes', onPress: () => confirmLogout() }
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const confirmLogout = () => {
+    // Dispatch the logout action
+    dispatch(logoutUser());
+  
+    // Reset the navigation stack and navigate to the Auth screen (Login)
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'Auth', params: { screen: 'Login' } }],
+      })
+    );
+  };
   console.log('rollId====================',user?.rollId)
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
@@ -231,7 +262,17 @@ function DrawerNavigator() {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
-      drawerContent={(props) => <DrawerContent {...props} />} 
+      drawerContent={(props) => (
+        <DrawerContentScrollView {...props}>
+            <DrawerContent {...props} />
+            <DrawerItem
+                label="Logout"
+                icon={({ color, size }) => <Icon name="sign-out" color={color} size={size} />}
+                onPress={handleLogout}
+            />
+        </DrawerContentScrollView>
+    )}
+      // drawerContent={(props) => <DrawerContent {...props} />} 
       screenOptions={{
         drawerActiveTintColor: '#a3238f', 
         drawerInactiveTintColor: 'black', 
@@ -484,36 +525,27 @@ function DrawerNavigator() {
           />
       </>
       )}
-      <Drawer.Screen
-        name="Logout"
-        component={LoginScreen}
-        options={({ navigation }) => ({
-          drawerLabel: 'Logout',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="sign-out" color={color} size={size} />
-          ),
-          headerShown: false,
-        })}
-      />
     </Drawer.Navigator>
   );
 }
-
-
 function AppNavigator() {
+  const user = useSelector((state) => state.user);
   return (
     <Stack.Navigator initialRouteName="Splash">
-      
+      {!user ? (
       <Stack.Screen
         name="Splash"
         component={SplashScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Auth"
-        component={AuthNavigator}
-        options={{ headerShown: false }}
-      />
+    ) : null}
+    {!user ? (
+        <Stack.Screen
+          name="Auth"
+          component={AuthNavigator}
+          options={{ headerShown: false }}
+        />
+      ) : null}
       <Stack.Screen
         name="DrawerNavigator"
         component={DrawerNavigator}

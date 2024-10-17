@@ -233,6 +233,7 @@ const handlelocationChange = (selectedLocation) => {
     }
     if (isValid) {
       try {
+
         // Step 1: Fetch userId when the Register button is clicked
         const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
         const userIdData = await userIdResponse.json();
@@ -271,6 +272,7 @@ const handlelocationChange = (selectedLocation) => {
 
           const data = await response.json();
           console.log('Registration successful:', data);
+
 
           // Navigate to the OTP screen with the mobile number
           navigation.navigate('Otpscreen', { Mobileno });
@@ -398,20 +400,22 @@ const handlelocationChange = (selectedLocation) => {
         {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
 
         {/* <Text style={styles.label}>Select Slot</Text> */}
-        <View style={styles.selectList}>
-        
-          <Picker label="Select slot" value=""
-            selectedValue={selectedChapterType}
-            onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
-            style={styles.picker}
-            >
-            {chapterType.map((slot) => (
-              <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
-            ))}
-          </Picker>
 
-        </View>
-        
+
+        <View style={styles.selectList}>
+        <Picker
+          selectedValue={selectedChapterType}
+          onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
+          style={styles.picker}
+          >
+          <Picker.Item label="Select Slot" value="" />
+          {chapterType.map((slot) => (
+            <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
+          ))}
+          </Picker>
+          </View>
+
+      
         <View style={styles.inputContainer}>
         <Icon name="user-plus" size={24} color="gray" style={styles.iconStyle} />
           <AnimatedTextInput
