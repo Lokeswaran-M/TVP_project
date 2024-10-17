@@ -92,35 +92,46 @@ const HomeScreen = () => {
           />
         </View>    
         <View style={styles.cards}>
-            <Text style={styles.dashboardTitle}>Dashboard</Text>
+  <Text style={styles.dashboardTitle}>Dashboard</Text>
 
-            {eventData && (
-        <View style={styles.meetupCard}>
-          <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
+  {eventData ? (
+    <View style={styles.meetupCard}>
+      <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
 
-          <View style={styles.row}>
-            <Icon name="calendar" size={18} color="#6C757D" />
-            <Text style={styles.meetupInfo}>{new Date(eventData.DateTime).toLocaleDateString()}</Text>
-            <Icon name="clock-o" size={18} color="#6C757D" />
-            <Text style={styles.meetupInfo}>
-              {new Date(eventData.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
-            </Text>
-          </View>
+      <View style={styles.row}>
+        <Icon name="calendar" size={18} color="#6C757D" />
+        <Text style={styles.meetupInfo}>
+          {new Date(eventData.DateTime).toLocaleDateString()}
+        </Text>
+        <Icon name="clock-o" size={18} color="#6C757D" />
+        <Text style={styles.meetupInfo}>
+          {new Date(eventData.DateTime).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </Text>
+      </View>
 
-          <View style={styles.row}>
-            <Icon name="map-marker" size={18} color="#6C757D" />
-            <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
-          </View>
+      <View style={styles.row}>
+        <Icon name="map-marker" size={18} color="#6C757D" />
+        <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
+      </View>
 
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
-              <Icon name="check-circle" size={24} color="#28A745" />
-              <Text style={styles.buttonText}>Click to Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
+          <Icon name="check-circle" size={24} color="#28A745" />
+          <Text style={styles.buttonText}>Click to Confirm</Text>
+        </TouchableOpacity>
+      </View>
     </View>
+  ) : (
+    // Message when no upcoming events
+    <View style={styles.noMeetupCard}>
+      <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
+    </View>
+  )}
+</View>
+
 
       <View style={styles.header}>
         <Text style={styles.headerText}>Requirements</Text>
@@ -374,7 +385,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
 
-
+  noMeetupCard: {
+    padding: 20,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  noMeetupText: {
+    fontSize: 16,
+    color: '#6C757D',
+  },
+  
 
 
 

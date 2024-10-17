@@ -28,6 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
 const ProfileStack = createStackNavigator();
+
 function ProfileStackNavigator() {
   const user = useSelector((state) => state.user);
   const userId = useSelector((state) => state.user?.userId);
@@ -75,12 +76,11 @@ function ProfileStackNavigator() {
   name="Profile"
   component={ProfileScreen}
   initialParams={{ 
-    categoryID: profileData?.CategoryId || null, // Ensure this has a value
-    Profession: profileData?.Profession || 'None', // Default if not provided
+    categoryID: profileData?.CategoryId || null, 
+    Profession: profileData?.Profession || 'None', 
   }}
   options={{ headerShown: false, title: 'Profile' }}
 />
-
       <ProfileStack.Screen
         name="EditProfile"
         component={EditProfile}
@@ -90,6 +90,7 @@ function ProfileStackNavigator() {
     </ProfileStack.Navigator>
   );
 }
+
 const StackMeeting = createStackNavigator();
 
 function StackMeetingNavigator() {
@@ -190,6 +191,7 @@ const HeaderWithoutImage = ({ navigation }) => ({
   ),
   headerTintColor: '#000',
 });
+
 function DrawerNavigator() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
