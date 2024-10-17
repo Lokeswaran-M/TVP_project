@@ -262,7 +262,6 @@ const handlelocationChange = (selectedLocation) => {
               username,
               Password: password,
               Mobileno,
-              
             },
             business: {
               email,
@@ -277,7 +276,6 @@ const handlelocationChange = (selectedLocation) => {
             }
           }),
         });
-
         const data = await response.json();
         console.log('data=================', data);
         navigation.navigate('Otpscreen', { Mobileno });
@@ -406,20 +404,22 @@ const handlelocationChange = (selectedLocation) => {
         {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
 
         {/* <Text style={styles.label}>Select Slot</Text> */}
-        <View style={styles.selectList}>
-        
-          <Picker label="Select slot" value=""
-            selectedValue={selectedChapterType}
-            onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
-            style={styles.picker}
-            >
-            {chapterType.map((slot) => (
-              <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
-            ))}
-          </Picker>
 
-        </View>
-        
+
+        <View style={styles.selectList}>
+        <Picker
+          selectedValue={selectedChapterType}
+          onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
+          style={styles.picker}
+          >
+          <Picker.Item label="Select Slot" value="" />
+          {chapterType.map((slot) => (
+            <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
+          ))}
+          </Picker>
+          </View>
+
+      
         <View style={styles.inputContainer}>
         <Icon name="user-plus" size={24} color="gray" style={styles.iconStyle} />
           <AnimatedTextInput
