@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -19,7 +18,7 @@ const Scanner = () => {
   const handleQRCodeScan = ({ data }) => {
     console.log('QR Code Scanned:', data);
     // Add your logic for what to do with the scanned data
-    setIsQRScannerVisible(false); // Hide scanner after scanning
+    setIsQRScannerVisible(false); 
   };
 
   // Toggle flash mode

@@ -1,3 +1,128 @@
+const handleRegister = async () => { 
+    // Resetting validation errors
+    setUsernameError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+    setMobilenoError('');
+    setEmailError('');
+    setAddressError('');
+    setBusinessNameError('');
+    setSelectedProfessionError('');
+    setSelectedLocationError('');
+    setReferredByError('');
+    setSelecteddateError('');
+
+    let isValid = true;
+
+    // Validation checks
+    if (!username) {
+      setUsernameError('Username is required');
+      isValid = false;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
+      isValid = false;
+    }
+    if (!Mobileno) {
+      setMobilenoError('Mobile number is required');
+      isValid = false;
+    } else if (Mobileno.length !== 10) {
+      setMobilenoError('Mobile number must be 10 digits');
+      isValid = false;
+    }
+    if (!email) {
+      setEmailError('Email is required');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      isValid = false;
+    }
+    if (!address) {
+      setAddressError('Address is required');
+      isValid = false;
+    }
+    if (!businessName) {
+      setBusinessNameError('Business Name is required');
+      isValid = false;
+    }
+    if (!selectedProfession) {
+      setSelectedProfessionError('Profession is required');
+      isValid = false;
+    }
+    if (!selectedLocation) {
+      setSelectedLocationError('Location is required');
+      isValid = false;
+    }
+    if (!chapterType) {
+      setSelectedslotError('Slot is required');
+      isValid = false;
+    }
+    if (!referredBy) {
+      setReferredByError('Referred By is required');
+      isValid = false;
+    }
+    if (!startDate) {
+      setSelecteddateError('Date is required');
+      isValid = false;
+    }
+
+    // Proceed if all validations are passed
+    if (isValid) {
+      try {
+        // Step 1: Fetch userId when the Register button is clicked
+        const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+        const userIdData = await userIdResponse.json();
+        
+        if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
+          const generatedUserId = userIdData.NextuserId[0].UserId;
+          console.log('Extracted UserId:', generatedUserId);
+          setUserId(generatedUserId); // Set userId in state
+
+          // Step 2: Register user with the generated userId
+          const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user: {
+                userId: generatedUserId,  // Use the generated userId here
+                username,
+                Password: password,
+                Mobileno,
+              },
+              business: {
+                email,
+                address,
+                businessName,
+                profession: selectedProfession,
+                chapterType: selectedChapterType,
+                LocationID: selectedLocation,
+                referredBy,
+                startDate,
+                endDate
+              }
+            }),
+          });
+
+          const data = await response.json();
+          console.log('Registration successful:', data);
+
+          // Navigate to the OTP screen with the mobile number
+          navigation.navigate('Otpscreen', { Mobileno });
+
+        } else {
+          console.error('No UserId found in the response!');
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    }
+};
 
 
 // // CCavenue Payment customer.js file 

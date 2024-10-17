@@ -69,25 +69,7 @@ import {API_BASE_URL} from '../constants/Config'
 const togglePasswordVisibility1 = () => {
   setPasswordVisible1(!passwordVisible1);
 };
-const fetchData = async () => {
-  try {
-    const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
-    const userIdData = await userIdResponse.json();
-    console.log('userIdData====================', userIdData);
-    if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
-      const userId = userIdData.NextuserId[0].UserId;
-      console.log('Extracted UserId:', userId);
-      setUserId(userId);
-    } else {
-      console.error('No UserId found in the response!');
-    }
-  } catch (error) {
-    console.error('Error fetching UserId:', error);
-  }
-};
-useEffect(() => {
-  fetchData();
-}, []);
+
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`)
       .then((response) => response.json())
@@ -251,40 +233,53 @@ const handlelocationChange = (selectedLocation) => {
     }
     if (isValid) {
       try {
-        const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user: {
-              userId,
-              username,
-              Password: password,
-              Mobileno,
-              
+        // Step 1: Fetch userId when the Register button is clicked
+        const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+        const userIdData = await userIdResponse.json();
+        
+        if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
+          const generatedUserId = userIdData.NextuserId[0].UserId;
+          console.log('Extracted UserId:', generatedUserId);
+          setUserId(generatedUserId); // Set userId in state
+
+          // Step 2: Register user with the generated userId
+          const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-            business: {
-              email,
-              address,
-              businessName,
-              profession: selectedProfession,
-              chapterType: selectedChapterType,
-              LocationID: selectedLocation,
-              referredBy,
-              startDate,
-              endDate
-            }
-          }),
-        });
+            body: JSON.stringify({
+              user: {
+                userId: generatedUserId,  // Use the generated userId here
+                username,
+                Password: password,
+                Mobileno,
+              },
+              business: {
+                email,
+                address,
+                businessName,
+                profession: selectedProfession,
+                chapterType: selectedChapterType,
+                LocationID: selectedLocation,
+                referredBy,
+                startDate,
+                endDate
+              }
+            }),
+          });
 
-        const data = await response.json();
-        console.log('data=================', data);
-        navigation.navigate('Otpscreen', { Mobileno });
+          const data = await response.json();
+          console.log('Registration successful:', data);
 
-        console.log('Registration successful:', data);
+          // Navigate to the OTP screen with the mobile number
+          navigation.navigate('Otpscreen', { Mobileno });
+
+        } else {
+          console.error('No UserId found in the response!');
+        }
       } catch (error) {
-        console.error('Error registering data:', error);
+        console.error('Error registering user:', error);
       }
     }
 };
@@ -302,9 +297,6 @@ const handlelocationChange = (selectedLocation) => {
       </View>
       {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
       <View>
-      <Text >
-        {userId ? `User ID: ${userId}` : 'No User ID found'} 
-      </Text>
     </View>
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconStyle}>
@@ -448,7 +440,7 @@ const handlelocationChange = (selectedLocation) => {
 
       {/* End Date */}
       <Text style={styles.label}>End Date</Text>
-      <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton}>
+      <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton} disabled={true} >
         <Text style={styles.datePickerText}>{endDate ? endDate : 'Select End Date'}</Text>
       </TouchableOpacity>
 
@@ -458,6 +450,7 @@ const handlelocationChange = (selectedLocation) => {
           mode="date"
           display="default"
           onChange={onChangeEndDate}
+          
         />
       )}
 

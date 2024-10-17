@@ -14,7 +14,7 @@ import TabNavigator from './TabNavigator';
 import ProfileDrawerLabel  from './ProfileDrawerLabel';
 import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
-import Pay from '../screens/Pay';
+import PaymentWebview from '../screens/PaymentWebview';
 import Subscription from '../screens/Subscription';
 import LoginScreen from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -151,9 +151,9 @@ function StackPaymentNavigator() {
         options={{ headerShown: true, title: 'Payment'}}
       />
       <StackPayment.Screen
-        name="Pay"
-        component={Pay}
-        options={{ headerShown: false, title: 'Pay'}}
+        name="PaymentWebview"
+        component={PaymentWebview}
+        options={{ headerShown: false, title: 'PaymentWebview'}}
       />
     </StackPayment.Navigator>
   );

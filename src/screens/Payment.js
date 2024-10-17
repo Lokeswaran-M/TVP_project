@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 
 const Payment = ({ navigation }) => {
   const [isOffMonth, setIsOffMonth] = useState(false);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   // const { userID } = useContext(AuthContext); // Assume you're using user context
   const userId = useSelector((state) => state.user?.userId);
   const handlePayment = () => {
@@ -21,7 +21,7 @@ const Payment = ({ navigation }) => {
       console.log('Payment URL:', paymentUrl);
 
       // Navigate to a WebView for payment processing
-      navigation.navigate('PaymentWebView', { paymentUrl });
+      navigation.navigate('PaymentWebview', { paymentUrl });
     } catch (error) {
       console.error('Error during payment initiation:', error);
       Alert.alert('Payment Error', 'An error occurred during the payment initiation. Please try again.');
@@ -47,7 +47,7 @@ const Payment = ({ navigation }) => {
         <Text style={styles.offbotpaymentText}>₹2000</Text>
         <Text style={styles.toggleLabel}>Amount To Pay</Text>
 
-        <TouchableOpacity style={styles.button} onPress={handleContinue}>
+        <TouchableOpacity style={styles.button} onPress={handlePayment}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>
