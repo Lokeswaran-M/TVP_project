@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   Dimensions,
   Image,
+  RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -25,11 +26,12 @@ const HeadAdminMembersPage = ({ navigation }) => {
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedIcons, setSelectedIcons] = useState({ sunActive: false, moonActive: false });
-  const [selectedChapterTypes, setSelectedChapterTypes] = useState([]); // Changed to array
   const [selectedOption, setSelectedOption] = useState(''); // Tracks the selected filter option
+  const [refreshing, setRefreshing] = useState(false);
 
   // Fetch members data and location names only once
   const fetchMembersData = async () => {
+    setRefreshing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/admin/user-details-ratings`);
       if (!response.ok) {
@@ -53,7 +55,8 @@ const HeadAdminMembersPage = ({ navigation }) => {
         // Fetch profile image
         const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
         const imageData = await imageResponse.json();
-        member.profileImageUrl = imageData.imageUrl;
+        const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+        member.profileImageUrl = uniqueImageUrl;
 
         return member;
       }));
@@ -66,6 +69,8 @@ const HeadAdminMembersPage = ({ navigation }) => {
       setLocationOptions(locations);
     } catch (error) {
       console.error('Error fetching members location data:', error);
+    } finally {
+      setRefreshing(false); // Set refreshing state to false
     }
   };
 
@@ -108,7 +113,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
     return filtered;
   };
 
-  // Automatically apply filters when the search query changes
+  // Automatically apply filters when the search query or selected options change
   useEffect(() => {
     const filtered = applyFilters();
     setFilteredMembers(filtered);
@@ -117,7 +122,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
   // Handle clear filter
   const handleClearFilter = () => {
     setSelectedLocation('');
-    setSelectedChapterTypes([]); // Clear ChapterTypes
     setSelectedIcons({ sunActive: false, moonActive: false }); // Reset icon selection
     setSelectedOption(''); // Reset selected option
     setSearchQuery(''); // Clear search query
@@ -128,24 +132,12 @@ const HeadAdminMembersPage = ({ navigation }) => {
   const handleSunClick = () => {
     const newSunActiveState = !selectedIcons.sunActive;
     setSelectedIcons({ ...selectedIcons, sunActive: newSunActiveState });
-
-    if (newSunActiveState) {
-      setSelectedChapterTypes(prev => [...prev, 1]); // Add ChapterType 1 if Sun is active
-    } else {
-      setSelectedChapterTypes(prev => prev.filter(type => type !== 1)); // Remove ChapterType 1 if Sun is deactivated
-    }
   };
 
   // Handle Moon Icon Click
   const handleMoonClick = () => {
     const newMoonActiveState = !selectedIcons.moonActive;
     setSelectedIcons({ ...selectedIcons, moonActive: newMoonActiveState });
-
-    if (newMoonActiveState) {
-      setSelectedChapterTypes(prev => [...prev, 2]); // Add ChapterType 2 if Moon is active
-    } else {
-      setSelectedChapterTypes(prev => prev.filter(type => type !== 2)); // Remove ChapterType 2 if Moon is deactivated
-    }
   };
 
   // Handle Button Click to select "members" or "admin"
@@ -181,7 +173,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
         <View style={styles.filterContainer}>
           <View style={styles.filterSearchInputContainer}>
             <View style={styles.filterIconContainer}>
-              {/* Sun icon - active when selectedIcons.sunActive is true */}
+              {/* Sun icon */}
               <TouchableOpacity
                 style={[styles.iconWrapper, { backgroundColor: selectedIcons.sunActive ? '#A3238F' : 'transparent' }]}
                 onPress={handleSunClick}
@@ -194,7 +186,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
                 />
               </TouchableOpacity>
 
-              {/* Moon icon - active when selectedIcons.moonActive is true */}
+              {/* Moon icon */}
               <TouchableOpacity
                 style={[styles.iconWrapper, { backgroundColor: selectedIcons.moonActive ? '#A3238F' : 'transparent' }]}
                 onPress={handleMoonClick}
@@ -225,7 +217,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Button to toggle between "members" and "admin" */}
+          {/* Filter Options */}
           <TouchableOpacity
             style={[styles.filterOption, selectedOption === 'members' && styles.activeButton]}
             onPress={() => handleButtonPress('members')}
@@ -237,7 +229,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
 
-          {/* Admin Button */}
           <TouchableOpacity
             style={[styles.filterOption, selectedOption === 'admin' && styles.activeButton]}
             onPress={() => handleButtonPress('admin')}
@@ -263,7 +254,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.memberItem}
-            onPress={() => navigation.navigate('HeadAdminMemberViewPage', { memberId: item.UserId })}
+            onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
           >
             <View style={styles.memberDetails}>
               <Image source={{ uri: item.profileImageUrl }} style={styles.profileImage} />
@@ -285,6 +276,12 @@ const HeadAdminMembersPage = ({ navigation }) => {
             <Text style={styles.emptyListText}>No members found in this location and ChapterType.</Text>
           ) : null
         }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchMembersData} // Call fetchMembersData when refreshed
+          />
+        }
       />
 
       {/* Member Count */}
@@ -296,7 +293,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 // Styles omitted for brevity
 
 // Styles
@@ -304,6 +300,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#CCC',
     flex: 1,
+  },
+  emptyListText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#888',
   },
   profileImage: {
     width: 40, // Adjust size as needed
@@ -434,6 +436,7 @@ filterOptionText: {
   clearButtonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
+    fontSize:16,
     textAlign: 'center',
     paddingHorizontal:10,
   },
