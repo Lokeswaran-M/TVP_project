@@ -59,7 +59,8 @@ const MemberDetails = () => {
           throw new Error('Failed to fetch profile image');
         }
         const data = await response.json();
-        setProfileImageUrl(data.imageUrl);
+        const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
+        setProfileImageUrl(uniqueImageUrl);
       } catch (error) {
         console.error('Error fetching profile image:', error);
         setProfileImageUrl(null);
