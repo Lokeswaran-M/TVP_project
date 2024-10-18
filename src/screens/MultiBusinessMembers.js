@@ -47,17 +47,21 @@ const TabContent = ({ chapterType, locationId, userId }) => {
           } else {
             member.totalAverage = 0;
           }
-          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
-          if (imageResponse.ok) {
+          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (imageResponse.ok) {
             const imageData = await imageResponse.json();
-            member.profileImage = imageData.imageUrl;
-            console.log("Fetched profile image URL:", imageData.imageUrl);
-          } else {
+            const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+            member.profileImage = uniqueImageUrl;
+        } else {
             console.error('Failed to fetch profile image:', member.UserId);
             member.profileImage = null;
-          }
-        
-          return member;
+        }
+        return member;
         }));        
 
         setMembers(updatedMembers);
@@ -78,7 +82,7 @@ const TabContent = ({ chapterType, locationId, userId }) => {
     <View style={styles.memberItem}>
       <TouchableOpacity
         style={styles.memberDetails}
-        onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId })}
+        onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
       >
         <View style={styles.profileCircle}>
           {item.profileImage ? (

@@ -149,7 +149,7 @@ const ForgetPassword = ({ navigation }) => {
         // Wait for the toast to disappear, then navigate
         setTimeout(() => {
           navigation.navigate('ResetPassword', { Mobileno });
-        }, 2000); // Adjust this delay as needed (2000ms = 2 seconds)
+        }, 2000);
   
       } else {
         Toast.show({

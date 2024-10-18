@@ -328,7 +328,7 @@ const onChangeStartDate = (event, selectedDate) => {
     />
   )}
   <Text style={styles.label}>End Date</Text>
-  <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton}>
+  <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton} disabled={true}>
     <Text style={styles.datePickerText}>{endDate ? endDate : 'Select End Date'}</Text>
   </TouchableOpacity>
   {showEndPicker && (

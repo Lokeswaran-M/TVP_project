@@ -9,7 +9,10 @@ import { API_BASE_URL } from '../constants/Config';
 
 const MemberDetails = () => {
   const route = useRoute();
-  const { userId } = route.params;
+  const { userId, Profession } = route.params; // Get Profession from route params
+  console.log("USERID IN MEMBERS DETAILS------------------------------", userId);
+  console.log("PROFESSION IN MEMBERS DETAILS--------------------------", Profession);
+  
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [overallAverage, setOverallAverage] = useState(0);
@@ -19,14 +22,15 @@ const MemberDetails = () => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/info_with_star_rating/${userId}`);
+        // Update API call to include userId and Profession
+        const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
         if (!response.ok) {
           const errorData = await response.json();
           console.error('API Error:', errorData);
           throw new Error('Failed to fetch user details');
         }
         const data = await response.json();
-        console.log("DATA in MEMBERSDETAILS----------------------------------------",data);
+        console.log("DATA in MEMBERSDETAILS----------------------------------------", data);
         console.log("RollId:---------------------------------------", data.businessInfo.RollId);
 
         setUserDetails(data);
@@ -45,7 +49,7 @@ const MemberDetails = () => {
       }
     };
     fetchUserDetails();
-  }, [userId]);
+  }, [userId, Profession]); // Add Profession to dependency array
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -70,10 +74,12 @@ const MemberDetails = () => {
       Linking.openURL(`tel:${userDetails.businessInfo.Mobileno}`);
     }
   };
+  
   const handlePromotionToggle = () => {
     setIsPromoted(!isPromoted);
-    // Alert.alert(isPromoted ? 'Demoted' : 'Promoted', User has been ${isPromoted ? 'demoted' : 'promoted'} to admin.);
+    // Alert.alert(isPromoted ? 'Demoted' : 'Promoted', `User has been ${isPromoted ? 'demoted' : 'promoted'} to admin.`);
   };
+  
   const handleWhatsApp = () => {
     if (userDetails && userDetails.businessInfo.Mobileno) {
       Linking.openURL(`whatsapp://send?phone=${userDetails.businessInfo.Mobileno}`);
@@ -88,21 +94,21 @@ const MemberDetails = () => {
   }
 
   const { businessInfo, ratings } = userDetails;
-  
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View>
         <View style={styles.profileContainer}>
-        <View style={styles.profilePic}>
-  {profileImageUrl ? (
-    <Image 
-      source={{ uri: profileImageUrl }} 
-      style={styles.profileImage}
-    />
-  ) : (
-    <Text style={styles.profilePicText}>{businessInfo.Username.charAt(0)}</Text>
-  )}
-</View>
+          <View style={styles.profilePic}>
+            {profileImageUrl ? (
+              <Image 
+                source={{ uri: profileImageUrl }} 
+                style={styles.profileImage}
+              />
+            ) : (
+              <Text style={styles.profilePicText}>{businessInfo.Username.charAt(0)}</Text>
+            )}
+          </View>
           <View style={styles.userInfotop}>
             <Text style={styles.labeltop1}>{businessInfo.Username}</Text>
             <Text style={styles.valuetop}>
@@ -121,12 +127,20 @@ const MemberDetails = () => {
           <Text style={styles.value}>{businessInfo.BusinessName}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Description:</Text>
-          <Text style={styles.value}>{businessInfo.Description}</Text>
-        </View>
-        <View style={styles.infoContainer}>
           <Text style={styles.label}>Business Address:</Text>
           <Text style={styles.value}>{businessInfo.Address}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Email ID</Text>
+          <Text style={styles.value}>{businessInfo.Email}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Mobile Number</Text>
+          <Text style={styles.value}>{businessInfo.Mobileno}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Description:</Text>
+          <Text style={styles.value}>{businessInfo.Description}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Performance Ratings:</Text>
@@ -156,18 +170,18 @@ const MemberDetails = () => {
           </TouchableOpacity>
         </View>
         {businessInfo.RollId === 1 && (
-        <View>
-          <TouchableOpacity
-            style={styles.promoteButton}
-            onPress={handlePromotionToggle}
-          >
-            <Icon name="paper-plane" size={20} color="#fff" />
-            <Text style={styles.promoteButtonText}>
-              {isPromoted ? 'Demote to User' : 'Promote to Admin'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+          <View>
+            <TouchableOpacity
+              style={styles.promoteButton}
+              onPress={handlePromotionToggle}
+            >
+              <Icon name="paper-plane" size={20} color="#fff" />
+              <Text style={styles.promoteButtonText}>
+                {isPromoted ? 'Demote to User' : 'Promote to Admin'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </ScrollView>
   );

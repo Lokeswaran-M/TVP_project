@@ -64,21 +64,27 @@ const Members = () => {
                         totalStars += parseFloat(rating.average) || 0;
                     });
                     const totalAverage = totalStars / member.ratings.length;
-                    console.log("Total Average in Member List------------------------", totalAverage);
                     member.totalAverage = totalAverage || 0;
                 } else {
                     member.totalAverage = 0;
                 }
-                const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+                const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
                 if (imageResponse.ok) {
                     const imageData = await imageResponse.json();
-                    member.profileImage = imageData.imageUrl;
+                    const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+                    member.profileImage = uniqueImageUrl;
                 } else {
                     console.error('Failed to fetch profile image:', member.UserId);
                     member.profileImage = null;
                 }
                 return member;
             }));
+            
     
             setMembers(updatedMembers);
         } catch (error) {
@@ -108,7 +114,7 @@ const Members = () => {
         <View style={styles.memberItem}>
             <TouchableOpacity
                 style={styles.memberDetails}
-                onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId })}
+                onPress={() => navigation.navigate('MemberDetails', {userId: item.UserId, Profession: item.Profession })}
             >
                 <ProfilePic imageUrl={item.profileImage} name={item.Username} />
                 <View style={styles.memberText}>
@@ -120,7 +126,7 @@ const Members = () => {
                 </View>
             </TouchableOpacity>
         </View>
-    );    
+    );        
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>

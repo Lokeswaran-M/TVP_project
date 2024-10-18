@@ -26,11 +26,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BMW from '../../assets/images/BMW.png';
 // Get the width of the screen for responsiveness
 const { width } = Dimensions.get('window');
-
-
-
-
-
 const CustomHeaderBMWpng = () => {
   return (
     <View style={styles.topNav}>
@@ -61,8 +56,6 @@ const CustomHeaderLocation = () => {
 
   );
 };
-
-
 const CustomHeaderMembers = () => {
   return (
     <View style={styles.topNav}>
@@ -89,7 +82,6 @@ const CustomHeaderSubscribers = () => {
   </View>
   );
 };
-
 const CustomHeaderPayments = () => {
   return (
     <View style={styles.topNav}>
@@ -102,13 +94,6 @@ const CustomHeaderPayments = () => {
     </View>
   );
 };
-
-
-
-
-
-
-
 const Stack = createStackNavigator();
 const headerOptions = {
   headerStyle: { backgroundColor: '#a3238f' },
@@ -127,16 +112,11 @@ const AuthNavigator = () => {
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
-
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
 
-
-
 {/* Lokesh screens  */}
-
-     
         <Stack.Screen name="AdminMemberstack" component={AdminMemberstack} options={{ headerShown: false, headerLeft: () => null, }}/>
         <Stack.Screen name="HeadAdminNewSubscribers" component={HeadAdminNewSubscribers} options={{ headerShown:true , header: () => <CustomHeaderSubscribers/>, headerLeft: () => null,  }} />
         <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
@@ -159,9 +139,6 @@ const AdminLocationstack = () => (
     <Stack.Screen name="HeadAdminLocationView" component={HeadAdminLocationView} options={{ headerShown: true ,header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
   </Stack.Navigator>
 );
-
-
-
 const styles = StyleSheet.create({
   iconImage:{
     backgroundColor:'#FFFFFF',

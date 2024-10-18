@@ -14,7 +14,8 @@ const App = () => {
     <Provider store={store}>
       <NavigationContainer>
         <AppNavigator />
-        <Toast config={toastConfig} />
+        {/* <Toast config={toastConfig} /> */}
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
     </Provider>
 

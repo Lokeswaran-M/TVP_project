@@ -17,17 +17,18 @@ const ResetPassword = () => {
 
   const navigation = useNavigation();
   const route = useRoute();
-  const { mobileNo } = route.params || {};
+  const { Mobileno } = route.params || {};
 
   const handleSubmit = async () => {
     if (newPassword === '' || confirmPassword === '') {
-      Toast.show({
-        type: 'error',
-        text1: 'Validation Error',
-        text2: 'Please fill in all fields.',
-        position: 'top',
-        config: toastConfig,
-      });
+      console.log('Showing toast for validation error');
+Toast.show({
+  type: 'error',
+  text1: 'Validation Error',
+  text2: 'Please fill in all fields.',
+  position: 'top',
+  config: toastConfig,
+});
       return;
     }
   
@@ -44,9 +45,9 @@ const ResetPassword = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mobileNo: mobileNo,
+          Mobileno: Mobileno,
           password: newPassword,
-        }),
+        }),        
       });
   
       const result = await response.json();
@@ -60,7 +61,7 @@ const ResetPassword = () => {
         });
         setTimeout(() => {
           navigation.navigate('Login');
-        }, 1000);
+        }, 3000);
       } else {
         Toast.show({
           type: 'error',
@@ -83,7 +84,7 @@ const ResetPassword = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.mobileNoText}>Mobile Number: {mobileNo}</Text>
+      {/* <Text style={styles.mobileNoText}>Mobile Number: {Mobileno}</Text> */}
       <Image source={reset_password} style={styles.image} />
       <Text style={styles.text}>Create new password</Text>
       

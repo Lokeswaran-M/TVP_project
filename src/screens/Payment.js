@@ -5,11 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview'; // Import WebView to handle payments
 import { useSelector } from 'react-redux';
 
-
-
-const Payment = ({ navigation }) => {
+const Payment = () => {
   const [isOffMonth, setIsOffMonth] = useState(false);
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   // const { userID } = useContext(AuthContext); // Assume you're using user context
   const userId = useSelector((state) => state.user?.userId);
   const handlePayment = () => {

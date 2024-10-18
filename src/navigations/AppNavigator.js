@@ -217,10 +217,8 @@ function DrawerNavigator() {
   };
 
   const confirmLogout = () => {
-    // Dispatch the logout action
     dispatch(logoutUser());
-  
-    // Reset the navigation stack and navigate to the Auth screen (Login)
+    console.log("User has logged out:", user);
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
