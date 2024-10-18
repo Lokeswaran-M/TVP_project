@@ -532,20 +532,16 @@ function AppNavigator() {
   const user = useSelector((state) => state.user);
   return (
     <Stack.Navigator initialRouteName="Splash">
-      {!user ? (
       <Stack.Screen
         name="Splash"
         component={SplashScreen}
         options={{ headerShown: false }}
       />
-    ) : null}
-    {!user ? (
         <Stack.Screen
           name="Auth"
           component={AuthNavigator}
           options={{ headerShown: false }}
         />
-      ) : null}
       <Stack.Screen
         name="DrawerNavigator"
         component={DrawerNavigator}
