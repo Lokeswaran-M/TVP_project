@@ -1,491 +1,554 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../components/layout/MembersStyle';
-import { useSelector } from 'react-redux';
-import { API_BASE_URL } from '../constants/Config';
-import { useNavigation } from '@react-navigation/native';
+const handleRegister = async () => { 
+    // Resetting validation errors
+    setUsernameError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+    setMobilenoError('');
+    setEmailError('');
+    setAddressError('');
+    setBusinessNameError('');
+    setSelectedProfessionError('');
+    setSelectedLocationError('');
+    setReferredByError('');
+    setSelecteddateError('');
 
-const Members = () => {
-    const navigation = useNavigation();
-    const userId = useSelector((state) => state.user?.userId);
-    const [profileData, setProfileData] = useState({});
-    const [members, setMembers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    let isValid = true;
 
-    const fetchData = async () => {
-        try {
-            const profileResponse = await fetch(${API_BASE_URL}/api/user/business-info/${userId});
-            if (!profileResponse.ok) {
-                throw new Error('Failed to fetch profile data');
-            }
-            const profileData = await profileResponse.json();
-            console.log("PROFILE DATA IN MEMBERS LIST------------------------------------",profileData);
-            setProfileData(profileData);
-        } catch (error) {
-            console.error('Error fetching profile data:', error);
-        }
-    };
-
-    const fetchMembers = async () => {
-        if (!profileData.LocationID || !profileData.ChapterType) {
-            console.log("Profile data not available yet");
-            return;
-        }
-        try {
-            const membersResponse = await fetch(${API_BASE_URL}/list-members, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                    LocationID: profileData.LocationID,
-                    chapterType: profileData.ChapterType,
-                }),
-            });
-            if (!membersResponse.ok) {
-                throw new Error('Failed to fetch members');
-            }
-            const data = await membersResponse.json();
-            console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
-            const updatedMembers = await Promise.all(data.members.map(async member => {
-                let totalStars = 0;
-                if (member.ratings.length > 0) {
-                    member.ratings.forEach(rating => {
-                        totalStars += parseFloat(rating.average) || 0;
-                    });
-                    const totalAverage = totalStars / member.ratings.length;
-                    member.totalAverage = Math.round(totalAverage) || 0;
-                } else {
-                    member.totalAverage = 0;
-                }
-                
-                const imageResponse = await fetch(${API_BASE_URL}/profile-image?userId=${member.UserId});
-                if (imageResponse.ok) {
-                    const imageData = await imageResponse.json();
-                    member.profileImage = imageData.imageUrl;
-                } else {
-                    console.error('Failed to fetch profile image:', member.UserId);
-                    member.profileImage = null;
-                }
-                return member;
-            }));
-            
-            setMembers(updatedMembers);
-        } catch (error) {
-            console.error('Error fetching members:', error);
-        }
-    };
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchData();
-        }, [userId])
-    );
-
-    useFocusEffect(
-        useCallback(() => {
-            if (profileData.LocationID && profileData.ChapterType) {
-                fetchMembers();
-            }
-        }, [profileData])
-    );
-
-    const filteredMembers = members.filter(member =>
-        member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const renderMember = ({ item }) => (
-        <View style={styles.memberItem}>
-            <TouchableOpacity
-                style={styles.memberDetails}
-                onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId })}
-            >
-                <ProfilePic imageUrl={item.profileImage} name={item.Username} />
-                <View style={styles.memberText}>
-                    <Text style={styles.memberName}>{item.Username}</Text>
-                    <Text style={styles.memberRole}>{item.Profession}</Text>
-                </View>
-                <View style={styles.ratingContainer}>
-    {[...Array(Math.max(0, item.totalAverage))].map((_, index) => (
-        <Icon key={index} name="star" size={16} color="#FFD700" />
-    ))}
-</View>
-            </TouchableOpacity>
-        </View>
-    );
-    return (
-        <View style={styles.container}>
-            <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search members..."
-                    placeholderTextColor="black"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    color='#A3238F'
-                />
-                <View style={styles.searchIconContainer}>
-                    <Icon name="search" size={23} color="#A3238F" />
-                </View>
-            </View>
-            <FlatList
-                data={filteredMembers}
-                renderItem={renderMember}
-                keyExtractor={(item) => item.UserId.toString()}
-                contentContainerStyle={styles.memberList}
-            />
-            <View style={styles.memberCountContainer}>
-                <Text style={styles.memberCountText}>
-                    Count: {filteredMembers.length}
-                </Text>
-            </View>
-        </View>
-    );
-};
-
-const ProfilePic = ({ name, imageUrl }) => {
-    if (imageUrl) {
-        return (
-            <Image
-                source={{ uri: imageUrl }}
-                style={styles.profilePicImage}
-            />
-        );
+    // Validation checks
+    if (!username) {
+      setUsernameError('Username is required');
+      isValid = false;
     }
-    const initial = name.charAt(0).toUpperCase();
-    return (
-        <View style={styles.profilePicContainer}>
-            <Text style={styles.profilePicText}>{initial}</Text>
-        </View>
-    );
-};
-export default Members;
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match');
+      isValid = false;
+    }
+    if (!Mobileno) {
+      setMobilenoError('Mobile number is required');
+      isValid = false;
+    } else if (Mobileno.length !== 10) {
+      setMobilenoError('Mobile number must be 10 digits');
+      isValid = false;
+    }
+    if (!email) {
+      setEmailError('Email is required');
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Invalid email format');
+      isValid = false;
+    }
+    if (!address) {
+      setAddressError('Address is required');
+      isValid = false;
+    }
+    if (!businessName) {
+      setBusinessNameError('Business Name is required');
+      isValid = false;
+    }
+    if (!selectedProfession) {
+      setSelectedProfessionError('Profession is required');
+      isValid = false;
+    }
+    if (!selectedLocation) {
+      setSelectedLocationError('Location is required');
+      isValid = false;
+    }
+    if (!chapterType) {
+      setSelectedslotError('Slot is required');
+      isValid = false;
+    }
+    if (!referredBy) {
+      setReferredByError('Referred By is required');
+      isValid = false;
+    }
+    if (!startDate) {
+      setSelecteddateError('Date is required');
+      isValid = false;
+    }
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
-import { useSelector } from 'react-redux';
-
-const HomeScreen = () => {
-  const userId = useSelector((state) => state.user?.userId);
-  const [eventData, setEventData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
-  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/attendance`;
-
-  useEffect(() => { 
-    const fetchEventData = async () => {
+    // Proceed if all validations are passed
+    if (isValid) {
       try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-
-        if (response.ok) {
-          setEventData(data.events[0]); 
-        } else {
-          setError(data.error);
-        }
-      } catch (err) {
-        setError('Failed to fetch data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEventData();
-  },[]);
-
-  const handleConfirmClick = async () => {
-    if (!eventData) {
-      Alert.alert('Error', 'No event data available');
-      return;
-    }
-    try {
-      const response = await fetch(ATTENDANCE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          UserId: userId, 
-          LocationID: eventData.LocationID || '100003', 
-          EventId: eventData.EventId, 
-        }),
-      });  
-
-      const data = await response.json();
-      if (response.ok) {
-        Alert.alert('Success', 'Attendance confirmed successfully');
-      } else {
-        Alert.alert('Error', data.error || 'Failed to confirm attendance');
-      }
-    } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Network or server issue');
-    }
-  };
-
-  return (
-    <ScrollView>
-      <View style={styles.container}>
+        // Step 1: Fetch userId when the Register button is clicked
+        const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+        const userIdData = await userIdResponse.json();
         
-        {/* Header Section */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>Requirements</Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Text style={styles.addButtonText}>+ Add Requirement</Text>
-          </TouchableOpacity>
-        </View>
+        if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
+          const generatedUserId = userIdData.NextuserId[0].UserId;
+          console.log('Extracted UserId:', generatedUserId);
+          setUserId(generatedUserId); // Set userId in state
 
-        {/* Requirement Card */}
-        <View style={styles.requirementCard}>
-          <View style={styles.profileContainer}>
-            <Image
-              source={{ uri: 'https://example.com/profile-pic.jpg' }}  // Replace with actual image
-              style={styles.profileImage}
-            />
-            <Text style={styles.profileName}>Chandru</Text>
-          </View>
-          
-          <View style={styles.requirementContent}>
-            <Text style={styles.requirementText}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vel dapibus libero...
-            </Text>
-            <TouchableOpacity style={styles.acknowledgeButton}>
-              <Text style={styles.acknowledgeButtonText}>Acknowledge</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+          // Step 2: Register user with the generated userId
+          const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user: {
+                userId: generatedUserId,  // Use the generated userId here
+                username,
+                Password: password,
+                Mobileno,
+              },
+              business: {
+                email,
+                address,
+                businessName,
+                profession: selectedProfession,
+                chapterType: selectedChapterType,
+                LocationID: selectedLocation,
+                referredBy,
+                startDate,
+                endDate
+              }
+            }),
+          });
 
-      </View>
-    </ScrollView>
-  );
+          const data = await response.json();
+          console.log('Registration successful:', data);
+
+          // Navigate to the OTP screen with the mobile number
+          navigation.navigate('Otpscreen', { Mobileno });
+
+        } else {
+          console.error('No UserId found in the response!');
+        }
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    }
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#F5F5F5',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  addButton: {
-    backgroundColor: '#D81B60',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  requirementCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 3,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },
-  profileName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  requirementContent: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  requirementText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 10,
-  },
-  acknowledgeButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#D81B60',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  acknowledgeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+
+// // CCavenue Payment customer.js file 
+
+// import React, { useContext, useState, useEffect } from 'react';
+// import { View, Text, TouchableOpacity,TextInput,Platform, StyleSheet,Button ,Linking, Alert} from 'react-native';
+// import { API_ENDPOINTNODE } from './config';
+// import AuthContext from './Authcontext';
+// import { Buffer } from 'buffer';
+// import sha256 from 'js-sha256';
+// // import { encode, decode } from 'base-64';
+// import { encode } from 'base-64';
+// import { useNavigation } from '@react-navigation/native';
+// import { ScrollView } from 'react-native-gesture-handler';
+// import { WebView } from 'react-native-webview';
+
+// const Paymentcustomer = () => {
+//   const navigation = useNavigation();
+//   const { userID } = useContext(AuthContext);
+//   const [invoiceNumbers, setInvoiceNumbers] = useState([]);
+//   const [paymentList, setPaymentList] = useState([]);     
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [isError, setIsError] = useState(false);
+ 
+//   const [paymentAmount, setPaymentAmount] = useState('');
+//   const [webViewVisible, setWebViewVisible] = useState(false);
+
+//   const [refreshPage, setRefreshPage] = useState(false);//to refresh the page 
+
+//   // differentiate the invoice list 
+//   const [previousOutstandingInvoices, setPreviousOutstandingInvoices] = useState([]);
+//   const [currentInvoices, setCurrentInvoices] = useState([]);
+
+//   const handlePayment = async () => {
+//     try {
+//       // Replace with your actual payment amount and other details
+//       // const paymentAmount = 11; // Use your desired payment amount
+//       const paymentDetails1 = {
+//         amount: parseFloat(paymentAmount),
+//         userid: userID
+
+//       };
+//       console.log('Payment Details:', paymentDetails1);
+  
+//       console.log('paymentDetails1=======================',paymentDetails1.amount)
+//       // Construct the payment URL with the specified amount
+//       const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentDetails1.amount}&userid=${paymentDetails1.userid}&source=0`;
+//       // const paymentUrl = `https://www.smartzensolutions.com/`;
+
+//       console.log('Payment URL:===================', paymentUrl);
+//       // Navigate to the PaymentWebView screen with the constructed payment URL 
+//       navigation.navigate('PaymentWebView', { paymentUrl });
+//     } catch (error) {
+//       console.error('Error during payment initiation:', error);
+//       // Handle error as needed
+//       Alert.alert('Payment Error', 'An error occurred during the payment initiation. Please try again.');
+//     }
+//   };
+  
+
+// useEffect(() => {
+//   const fetchData = async () => {
+//     setIsLoading(true);
+//     setIsError(false);
+//     try {
+//       // Fetch invoice numbers
+//       const invoiceResponse = await fetch(
+//         `${API_ENDPOINTNODE}/customer/GettotalInvoice?USER_ID=${userID}`
+//       );
+
+//       if (invoiceResponse.ok) {
+//         const invoiceData = await invoiceResponse.json();
+
+//         // Separate invoices into current and previous
+//         const currentInvoices = [];
+//         const previousOutstandingInvoices = [];
+
+//         // Find the maximum two-digit number between hyphens
+//         const maxTwoDigitNumber = Math.max(
+//           ...invoiceData.GettotalInvoice.map((invoice) => {
+//             const match = invoice.INVOICE_NO.match(/-(\d+)-/);
+//             return match ? parseInt(match[1], 10) : 0;
+//           })
+//         );
+
+//         // Categorize invoices based on the two-digit number
+//         invoiceData.GettotalInvoice.forEach((invoice) => {
+//           const match = invoice.INVOICE_NO.match(/-(\d+)-/);
+//           const twoDigitNumber = match ? parseInt(match[1], 10) : 0;
+
+//           if (twoDigitNumber === maxTwoDigitNumber) {
+//             currentInvoices.push(invoice);
+//           } else {
+//             previousOutstandingInvoices.push(invoice);
+//           }
+//         });
+
+//         setInvoiceNumbers(invoiceData.GettotalInvoice);                        
+//         setCurrentInvoices(currentInvoices);
+//         setPreviousOutstandingInvoices(previousOutstandingInvoices);
+
+//         // Fetch payment details for each invoice
+//         const paymentPromises = invoiceData.GettotalInvoice.map(async (invoice) => {
+//           const paymentResponse = await fetch(
+//             `${API_ENDPOINTNODE}/Payments/PaymentListCustomer?INVOICE_NO=${invoice.INVOICE_NO}`
+//           );
+
+//           if (paymentResponse.ok) {
+//             const paymentData = await paymentResponse.json();
+//             return { invoiceNo: invoice.INVOICE_NO, paymentList: paymentData.paymentList };
+//           } else {
+//             setIsError(true);
+//             return { invoiceNo: invoice.INVOICE_NO, paymentList: [] };
+//           }
+//         });
+
+//         // Wait for all payment details to be fetched
+//         const allPayments = await Promise.all(paymentPromises);
+
+//         // Flatten the array and set the paymentList state
+//         const flattenedPayments = allPayments.flatMap((item) => item.paymentList);
+//         setPaymentList(flattenedPayments);
+//         if (refreshPage) {
+//           setRefreshPage(false);
+//         }
+//       } else {
+//         setIsError(true);
+//       }
+
+//       setIsLoading(false);
+//     } catch (error) {
+//       setIsError(true);
+//       setIsLoading(false);
+//     }
+//   };
+
+//   fetchData();
+
+
+// // Subscribe to the navigation focus event to reload the page
+// const unsubscribe = navigation.addListener('focus', () => {
+//   setRefreshPage(true);
+// });
+
+// // Cleanup function
+// return () => {
+//   unsubscribe();
+// };
+
+
+// }, [userID, refreshPage]);
+
+
+// // Rest of your code remains the same
+// let totalCurrentAmount = 0;
+// let totalPreviousAmount = 0;
+//   return (
+//   <View style={styles.container}>
+// <ScrollView>
+    
+// {previousOutstandingInvoices.length > 0 && (
+//   <>
+//     <Text style={styles.heading}>Previous Outstanding </Text>
+//     {previousOutstandingInvoices.map((invoice, index) => {
+//       const correspondingPayment = paymentList.find((payment) => payment.INVOICE_NO === invoice.INVOICE_NO);
+//       if (correspondingPayment) {
+//         totalPreviousAmount += parseFloat(correspondingPayment.Total_NetAmount);
+//       }
+//       return (
+//         <View key={index} style={styles.invoiceItem}>
+//           <View key={index} style={styles.paymentItem}>
+//         <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>INVOICE NO</Text>
+//          <Text style={styles.cardLabelTextinvoice}>{invoice.INVOICE_NO}</Text>
+//          </View>
+//           {correspondingPayment && (
+//             <>
+//                <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>USER ID</Text>
+//              <Text style={styles.cardLabelText}>{correspondingPayment.USER_ID}</Text>
+//          </View>            
+//               <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>LOGIN NAME</Text>
+//          <Text style={styles.cardLabelText}>{correspondingPayment.LOGIN_NAME}</Text>
+//          </View>
+//               <View style={styles.cardRow}>
+//                 <Text style={styles.cardLabel}>Total Amount</Text>
+//                 <Text style={styles.cardLabelText}>{parseFloat(correspondingPayment.Total_NetAmount).toFixed(2)}</Text>
+//               </View>
+//             </>
+//           )}
+//         </View>
+//         </View>
+//       );
+//     })}
+//   </>
+// )}
+
+// {currentInvoices.length > 0 && (
+//   <>
+//     <Text style={styles.heading}>Current invoice</Text>
+//     {currentInvoices.map((invoice, index) => {
+//       const correspondingPayment = paymentList.find((payment) => payment.INVOICE_NO === invoice.INVOICE_NO);
+//       if (correspondingPayment) {
+//         totalCurrentAmount += parseFloat(correspondingPayment.Total_NetAmount);
+//       }
+//       return (
+//         <View key={index} style={styles.paymentItem}>
+//            <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>INVOICE NO</Text>
+//          <Text style={styles.cardLabelTextinvoice}>{invoice.INVOICE_NO}</Text>
+//          </View>
+//           {correspondingPayment && (
+//             <>
+//          <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>USER ID</Text>
+//              <Text style={styles.cardLabelText}>{correspondingPayment.USER_ID}</Text>
+//          </View>            
+//               <View style={styles.cardRow}>
+//          <Text style={styles.cardLabel}>LOGIN NAME</Text>
+//          <Text style={styles.cardLabelText}>{correspondingPayment.LOGIN_NAME}</Text>
+//          </View>
+//               <View style={styles.cardRow}>
+//                 <Text style={styles.cardLabel}>Total Amount</Text>
+//                 <Text style={styles.cardLabelText}>{parseFloat(correspondingPayment.Total_NetAmount).toFixed(2)}</Text>
+//               </View>
+             
+//             </>
+//           )}
+//         </View>
+//       );
+//     })}
+//   </>
+// )}
+
+
+//         {/* Display the total amount for all invoices */}
+//         <View style={styles.cardRow}>
+//       <Text style={styles.cardLabeltotal}>Total Outstanding</Text>
+//       <Text style={styles.cardLabelTexttotal}>{(totalCurrentAmount + totalPreviousAmount).toFixed(2)}</Text>
+//     </View>
+
+//         <TextInput
+//           style={styles.textInput}
+//           placeholder="Enter the Payment Amount to Pay"
+//           placeholderTextColor="#999"
+//           keyboardType="numeric"
+//           value={paymentAmount}
+//           onChangeText={(text) => setPaymentAmount(text)}
+//         />
+//         {/* <TouchableOpacity
+//           style={styles.payButton}
+//           onPress={() => handlePayment(paymentAmount, 'UPI_INTENT')}
+//         > */}
+//          <TouchableOpacity
+//           style={styles.payButton}
+//           onPress={() => {
+//             if (paymentAmount !== '') {
+//               handlePayment(paymentAmount, 'UPI_INTENT');
+//             } else {
+//               // Optionally, you can show an alert or perform some other action to notify the user that the amount is required.
+//               Alert.alert('Please enter the payment amount.');
+//             }
+//           }}
+// >
+//           <Text style={styles.payButtonText}>Pay with UPI</Text>
+//         </TouchableOpacity>
+
+//         </ScrollView>
+//   </View>
+ 
+// );
+
+// };
 
 
 
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//   },
+//   heading: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     marginTop: 10,
+//     color:'#7c9663'
+//   },
+//   paymentItem: {
+//     marginTop: 10,
+//     borderWidth: 1,
+//     borderColor: '#ccc',
+//     padding: 10,
+//     borderRadius: 5,
+//   },
+//   paymentText: {
+//     color: 'grey',
+//     fontSize:20,
+//   },
+//   invoiceNumberText: {
+//     color: 'grey',
+//     fontSize:20,
+//     textAlign:'center'
+//   },
+//   // invoiceButton: {
+//   //   backgroundColor: '#f2f0f0',
+//   //   padding: 10,
+//   //   borderRadius: 5,
+//   //   marginVertical: 5,
+//   //   ...Platform.select({
+//   //     ios: {
+//   //       shadowColor: 'black',
+//   //       shadowOffset: { width: 0, height: 2 },
+//   //       shadowOpacity: 0.2,
+//   //       shadowRadius: 4,
+//   //     },
+//   //     android: {
+//   //       elevation: 2,
+//   //     },
+//   //   }),
+//   // },
+//   // invoiceButtonText: {
+//   //   color: 'white',
+//   //   textAlign: 'center',
+//   // },
+//   textInput: {
+//     marginTop:10,
+//     borderWidth: 1,
+//     borderColor: '#ccc',
+//     borderRadius: 5,
+//     padding: 8,
+//     marginBottom: 10,
+//     color: 'black',
+//     fontSize: 16,
+    
+//   },
+//   payButton: {
+//     backgroundColor: '#7c9663',
+//     padding: 10,
+//     borderRadius: 5,
+//     alignItems: 'center',
+//   },
+//   cardRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     marginBottom: 8,
+//   },
+//   cardLabelText: {
+//     color:'black',
+//     fontSize:16
+//   },
+//   cardLabelTexttotal:{
+//     marginTop:15,
+//     color:'red',
+//     fontSize:16
+//   },
+//   cardLabelTextinvoice:{
+//     color:'red',
+//     fontSize:16
+//   },
+//   payButtonText: {
+//     color: 'white',
+//     fontWeight: 'bold',
+//     fontSize:16
+//   },
+//   cardLabel: {
+//     fontWeight: 'bold',
+//     color:'grey',
+//     fontSize:16
+    
+//   },
 
-export default HomeScreen;
+//   cardLabeltotal:{
+//     marginTop:15,
+//     fontWeight: 'bold',
+//     color:'grey',
+//     fontSize:16
+//   },
 
 
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+//   cardtext:{
+//     marginTop:100,
+//     textAlign:'center',
+//     fontWeight: 'bold',
+//     color:'red',
+//     fontSize:16
+    
+//   }
+// });
 
-const RequirementCard = () => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Requirements</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add Requirement</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.card}>
-        <View style={styles.profileSection}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/50' }} // Replace with actual image link
-            style={styles.profileImage}
-          />
-          <Text style={styles.profileName}>Chandru</Text>
-        </View>
-
-        <View style={styles.requirementSection}>
-          <Text style={styles.requirementText}>
-            XXXXX X XXXXX XXXXX XXXXX X X X XXXXX XXXXXXXXXXXX XXX XXXXXXXXXXXXXX XXXXX X XXXXX
-          </Text>
-          <TouchableOpacity style={styles.acknowledgeButton}>
-            <Text style={styles.acknowledgeText}>Acknowledge</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.pagination}>
-        <View style={styles.activeDot} />
-        <View style={styles.inactiveDot} />
-        <View style={styles.inactiveDot} />
-      </View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#F8F8F8',
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#7E3F8F',
-  },
-  addButton: {
-    backgroundColor: '#A83893',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#F6EDF7',
-    borderRadius: 10,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    marginBottom: 20,
-  },
-  profileSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  profileName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#7E3F8F',
-  },
-  requirementSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: 10,
-    position: 'relative',
-  },
-  requirementText: {
-    color: '#7E3F8F',
-    lineHeight: 20,
-  },
-  acknowledgeButton: {
-    position: 'absolute',
-    top: -20,
-    right: 0,
-    backgroundColor: '#A83893',
-    paddingVertical: 5,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-  },
-  acknowledgeText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  activeDot: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#A83893',
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-  inactiveDot: {
-    width: 8,
-    height: 8,
-    backgroundColor: '#D8D8D8',
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-});
-
-export default RequirementCard;
+// export default Paymentcustomer;
 
 
 
 
+
+
+
+
+// <View style={styles.cards}>
+// <Text style={styles.dashboardTitle}>Dashboard</Text>
+
+// {eventData && (
+// <View style={styles.meetupCard}>
+// <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
+
+// <View style={styles.row}>
+// <Icon name="calendar" size={18} color="#6C757D" />
+// <Text style={styles.meetupInfo}>{new Date(eventData.DateTime).toLocaleDateString()}</Text>
+// <Icon name="clock-o" size={18} color="#6C757D" />
+// <Text style={styles.meetupInfo}>
+//   {new Date(eventData.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} 
+// </Text>
+// </View>
+
+// <View style={styles.row}>
+// <Icon name="map-marker" size={18} color="#6C757D" />
+// <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
+// </View>
+
+// <View style={styles.buttonRow}>
+// <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
+//   <Icon name="check-circle" size={24} color="#28A745" />
+//   <Text style={styles.buttonText}>Click to Confirm</Text>
+// </TouchableOpacity>
+// </View>
+// </View>
+// )}
+// </View>

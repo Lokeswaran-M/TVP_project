@@ -81,6 +81,12 @@ const Memberstack = () => (
     <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
+const MultiMemberstack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Members" component={MultiBusinessMembers} options={{ headerShown: false }} />
+    <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: false }} />
+  </Stack.Navigator>
+);
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const [profileData, setProfileData] = useState({});
@@ -159,8 +165,8 @@ const TabNavigator = () => {
       {profileData?.CategoryId === 2 && (
         <Tab.Screen
           name="MultiBusinessMembers"
-          component={MultiBusinessMembers}
-          options={{ title: 'MultiBusinessMembers' }}
+          component={MultiMemberstack}
+          options={{ title: 'Members' }}
         />
       )}
     </Tab.Navigator>

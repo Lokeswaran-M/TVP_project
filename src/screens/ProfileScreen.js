@@ -6,6 +6,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import sunmoon from '../../assets/images/sunandmoon-icon.png';
 import styles from '../components/layout/ProfileStyles';
+import Stars from '../screens/Stars';
 const Profile = () => {
   const route = useRoute();
   const { categoryID, Profession } = route.params;
@@ -104,16 +105,10 @@ const Profile = () => {
             </View>
           )}
           <Text style={styles.userId}>User ID: {userId} </Text>
-          <View style={styles.starsWrapper}>
-    {Array.from({ length: 5 }).map((_, index) => (
-        <FontAwesome 
-            key={index} 
-            name={index < Math.floor(overallAverage) ? "star" : "star-o"}
-            size={25} 
-            color="#FFD700"
-        />
-    ))}
-</View>
+          <Stars averageRating={overallAverage} />
+            <Text style={styles.RatingValue}>
+             {overallAverage} out of 5
+      </Text>
         </View>
         {loading ? (
           <ActivityIndicator size="large" color="#C23A8A" />
@@ -122,24 +117,24 @@ const Profile = () => {
             {categoryID === 2 ? (
               <>
             <Text style={styles.label}>Name</Text>
-            <View style={styles.nameRow}>
-              <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Username || 'None'}</Text>
-              <TouchableOpacity 
-                style={styles.editButton} 
-                onPress={() => navigation.navigate('EditProfile', { profession: multiProfile?.Profession })}
-              >
-                <FontAwesome name="edit" size={15} color="#C23A8A" />
-                <Text style={styles.editText}>Edit Profile</Text>
-              </TouchableOpacity>
-            </View>
-            <Text style={styles.label}>Profession</Text>
-            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Profession || 'None'}</Text>
-            <Text style={styles.label}>Business Name</Text>
-            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.BusinessName || 'None'}</Text>
-            <Text style={styles.label}>Description</Text>
-            <Text style={styles.description}>{multiProfile?.businessInfo?.[0]?.Description || 'None'}</Text>
-            <Text style={styles.label}>Business Address</Text>
-            <Text style={styles.info}>{multiProfile?.businessInfo?.[0]?.Address || 'None'}</Text>
+<View style={styles.nameRow}>
+  <Text style={styles.info}>{multiProfile?.businessInfo?.Username || 'None'}</Text>
+  <TouchableOpacity 
+    style={styles.editButton} 
+    onPress={() => navigation.navigate('EditProfile', { profession: multiProfile?.businessInfo?.Profession })}
+  >
+    <FontAwesome name="edit" size={15} color="#C23A8A" />
+    <Text style={styles.editText}>Edit Profile</Text>
+  </TouchableOpacity>
+</View>
+<Text style={styles.label}>Profession</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.Profession || 'None'}</Text>
+<Text style={styles.label}>Business Name</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.BusinessName || 'None'}</Text>
+<Text style={styles.label}>Description</Text>
+<Text style={styles.description}>{multiProfile?.businessInfo?.Description || 'None'}</Text>
+<Text style={styles.label}>Business Address</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.Address || 'None'}</Text>
             </>
             ) : (
               <>
@@ -172,18 +167,8 @@ const Profile = () => {
     <View key={index} style={styles.performanceRow}>
       <Text style={styles.performanceLabel}>{rating.RatingName.trim()}</Text>
       <View style={styles.stars}>
-        {Array.from({ length: 5 }).map((_, i) => {
-          const average = parseFloat(rating.average);
-          return (
-            <FontAwesome
-              key={i}
-              name="star"
-              size={25}
-              color={i < Math.floor(average) ? "#FFD700" : "#D3D3D3"}
-            />
-          );
-        })}
-      </View>
+  <Stars averageRating={parseFloat(rating.average)} />
+</View>
     </View>
   ))}
 </View>
@@ -196,15 +181,8 @@ const Profile = () => {
     <View key={index} style={styles.performanceRow}>
       <Text style={styles.performanceLabel}>{rating.RatingName.trim()}</Text>
       <View style={styles.stars}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <FontAwesome
-            key={i}
-            name={i < Math.floor(rating.average) ? "star" : "star-o"}
-            size={25}
-            color= "#FFD700"
-          />
-        ))}
-      </View>
+  <Stars averageRating={parseFloat(rating.average)} />
+</View>
     </View>
   ))}
 </View>

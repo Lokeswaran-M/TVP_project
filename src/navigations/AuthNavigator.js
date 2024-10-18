@@ -8,6 +8,7 @@ import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
+// import PaymentWebView from '../screens/PaymentWebview';
 
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
 
@@ -109,18 +110,29 @@ const CustomHeaderPayments = () => {
 
 
 const Stack = createStackNavigator();
+const headerOptions = {
+  headerStyle: { backgroundColor: '#a3238f' },
+  headerTintColor: '#fff',
+};
 
 const AuthNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen  name="Login"   component={LoginScreen} options={{ headerShown: false }}  />
-      <Stack.Screen  name="Register"  component={RegisterScreen}   options={{ title: 'Register ',   headerStyle: { backgroundColor: '#a3238f' },   headerTintColor: '#fff'}}   />
-      <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password',   headerStyle: { backgroundColor: '#a3238f' },   headerTintColor: '#fff'}} />
-      <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',   headerStyle: { backgroundColor: '#a3238f' },   headerTintColor: '#fff'}} />
+      <Stack.Screen  name="Login"   component={LoginScreen} options={{ headerShown: false }} />
+      <Stack.Screen  name="Register"  component={RegisterScreen}   options={{ title: 'Register ',  ...headerOptions}}   />
+      <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password', ...headerOptions }} />
+      <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',  ...headerOptions}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
+<<<<<<< HEAD
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
+=======
+      <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',  ...headerOptions}} />
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: false, ...headerOptions}} />
+      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown: false }}/>
+      {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
+>>>>>>> 3e10a02481f4d469d57bd8a3f100b8b27eebf6ee
 
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
