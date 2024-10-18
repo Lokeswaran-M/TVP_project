@@ -494,6 +494,7 @@ function AppNavigator() {
         }}
       />
     </Stack.Navigator>
+
   );
 }
 

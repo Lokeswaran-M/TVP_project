@@ -32,20 +32,7 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation Bar */}
-      <View style={styles.topNav}>
-      <View style={styles.backButtonContainer}>
-          <TouchableOpacity onPress={handleback}>
-            <Icon name="arrow-left" size={28} color="#A3238F" />
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <Ionicons name="location-outline" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>LOCATION</Text>
-        </TouchableOpacity>
-      </View>
+ 
 
       {/* Location Details */}
       <View style={styles.locationDetailsContainer}>
@@ -83,49 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#CCC',
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-    justifyContent: 'center',
-  },
-  backButtonContainer: {
-    padding: 0,
-    margin: 0,
-    alignItems: 'flex-start',
-  },
-  navTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-    marginRight: 70,
-    marginLeft: 50,
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 4,
-    paddingRight: 5,
-    paddingLeft: 5,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    margin: 7,
-    paddingHorizontal: 32,
-  },
+ 
 
   locationDetailsContainer: {
     height: height * 0.15, // Adjusting height dynamically

@@ -1,62 +1,96 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Image,
-  Dimensions,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useRoute } from '@react-navigation/native';
+import { API_BASE_URL } from '../constants/Config';  // Ensure this points to your API base URL
 import { useNavigation } from '@react-navigation/native';
 
-
-const { width, height } = Dimensions.get('window');
-
 const HeadAdminMemberViewPage = () => {
-  const user = {
-    userId: '3242534654674',
-    name: 'Chandru',
-    profession: 'Digital Marketer',
-    businessName: 'Try Out',
-    description:
-      "Unlock your brand's potential with targeted digital marketing strategies. At TRYOUT, we turn clicks into customers and enhance your online presence with precision.",
-    performanceScore: {
-      attendance: '★★★★★',
-      oneMinPresentation: '★★★★★',
-      oneOnOneMeeting: '★★★★★',
-      businessReferral: '★★★★★',
-      offeringbusiness: '★★★★★',
-      externalbusiness: '★★★★★',
-      overallRatings: '★★★★★',
-    },
-    address: 'No.3, SElliyamman kovil 5th street potheri, Chengalpattu',
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { memberId } = route.params; 
+  const [userDetails, setUserDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [overallAverage, setOverallAverage] = useState(0);
+  const [isPromoted, setIsPromoted] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState(''); 
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/info_with_star_rating/${memberId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch user details. Please try again later.');
+        }
+        const data = await response.json();
+        setUserDetails(data);
+        if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
+          const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
+          const overallAverage = totalAverage / data.ratings.length;
+          setOverallAverage(overallAverage.toFixed(1));
+        }
+        await fetchProfileImage(data.businessInfo.userId);  // Await for profile image fetch
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+        Alert.alert('Error', error.message || 'An unexpected error occurred while fetching user details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchProfileImage = async (userId) => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/profile-image?userId=${memberId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile image. Please try again later.');
+        }
+        const data = await response.json();
+        if (data.imageUrl) {
+          setProfileImageUrl(data.imageUrl); 
+        } else {
+          console.warn('No image URL found in response:', data);
+          Alert.alert('Info', 'No profile image available.');
+        }
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+        Alert.alert('Error', error.message || 'An unexpected error occurred while fetching the profile image.');
+      }
+    };
+
+    fetchUserDetails();
+  }, [memberId]); 
+
+  const renderStars = (averageRating) => {
+    const filledStars = Math.floor(averageRating);
+    const hasHalfStar = averageRating % 1 >= 0.2 && averageRating % 1 < 0.8;
+    const totalStars = 5;
+    const stars = Array(filledStars).fill(0).map((_, index) => (
+      <Icon key={index} name="star" size={25} color="#FFD700" />
+    ));
+    if (hasHalfStar) {
+      stars.push(<Icon key="half" name="star-half-full" size={25} color="#FFD700" />);
+    }
+    const unfilledStars = Array(totalStars - filledStars - (hasHalfStar ? 1 : 0)).fill(0).map((_, index) => (
+      <Icon key={filledStars + index + (hasHalfStar ? 1 : 0)} name="star-o" size={25} color="#D3D3D3" />
+    ));
+    return [...stars, ...unfilledStars];
   };
 
-  const navigation = useNavigation();
-  const [isPromoted, setIsPromoted] = useState(false);
+  const handleCall = () => {
+    if (userDetails && userDetails.businessInfo.Mobileno) {
+      Linking.openURL(`tel:${userDetails.businessInfo.Mobileno}`);
+    }
+  };
 
-  const renderStars = (score) => {
-    return score.split('').map((star, index) => (
-      <Text key={index} style={styles.star}>
-        ★
-      </Text>
-    ));
+  const handleWhatsApp = () => {
+    if (userDetails && userDetails.businessInfo.Mobileno) {
+      Linking.openURL(`whatsapp://send?phone=${userDetails.businessInfo.Mobileno}`);
+    }
   };
 
   const handleBack = () => {
     navigation.navigate('HeadAdminMembersPage');
-  };
-
-  const handleCall = () => {
-    // Implement your calling logic here
-  };
-
-  const handleWhatsApp = () => {
-    // Implement your WhatsApp logic here
   };
 
   const handlePromotionToggle = () => {
@@ -64,192 +98,91 @@ const HeadAdminMemberViewPage = () => {
     Alert.alert(isPromoted ? 'Demoted' : 'Promoted', `User has been ${isPromoted ? 'demoted' : 'promoted'} to admin.`);
   };
 
-  return (
-    <View style={styles.container}>
-      {/* Top Navigation */}
-      <View style={styles.topNav}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButtonContainer}>
-          <Icon name="arrow-left" size={28} color="#A3238F" />
-        </TouchableOpacity>
-        <View style={styles.navTitleContainer}>
-          <TouchableOpacity style={styles.buttonNavtop}>
-            <View style={styles.topNavlogo}>
-              <MaterialIcons name="group" size={28} color="#FFFFFF" />
-            </View>
-            <Text style={styles.NavbuttonText}>MEMBERS</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+  if (!userDetails) {
+    return <Text>No user details found.</Text>;
+  }
 
-      {/* Scrollable Profile Section */}
-      <ScrollView contentContainerStyle={styles.profileContainer}>
-        {/* Profile Picture and User Info */}
-        <View style={styles.profileHeader}>
-          <Image
-            source={{ uri: 'https://i.pinimg.com/736x/52/af/bf/52afbfeb6294f24e715a00367be3cdf3.jpg' }}
-            style={styles.profilePic}
-          />
-          <View style={styles.userInfo}>
-            <Text style={styles.userId}>User ID: {user.userId}</Text>
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.performanceScore}>
-              {renderStars(user.performanceScore.externalbusiness)}
-            </Text>
+  const { businessInfo, ratings } = userDetails;
+  return (
+    <View>
+     
+
+      <ScrollView contentContainerStyle={styles.container}>
+        <View>
+          <View style={styles.profileContainer}>
+            <View style={styles.profilePic}>
+              {/* Display profile image */}
+              {profileImageUrl ? (
+                <Image source={{ uri: profileImageUrl }} style={styles.profileImage} />
+              ) : (
+                <Text style={styles.profilePicText}>{businessInfo.Username.charAt(0)}</Text>
+              )}
+            </View>
+            <View style={styles.userInfotop}>
+              <Text style={styles.labeltop1}>{businessInfo.Username}</Text>
+              <Text style={styles.valuetop}>{renderStars(overallAverage || 0)} {overallAverage} out of 5 {'\n'}</Text>
+            </View>
           </View>
         </View>
-
-        {/* Profile Details */}
         <View style={styles.card}>
           <View style={styles.infoContainer}>
-            <Text style={styles.label}>User ID:</Text>
-            <Text style={styles.value}>{user.userId}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Name:</Text>
-            <Text style={styles.value}>{user.name}</Text>
-          </View>
-          <View style={styles.infoContainer}>
             <Text style={styles.label}>Profession:</Text>
-            <Text style={styles.value}>{user.profession}</Text>
+            <Text style={styles.value}>{businessInfo.Profession}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.label}>Business Name:</Text>
-            <Text style={styles.value}>{user.businessName}</Text>
+            <Text style={styles.value}>{businessInfo.BusinessName}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.label}>Description:</Text>
-            <Text style={styles.value}>{user.description}</Text>
-          </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Performance Score:</Text>
-            <Text style={styles.value}>
-              Attendance: {renderStars(user.performanceScore.attendance)} {'\n'}
-              One-Min Presentation: {renderStars(user.performanceScore.oneMinPresentation)} {'\n'}
-              One-On-One Meeting: {renderStars(user.performanceScore.oneOnOneMeeting)} {'\n'}
-              Business Referral: {renderStars(user.performanceScore.businessReferral)} {'\n'}
-              Offering Business: {renderStars(user.performanceScore.offeringbusiness)} {'\n'}
-              External Business: {renderStars(user.performanceScore.externalbusiness)} {'\n'}
-              <Text style={styles.overallRatings}>
-                Overall Ratings: {renderStars(user.performanceScore.overallRatings)}
-              </Text>
-            </Text>
+            <Text style={styles.value}>{businessInfo.Description}</Text>
           </View>
           <View style={styles.infoContainer}>
             <Text style={styles.label}>Business Address:</Text>
-            <Text style={styles.value}>{user.address}</Text>
+            <Text style={styles.value}>{businessInfo.Address}</Text>
           </View>
-        </View>
-
-        {/* Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleCall}>
-            <MaterialIcons name="call" size={20} color="#fff" />
-            <Text style={styles.buttonText}>Call</Text>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Performance Ratings:</Text>
+            {ratings.map((rating) => (
+              <View key={rating.RatingId} style={styles.ratingRow}>
+                <Text style={styles.ratingName}>{rating.RatingName}</Text>
+                <View style={styles.starsContainer}>
+                  {renderStars(rating.average)}
+                </View>
+              </View>
+            ))}
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleCall}>
+              <View style={styles.buttonIcon}>
+                <MaterialIcons name="call" size={20} color="#fff" />
+              </View>
+              <Text style={styles.buttonText}>Voice call</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleWhatsApp}>
+              <View style={styles.buttonIcon}>
+                <Icon name="whatsapp" size={20} color="#fff" />
+              </View>
+              <Text style={styles.buttonText}>WhatsApp</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.promoteButton} onPress={handlePromotionToggle}>
+            <Icon name="paper-plane" size={20} color="#fff" />
+            <Text style={styles.promoteButtonText}>{isPromoted ? 'Demote to User' : 'Promote to Admin'}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleWhatsApp}>
-            <Icon name="whatsapp" size={20} color="#fff" />
-            <Text style={styles.buttonText}>WhatsApp</Text>
-          </TouchableOpacity>
         </View>
-
-        {/* Promote/Demote Button */}
-        <TouchableOpacity style={styles.promoteButton} onPress={handlePromotionToggle}>
-          <Icon name="paper-plane" size={20} color="#fff" />
-          <Text style={styles.promoteButtonText}>{isPromoted ? 'Demote to User' : 'Promote to Admin'}</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
-
-// Responsive styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    padding: 20,
     backgroundColor: '#f0f0f0',
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-    justifyContent: 'center',
-  },
-  backButtonContainer: {
-    padding: 0,
-    margin: 0,
-    alignItems: 'flex-start',
-  },
-  navTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-    marginRight: 70,
-    marginLeft: 50,
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 4,
-    paddingRight: 5,
-    paddingLeft: 5,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    margin: 7,
-    paddingHorizontal: 32,
-  },
-
-  // Profile Header
-  profileContainer: {
-    padding: 20,
-    paddingTop: 10,
-  },
-  profileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  profilePic: {
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-    backgroundColor: '#A3238F',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  userInfo: {
-    flexDirection: 'column',
-  },
-  userId: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#A3238F',
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  performanceScore: {
-    color: 'gold',
-    fontSize: 18,
-  },
-
-  // Profile Details Card
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
@@ -261,36 +194,85 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 80,
   },
-  infoContainer: {
-    marginBottom: 15,
+    infoContainer: {
+      marginBottom: 15,
+    },
+    profileImage: {
+      width: 90,
+      height: 90,
+      borderRadius: 50,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 5,
+      color: '#A3238F',
+    },
+    ratingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center', 
+      marginBottom: 5,
+    },
+    ratingName: {
+      fontSize: 14,
+      color: 'black',
+    },
+    starsContainer: {
+      flexDirection: 'row',
+    },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
   },
-  label: {
-    fontSize: 16,
+  profilePic: {
+    width: 90,
+    height: 90,
+    borderRadius: 50,
+    backgroundColor: '#A3238F',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+    marginTop:10,
+  },
+ 
+  userInfotop: {
+    flexDirection: 'column',
+    paddingTop: 30,
+    marginLeft: 20,
+  },
+  labeltop1:{
+fontSize: 20,
+marginBottom: 10,
     fontWeight: 'bold',
     color: '#A3238F',
-    flex: 1,
+    transform: [{ translateY: -5}],
+  },
+  valuetop: {
+    transform: [{ translateY: -10}],
+    marginTop: 10,
   },
   value: {
     fontSize: 14,
-    color: '#555',
-    flex: 2,
+    color: 'black',
   },
-  overallRatings: {
-    color: '#A3238F',
-    fontWeight: 'bold',
+  star: {
+    color: 'gold',
+    fontSize: 20,
   },
-
-  // Buttons
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
+    justifyContent: 'space-around',
+    marginTop: 5,
+    marginBottom: 15,
   },
   button: {
+    marginTop:50,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#A3238F',
-    padding: 10,
+    padding:5,
     borderRadius: 5,
     width: '45%',
     justifyContent: 'center',
@@ -299,6 +281,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginLeft: 5,
     fontWeight: 'bold',
+  },
+  buttonIcon: {
+    backgroundColor: '#A3238F',
+    borderRadius: 70,
+    padding: 6,
+    marginRight: 10,
+  },
+
+  performanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  performanceLabel: {
+    fontSize: 14,
+    color: '#000',
   },
   promoteButton: {
     flexDirection: 'row',
@@ -316,13 +315,46 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontWeight: 'bold',
   },
-
-  star: {
-    color: 'gold',
-    fontSize: 20,
+  stars: {
+    flexDirection: 'row',
   },
 });
 
 export default HeadAdminMemberViewPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -29,16 +29,6 @@ const HeadAdminLocationCreate = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation Bar */}
-      <View style={styles.topNav}>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <Icon name='map-marker' size={28} color='#FFFFFF' />
-          </View>
-          <Text style={styles.NavbuttonText}>LOCATION</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Scrollable content */}
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.Blabel}>Create New Location</Text>
@@ -86,35 +76,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#CCC',
-  },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 5,
-    paddingLeft: 11.5,
-    paddingRight: 12,
-    borderRadius: 50,
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginLeft: 20,
-    paddingRight: 20,
   },
   content: {
     paddingHorizontal: 20,

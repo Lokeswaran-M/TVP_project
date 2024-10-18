@@ -9,6 +9,105 @@ import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
 
+import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
+
+import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
+
+import HeadAdminNewSubscribers from '../screens/HeadAdminNewSubscribers';
+import HeadAdminPaymentsPage from '../screens/HeadAdminPaymentsPage';
+import HeadAdminLocation from '../screens/HeadAdminLocation';
+import HeadAdminLocationCreate from '../screens/HeadAdminLocationCreate';
+import HeadAdminLocationEdit from '../screens/HeadAdminLocationEdit';
+import HeadAdminLocationView from '../screens/HeadAdminLocationView';
+import { View, Text, StyleSheet, Dimensions,Image } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import BMW from '../../assets/images/BMW.png';
+// Get the width of the screen for responsiveness
+const { width } = Dimensions.get('window');
+
+
+
+
+
+const CustomHeaderBMWpng = () => {
+  return (
+    <View style={styles.topNav}>
+    <View >
+      <View>
+        {/* Use Image component */}
+        <Image 
+          source={BMW}  // Local image path
+          style={styles.iconImage}
+        />
+      </View>
+  
+    </View>
+  </View>
+
+  );
+};
+const CustomHeaderLocation = () => {
+  return (
+    <View style={styles.topNav}>
+    <View style={styles.buttonNavtop}>
+      <View style={styles.topNavlogo}>
+        <Ionicons name="location-outline" size={28} color="#FFFFFF" />
+      </View>
+      <Text style={styles.NavbuttonText}>LOCATION</Text>
+    </View>
+  </View>
+
+  );
+};
+
+
+const CustomHeaderMembers = () => {
+  return (
+    <View style={styles.topNav}>
+ 
+        <View style={styles.buttonNavtop}>
+          <View style={styles.topNavlogo}>
+            <MaterialIcons name="group" size={28} color="#FFFFFF" />
+          </View>
+          <Text style={styles.NavbuttonText}>MEMBERS</Text>
+        </View>
+      </View>
+
+  );
+};
+const CustomHeaderSubscribers = () => {
+  return (
+    <View style={styles.topNav}>
+    <View style={styles.buttonNavtop}>
+      <View style={styles.topNavlogo}>
+        <MaterialIcons name="group" size={28} color="#FFFFFF" />
+      </View>
+      <Text style={styles.NavbuttonText}>New Subscribers</Text>
+    </View>
+  </View>
+  );
+};
+
+const CustomHeaderPayments = () => {
+  return (
+    <View style={styles.topNav}>
+      <View style={styles.buttonNavtop}>
+        <View style={styles.topNavlogo}>
+          <MaterialIcons name="group" size={28} color="#FFFFFF" />
+        </View>
+        <Text style={styles.NavbuttonText}>Payments</Text>
+      </View>
+    </View>
+  );
+};
+
+
+
+
+
+
+
 const Stack = createStackNavigator();
 
 const AuthNavigator = () => {
@@ -20,15 +119,79 @@ const AuthNavigator = () => {
       <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',   headerStyle: { backgroundColor: '#a3238f' },   headerTintColor: '#fff'}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: false,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown: false }}/>
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
+
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
 
+
+
+{/* Lokesh screens  */}
+
+     
+        <Stack.Screen name="AdminMemberstack" component={AdminMemberstack} options={{ headerShown: false, headerLeft: () => null, }}/>
+        <Stack.Screen name="HeadAdminNewSubscribers" component={HeadAdminNewSubscribers} options={{ headerShown:true , header: () => <CustomHeaderSubscribers/>, headerLeft: () => null,  }} />
+        <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
+        <Stack.Screen name="AdminLocationstack" component={AdminLocationstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
     </Stack.Navigator>
-    
+
   );
 };
+const AdminMemberstack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HeadAdminMembersPage" component={HeadAdminMembersPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null,  }} />
+    <Stack.Screen name="HeadAdminMemberViewPage" component={HeadAdminMemberViewPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
+  </Stack.Navigator>
+);
+const AdminLocationstack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HeadAdminLocation" component={HeadAdminLocation} options={{ headerShown: true, header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
+    <Stack.Screen name="HeadAdminLocationCreate" component={HeadAdminLocationCreate} options={{ headerShown: true,header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
+    <Stack.Screen name="HeadAdminLocationEdit" component={HeadAdminLocationEdit} options={{ headerShown: true ,header: () => <CustomHeaderLocation/>, headerLeft: () => null,}} />
+    <Stack.Screen name="HeadAdminLocationView" component={HeadAdminLocationView} options={{ headerShown: true ,header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
+  </Stack.Navigator>
+);
+
+
+
+const styles = StyleSheet.create({
+  iconImage:{
+    backgroundColor:'#FFFFFF',
+    width: 300, 
+    height: 55, 
+    resizeMode: 'contain',
+  },
+  topNav: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomEndRadius: 15,
+    borderBottomStartRadius: 15,
+    justifyContent: 'center',
+  },
+  buttonNavtop: {
+    borderRadius: 25,
+    alignItems: 'center',
+    borderColor: '#A3238F',
+    borderWidth: 2,
+    flexDirection: 'row',
+  },
+  topNavlogo: {
+    backgroundColor: '#A3238F',
+    padding: 4,
+    borderRadius: 50,
+    justifyContent: 'center',
+  },
+  NavbuttonText: {
+    color: '#A3238F',
+    fontSize: width * 0.04, // Responsive font size
+    fontWeight: 'bold',
+    marginHorizontal: 10,
+  },
+});
+
 
 export default AuthNavigator;

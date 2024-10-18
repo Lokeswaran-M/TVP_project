@@ -93,15 +93,7 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation */}
-      <View style={styles.topNav}>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <MaterialIcons name="group" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>New Subscribers</Text>
-        </TouchableOpacity>
-      </View>
+
 
       {/* Search Input */}
       <View style={styles.searchContainer}>
@@ -169,37 +161,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCC',
     flex: 1,
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-    justifyContent: 'center',
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 4,
-    paddingRight: 5,
-    paddingLeft: 5,
-    borderRadius: 50,
-    justifyContent: 'space-around',
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    margin: 7,
-    paddingHorizontal: 32,
-  },
+ 
 
   // Search Bar Styles
   searchContainer: {

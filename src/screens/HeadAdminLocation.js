@@ -111,16 +111,7 @@ const HeadAdminLocation = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Top Navigation Bar */}
-      <View style={styles.topNav}>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <Ionicons name="location-outline" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>LOCATION</Text>
-        </TouchableOpacity>
-      </View>
-
+  
       {/* Search Input */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -167,35 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#CCC',
     flex: 1,
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 50,
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    margin: 7,
-    paddingHorizontal: 10,
-  },
+ 
   searchContainer: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',

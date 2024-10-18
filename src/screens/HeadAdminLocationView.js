@@ -17,22 +17,6 @@ const HeadAdminLocationView = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topNav}>
-        {/* Back Button */}
-        <View style={styles.backButtonContainer}>
-          <TouchableOpacity onPress={handleback}>
-            <Icon name="arrow-left" size={28} color="#A3238F" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Title */}
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <Ionicons name="location-outline" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>LOCATION</Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Location Details */}
       <View style={styles.locationDetailsContainer}>
@@ -62,40 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#fff',
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-    marginRight: 70,
-    marginLeft: 50,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 4,
-    paddingRight: 5,
-    paddingLeft: 5,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginHorizontal: 5,
-  },
+  
   locationDetailsContainer: {
     height: height * 0.25,
     paddingHorizontal: 20,

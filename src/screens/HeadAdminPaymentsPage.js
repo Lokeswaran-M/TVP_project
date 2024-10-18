@@ -81,14 +81,14 @@ const HeadAdminPaymentsPage = ({ navigation }) => {
     };
   return (
     <View style={styles.container}>
-      <View style={styles.topNav}>
+      {/* <View style={styles.topNav}>
         <TouchableOpacity style={styles.buttonNavtop}>
           <View style={styles.topNavlogo}>
             <MaterialIcons name="group" size={28} color="#FFFFFF" />
           </View>
           <Text style={styles.NavbuttonText}>Payments</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -141,35 +141,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Top Navigation
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-    justifyContent: 'center',
-  },
-  buttonNavtop: {
-    borderRadius: 25,
-    alignItems: 'center',
-    borderColor: '#A3238F',
-    borderWidth: 2,
-    flexDirection: 'row',
-  },
-  topNavlogo: {
-    backgroundColor: '#A3238F',
-    padding: 4,
-    borderRadius: 50,
-    justifyContent: 'center',
-  },
-  NavbuttonText: {
-    color: '#A3238F',
-    fontSize: width * 0.04, // Scalable font size
-    fontWeight: 'bold',
-    marginHorizontal: 10,
-  },
+  // // Top Navigation
+  // topNav: {
+  //   backgroundColor: '#FFFFFF',
+  //   paddingVertical: 12,
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   borderBottomEndRadius: 15,
+  //   borderBottomStartRadius: 15,
+  //   justifyContent: 'center',
+  // },
+  // buttonNavtop: {
+  //   borderRadius: 25,
+  //   alignItems: 'center',
+  //   borderColor: '#A3238F',
+  //   borderWidth: 2,
+  //   flexDirection: 'row',
+  // },
+  // topNavlogo: {
+  //   backgroundColor: '#A3238F',
+  //   padding: 4,
+  //   borderRadius: 50,
+  //   justifyContent: 'center',
+  // },
+  // NavbuttonText: {
+  //   color: '#A3238F',
+  //   fontSize: width * 0.04, // Scalable font size
+  //   fontWeight: 'bold',
+  //   marginHorizontal: 10,
+  // },
 
   // Search Bar Styles
   searchContainer: {
