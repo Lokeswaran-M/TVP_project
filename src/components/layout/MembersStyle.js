@@ -127,6 +127,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#A3238F',
     },
+    alarmContainer: {
+        margin:11,
+    },
 });
 
 export default styles;
