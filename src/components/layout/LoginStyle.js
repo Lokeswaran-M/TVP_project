@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.04,
     fontSize: width * 0.04, 
     paddingTop: height * 0.02, 
+    color: 'black',
   },
   icon: {
     paddingHorizontal: width * 0.025,
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
     bottom: height * 0.05, 
   },
   registerText: {
+    marginTop: 50,
     fontSize: width * 0.035, 
     color: '#888',
   },
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
   radioButtonLabel: {
     fontSize: 16,
     marginLeft: 8, 
-    color:'grey',
+    color:'black',
   },
 
 

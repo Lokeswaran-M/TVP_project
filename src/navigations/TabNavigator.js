@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from '../screens/HomeScreen';
 import Members from '../screens/MembersList';
+import Post from '../screens/Post';
 import MemberDetails from '../screens/MemberDetails';
 import MultiBusinessMembers from '../screens/MultiBusinessMembers';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,6 +14,9 @@ import { launchCamera } from 'react-native-image-picker';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import Scanner from '../screens/Scanner';
+import MultiBusinessScanner from '../screens/MultiBusinessScanner';
+import MultiBusinessPost from '../screens/MultiBusinessPost';
+import MultiBusinessCamera from '../screens/MultiBusinessCamera';
 import { TabView, SceneMap } from 'react-native-tab-view';
 const CameraScreen = ({ navigation, profileData }) => {
   const userId = useSelector((state) => state.user?.userId);
@@ -135,9 +139,17 @@ const TabNavigator = () => {
             iconName = 'users';
           } else if (route.name === 'MultiBusinessMembers') {
             iconName = 'users';
+          } else if (route.name === 'Post') {
+            iconName = 'picture-o';
+          } else if (route.name === 'MultiBusinessPost') {
+            iconName = 'picture-o';
           } else if (route.name === 'Scanner') {
             iconName = 'qrcode';
+          } else if (route.name === 'MultiBusinessScanner') {
+            iconName = 'qrcode';
           } else if (route.name === 'Camera') {
+            iconName = 'camera';
+          } else if (route.name === 'MultiBusinessCamera') {
             iconName = 'camera';
           }
           const iconSize = focused ? size + 5 : size;
@@ -152,22 +164,38 @@ const TabNavigator = () => {
         tabBarStyle: { backgroundColor: '#fff' },
       })}
     >
-      <Tab.Screen name="Dashboard" component={Dashboard} options={{ title: 'Home' }} />
+       <Tab.Screen name="Dashboard" component={Dashboard} options={{ title: 'Home' }} />
+  {profileData?.CategoryId === 1 && (
+    <>
       <Tab.Screen name="Scanner" component={Scanner} options={{ title: 'Scanner' }} />
-      <Tab.Screen
-        name="Camera"
-        component={CameraScreen}
-        options={{ title: 'Camera' }}
-      />
-      {profileData?.CategoryId === 1 && (
+      <Tab.Screen name="Post" component={Post} options={{ title: 'Post' }} />
+      <Tab.Screen name="Camera" component={CameraScreen} options={{ title: 'Camera' }} />
       <Tab.Screen name="Member" component={Memberstack} options={{ title: 'Members' }} />
-    )}
+    </>
+  )}
       {profileData?.CategoryId === 2 && (
+        <>
+        <Tab.Screen
+          name="MultiBusinessScanner"
+          component={MultiBusinessScanner}
+          options={{ title: 'Scanner' }}
+        />
+        <Tab.Screen
+          name="MultiBusinessPost"
+          component={MultiBusinessPost}
+          options={{ title: 'Post' }}
+        />
+        <Tab.Screen
+          name="MultiBusinessCamera"
+          component={MultiBusinessCamera}
+          options={{ title: 'Camera' }}
+        />
         <Tab.Screen
           name="MultiBusinessMembers"
           component={MultiMemberstack}
           options={{ title: 'Members' }}
         />
+        </>
       )}
     </Tab.Navigator>
   );

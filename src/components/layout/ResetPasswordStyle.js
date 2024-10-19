@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     height: height * 0.06, 
     paddingHorizontal: width * 0.03, 
     fontSize: width * 0.04, 
+    color: 'black',
   },
   eyeIcon: {
     padding: width * 0.025, 

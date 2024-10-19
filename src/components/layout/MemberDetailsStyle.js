@@ -76,10 +76,8 @@ const styles = StyleSheet.create({
   marginBottom: 10,
       fontWeight: 'bold',
       color: '#A3238F',
-      transform: [{ translateY: -5}],
     },
     valuetop: {
-      transform: [{ translateY: -10}],
       bottom: 6,
       marginTop: 10,
       color: 'black',
