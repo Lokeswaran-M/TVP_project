@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+
   container: {
     backgroundColor: '#DDDDDD',
     flex: 1,
@@ -92,22 +93,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  memberCountContainer: {
-    position: 'absolute',
-    backgroundColor: 'rgba(250, 250, 250, 0.8)',
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#A3238F',
-    marginLeft: 250,
-    marginTop: 600,
-  },
-  memberCountText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#A3238F',
-  },
+  
   alarmContainer: {
     margin: 11,
   },
@@ -249,7 +235,24 @@ const styles = StyleSheet.create({
   },
   alarmContainer: {
     margin: 11,
-  }
+  },
+ memberCountContainer: {
+        position: 'absolute',
+        backgroundColor: 'rgba(250, 250, 250, 0.8)',
+        padding: 10,
+        alignItems: 'center',
+        borderRadius: 20,
+        borderWidth: 2,
+        borderColor: '#A3238F',
+        marginLeft: 250,
+        marginTop: 600,
+    },
+    memberCountText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#A3238F',
+    },
+
 });
 
 export default styles;
