@@ -128,10 +128,6 @@ const TabNavigator = () => {
               });
             }
           }, [focused]);
-          const rotate = rotation.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['0deg', '360deg'],
-          });
           let iconName;
           if (route.name === 'Dashboard') {
             iconName = 'home';
@@ -154,7 +150,7 @@ const TabNavigator = () => {
           }
           const iconSize = focused ? size + 5 : size;
           return (
-            <Animated.View style={{ transform: [{ rotate }] }}>
+            <Animated.View>
               <Icon name={iconName} size={iconSize} color={color} />
             </Animated.View>
           );

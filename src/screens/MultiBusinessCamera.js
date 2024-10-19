@@ -18,7 +18,6 @@ const MultiBusinessCamera = () => {
   );
 };
 
-
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
