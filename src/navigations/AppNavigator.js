@@ -19,7 +19,9 @@ import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import CreateQR from '../screens/CreateQR';
+import OneMinPresentation from '../screens/OneMinPresentation';
 import Attendance from '../screens/Attendance';
+import StopWatch from '../screens/StopWatch';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
@@ -154,6 +156,32 @@ function StackPaymentNavigator() {
         options={{ headerShown: false, title: 'PaymentWebview'}}
       />
     </StackPayment.Navigator>
+  );
+}
+
+const StackOneMinPresentation = createStackNavigator();
+
+function StackOneMinPresentationNavigator() {
+  return (
+    <StackOneMinPresentation.Navigator
+      screenOptions={{
+        headerTintColor: '#000',
+        headerStyle: {
+          backgroundColor: '#fff',
+        },
+      }}
+    >
+      <StackOneMinPresentation.Screen
+        name="OneMinPresentation"
+        component={OneMinPresentation}
+        options={{ headerShown: false, title: 'OneMinPresentation'}}
+      />
+      <StackOneMinPresentation.Screen
+        name="StopWatch"
+        component={StopWatch}
+        options={{ headerShown: false, title: 'StopWatch'}}
+      />
+    </StackOneMinPresentation.Navigator>
   );
 }
 
@@ -476,29 +504,6 @@ function DrawerNavigator() {
             })}
           />
           <Drawer.Screen
-            name="CreateQR"
-            component={CreateQR}
-            options={({ navigation }) => ({
-              drawerLabel: 'Create QR',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="qrcode" color={color} size={size} />
-              ),
-              header: () => (
-                <View style={styles.topNav}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                    <Icon name="navicon" size={20} color="black" />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buttonNavtop}>
-                    <View style={styles.topNavlogo}>
-                      <Icon name="qrcode" size={28} color="#FFFFFF" />
-                    </View>
-                    <Text style={styles.NavbuttonText}>CREATE QR</Text>
-                  </TouchableOpacity>
-                </View>
-              ),
-            })}
-          />
-          <Drawer.Screen
             name="Attendance"
             component={Attendance}
             options={({ navigation }) => ({
@@ -515,7 +520,30 @@ function DrawerNavigator() {
                     <View style={styles.topNavlogo}>
                       <Icon name="calendar-check-o" size={28} color="#FFFFFF" />
                     </View>
-                    <Text style={styles.NavbuttonText}>ATTENDANCE</Text>
+                    <Text style={styles.NavbuttonText}>Attendence</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+          <Drawer.Screen
+            name="OneMinPresentation"
+            component={StackOneMinPresentationNavigator}
+            options={({ navigation }) => ({
+              drawerLabel: 'One Min Presentation',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="microphone" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="microphone" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>ONE MIN PRESENTATION</Text>
                   </TouchableOpacity>
                 </View>
               ),
