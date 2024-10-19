@@ -11,8 +11,8 @@ import AdminPage from '../screens/AdminPage';
 // import PaymentWebView from '../screens/PaymentWebview';
 
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
-
-import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
+import MemberDetails from '../screens/MemberDetails';
+// import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
 
 import HeadAdminNewSubscribers from '../screens/HeadAdminNewSubscribers';
 import HeadAdminPaymentsPage from '../screens/HeadAdminPaymentsPage';
@@ -128,7 +128,7 @@ const AuthNavigator = () => {
 const AdminMemberstack = () => (
   <Stack.Navigator>
     <Stack.Screen name="HeadAdminMembersPage" component={HeadAdminMembersPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null,  }} />
-    <Stack.Screen name="HeadAdminMemberViewPage" component={HeadAdminMemberViewPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
+    <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
   </Stack.Navigator>
 );
 const AdminLocationstack = () => (
