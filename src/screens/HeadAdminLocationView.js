@@ -1,34 +1,32 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-
 
 const { width, height } = Dimensions.get('window');
 
 const HeadAdminLocationView = ({ route }) => {
-  const { Location } = route.params;
+  // Access the location data passed through route.params
+  const { location } = route.params;
   const navigation = useNavigation();
 
-  const handleback = () => {
-    navigation.navigate('HeadAdminLocation'); 
-  };
-
+ 
   return (
     <View style={styles.container}>
 
       {/* Location Details */}
       <View style={styles.locationDetailsContainer}>
-        <Text style={styles.locationName}>{Location.Location}</Text>
+        <Text style={styles.locationName}>{location.LocationName}</Text>
       </View>
 
       {/* Place Label */}
-      <Text style={styles.placehead}>Place:</Text>
 
+      
       {/* Place Details */}
       <View style={styles.PlaceDetailsContainer}>
-        <Text style={styles.PlaceName}>{Location.Place}</Text>
+      <Text style={styles.PlaceNameHead}>Meetin Place:</Text>
+        <Text style={styles.PlaceName}>{location.Place}</Text>
+        
       </View>
     </View>
   );
@@ -63,14 +61,7 @@ const styles = StyleSheet.create({
     color: '#A3238F',
     textAlign: 'center',
   },
-  placehead: {
-    position: 'absolute',
-    color: '#A3238F',
-    fontSize: 20,
-    marginTop: height * 0.45, 
-    marginLeft: 50,
-    fontWeight: '500',
-  },
+
   PlaceDetailsContainer: {
     height: height * 0.12, 
     paddingHorizontal: 20,
@@ -80,7 +71,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{ translateY: -18 }],
+    transform: [{ translateY: -39 }],
+  },
+  PlaceNameHead:{
+  color:'black',
+  fontSize:15,
+  fontWeight:'600',
+  marginBottom:10,
   },
   PlaceName: {
     fontSize: 25,
