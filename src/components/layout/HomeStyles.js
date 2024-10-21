@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
       marginBottom: 10,
     },
     line: {
-        margin: 10,
+        margin: 15,
     },
     buttonContent: {
         flexDirection: 'row',

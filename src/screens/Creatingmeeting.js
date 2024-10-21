@@ -59,7 +59,7 @@ const CreatingMeeting = () => {
   const handleDelete = async (eventId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
-        method: 'DELETE',
+        method: 'PUT',
       });
       if (!response.ok) {
         throw new Error('Failed to delete the meeting');
@@ -84,14 +84,10 @@ const CreatingMeeting = () => {
       <ScrollView>
         <TouchableWithoutFeedback onPress={closeOptions}>
           <View style={styles.container}>
-            {/* Button to create a new meeting */}
             <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
               <Text style={styles.buttonText}>Create New Meeting</Text>
             </TouchableOpacity>
-    
             <Text style={styles.title}>Upcoming Business Meetup</Text>
-    
-            {/* Conditional rendering for meeting data */}
             {meetingData.length > 0 ? (
               meetingData.map((meeting, index) => (
                 <View key={index} style={styles.meetingCard}>
