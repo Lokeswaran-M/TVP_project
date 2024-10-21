@@ -14,8 +14,6 @@ import { launchCamera } from 'react-native-image-picker';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSelector } from 'react-redux';
 import Scanner from '../screens/Scanner';
-import MultiBusinessScanner from '../screens/MultiBusinessScanner';
-import MultiBusinessPost from '../screens/MultiBusinessPost';
 import MultiBusinessCamera from '../screens/MultiBusinessCamera';
 import { TabView, SceneMap } from 'react-native-tab-view';
 const CameraScreen = ({ navigation, profileData }) => {
@@ -137,11 +135,7 @@ const TabNavigator = () => {
             iconName = 'users';
           } else if (route.name === 'Post') {
             iconName = 'picture-o';
-          } else if (route.name === 'MultiBusinessPost') {
-            iconName = 'picture-o';
           } else if (route.name === 'Scanner') {
-            iconName = 'qrcode';
-          } else if (route.name === 'MultiBusinessScanner') {
             iconName = 'qrcode';
           } else if (route.name === 'Camera') {
             iconName = 'camera';
@@ -161,26 +155,16 @@ const TabNavigator = () => {
       })}
     >
        <Tab.Screen name="Dashboard" component={Dashboard} options={{ title: 'Home' }} />
+       <Tab.Screen name="Scanner" component={Scanner} options={{ title: 'Scanner' }} />
+       <Tab.Screen name="Post" component={Post} options={{ title: 'Post' }} />
   {profileData?.CategoryId === 1 && (
     <>
-      <Tab.Screen name="Scanner" component={Scanner} options={{ title: 'Scanner' }} />
-      <Tab.Screen name="Post" component={Post} options={{ title: 'Post' }} />
       <Tab.Screen name="Camera" component={CameraScreen} options={{ title: 'Camera' }} />
       <Tab.Screen name="Member" component={Memberstack} options={{ title: 'Members' }} />
     </>
   )}
       {profileData?.CategoryId === 2 && (
         <>
-        <Tab.Screen
-          name="MultiBusinessScanner"
-          component={MultiBusinessScanner}
-          options={{ title: 'Scanner' }}
-        />
-        <Tab.Screen
-          name="MultiBusinessPost"
-          component={MultiBusinessPost}
-          options={{ title: 'Post' }}
-        />
         <Tab.Screen
           name="MultiBusinessCamera"
           component={MultiBusinessCamera}

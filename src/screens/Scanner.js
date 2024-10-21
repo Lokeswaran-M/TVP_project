@@ -1,23 +1,25 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
   Text,
   PermissionsAndroid,
   StyleSheet,
+  useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { RNCamera as BarCodeScanner } from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { API_BASE_URL } from '../constants/Config';
+import { TabView, TabBar } from 'react-native-tab-view';
+import { useSelector } from 'react-redux';
 
 const Scanner = () => {
   const [isQRScannerVisible, setIsQRScannerVisible] = useState(false);
   const cameraRef = useRef(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
-
-  // Handle QR code scan
   const handleQRCodeScan = ({ data }) => {
     console.log('QR Code Scanned:', data);
-    // Add your logic for what to do with the scanned data
     setIsQRScannerVisible(false); 
   };
 
@@ -81,6 +83,77 @@ const Scanner = () => {
     </View>
   );
 };
+export default function TabViewExample({ navigation }) {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes, setRoutes] = useState([]);
+  const userId = useSelector((state) => state.user?.userId);
+  const [businessInfo, setBusinessInfo] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          const updatedRoutes = data.map((business, index) => ({
+            key: `business${index + 1}`,
+            title: business.BD,
+            chapterType: business.CT,
+            locationId: business.L,
+          }));
+          setRoutes(updatedRoutes);
+          setBusinessInfo(data);
+        } else {
+          console.error('Error fetching business info:', data.message);
+        }
+      } catch (error) {
+        console.error('API call error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinessInfo();
+  }, [userId]);
+
+  const renderScene = ({ route }) => {
+    const business = businessInfo.find((b) => b.BD === route.title);
+    return (
+      <Scanner
+        title={route.title}
+        chapterType={business?.CT}
+        locationId={business?.L}
+        userId={userId}
+        navigation={navigation}
+      />
+    );
+  };
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: '#A3238F' }}
+      style={{ backgroundColor: '#F3ECF3' }}
+      activeColor="#A3238F"
+      inactiveColor="gray"
+      labelStyle={{ fontSize: 14 }}
+    />
+  );
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+  return (
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      renderTabBar={renderTabBar}
+    />
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -122,7 +195,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Scanner;
 
 
 
