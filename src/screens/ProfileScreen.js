@@ -131,10 +131,12 @@ const Profile = () => {
 <Text style={styles.info}>{multiProfile?.businessInfo?.Profession || 'None'}</Text>
 <Text style={styles.label}>Business Name</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.BusinessName || 'None'}</Text>
-<Text style={styles.label}>Description</Text>
-<Text style={styles.description}>{multiProfile?.businessInfo?.Description || 'None'}</Text>
 <Text style={styles.label}>Business Address</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.Address || 'None'}</Text>
+<Text style={styles.label}>Email ID</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.Email || 'None'}</Text>
+<Text style={styles.label}>Description</Text>
+<Text style={styles.description}>{multiProfile?.businessInfo?.Description || 'None'}</Text>
             </>
             ) : (
               <>
@@ -153,10 +155,14 @@ const Profile = () => {
             <Text style={styles.info}>{profileData?.businessInfo?.Profession || 'None'}</Text>
             <Text style={styles.label}>Business Name</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.BusinessName || 'None'}</Text>
-            <Text style={styles.label}>Description</Text>
-            <Text style={styles.description}>{profileData?.businessInfo?.Description || 'None'}</Text>
             <Text style={styles.label}>Business Address</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.Address || 'None'}</Text>
+            <Text style={styles.label}>Email</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.Email || 'None'}</Text>
+            <Text style={styles.label}>Mobile Number</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.Mobileno || 'None'}</Text>
+            <Text style={styles.label}>Description</Text>
+            <Text style={styles.description}>{profileData?.businessInfo?.Description || 'None'}</Text>
             </>
             )}
             {categoryID === 2 ? (

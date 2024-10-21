@@ -80,12 +80,20 @@ const MemberDetails = () => {
     setIsPromoted(!isPromoted);
     // Alert.alert(isPromoted ? 'Demoted' : 'Promoted', `User has been ${isPromoted ? 'demoted' : 'promoted'} to admin.`);
   };
-  
-  const handleWhatsApp = () => {
-    if (userDetails && userDetails.businessInfo.Mobileno) {
-      Linking.openURL(`whatsapp://send?phone=${userDetails.businessInfo.Mobileno}`);
-    }
-  };
+
+const handleWhatsApp = () => {
+  if (userDetails && userDetails.businessInfo.Mobileno) {
+    const phoneNumber = userDetails.businessInfo.Mobileno;
+    const countryCode = "+91";
+    const formattedPhoneNumber = `${countryCode}${phoneNumber}`;
+    Linking.openURL(`whatsapp://send?phone=${formattedPhoneNumber}`);
+  }
+};
+//  const handleWhatsApp = () => {
+//     if (userDetails && userDetails.businessInfo.Mobileno) {
+//       Linking.openURL(whatsapp://send?phone=${userDetails.businessInfo.Mobileno});
+//     }
+//   };
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -113,7 +121,8 @@ const MemberDetails = () => {
           <View style={styles.userInfotop}>
             <Text style={styles.labeltop1}>{businessInfo.Username}</Text>
             <Text style={styles.valuetop}>
-              <Stars averageRating={overallAverage} /> {overallAverage} out of 5
+              <Stars averageRating={overallAverage} />
+              <Text style={styles.valuetop}>{overallAverage} out of 5</Text> 
             </Text>
           </View>
         </View>

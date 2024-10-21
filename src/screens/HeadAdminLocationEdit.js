@@ -6,41 +6,57 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  Alert,
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+import { API_BASE_URL } from '../constants/Config'; 
 // Get screen dimensions
 const { width, height } = Dimensions.get('window');
 
 const HeadAdminLocationEdit = ({ route, navigation }) => {
-  const { Location } = route.params;
+  const { LocationID, Place, LocationName } = route.params; // Destructure parameters from route
+  console.log('---------------------------headadminedit page', LocationID, Place, LocationName);
 
   // Initialize state for edited place name
-  const [editedPlace, setEditedPlace] = useState(Location.Place);
-  const handleback = () => {
-    navigation.navigate('HeadAdminLocation'); 
-  };
-  const handleSave = () => {
-    // Pass the updated place name back to the previous screen
-    navigation.navigate('HeadAdminLocation', {
-      editedLocation: Location.Location,
-      editedPlace: editedPlace,
-    });
-   
+  const [editedPlace, setEditedPlace] = useState(Place);
+
+  const handleSave = async () => {
+    try {
+      // Send PUT request to update the location
+      
+      const response = await fetch(`${API_BASE_URL}/Locations/${LocationID}`, { // Replace with your actual API URL
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          LocationName, // Include the existing LocationName from params
+          Place: editedPlace, // Send the updated place
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', data.message); // Show success message
+        navigation.navigate('HeadAdminLocation'); // Navigate back to the list
+      } else {
+        Alert.alert('Error', data.error || 'Failed to update location.'); // Show error message
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An unexpected error occurred.'); // Handle network errors
+      console.error(error);
+    }
   };
 
   return (
     <View style={styles.container}>
- 
-
-      {/* Location Details */}
+      {/* Location Name Display */}
       <View style={styles.locationDetailsContainer}>
-        <Text style={styles.locationName}>{Location.Location}</Text>
+        <Text style={styles.locationName}>{LocationName}</Text>
       </View>
 
-      {/* Edit Place Details */}
-      <View style={styles.PlaceDetailsContainer}>
+      {/* Edit Place Input */}
+      <View style={styles.placeDetailsContainer}>
         <TextInput
           style={styles.input}
           value={editedPlace}
@@ -64,30 +80,28 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
   );
 };
 
-// Responsive styles
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#CCC',
   },
- 
-
   locationDetailsContainer: {
-    height: height * 0.15, // Adjusting height dynamically
+    height: height * 0.15, 
     paddingHorizontal: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 100, // Adjusted margin for better spacing
+    marginTop: 100,
   },
   locationName: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#A3238F',
   },
-  PlaceDetailsContainer: {
+  placeDetailsContainer: {
     paddingHorizontal: 20,
     paddingVertical: 20,
     backgroundColor: '#f0e1eb',

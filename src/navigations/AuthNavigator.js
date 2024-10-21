@@ -8,11 +8,12 @@ import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
+
 // import PaymentWebView from '../screens/PaymentWebview';
 
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
-
-import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
+import MemberDetails from '../screens/MemberDetails';
+// import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
 
 import HeadAdminNewSubscribers from '../screens/HeadAdminNewSubscribers';
 import HeadAdminPaymentsPage from '../screens/HeadAdminPaymentsPage';
@@ -108,8 +109,8 @@ const AuthNavigator = () => {
       <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password', ...headerOptions }} />
       <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',  ...headerOptions}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
-      <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  ...headerOptions}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
@@ -128,7 +129,7 @@ const AuthNavigator = () => {
 const AdminMemberstack = () => (
   <Stack.Navigator>
     <Stack.Screen name="HeadAdminMembersPage" component={HeadAdminMembersPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null,  }} />
-    <Stack.Screen name="HeadAdminMemberViewPage" component={HeadAdminMemberViewPage} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
+    <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
   </Stack.Navigator>
 );
 const AdminLocationstack = () => (

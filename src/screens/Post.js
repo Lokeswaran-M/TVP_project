@@ -1,14 +1,12 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 
-const Attendence = () => {
+const Post = () => {
   return (
     <View>
-        <Text>
-            Attendence
-        </Text>
+        <Text> Posts </Text>
     </View>
   )
 }
 
-export default Attendence
+export default Post

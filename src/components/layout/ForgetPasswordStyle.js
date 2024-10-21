@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     height: height * 0.07, 
     borderBottomWidth: 0,
     paddingHorizontal: width * 0.03, 
+    color: 'black',
   },
   icon: {
     marginHorizontal: width * 0.03, 

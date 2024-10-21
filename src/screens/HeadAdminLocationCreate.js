@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import { API_BASE_URL } from '../constants/Config'; // Import your API base URL
 
 // Get screen dimensions
 const { width, height } = Dimensions.get('window');
@@ -19,12 +20,42 @@ const HeadAdminLocationCreate = () => {
   const [locationName, setLocationName] = useState('');
   const [placeName, setPlaceName] = useState('');
 
+  // Handle Cancel action
   const handleCancel = () => {
     navigation.navigate('HeadAdminLocation'); // Navigate back to the previous screen
   };
-  
-  const handleSave = () => {
-    navigation.goBack(); // Navigate back to the previous screen
+
+  // Handle Save action
+  const handleSave = async () => {
+    if (!locationName || !placeName) {
+      Alert.alert('Error', 'Please fill out all fields.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/locations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          LocationName: locationName,
+          Place: placeName,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Location created successfully!', [
+          { text: 'OK', onPress: () => navigation.navigate('HeadAdminLocation') },
+        ]);
+      } else {
+        Alert.alert('Error', result.error || 'Location creation failed');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -40,8 +71,8 @@ const HeadAdminLocationCreate = () => {
             style={styles.input}
             value={locationName}
             onChangeText={setLocationName}
-            placeholder="Enter location"
-            placeholderTextColor="#D1C7E0"
+            placeholder="Enter location..."
+            placeholderTextColor="gray"
           />
         </View>
 
@@ -52,8 +83,8 @@ const HeadAdminLocationCreate = () => {
             style={styles.input}
             value={placeName}
             onChangeText={setPlaceName}
-            placeholder="Enter place"
-            placeholderTextColor="#D1C7E0"
+            placeholder="Enter place..."
+            placeholderTextColor="gray"
           />
         </View>
 
@@ -81,10 +112,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 25,
     justifyContent: 'center',
-    marginTop: height * 0.05, // Adjust margin dynamically based on screen height
+    marginTop: height * 0.20, // Adjust margin dynamically based on screen height
     marginBottom: height * 0.05,
     marginLeft: height * 0.03,
     marginRight: height * 0.03,
+    backgroundColor:'#FFFFFF',
+    borderRadius:10,
+
   },
   Blabel: {
     fontSize: 23,

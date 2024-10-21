@@ -1,96 +1,133 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList, Dimensions, BackHandler, } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Dimensions,
+  BackHandler,
+  ActivityIndicator,Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { API_BASE_URL } from '../constants/Config';
+
 const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
 const HeadAdminPaymentsPage = ({ navigation }) => {
-    const [searchQuery, setSearchQuery] = useState(''); 
-    const [members, setMembers] = useState([]); // State to store the new members
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null); // Error state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [members, setMembers] = useState([]); // State to store the new members
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+
+  // Fetch members from the API
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/last-week`);
+      const data = await response.json();
+      console.log("Data for new sub----------------------",data);
+    //   data.members.forEach(member => {
+    //     console.log("ROLLID IN MEMBERS LIST SCREEN---------------------------------", member.UserId);
+    // });
   
-    // Fetch members from the API
-    const fetchMembers = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/users/last-week`);
-        const data = await response.json();
+      if (response.ok) {
+        // Fetch profile images for each member
+        const updatedMembers = await Promise.all(data.map(async (member) => {
+          try {
+            // Fetch profile image for each member
+            const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
   
-        if (response.ok) {
-          setMembers(data); // Set members data if the API call is successful
-        } else {
-          throw new Error(data.message || 'Failed to fetch members.');
-        }
-      } catch (err) {
-        setError(err.message); // Set error if something goes wrong
-      } finally {
-        setLoading(false); // Set loading to false once the API call is done
+            if (imageResponse.ok) {
+              const imageData = await imageResponse.json();
+              const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+              member.profileImage = uniqueImageUrl; // Assign image URL to member
+              
+              // Print the image URL to the console
+              console.log(`Profile Image URL for ${member.Username}: ${member.profileImage}`); // Log image URL
+            } else {
+              console.error('Failed to fetch profile image:', member.UserId);
+              member.profileImage = null; // Set image to null if fetch fails
+            }
+          } catch (error) {
+            console.error('Error fetching image:', error); // Log image fetch errors
+            member.profileImage = null; // Set image to null if there is an error
+          }
+          return member; // Return member with updated profile image
+        }));
+  
+        setMembers(updatedMembers); // Set members data with profile images
+      } else {
+        throw new Error(data.message || 'Failed to fetch members.');
       }
-    };
+    } catch (err) {
+      setError(err.message); // Set error if something goes wrong
+    } finally {
+      setLoading(false); // Set loading to false once the API call is done
+    }
+  };
   
-    // Fetch data when the component mounts
-    useEffect(() => {
-      fetchMembers(); // Fetch new members when the component mounts
-  
-      // Set the tabBar to be shown when the screen is focused
-      const unsubscribe = navigation.addListener('focus', () => {
+
+  // Fetch data when the component mounts
+  useEffect(() => {
+    fetchMembers(); // Fetch new members when the component mounts
+
+    // Set the tabBar to be shown when the screen is focused
+    const unsubscribe = navigation.addListener('focus', () => {
+      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
+    });
+
+    // Handle back button press to manage the tab bar and search field visibility
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (searchQuery) {
+        // If searchQuery is not empty, clear the search and show the tab bar
+        setSearchQuery(''); // Clear search query
         navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-      });
-  
-      // Handle back button press to manage the tab bar and search field visibility
-      const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-        if (searchQuery) {
-          // If searchQuery is not empty, clear the search and show the tab bar
-          setSearchQuery(''); // Clear search query
-          navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-          return true; // Prevent default back button behavior
-        }
-        return false; // Allow default back button behavior if no search query
-      });
-  
-      return () => {
-        unsubscribe(); // Cleanup the navigation listener
-        backHandler.remove(); // Cleanup the back button listener
-      };
-    }, [navigation, searchQuery]);
-  
-    // Filter members based on the search query
-    const filteredMembers = members.filter((member) =>
-      member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  
-    // Render member item
-    const renderMember = ({ item }) => (
-      <View style={styles.memberItem}>
-        <View style={styles.memberDetails}>
-          <ProfilePic name={item.Username} />
-          <View style={styles.memberText}>
-            <Text style={styles.memberName}>{item.Username}</Text>
-          </View>
+        return true; // Prevent default back button behavior
+      }
+      return false; // Allow default back button behavior if no search query
+    });
+
+    return () => {
+      unsubscribe(); // Cleanup the navigation listener
+      backHandler.remove(); // Cleanup the back button listener
+    };
+  }, [navigation, searchQuery]);
+
+  // Filter members based on the search query
+  const filteredMembers = members.filter((member) =>
+    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Render member item
+  const renderMember = ({ item }) => (
+    <View style={styles.memberItem}>
+      <View style={styles.memberDetails}>
+        <ProfilePic image={item.profileImage} name={item.Username} />
+        <View style={styles.memberText}>
+          <Text style={styles.memberName}>{item.Username}</Text>
         </View>
       </View>
-    );
-  
-    const handleFocus = () => {
-      navigation.setOptions({ tabBarStyle: { display: 'none' } });
-    };
-  
-    const handleBlur = () => {
-      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-    };
+    </View>
+  );
+
+  const handleFocus = () => {
+    navigation.setOptions({ tabBarStyle: { display: 'none' } });
+  };
+
+  const handleBlur = () => {
+    navigation.setOptions({ tabBarStyle: { display: 'flex' } });
+  };
+
   return (
     <View style={styles.container}>
-      {/* <View style={styles.topNav}>
-        <TouchableOpacity style={styles.buttonNavtop}>
-          <View style={styles.topNavlogo}>
-            <MaterialIcons name="group" size={28} color="#FFFFFF" />
-          </View>
-          <Text style={styles.NavbuttonText}>Payments</Text>
-        </TouchableOpacity>
-      </View> */}
 
-      {/* Search Bar */}
+      {/* Search Input */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -107,71 +144,60 @@ const HeadAdminPaymentsPage = ({ navigation }) => {
         </View>
       </View>
 
-      <FlatList
-        data={filteredMembers}
-        renderItem={renderMember}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.memberList}
-      />
+      {/* Loading or Members List */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#A3238F" style={styles.loader} />
+      ) : (
+        <>
+          {/* Error Handling */}
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : (
+            <>
+              {/* Members List */}
+              <FlatList
+                data={filteredMembers}
+                renderItem={renderMember}
+               
+                contentContainerStyle={styles.memberList}
+              />
 
-
-      {/* Member Count */}
-      <View style={styles.memberCountContainer}>
-        <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
-      </View>
+              {/* Member Count */}
+              <View style={styles.memberCountContainer}>
+                <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
+              </View>
+            </>
+          )}
+        </>
+      )}
     </View>
   );
 };
 
-// Profile Picture Component
-const ProfilePic = ({ name }) => {
+// Profile Pic Component
+const ProfilePic = ({ image, name }) => {
   const initial = name.charAt(0).toUpperCase();
 
   return (
     <View style={styles.profilePicContainer}>
-      <Text style={styles.profilePicText}>{initial}</Text>
+      {image ? (
+        <Image source={{ uri: image }} style={styles.profileImage} />
+      ) : (
+        <Text style={styles.profilePicText}>{initial}</Text>
+      )}
     </View>
   );
 };
 
-// Styles with responsiveness
+// Styles
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#CCC',
     flex: 1,
   },
 
-  // // Top Navigation
-  // topNav: {
-  //   backgroundColor: '#FFFFFF',
-  //   paddingVertical: 12,
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   borderBottomEndRadius: 15,
-  //   borderBottomStartRadius: 15,
-  //   justifyContent: 'center',
-  // },
-  // buttonNavtop: {
-  //   borderRadius: 25,
-  //   alignItems: 'center',
-  //   borderColor: '#A3238F',
-  //   borderWidth: 2,
-  //   flexDirection: 'row',
-  // },
-  // topNavlogo: {
-  //   backgroundColor: '#A3238F',
-  //   padding: 4,
-  //   borderRadius: 50,
-  //   justifyContent: 'center',
-  // },
-  // NavbuttonText: {
-  //   color: '#A3238F',
-  //   fontSize: width * 0.04, // Scalable font size
-  //   fontWeight: 'bold',
-  //   marginHorizontal: 10,
-  // },
-
-  // Search Bar Styles
   searchContainer: {
     flexDirection: 'row',
     padding: 0,
@@ -179,14 +205,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     color: '#A3238F',
     borderRadius: 10,
-    marginVertical: 10,
-    marginHorizontal: width * 0.1, // Responsive margin
+    margin: 10,
+    marginHorizontal: width * 0.1, // Use width as percentage
   },
   searchInput: {
     flex: 1,
     borderRadius: 25,
     paddingLeft: 50,
-    fontSize: width * 0.04, // Scalable font size
+    fontSize: 16,
     paddingVertical: 8,
   },
   searchIconContainer: {
@@ -196,7 +222,6 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -12 }],
   },
 
-  // Members List Styles
   memberList: {
     flexGrow: 1,
     paddingHorizontal: 10,
@@ -206,6 +231,7 @@ const styles = StyleSheet.create({
   memberItem: {
     backgroundColor: '#FFFFFF',
     padding: 8,
+    paddingVertical:15,
     borderRadius: 10,
     marginBottom: 8,
     elevation: 2,
@@ -216,48 +242,81 @@ const styles = StyleSheet.create({
   memberDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+  },
+  memberText: {
+    marginLeft: 10,
+  },
+  memberName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  memberCountContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: width * 0.75,
+    backgroundColor: 'rgba(250, 250, 250, 0.8)',
+    padding: 10,
+    borderRadius: 20,
+    borderColor: '#A3238F',
+    borderWidth: 2,
+  },
+  memberCountText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#A3238F',
+  },
+  errorContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
   },
   profilePicContainer: {
-    width: width * 0.12, // Relative width
-    height: width * 0.12, // Equal width and height for circular profile picture
-    borderRadius: width * 0.06, // Half of the width for rounded shape
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#A3238F',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
   },
   profilePicText: {
-    color: '#FFFFFF',
-    fontSize: width * 0.08, // Scalable font size
+    color: 'white',
+    fontSize: 18,
     fontWeight: 'bold',
   },
-  memberText: {
-    flex: 1,
-  },
-  memberName: {
-    fontSize: width * 0.05, // Scalable font size
-    fontWeight: 'bold',
-    color: '#A3238F',
-  },
-
-  // Member Count
-  memberCountContainer: {
-    position: 'absolute',
-    backgroundColor: 'rgba(250, 250, 250, 0.8)',
-    padding: 10,
-    alignItems: 'center',
+  profileImage: {
+    width: 40,
+    height: 40,
     borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#A3238F',
-    left: width * 0.6, // Relative positioning
-    top: height * 0.8, // Relative positioning
-  },
-  memberCountText: {
-    fontSize: width * 0.04, // Scalable font size
-    fontWeight: 'bold',
-    color: '#A3238F',
   },
 });
 
 export default HeadAdminPaymentsPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
