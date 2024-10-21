@@ -7,13 +7,16 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
-  ActivityIndicator,RefreshControl,
+  ActivityIndicator,
+  RefreshControl,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import { API_BASE_URL } from '../constants/Config';
+
 const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
 const HeadAdminLocation = ({ navigation }) => {
@@ -23,10 +26,11 @@ const HeadAdminLocation = ({ navigation }) => {
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
   // Fetch location data from the API
   const fetchLocations = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/Locations`);// Use your backend URL here
+      const response = await fetch(`${API_BASE_URL}/Locations`);
       if (!response.ok) {
         throw new Error('Failed to fetch locations');
       }
@@ -48,7 +52,7 @@ const HeadAdminLocation = ({ navigation }) => {
   );
 
   const handleViewPress = (location, place) => {
-    navigation.navigate('HeadAdminLocationView', { location, place });
+    navigation.navigate('HeadAdminLocationView', { location, place,IsActive });
   };
 
   const handleEditPress = (item) => {
@@ -58,6 +62,7 @@ const HeadAdminLocation = ({ navigation }) => {
       LocationName: item.LocationName 
     });
   };
+
   const handleNavPress2 = () => {
     navigation.navigate('HeadAdminLocationCreate');
   };
@@ -66,16 +71,37 @@ const HeadAdminLocation = ({ navigation }) => {
     setSelectedItem(selectedItem === item.LocationID ? null : item.LocationID);
   };
 
-  const handleDeletePress = () => {
-    setLocations(prev => prev.filter(loc => loc.LocationID !== selectedItem));
-    setSelectedItem(null);
+  // Handle update by making API call to set IsActive = 0
+  const handleUpdatePress = async (item) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/locations/${item.LocationID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          LocationName: item.LocationName,
+          Place: item.Place,
+          IsActive: 0, // Update the IsActive field to 0
+        }),
+      });
+     
+      if (response.ok) {
+        Alert.alert('Success', 'Location deleted successfully!');
+        fetchLocations(); // Refresh the locations list
+      } else {
+        Alert.alert('Error', 'Failed to update location.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    }
   };
 
   const renderLocation = ({ item }) => (
     <View style={styles.locationCon}>
       <View style={styles.locationDetails}>
         <View style={styles.locationIcon}>
-          <Ionicons name="location-outline" size={30} color="#A3238F" />
+          <Ionicons name="location-outline" size={30} color="#A3238F"/>
         </View>
         <View style={styles.memberText}>
           <Text style={styles.locationName}>{item.LocationName}</Text>
@@ -85,7 +111,7 @@ const HeadAdminLocation = ({ navigation }) => {
         <TouchableOpacity
           style={styles.locationIconLeftEye}
           onPress={() => handleViewPress(item)}>
-          <Ionicons name="eye-outline" size={28} color="#A3238F" />
+          <Ionicons name="eye-outline" size={28} color="#A3238F"/>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleViewPress(item)}>
           <Text style={styles.locationIconLeftText}>View</Text>
@@ -94,14 +120,14 @@ const HeadAdminLocation = ({ navigation }) => {
 
       <View style={styles.locationIconLeft}>
         <TouchableOpacity onPress={() => handleMorePress(item)}>
-          <MaterialIcons name="more-vert" size={38} color="#A3238F" />
+          <MaterialIcons name="more-vert" size={38} color="#A3238F"/>
         </TouchableOpacity>
         {selectedItem === item.LocationID && (
           <View style={styles.moreOptions}>
             <TouchableOpacity onPress={() => handleEditPress(item)}>
               <Text style={styles.optionText}>Edit</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleDeletePress}>
+            <TouchableOpacity onPress={() => handleUpdatePress(item)}>
               <Text style={styles.optionText}>Delete</Text>
             </TouchableOpacity>
           </View>
@@ -113,7 +139,7 @@ const HeadAdminLocation = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A3238F" />
+        <ActivityIndicator size="large" color="#A3238F"/>
       </View>
     );
   }
@@ -139,30 +165,30 @@ const HeadAdminLocation = ({ navigation }) => {
           color="#A3238F"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#A3238F"/>
         </View>
       </View>
 
       {/* Create New Location Button */}
       <View style={styles.locationCreateCon}>
         <TouchableOpacity onPress={handleNavPress2}>
-          <Octicons name="plus-circle" size={28} color="#FFFFFF" />
+          <Octicons name="plus-circle" size={28} color="#FFFFFF"/>
         </TouchableOpacity>
         <Text style={styles.locationCreateConName}>Create New Location</Text>
       </View>
 
       <FlatList
-  data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
-  renderItem={renderLocation}
-  keyExtractor={item => item.LocationID.toString()}
-  contentContainerStyle={styles.LocationList}
-  refreshControl={
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={fetchLocations} // Call fetchMembersData when refreshed
-    />
-  }
-/>
+        data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
+        renderItem={renderLocation}
+        keyExtractor={item => item.LocationID.toString()}
+        contentContainerStyle={styles.LocationList}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={fetchLocations} // Call fetchLocations when refreshed
+          />
+        }
+      />
 
       {/* Location Count */}
       <View style={styles.memberCountContainer}>

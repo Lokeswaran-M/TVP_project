@@ -31,6 +31,7 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
         body: JSON.stringify({
           LocationName, // Include the existing LocationName from params
           Place: editedPlace, // Send the updated place
+          IsActive: 1, 
         }),
       });
 
