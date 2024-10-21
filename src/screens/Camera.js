@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image, Button } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -7,17 +7,69 @@ import Stars from './Stars';
 import styles from '../components/layout/MembersStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-
-const MultiBusinessCamera = () => {
+import { launchCamera } from 'react-native-image-picker';
+import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+const MultiBusinessCamera = ({ navigation, profileData }) => {
+  const userId = useSelector((state) => state.user?.userId);
+  const requestCameraPermission = async () => {
+    const result = await request(PERMISSIONS.ANDROID.CAMERA);
+    if (result === RESULTS.GRANTED) {
+      openCamera();
+    } else {
+      Alert.alert('Permission Denied', 'Camera access is required to take photos.');
+      navigation.navigate('Dashboard');
+    }
+  };
+  const openCamera = () => {
+    const options = {
+      mediaType: 'photo',
+      cameraType: 'front',
+    };
+    launchCamera(options, async (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+        navigation.navigate('Dashboard');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorCode);
+        navigation.navigate('Dashboard');
+      } else if (response.assets && response.assets.length > 0) {
+        const photoUri = response.assets[0].uri;
+        const userId = user?.userId;
+        const currentDateTime = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 12);
+        const fileName = `${userId}_${currentDateTime}.jpeg`;
+        try {
+          const formData = new FormData();
+          formData.append('image', {
+            uri: photoUri,
+            type: 'image/jpeg',
+            name: fileName,
+          });
+          const uploadResponse = await fetch(`${API_BASE_URL}/upload-meeting-photo?userId=${userId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const result = await uploadResponse.json();
+          if (uploadResponse.ok) {
+            Alert.alert('Success', 'Photo uploaded successfully');
+          } else {
+            Alert.alert('Error', 'Photo upload failed');
+          }
+        } catch (error) {
+          Alert.alert('Error', 'Something went wrong during the upload');
+        }
+        navigation.navigate('Dashboard');
+      }
+    });
+  };
   return (
     <View>
-        <Text>
-            Multi Business Camera
-        </Text>
+         <Button title="Open Camera" onPress={requestCameraPermission} />
     </View>
   );
 };
-
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);

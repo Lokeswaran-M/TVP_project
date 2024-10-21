@@ -78,33 +78,6 @@ const TabContent = ({ chapterType, locationId, userId }) => {
   const filteredMembers = members.filter(member =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  // const renderMember = ({ item }) => (
-  //   <View style={styles.memberItem}>
-  //     <TouchableOpacity
-  //       style={styles.memberDetails}
-  //       onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
-  //     >
-  //       <View style={styles.profileCircle}>
-  //         {item.profileImage ? (
-  //           <Image
-  //             source={{ uri: item.profileImage }}
-  //             style={styles.profileImage}
-  //             onError={() => console.log('Image load error for UserId:', item.UserId)}
-  //           />
-  //         ) : (
-  //           <Text style={styles.profileLetter}>{item.Username.charAt(0).toUpperCase()}</Text>
-  //         )}
-  //       </View>
-  //       <View style={styles.memberText}>
-  //         <Text style={styles.memberName}>{item.Username}</Text>
-  //         <Text style={styles.memberRole}>{item.Profession}</Text>
-  //       </View>
-  //       <View style={styles.ratingContainer}>
-  //         <Stars averageRating={item.totalAverage} />
-  //       </View>
-  //     </TouchableOpacity>
-  //   </View>
-  // );
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
