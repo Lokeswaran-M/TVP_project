@@ -26,6 +26,7 @@ import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
+import Requirements from '../screens/Requirements';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
@@ -573,6 +574,23 @@ function AppNavigator() {
         component={DrawerNavigator}
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Requirements"
+        component={Requirements}
+        options={{
+          headerShown: true,
+          header: () => (
+            <View style={styles.topNav}>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="plus-square-o" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>REQUIREMENTS</Text>
+              </View>
+            </View>
+          ),
         }}
       />
     </Stack.Navigator>
