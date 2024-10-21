@@ -18,6 +18,7 @@ import Subscription from '../screens/Subscription';
 import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
+import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import CreateQR from '../screens/CreateQR';
 import OneMinPresentation from '../screens/OneMinPresentation';
 import Attendance from '../screens/Attendance';
@@ -26,6 +27,7 @@ import CreatingMeeting from '../screens/Creatingmeeting';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
+import Requirements from '../screens/Requirements';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
@@ -129,6 +131,12 @@ function StackMeetingNavigator() {
         component={EditMeeting}
         options={{ headerShown: true, title: 'Edit Meeting'}}
       />
+      <Stack.Screen 
+      name="GeneratedQRScreen" 
+      component={GeneratedQRScreen} 
+      options={{ headerShown: true, title: 'QR Genrated'}}
+      />
+
     </StackMeeting.Navigator>
   );
 }
@@ -573,6 +581,23 @@ function AppNavigator() {
         component={DrawerNavigator}
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Requirements"
+        component={Requirements}
+        options={{
+          headerShown: true,
+          header: () => (
+            <View style={styles.topNav}>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="plus-square-o" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>REQUIREMENTS</Text>
+              </View>
+            </View>
+          ),
         }}
       />
     </Stack.Navigator>

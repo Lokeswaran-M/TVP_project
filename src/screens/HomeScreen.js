@@ -4,9 +4,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const userId = useSelector((state) => state.user?.userId);
+  const navigation = useNavigation();
   console.log('userId================dfgdfgf===================',userId);
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -125,55 +127,54 @@ const HomeScreen = () => {
       </View>
     </View>
   ) : (
-    // Message when no upcoming events
     <View style={styles.noMeetupCard}>
       <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
     </View>
   )}
 </View>
-
-
+<View style={styles.cards}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Requirements</Text>
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add Requirement</Text>
-        </TouchableOpacity>
+        <TouchableOpacity
+      style={styles.addButton}
+      onPress={() => navigation.navigate('Requirements')}
+    >
+      <View style={styles.buttonContent}>
+        <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
+        <Text style={styles.addButtonText}>Add Requirement</Text>
       </View>
-
+    </TouchableOpacity>
+      </View>
+      <View>
+          <Text style={styles.line}>
+           ___________________________________________________
+          </Text>
+        </View>
       <View style={styles.card}>
         <View style={styles.profileSection}>
           <Image
-            source={{ uri: 'https://via.placeholder.com/50' }} // Replace with actual image link
+            source={{ uri: 'https://via.placeholder.com/50' }}
             style={styles.profileImage}
           />
           <Text style={styles.profileName}>Chandru</Text>
         </View>
-
         <View style={styles.requirementSection}>
           <Text style={styles.requirementText}>
-            X XXXXX XXX X XXXXX XXXXXXXXXXXX XXX XXXXXXXXXXXXXX XXXXX X XXXXX
+            XXXXX x xxxx xxxxx xxxxx xxxxx x xx x xxxx xxxxxxxxx xxxxxx xx xxxx
           </Text>
           <TouchableOpacity style={styles.acknowledgeButton}>
             <Text style={styles.acknowledgeText}>Acknowledge</Text>
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* <View style={styles.pagination}>
-        <View style={styles.activeDot} />
-        <View style={styles.inactiveDot} />
-        <View style={styles.inactiveDot} />
-      </View> */}
     </View>
-
-        <View style={styles.card}>
+      <View style={styles.card}>
           <Image
             source={require('../../assets/images/Homepage_BMW.jpg')}
             style={styles.image}
           />
         </View>
-      
-
+    </View>
     </ScrollView>
   );
 };

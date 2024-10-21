@@ -6,6 +6,7 @@ const styles = StyleSheet.create({
       flex: 1,
       padding: 10,
       backgroundColor: '#F5F5F5',
+      margin: 8,
     },
     card: {
       backgroundColor: '#fff',
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
     },
     image: {
       width: '100%',
-      height: 130, 
+      height: 150, 
       borderRadius: 10,
     },
     cards: {
@@ -38,10 +39,10 @@ const styles = StyleSheet.create({
     dashboardTitle: {
       fontSize: 16,
       fontWeight: 'bold',
-      marginBottom: 10,
+      marginBottom: 5,
     },
     meetupCard: {
-      backgroundColor: '#f0e1eb',
+      backgroundColor: '#F3ECF3',
       borderRadius: 10,
       padding: 15,
     },
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
     buttonRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginTop: 15,
+      marginTop: 5,
     },
     confirmButton: {
       flexDirection: 'row',
@@ -92,7 +93,6 @@ const styles = StyleSheet.create({
       marginLeft: 5,
       fontSize: 14,
     },
-  
     headerContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -139,54 +139,87 @@ const styles = StyleSheet.create({
       color: '#666',
       marginBottom: 10,
     },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 10,
+    line: {
+        margin: 10,
     },
-    headerText: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#7E3F8F',
-    },
-    card: {
-      backgroundColor: '#F6EDF7',
-      borderRadius: 10,
-      padding: 15,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 5,
-      marginBottom: 20,
-    },
-    addButton: {
-      backgroundColor: '#A83893',
-      top: 5,
-      paddingVertical: 8,
-      paddingHorizontal: 15,
-      borderRadius: 20,
-    },
-    addButtonText: {
-      color: '#fff',
-      fontWeight: '600',
-    },
-  
-    acknowledgeButton: {
-      position: 'absolute',
-      top: -30,
-      right: 0,
-      backgroundColor: '#A83893',
-      paddingVertical: 5,
-      paddingHorizontal: 12,
-      borderRadius: 20,
-      
-    },
-    acknowledgeText: {
-      color: '#fff',
-      fontSize: 12,
-      fontWeight: '600',
-    },
+    buttonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      iconStyle: {
+        marginRight: 8,
+      },
+      header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+      headerText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#a3238f',
+      },
+      addButton: {
+        backgroundColor: '#a3238f',
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        borderRadius: 20,
+      },
+      addButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+      },
+      card: {
+        backgroundColor: '#F6EDF7',
+        borderRadius: 10,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        marginBottom: 20,
+      },
+      profileSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+      },
+      profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10,
+      },
+      profileName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#a3238f',
+      },
+      requirementSection: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 15,
+      },
+      requirementText: {
+        fontSize: 14,
+        color: '#7E3F8F',
+        lineHeight: 22,
+      },
+      acknowledgeButton: {
+        position: 'absolute',
+        top: -50,
+        right: 0,
+        backgroundColor: '#a3238f',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 20,
+      },
+      acknowledgeText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '600',
+      },
+    
     pagination: {
       flexDirection: 'row',
       justifyContent: 'center',
