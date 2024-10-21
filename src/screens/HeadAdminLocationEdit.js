@@ -63,7 +63,7 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
           value={editedPlace}
           onChangeText={setEditedPlace}
           placeholder="Edit Place Name"
-          placeholderTextColor="#A3238F"
+          placeholderTextColor="gray"
         />
         <View style={styles.buttonCon}>
           <TouchableOpacity style={styles.button} onPress={handleSave}>

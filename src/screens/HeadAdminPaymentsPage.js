@@ -251,6 +251,7 @@ const styles = StyleSheet.create({
   memberName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color:'black',
   },
   memberCountContainer: {
     position: 'absolute',
