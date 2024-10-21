@@ -100,9 +100,11 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
   }, [navigation, searchQuery]);
 
   // Filter members based on the search query
-  const filteredMembers = members.filter((member) =>
+  const filteredMembers = members
+  .filter((member) =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  )
+  .sort((a, b) => b.UserId - a.UserId);
 
   // Render member item
   const renderMember = ({ item }) => (
@@ -248,6 +250,7 @@ const styles = StyleSheet.create({
   memberName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color:'black',
   },
   memberCountContainer: {
     position: 'absolute',
@@ -276,7 +279,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#A3238F',
     justifyContent: 'center',
     alignItems: 'center',
   },

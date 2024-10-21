@@ -90,10 +90,10 @@ const HeadAdminLocationCreate = () => {
 
         {/* Button Row */}
         <View style={styles.buttonCon}>
-          <TouchableOpacity style={styles.button1} onPress={handleSave}>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={handleCancel}>
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -151,24 +151,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  button1: {
+  button: {
     backgroundColor: '#A3238F',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
     alignItems: 'center',
     marginHorizontal: 10,
-    width: width * 0.3, // Set the width as a percentage of screen width
+    width:120,
+
   },
-  button2: {
-    backgroundColor: '#A3238F',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    alignItems: 'center',
-    marginHorizontal: 10,
-    width: width * 0.3, // Set the width as a percentage of screen width
-  },
+
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
