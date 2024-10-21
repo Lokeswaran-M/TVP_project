@@ -3,10 +3,9 @@ import { View, useWindowDimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Dashboard from '../screens/HomeScreen';
-import Members from '../screens/MembersList';
 import Post from '../screens/Post';
 import MemberDetails from '../screens/MemberDetails';
-import MultiBusinessMembers from '../screens/MultiBusinessMembers';
+import MultiBusinessMembers from '../screens/MembersList';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Animated, Easing, Alert } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
@@ -129,8 +128,6 @@ const TabNavigator = () => {
           let iconName;
           if (route.name === 'Dashboard') {
             iconName = 'home';
-          } else if (route.name === 'Member') {
-            iconName = 'users';
           } else if (route.name === 'MultiBusinessMembers') {
             iconName = 'users';
           } else if (route.name === 'Post') {
@@ -160,7 +157,6 @@ const TabNavigator = () => {
   {profileData?.CategoryId === 1 && (
     <>
       <Tab.Screen name="Camera" component={CameraScreen} options={{ title: 'Camera' }} />
-      <Tab.Screen name="Member" component={Memberstack} options={{ title: 'Members' }} />
     </>
   )}
       {profileData?.CategoryId === 2 && (
@@ -170,13 +166,14 @@ const TabNavigator = () => {
           component={MultiBusinessCamera}
           options={{ title: 'Camera' }}
         />
-        <Tab.Screen
+        
+        </>
+      )}
+      <Tab.Screen
           name="MultiBusinessMembers"
           component={MultiMemberstack}
           options={{ title: 'Members' }}
         />
-        </>
-      )}
     </Tab.Navigator>
   );
 };
