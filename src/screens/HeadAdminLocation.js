@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
-  ActivityIndicator,
+  ActivityIndicator,RefreshControl,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -22,7 +22,7 @@ const HeadAdminLocation = ({ navigation }) => {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-
+  const [refreshing, setRefreshing] = useState(false);
   // Fetch location data from the API
   const fetchLocations = async () => {
     try {
@@ -151,13 +151,18 @@ const HeadAdminLocation = ({ navigation }) => {
         <Text style={styles.locationCreateConName}>Create New Location</Text>
       </View>
 
-      {/* Location List */}
       <FlatList
-        data={filteredLocations}
-        renderItem={renderLocation}
-        keyExtractor={item => item.LocationID.toString()}
-        contentContainerStyle={styles.LocationList}
-      />
+  data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
+  renderItem={renderLocation}
+  keyExtractor={item => item.LocationID.toString()}
+  contentContainerStyle={styles.LocationList}
+  refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={fetchLocations} // Call fetchMembersData when refreshed
+    />
+  }
+/>
 
       {/* Location Count */}
       <View style={styles.memberCountContainer}>

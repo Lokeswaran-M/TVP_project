@@ -24,7 +24,7 @@ const HeadAdminPaymentsPage = ({ navigation }) => {
   // Fetch members from the API
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/last-week`);
+      const response = await fetch(`${API_BASE_URL}/api/users/last-month`);
       const data = await response.json();
       console.log("Data for new sub----------------------",data);
     //   data.members.forEach(member => {
