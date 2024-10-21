@@ -7,48 +7,67 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
-
+import { API_BASE_URL } from '../constants/Config';
 const { width, height } = Dimensions.get('window'); // Get screen dimensions
 
 const HeadAdminLocation = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [Location, setLocation] = useState([
-    { id: '1', Location: 'T Nagar', Place: 'Taj Hotel' },
-    { id: '2', Location: 'Chrompet', Place: 'Loki Hotel' },
-    { id: '3', Location: 'Tambaram', Place: 'Ajay Hotel' },
-    { id: '4', Location: 'Pallavaram', Place: 'PPPPPP' },
-    { id: '5', Location: 'T Nagar', Place: 'TNTNTNTTN' },
-    { id: '6', Location: 'Chrompet', Place: 'TNTNTNTTN' },
-    { id: '7', Location: 'Tambaram', Place: 'TNTNTNTTN' },
-    { id: '8', Location: 'Pallavaram', Place: 'TNTNTNTTN' },
-  ]);
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const filteredLocation = Location.filter(Location =>
-    Location.Location.toLowerCase().includes(searchQuery.toLowerCase())
+  // Fetch location data from the API
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Locations`);// Use your backend URL here
+      if (!response.ok) {
+        throw new Error('Failed to fetch locations');
+      }
+      const data = await response.json();
+      setLocations(data); // Set the fetched data
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLocations(); // Fetch locations when the component mounts
+  }, []);
+
+  const filteredLocations = locations.filter(location =>
+    location.LocationName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleViewPress = (Location, Place) => {
-    navigation.navigate('HeadAdminLocationView', { Location, Place });
+  const handleViewPress = (location, place) => {
+    navigation.navigate('HeadAdminLocationView', { location, place });
   };
-  const handleEditPress = (Location, Place) => {
-    navigation.navigate('HeadAdminLocationEdit', { Location, Place });
+
+  const handleEditPress = (item) => {
+    navigation.navigate('HeadAdminLocationEdit', { 
+      LocationID: item.LocationID, 
+      Place: item.Place, 
+      LocationName: item.LocationName 
+    });
   };
   const handleNavPress2 = () => {
     navigation.navigate('HeadAdminLocationCreate');
   };
 
   const handleMorePress = item => {
-    setSelectedItem(selectedItem === item.id ? null : item.id);
+    setSelectedItem(selectedItem === item.LocationID ? null : item.LocationID);
   };
 
   const handleDeletePress = () => {
-    setLocation(prev => prev.filter(loc => loc.id !== selectedItem));
+    setLocations(prev => prev.filter(loc => loc.LocationID !== selectedItem));
     setSelectedItem(null);
   };
 
@@ -59,7 +78,7 @@ const HeadAdminLocation = ({ navigation }) => {
           <Ionicons name="location-outline" size={30} color="#A3238F" />
         </View>
         <View style={styles.memberText}>
-          <Text style={styles.locationName}>{item.Location}</Text>
+          <Text style={styles.locationName}>{item.LocationName}</Text>
         </View>
       </View>
       <View style={styles.locationIconLeft}>
@@ -77,7 +96,7 @@ const HeadAdminLocation = ({ navigation }) => {
         <TouchableOpacity onPress={() => handleMorePress(item)}>
           <MaterialIcons name="more-vert" size={38} color="#A3238F" />
         </TouchableOpacity>
-        {selectedItem === item.id && (
+        {selectedItem === item.LocationID && (
           <View style={styles.moreOptions}>
             <TouchableOpacity onPress={() => handleEditPress(item)}>
               <Text style={styles.optionText}>Edit</Text>
@@ -91,27 +110,24 @@ const HeadAdminLocation = ({ navigation }) => {
     </View>
   );
 
-  const handleFocus = () => {
-    navigation.setOptions({ tabBarStyle: { display: 'none' } });
-  };
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#A3238F" />
+      </View>
+    );
+  }
 
-  const handleBlur = () => {
-    navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-  };
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [navigation]);
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-  
       {/* Search Input */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -120,8 +136,6 @@ const HeadAdminLocation = ({ navigation }) => {
           placeholderTextColor="black"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
           color="#A3238F"
         />
         <View style={styles.searchIconContainer}>
@@ -139,15 +153,15 @@ const HeadAdminLocation = ({ navigation }) => {
 
       {/* Location List */}
       <FlatList
-        data={filteredLocation}
+        data={filteredLocations}
         renderItem={renderLocation}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.LocationID.toString()}
         contentContainerStyle={styles.LocationList}
       />
 
       {/* Location Count */}
       <View style={styles.memberCountContainer}>
-        <Text style={styles.memberCountText}>Count: {filteredLocation.length}</Text>
+        <Text style={styles.memberCountText}>Count: {filteredLocations.length}</Text>
       </View>
     </View>
   );

@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, InputText, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 // import { Assets } from 'react-navigation-stack';
 
 
-const { width, height } = Dimensions.get('window'); 
+const { width, height } = Dimensions.get('window');
 
 const AdminPage = () => {
   const navigation = useNavigation();
@@ -29,21 +29,31 @@ const AdminPage = () => {
     <View style={styles.container}>
 
       <View style={styles.containermain}>
-    
+
         <View style={styles.topContainer1}>
           <Text style={styles.topText}>Requirements</Text>
           <View style={styles.underline} />
           <View style={styles.innerContainer1}>
-            <Image
-              source={{
-                uri: 'https://i.pinimg.com/736x/52/af/bf/52afbfeb6294f24e715a00367be3cdf3.jpg',
-              }}
-              style={styles.profileImage1}
-            />
-            <Text style={styles.profileName1}>Lokiliikiijjjijihihuii</Text>
-            <Text style={styles.innerText1}>
-              Details about Requirements reviews React Native allows developers to build mobile apps.
-            </Text>
+            <View style={styles.innerpictexcon}>
+              <Image
+                source={{
+                  uri: 'https://i.pinimg.com/736x/52/af/bf/52afbfeb6294f24e715a00367be3cdf3.jpg',
+                }}
+                style={styles.profileImage1}
+              />
+              <Text style={styles.profileName1}>Logeshwaran</Text>
+
+            </View>
+            <View style={styles.innerTextcon1}>
+              <ScrollView>
+                <Text style={styles.innerText3}>
+                  to build mobile apps.   Reviews React Native all    Reviews React Native allows developers who know React to create native apps.
+                  Reviews React Native allows developers who know React to create native apps.ows developers who know React to create native apps.
+                </Text>
+              </ScrollView>
+            </View>
+
+
           </View>
         </View>
 
@@ -58,22 +68,21 @@ const AdminPage = () => {
               }}
               style={styles.profileImage2}
             />
-            <View style={styles.innerTextcon}>
+            <View style={styles.innerTextcon2}>
               <View style={styles.ratingContainer}>
                 <Icon name="star" size={18} color="gold" />
-                <Icon name="star" size={18} color="gold" />
-                <Icon name="star" size={18} color="gold" />
-                <Icon name="star" size={18} color="gold" />
-                <Icon name="star" size={18} color="gold" />
               </View>
-              <Text style={styles.innerText3}>
-                Reviews React Native allows developers who know React to create native apps.
-              </Text>
+              <ScrollView>
+                <Text style={styles.innerText3}>
+                  Reviews React Native allows developers who know React to create native apps.
+                  Reviews React Native allows developers who know React to create native apps.
+                </Text>
+              </ScrollView>
             </View>
           </View>
         </View>
 
-      
+
         <View style={styles.buttonContainer}>
           <View style={styles.leftButtons}>
             <TouchableOpacity style={styles.button} onPress={handleNavPress1}>
@@ -106,16 +115,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ccc',
+    padding: 5,
+  }, scrollView: {
+    width: width, // Full width of the screen
+  },
+  innerText3: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    padding: 20,
   },
   containermain: {
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#ccc',
   },
-  iconImage:{
+  iconImage: {
 
-    width: 300, 
-    height: 50, 
+    width: 300,
+    height: 50,
     resizeMode: 'contain',
   },
   topNav: {
@@ -130,16 +148,16 @@ const styles = StyleSheet.create({
 
   topContainer1: {
     width: '90%',
-    height: height * 0.2,
+    height: height * 0.25,
     backgroundColor: '#fff',
     marginBottom: 25,
     borderRadius: 15,
-    marginTop: 50,
+    marginTop: 25,
     padding: 8,
   },
   topContainer2: {
     width: '90%',
-    height: height * 0.2, 
+    height: height * 0.25,
     backgroundColor: '#fff',
     borderRadius: 15,
     padding: 8,
@@ -159,51 +177,54 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: '#f0e1eb',
     borderRadius: 8,
-    height: 110,
+    height: 150,
     justifyContent: 'center',
+
   },
   innerContainer2: {
     margin: 5,
     backgroundColor: '#f0e1eb',
     borderRadius: 8,
-    height: 110,
+    height: 150,
     flexDirection: 'row',
     paddingRight: 10,
     paddingLeft: 10,
   },
-  innerText1: {
+  innerTextcon1: {
     color: '#A3238F',
     fontSize: 15,
-    height: 55,
+    height: 85,
     width: '93.5%',
     backgroundColor: '#fff',
     padding: 5,
     borderRadius: 8,
-    margin: 20,
-    marginLeft: 10,
-    transform: [{ translateY: -20 }],
+    marginHorizontal: 10,
+  },
+  innerpictexcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   innerText3: {
     color: 'black',
   },
-  innerTextcon: {
+  innerTextcon2: {
     backgroundColor: '#fff',
-    height: 77,
+    height: 110,
     width: '78%',
     borderRadius: 8,
     padding: 5,
     marginLeft: 5,
     alignItems: 'flex-start',
     marginTop: 25,
+
   },
   profileImage1: {
     height: 35,
     width: 35,
     borderRadius: 50,
-    marginRight: 10,
-    marginBottom: 6,
-    marginLeft: 10,
-    marginTop: 36,
+    margin: 10,
+    marginRight: 5,
+
   },
   profileImage2: {
     height: 55,
@@ -214,15 +235,9 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   profileName1: {
-    position: 'absolute',
-    padding: 10,
     color: '#A3238F',
-    paddingBottom: 75,
-    paddingLeft: 10,
-    transform: [{ translateX: 40 }],
     fontSize: 15,
     fontWeight: 'bold',
-    alignItems: 'flex-start',
   },
   profileName2: {
     position: 'absolute',
@@ -239,7 +254,7 @@ const styles = StyleSheet.create({
     width: '90%',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 30,
+    marginTop: 25,
   },
   leftButtons: {
     flex: 1,
