@@ -13,7 +13,7 @@ const Payment = () => {
   const handlePayment = () => {
     try {
       const paymentAmount = isOffMonth ? 1500 : 3000;
-      const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}&source=0`;
+      const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}`;
       
       // Log the URL for debugging purposes
       console.log('Payment URL:', paymentUrl);
