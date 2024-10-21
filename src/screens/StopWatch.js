@@ -132,15 +132,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentcontainer: {
-        flex: 1,
-        padding: 20,
-        paddingTop: 25,
+        padding: 30,
         backgroundColor: '#fff',
-        marginBottom: 50,
         marginHorizontal: 30,
         marginVertical: 100,
         borderRadius: 20,
         color: 'blue',
+        alignItems:'center',
     },
     timer: {
         fontSize: 98,

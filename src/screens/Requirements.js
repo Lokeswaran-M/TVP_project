@@ -10,6 +10,9 @@ const Requirements = () => {
   const [businessInfo, setBusinessInfo] = useState(null); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null);
+  const [requirement, setRequirement] = useState(''); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState('');
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -19,7 +22,7 @@ const Requirements = () => {
           throw new Error('Failed to fetch business info');
         }
         const data = await response.json();
-        console.log("DATA IN REQUIREMENTS SCREEN---------------------------------------",data);
+        console.log("DATA IN REQUIREMENTS SCREEN---------------------------------------", data);
         setBusinessInfo(data);
       } catch (error) {
         setError(error.message);
@@ -31,17 +34,48 @@ const Requirements = () => {
       fetchBusinessInfo();
     }
   }, [userId]);
+  const handleSubmit = async () => {
+    if (!businessInfo || !requirement.trim()) {
+      setValidationError('Please provide your requirement');
+      return;
+    }
+    setIsSubmitting(true);
+    setValidationError('');
+    const requestData = {
+      UserId: userId,
+      LocationID: businessInfo.LocationID,
+      Slots: 1,
+      Profession: businessInfo.Profession,
+      Description: requirement.trim(),
+    };
+    try {
+      const response = await fetch(`${API_BASE_URL}/requirements`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to submit requirement');
+      }
+      const result = await response.json();
+      console.log('Requirement submitted:', result);
+      setError(null);
+      alert('Requirement Created Successfully');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error submitting requirement:', error);
+      setError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };  
   if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#a3238f" />
-      </View>
-    );
-  }
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ color: 'red' }}>{error}</Text>
       </View>
     );
   }
@@ -61,7 +95,12 @@ const Requirements = () => {
             placeholder="Enter your requirement here"
             multiline={true}
             numberOfLines={4}
+            value={requirement}
+            onChangeText={setRequirement}
           />
+          {validationError ? (
+            <Text style={styles.errorText}>{validationError}</Text>
+          ) : null}
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -72,9 +111,19 @@ const Requirements = () => {
           <Icon name="arrow-left" size={20} color="#fff" style={styles.icon} />
           <Text style={styles.buttonText}>Back</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.submitButton}>
-          <Icon name="check" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Submit</Text>
+        <TouchableOpacity
+          style={styles.submitButton}
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <>
+              <Icon name="check" size={20} color="#fff" style={styles.icon} />
+              <Text style={styles.buttonText}>Submit</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -125,12 +174,17 @@ const styles = StyleSheet.create({
     borderColor: '#a3238f',
     borderRadius: 10,
     padding: 10,
-    marginBottom: 20,
+    marginBottom: 5,
   },
   input: {
     height: 100,
     fontSize: 16,
     color: 'black',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -169,13 +223,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 5,
-  },
-  infoContainer: {
-    marginBottom: 20,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#333',
   },
 });
 export default Requirements;

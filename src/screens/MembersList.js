@@ -1,176 +1,200 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, FlatList } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../components/layout/MembersStyle';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
+import { useSelector } from 'react-redux';
+import { TabView, TabBar } from 'react-native-tab-view';
+import Stars from './Stars';
+import styles from '../components/layout/MembersStyle';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import Stars from '../screens/Stars';
-const Members = () => {
-    const navigation = useNavigation();
-    const userId = useSelector((state) => state.user?.userId);
-    const [profileData, setProfileData] = useState({});
-    const [members, setMembers] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
-    const fetchData = async () => {
-        try {
-            const profileResponse = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
-            if (!profileResponse.ok) {
-                throw new Error('Failed to fetch profile data');
-            }
-            const profileData = await profileResponse.json();
-            console.log("PROFILE DATA IN MEMBERS LIST------------------------------------",profileData);
-            setProfileData(profileData);
-        } catch (error) {
-            console.error('Error fetching profile data:', error);
-        }
-    };
 
+const TabContent = ({ chapterType, locationId, userId }) => {
+  const navigation = useNavigation();
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
     const fetchMembers = async () => {
-        if (!profileData.LocationID || !profileData.ChapterType) {
-            console.log("Profile data not available yet");
-            return;
+      try {
+        const membersResponse = await fetch(`${API_BASE_URL}/list-members`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            LocationID: locationId,
+            chapterType: chapterType,
+            userId: userId,
+          }),
+        });
+
+        if (!membersResponse.ok) {
+          throw new Error('Failed to fetch members');
         }
-        try {
-            const membersResponse = await fetch(`${API_BASE_URL}/list-members`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    userId: userId,
-                    LocationID: profileData.LocationID,
-                    chapterType: profileData.ChapterType,
-                }),
+
+        const data = await membersResponse.json();
+        console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
+
+        const updatedMembers = await Promise.all(data.members.map(async (member) => {
+          let totalStars = 0;
+          if (member.ratings && member.ratings.length > 0) {
+            member.ratings.forEach(rating => {
+              totalStars += parseFloat(rating.average) || 0;
             });
-            
-            if (!membersResponse.ok) {
-                throw new Error('Failed to fetch members');
-            }
-    
-            const data = await membersResponse.json();
-            console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
-    
-            // Loop through the members and log the RollId
-            data.members.forEach(member => {
-                console.log("ROLLID IN MEMBERS LIST SCREEN---------------------------------", member.RollId);
-            });
-    
-            const updatedMembers = await Promise.all(data.members.map(async member => {
-                let totalStars = 0;
-                if (member.ratings.length > 0) {
-                    member.ratings.forEach(rating => {
-                        totalStars += parseFloat(rating.average) || 0;
-                    });
-                    const totalAverage = totalStars / member.ratings.length;
-                    member.totalAverage = totalAverage || 0;
-                } else {
-                    member.totalAverage = 0;
-                }
-                const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                if (imageResponse.ok) {
-                    const imageData = await imageResponse.json();
-                    const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
-                    member.profileImage = uniqueImageUrl;
-                } else {
-                    console.error('Failed to fetch profile image:', member.UserId);
-                    member.profileImage = null;
-                }
-                return member;
-            }));
-            
-    
-            setMembers(updatedMembers);
-        } catch (error) {
-            console.error('Error fetching members:', error);
-        }
+            const totalAverage = totalStars / member.ratings.length;
+            member.totalAverage = totalAverage || 0;
+          } else {
+            member.totalAverage = 0;
+          }
+          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+            member.profileImage = uniqueImageUrl;
+          } else {
+            console.error('Failed to fetch profile image:', member.UserId);
+            member.profileImage = null;
+          }
+          return member;
+        }));
+
+        setMembers(updatedMembers);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchData();
-        }, [userId])
-    );
+    fetchMembers();
+  }, [chapterType, locationId, userId]);
 
-    useFocusEffect(
-        useCallback(() => {
-            if (profileData.LocationID && profileData.ChapterType) {
-                fetchMembers();
-            }
-        }, [profileData])
-    );
-
-    const filteredMembers = members.filter(member =>
-        member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const renderMember = ({ item }) => (
-        <View style={styles.memberItem}>
-            <TouchableOpacity
-                style={styles.memberDetails}
-                onPress={() => navigation.navigate('MemberDetails', {userId: item.UserId, Profession: item.Profession })}
-            >
-                <ProfilePic imageUrl={item.profileImage} name={item.Username} />
-                <View style={styles.memberText}>
-                    <Text style={styles.memberName}>{item.Username}</Text>
-                    <Text style={styles.memberRole}>{item.Profession}</Text>
-                </View>
-                <View style={styles.ratingContainer}>
-                    <Stars averageRating={item.totalAverage} />
-                </View>
-            </TouchableOpacity>
+  const filteredMembers = members.filter(member =>
+    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+  return (
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search members..."
+          placeholderTextColor="black"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          color="#A3238F"
+        />
+        <View style={styles.searchIconContainer}>
+          <Icon name="search" size={23} color="#A3238F" />
         </View>
-    );        
-    return (
-        <View style={styles.container}>
-            <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search members..."
-                    placeholderTextColor="black"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    color='#A3238F'
-                />
-                <View style={styles.searchIconContainer}>
-                    <Icon name="search" size={23} color="#A3238F" />
-                </View>
+      </View>
+      <FlatList
+        data={filteredMembers}
+        keyExtractor={(item) => item.UserId.toString()}
+        contentContainerStyle={styles.memberList}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.memberItem}
+            onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
+          >
+            <View style={styles.memberDetails}>
+              <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+              <View style={styles.memberText}>
+                <Text style={styles.memberName}>{item.Username}</Text>
+                <Text style={styles.memberRole}>{item.Profession}</Text>
+              </View>
             </View>
-            <FlatList
-                data={filteredMembers}
-                renderItem={renderMember}
-                keyExtractor={(item) => item.UserId.toString()}
-                contentContainerStyle={styles.memberList}
-            />
-            <View style={styles.memberCountContainer}>
-                <Text style={styles.memberCountText}>
-                    Count: {filteredMembers.length}
-                </Text>
+            <View style={styles.ratingContainer}>
+              <Stars averageRating={item.totalAverage} />
             </View>
-        </View>
-    );
-};
+          </TouchableOpacity>
+        )}
 
-const ProfilePic = ({ name, imageUrl }) => {
-    if (imageUrl) {
-        return (
-            <Image
-                source={{ uri: imageUrl }}
-                style={styles.profilePicImage}
-            />
-        );
-    }
-    const initial = name.charAt(0).toUpperCase();
-    return (
-        <View style={styles.profilePicContainer}>
-            <Text style={styles.profilePicText}>{initial}</Text>
-        </View>
-    );
+      />
+      <View style={styles.memberCountContainer}>
+        <Text style={styles.memberCountText}>
+          Count: {members.length}
+        </Text>
+      </View>
+    </View>
+  );
 };
-export default Members;
+export default function TabViewExample({ navigation }) {
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(0);
+  const [routes, setRoutes] = useState([]);
+  const userId = useSelector((state) => state.user?.userId);
+  const [businessInfo, setBusinessInfo] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          const updatedRoutes = data.map((business, index) => ({
+            key: `business${index + 1}`,
+            title: business.BD,
+            chapterType: business.CT,
+            locationId: business.L,
+          }));
+          setRoutes(updatedRoutes);
+          setBusinessInfo(data);
+        } else {
+          console.error('Error fetching business info:', data.message);
+        }
+      } catch (error) {
+        console.error('API call error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinessInfo();
+  }, [userId]);
+
+  const renderScene = ({ route }) => {
+    const business = businessInfo.find((b) => b.BD === route.title);
+    return (
+      <TabContent
+        title={route.title}
+        chapterType={business?.CT}
+        locationId={business?.L}
+        userId={userId}
+        navigation={navigation}
+      />
+    );
+  };
+  const renderTabBar = (props) => (
+    <TabBar
+      {...props}
+      indicatorStyle={{ backgroundColor: '#A3238F' }}
+      style={{ backgroundColor: '#F3ECF3' }}
+      activeColor="#A3238F"
+      inactiveColor="gray"
+      labelStyle={{ fontSize: 14 }}
+    />
+  );
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+  return (
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      renderTabBar={renderTabBar}
+    />
+  );
+}
