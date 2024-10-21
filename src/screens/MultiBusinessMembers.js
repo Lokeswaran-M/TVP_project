@@ -50,19 +50,19 @@ const TabContent = ({ chapterType, locationId, userId }) => {
           const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+              'Content-Type': 'application/json',
             },
-        });
-        if (imageResponse.ok) {
+          });
+          if (imageResponse.ok) {
             const imageData = await imageResponse.json();
             const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
             member.profileImage = uniqueImageUrl;
-        } else {
+          } else {
             console.error('Failed to fetch profile image:', member.UserId);
             member.profileImage = null;
-        }
-        return member;
-        }));        
+          }
+          return member;
+        }));
 
         setMembers(updatedMembers);
       } catch (error) {
@@ -78,33 +78,33 @@ const TabContent = ({ chapterType, locationId, userId }) => {
   const filteredMembers = members.filter(member =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const renderMember = ({ item }) => (
-    <View style={styles.memberItem}>
-      <TouchableOpacity
-        style={styles.memberDetails}
-        onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
-      >
-        <View style={styles.profileCircle}>
-          {item.profileImage ? (
-            <Image
-              source={{ uri: item.profileImage }}
-              style={styles.profileImage}
-              onError={() => console.log('Image load error for UserId:', item.UserId)}
-            />
-          ) : (
-            <Text style={styles.profileLetter}>{item.Username.charAt(0).toUpperCase()}</Text>
-          )}
-        </View>
-        <View style={styles.memberText}>
-          <Text style={styles.memberName}>{item.Username}</Text>
-          <Text style={styles.memberRole}>{item.Profession}</Text>
-        </View>
-        <View style={styles.ratingContainer}>
-          <Stars averageRating={item.totalAverage} />
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
+  // const renderMember = ({ item }) => (
+  //   <View style={styles.memberItem}>
+  //     <TouchableOpacity
+  //       style={styles.memberDetails}
+  //       onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
+  //     >
+  //       <View style={styles.profileCircle}>
+  //         {item.profileImage ? (
+  //           <Image
+  //             source={{ uri: item.profileImage }}
+  //             style={styles.profileImage}
+  //             onError={() => console.log('Image load error for UserId:', item.UserId)}
+  //           />
+  //         ) : (
+  //           <Text style={styles.profileLetter}>{item.Username.charAt(0).toUpperCase()}</Text>
+  //         )}
+  //       </View>
+  //       <View style={styles.memberText}>
+  //         <Text style={styles.memberName}>{item.Username}</Text>
+  //         <Text style={styles.memberRole}>{item.Profession}</Text>
+  //       </View>
+  //       <View style={styles.ratingContainer}>
+  //         <Stars averageRating={item.totalAverage} />
+  //       </View>
+  //     </TouchableOpacity>
+  //   </View>
+  // );
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -125,9 +125,26 @@ const TabContent = ({ chapterType, locationId, userId }) => {
       </View>
       <FlatList
         data={filteredMembers}
-        renderItem={renderMember}
         keyExtractor={(item) => item.UserId.toString()}
         contentContainerStyle={styles.memberList}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.memberItem}
+            onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
+          >
+            <View style={styles.memberDetails}>
+              <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+              <View style={styles.memberText}>
+                <Text style={styles.memberName}>{item.Username}</Text>
+                <Text style={styles.memberRole}>{item.Profession}</Text>
+              </View>
+            </View>
+            <View style={styles.ratingContainer}>
+              <Stars averageRating={item.totalAverage} />
+            </View>
+          </TouchableOpacity>
+        )}
+
       />
       <View style={styles.memberCountContainer}>
         <Text style={styles.memberCountText}>
@@ -135,7 +152,7 @@ const TabContent = ({ chapterType, locationId, userId }) => {
         </Text>
       </View>
     </View>
-  );  
+  );
 };
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
