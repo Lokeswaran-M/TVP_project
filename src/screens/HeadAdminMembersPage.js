@@ -251,8 +251,9 @@ const HeadAdminMembersPage = ({ navigation }) => {
       )}
 
       {/* Members List */}
-      <FlatList
-        data={filteredMembers}
+      <FlatList 
+       
+        data={filteredMembers.sort((a, b) => b.LocationID - a.LocationID)}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.memberItem}

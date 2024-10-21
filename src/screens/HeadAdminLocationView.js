@@ -24,7 +24,7 @@ const HeadAdminLocationView = ({ route }) => {
       
       {/* Place Details */}
       <View style={styles.PlaceDetailsContainer}>
-      <Text style={styles.PlaceNameHead}>Meetin Place:</Text>
+      <Text style={styles.PlaceNameHead}>Meeting Place:</Text>
         <Text style={styles.PlaceName}>{location.Place}</Text>
         
       </View>
@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   },
   PlaceNameHead:{
   color:'black',
-  fontSize:15,
-  fontWeight:'600',
+  fontSize:17,
+  fontWeight:'500',
   marginBottom:10,
   },
   PlaceName: {
