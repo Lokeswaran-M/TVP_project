@@ -1,35 +1,43 @@
-import React, { useState ,useEffect} from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions, Alert,ActivityIndicator,ScrollView,Image, StyleSheet ,Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  Alert,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
-  console.log('userId================dfgdfgf===================',userId);
+  const { chapterType } = route.params;
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=2002`;
+  const [requirementsData, setRequirementsData] = useState([]);
+  const [requirementsLoading, setRequirementsLoading] = useState(true);
+  const [requirementsError, setRequirementsError] = useState(null);
+  const [showAllRequirements, setShowAllRequirements] = useState(false);
 
   const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
-  console.log('API_URL----------------------------',API_URL)
-  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/attendance`;
 
-  console.log(API_URL)
-
-  useEffect(() => { 
+  useEffect(() => {
     const fetchEventData = async () => {
       try {
         const response = await fetch(API_URL);
         const data = await response.json();
 
         if (response.ok) {
-          setEventData(data.events[0]); 
+          setEventData(data.events[0]);
         } else {
           setError(data.error);
         }
@@ -39,8 +47,31 @@ const HomeScreen = () => {
         setLoading(false);
       }
     };
+
+    const fetchRequirementsData = async () => {
+      try {
+        const locationId = route.params.locationId;
+        const slots = chapterType;
+
+        const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
+        const data = await response.json();
+        console.log("Requirements Details in the Home page----------------------------", data);
+
+        if (response.ok) {
+          setRequirementsData(data);
+        } else {
+          setRequirementsError(data.error);
+        }
+      } catch (err) {
+        setRequirementsError('Failed to fetch requirements');
+      } finally {
+        setRequirementsLoading(false);
+      }
+    };
+
     fetchEventData();
-  },[]);
+    fetchRequirementsData();
+  }, [userId, route.params.locationId]);
 
   const handleConfirmClick = async () => {
     if (!eventData) {
@@ -54,11 +85,11 @@ const HomeScreen = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          UserId: userId, 
-          LocationID: eventData.LocationID || '100003', 
-          EventId: eventData.EventId, 
+          UserId: userId,
+          LocationID: eventData.LocationID || '100003',
+          EventId: eventData.EventId,
         }),
-      });  
+      });
 
       const data = await response.json();
       if (response.ok) {
@@ -72,9 +103,7 @@ const HomeScreen = () => {
     }
   };
 
-
-
-  if (loading) {
+  if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
@@ -85,6 +114,15 @@ const HomeScreen = () => {
       </View>
     );
   }
+
+  if (requirementsError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Requirements Error: {requirementsError}</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -93,89 +131,102 @@ const HomeScreen = () => {
             source={require('../../assets/images/Homepage_BMW.jpg')}
             style={styles.image}
           />
-        </View>    
-        <View style={styles.cards}>
-  <Text style={styles.dashboardTitle}>Dashboard</Text>
-
-  {eventData ? (
-    <View style={styles.meetupCard}>
-      <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
-
-      <View style={styles.row}>
-        <Icon name="calendar" size={18} color="#6C757D" />
-        <Text style={styles.meetupInfo}>
-          {new Date(eventData.DateTime).toLocaleDateString()}
-        </Text>
-        <Icon name="clock-o" size={18} color="#6C757D" />
-        <Text style={styles.meetupInfo}>
-          {new Date(eventData.DateTime).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </Text>
-      </View>
-
-      <View style={styles.row}>
-        <Icon name="map-marker" size={18} color="#6C757D" />
-        <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
-      </View>
-
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
-          <Icon name="check-circle" size={24} color="#28A745" />
-          <Text style={styles.buttonText}>Click to Confirm</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  ) : (
-    <View style={styles.noMeetupCard}>
-      <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
-    </View>
-  )}
-</View>
-<View style={styles.cards}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Requirements</Text>
-        <TouchableOpacity
-      style={styles.addButton}
-      onPress={() => navigation.navigate('Requirements')}
-    >
-      <View style={styles.buttonContent}>
-        <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
-        <Text style={styles.addButtonText}>Add Requirement</Text>
-      </View>
-    </TouchableOpacity>
-      </View>
-      <View>
-          <Text style={styles.line}>
-           ________________________________________________
-          </Text>
         </View>
-      <View style={styles.card}>
+        <View style={styles.cards}>
+          <Text style={styles.dashboardTitle}>Dashboard</Text>
+
+          {eventData ? (
+            <View style={styles.meetupCard}>
+              <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
+              <View style={styles.row}>
+                <Icon name="calendar" size={18} color="#6C757D" />
+                <Text style={styles.meetupInfo}>
+                  {new Date(eventData.DateTime).toLocaleDateString()}
+                </Text>
+                <Icon name="clock-o" size={18} color="#6C757D" />
+                <Text style={styles.meetupInfo}>
+                  {new Date(eventData.DateTime).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Text>
+              </View>
+
+              <View style={styles.row}>
+                <Icon name="map-marker" size={18} color="#6C757D" />
+                <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
+              </View>
+
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
+                  <Icon name="check-circle" size={24} color="#28A745" />
+                  <Text style={styles.buttonText}>Click to Confirm</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.noMeetupCard}>
+              <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
+            </View>
+          )}
+        </View>
+        
+        <View style={styles.cards}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Requirements</Text>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => navigation.navigate('Requirements', {
+                businessName: route.title,
+                locationId: route.params.locationId,
+                chapterType: route.params.chapterType,
+              })}
+            >
+              <View style={styles.buttonContent}>
+                <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
+                <Text style={styles.addButtonText}>Add Requirement</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          
+          <View>
+            <Text style={styles.line}>
+              ________________________________________________
+            </Text>
+          </View>
+          
+          {requirementsData.length > 0 ? (
+  <>
+    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+      <View key={index} style={styles.card}>
         <View style={styles.profileSection}>
           <Image
             source={{ uri: 'https://via.placeholder.com/50' }}
             style={styles.profileImage}
           />
-          <Text style={styles.profileName}>Chandru</Text>
+          <Text style={styles.profileName}>{requirement.Username}</Text>
         </View>
         <View style={styles.requirementSection}>
-          <Text style={styles.requirementText}>
-            XXXXX x xxxx xxxxx xxxxx xxxxx x xx x xxxx xxxxxxxxx xxxxxx xx xxxx
-          </Text>
+          <Text style={styles.requirementText}>{requirement.Description}</Text>
           <TouchableOpacity style={styles.acknowledgeButton}>
             <Text style={styles.acknowledgeText}>Acknowledge</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
-      <View style={styles.card}>
-          <Image
-            source={require('../../assets/images/Homepage_BMW.jpg')}
-            style={styles.image}
-          />
+    ))}
+    {!showAllRequirements && requirementsData.length > 1 && (
+      <TouchableOpacity style={styles.viewMoreButton} onPress={() => setShowAllRequirements(true)}>
+        <Text style={styles.viewMoreText}>View More</Text>
+      </TouchableOpacity>
+    )}
+  </>
+) : (
+  <View style={styles.noMeetupCard}>
+    <Text style={styles.noMeetupText}>No Requirements Available</Text>
+  </View>
+)}
         </View>
-    </View>
+      </View>
     </ScrollView>
   );
 };
@@ -186,12 +237,12 @@ export default function TabViewExample({ navigation }) {
   const userId = useSelector((state) => state.user?.userId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
         const data = await response.json();
+        console.log("Data in the Home Screen Drawer-----------------------------",data);
 
         if (response.ok) {
           const updatedRoutes = data.map((business, index) => ({
@@ -211,10 +262,8 @@ export default function TabViewExample({ navigation }) {
         setLoading(false);
       }
     };
-
     fetchBusinessInfo();
   }, [userId]);
-
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
     return (
@@ -224,6 +273,13 @@ export default function TabViewExample({ navigation }) {
         locationId={business?.L}
         userId={userId}
         navigation={navigation}
+        route={{ 
+          ...route, 
+          params: { 
+            locationId: business?.L, 
+            chapterType: business?.CT 
+          } 
+        }}
       />
     );
   };
@@ -250,122 +306,3 @@ export default function TabViewExample({ navigation }) {
     />
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from 'react';
-// import { View, Text, StyleSheet, Button } from 'react-native';
-// import Icon from 'react-native-vector-icons/FontAwesome'; // You can use other icon libraries
-
-// const UpcomingMeetupCard = () => {
-//   return (
-//     <View style={styles.card}>
-//       <Text style={styles.cardTitle}>Upcoming Business Meetup</Text>
-//       <Text style={styles.meetupTime}>
-//         <Icon name="calendar" size={16} color="#6A1B9A" /> 07/09/2024, 8:30 AM to 10:30 AM
-//       </Text>
-//       <Text style={styles.meetupLocation}>
-//         <Icon name="map-marker" size={16} color="#6A1B9A" /> Urapakkam, Chennai
-//       </Text>
-//       <View style={styles.buttonContainer}>
-//         <Button title="Click to Confirm" color="#28A745" />
-//         <Button title="Click to Decline" color="#DC3545" />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   card: {
-//     backgroundColor: '#f3e5f5',
-//     padding: 15,
-//     borderRadius: 10,
-//     margin: 10,
-//   },
-//   cardTitle: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     marginBottom: 5,
-//   },
-//   meetupTime: {
-//     fontSize: 14,
-//     marginVertical: 5,
-//     color: '#6A1B9A',
-//   },
-//   meetupLocation: {
-//     fontSize: 14,
-//     marginVertical: 5,
-//     color: '#6A1B9A',
-//   },
-//   buttonContainer: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-around',
-//     marginTop: 10,
-//   },
-// });
-
-// export default UpcomingMeetupCard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-// import { useSelector } from 'react-redux';
-// import { useNavigation } from '@react-navigation/native';
-// const HomeScreen = () => {
-//   const user = useSelector((state) => state.user);
-//   const navigation = useNavigation();
-  
-
-//   return (
-//     <View>
-//       <Text style={styles.textBold}>ID {user?.userId}</Text>
-//       <Text style={styles.textLargeBold}>Welcome, {user?.username}!</Text>
-//       <Text style={styles.textNormal}>Profession: {user?.profession || 'Not provided'}</Text>
-//     </View>
-//   );
-// };
-
-
-// const styles = StyleSheet.create({
-//   textBold: {
-//     fontWeight: 'bold',
-//     fontSize: 16, 
-//   },
-//   textLargeBold: {
-//     fontWeight: 'bold',
-//     fontSize: 24, 
-//   },
-//   textNormal: {
-//     fontSize: 18,
-//   },
-// });
-// export default HomeScreen;
-// // export default HomeScreen;

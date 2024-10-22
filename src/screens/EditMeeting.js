@@ -41,7 +41,6 @@ const EditMeeting = ({ route }) => {
         EventId: eventId,
         LocationID: locationId,
         DateTime: formattedDateTime,
-        ConfirmationStatus: 1,
         SlotID,
     };
     console.log("meetingData----------------", meetingData);

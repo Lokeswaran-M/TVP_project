@@ -57,7 +57,6 @@ const NewMeeting = () => {
       CreatedBy: userId,
       LocationID: profileData.LocationID,
       DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-      ConfirmationStatus: 1,
       SlotID,
     };
     console.log("meetingData----------------",meetingData);

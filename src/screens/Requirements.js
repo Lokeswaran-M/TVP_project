@@ -4,15 +4,19 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
-const Requirements = () => {
+import { Picker } from '@react-native-picker/picker';
+const Requirements = ({ route }) => {
+  const { businessName, locationId, chapterType } = route.params;
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
-  const [businessInfo, setBusinessInfo] = useState(null); 
-  const [loading, setLoading] = useState(true); 
+  const [businessInfo, setBusinessInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [requirement, setRequirement] = useState(''); 
+  const [requirement, setRequirement] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState('');
+  const [selectedMember, setSelectedMember] = useState('');
+  const [members, setMembers] = useState([]);
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -22,7 +26,6 @@ const Requirements = () => {
           throw new Error('Failed to fetch business info');
         }
         const data = await response.json();
-        console.log("DATA IN REQUIREMENTS SCREEN---------------------------------------", data);
         setBusinessInfo(data);
       } catch (error) {
         setError(error.message);
@@ -30,23 +33,49 @@ const Requirements = () => {
         setLoading(false);
       }
     };
+    const fetchMembers = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/list-members`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            LocationID: locationId,
+            chapterType: chapterType,
+            userId: userId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch members');
+        }
+
+        const data = await response.json();
+        setMembers(data.members);
+      } catch (error) {
+        console.error('Failed to fetch members:', error);
+      }
+    };
     if (userId) {
       fetchBusinessInfo();
+      fetchMembers();
     }
   }, [userId]);
   const handleSubmit = async () => {
     if (!businessInfo || !requirement.trim()) {
-      setValidationError('Please provide your requirement');
+      setValidationError('Please provide your requirement and select a member');
       return;
     }
     setIsSubmitting(true);
     setValidationError('');
     const requestData = {
       UserId: userId,
-      LocationID: businessInfo.LocationID,
+      LocationID: businessInfo.LocationID, 
       Slots: 1,
-      Profession: businessInfo.Profession,
+      Profession: businessName,
       Description: requirement.trim(),
+      Member: selectedMember || null,
     };
     try {
       const response = await fetch(`${API_BASE_URL}/requirements`, {
@@ -56,13 +85,10 @@ const Requirements = () => {
         },
         body: JSON.stringify(requestData),
       });
-  
       if (!response.ok) {
         throw new Error('Failed to submit requirement');
       }
       const result = await response.json();
-      console.log('Requirement submitted:', result);
-      setError(null);
       alert('Requirement Created Successfully');
       navigation.goBack();
     } catch (error) {
@@ -71,7 +97,7 @@ const Requirements = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };  
+  };
   if (loading) {
     return (
       <View style={styles.container}>
@@ -84,10 +110,18 @@ const Requirements = () => {
       <View style={styles.card}>
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Submit Your Need</Text>
-          <TouchableOpacity style={styles.memberButton}>
-            <Icon name="user-o" size={18} color="white" />
-            <Text style={styles.memberButtonText}>Choose Member</Text>
-          </TouchableOpacity>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedMember}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedMember(itemValue)}
+            >
+              <Picker.Item label="Choose Member" value="" />
+              {members.map((member) => (
+                <Picker.Item key={member.UserId} label={member.Username} value={member.UserId} />
+              ))}
+            </Picker>
+          </View>
         </View>
         <View style={styles.inputContainer}>
           <TextInput
@@ -129,6 +163,7 @@ const Requirements = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -139,7 +174,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 15,
-    margin: 0,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -158,16 +192,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#a3238f',
   },
-  memberButton: {
-    backgroundColor: '#a3238f',
-    borderRadius: 20,
-    padding: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+  pickerContainer: {
+    flex: 1,
+    borderColor: '#a3238f',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginLeft: 10,
   },
-  memberButtonText: {
-    color: 'white',
-    marginLeft: 8,
+  picker: {
+    height: 50,
+    width: '100%',
   },
   inputContainer: {
     borderWidth: 1,
@@ -225,4 +259,5 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
 });
+
 export default Requirements;
