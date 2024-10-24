@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Sound from 'react-native-sound';
+
 const StopWatch = ({ route, navigation }) => {
     const { member } = route.params;
     const [seconds, setSeconds] = useState(6);
@@ -11,45 +13,96 @@ const StopWatch = ({ route, navigation }) => {
     const [isTimeoutModalVisible, setIsTimeoutModalVisible] = useState(false);
     const [isStarReviewModalVisible, setIsStarReviewModalVisible] = useState(false);
     const [rating, setRating] = useState(0);
+    
+    // Use useRef to store sound instance
+    const alarmSound = useRef(null);
+
+    // Load and prepare the alarm sound once
+    useEffect(() => {
+        Sound.setCategory('Playback'); // Set category to ensure it works in background
+        alarmSound.current = new Sound(require('../../assets/audio/audiosound.mp3'), Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('Failed to load the sound', error);
+                return;
+            }
+            console.log('Sound loaded successfully');
+        });
+
+        // Cleanup when component unmounts
+        return () => {
+            if (alarmSound.current) {
+                alarmSound.current.release(); // Release the sound resources
+            }
+        };
+    }, []);
+
+    // Play the alarm sound
+    const playAlarm = () => {
+        if (alarmSound.current) {
+            alarmSound.current.play((success) => {
+                if (!success) {
+                    console.log('Failed to play the sound');
+                }
+            });
+        }
+    };
+
     useEffect(() => {
         if (isRunning && !isPaused) {
+            console.log("Timer started");
             const id = setInterval(() => {
                 setSeconds(prev => {
                     if (prev <= 0) {
+                        console.log("Time's up! Stopping the timer.");
                         clearInterval(id);
                         setIsRunning(false);
                         setIsTimeoutModalVisible(true);
-                        return 6;
+
+                        // Play alarm sound
+                        playAlarm();
+
+                        return 6; // Reset time to 6 seconds
                     }
+                    console.log(`Seconds left: ${prev - 1}`);
                     return prev - 1;
                 });
             }, 1000);
             setIntervalId(id);
-            return () => clearInterval(id);
+            return () => {
+                console.log("Timer cleared");
+                clearInterval(id);
+            };
+        } else {
+            console.log(`Timer paused or stopped. isRunning: ${isRunning}, isPaused: ${isPaused}`);
         }
     }, [isRunning, isPaused]);
+
     const handleStart = () => {
         if (!isRunning) {
             setIsRunning(true);
             setIsPaused(false);
         }
     };
+
     const handleStop = () => {
         setIsRunning(false);
         setIsPaused(false);
         clearInterval(intervalId);
     };
+
     const handleRestart = () => {
         setSeconds(6);
         setIsRunning(false);
         setIsPaused(false);
         clearInterval(intervalId);
     };
+
     const formatTime = secs => {
         const minutes = Math.floor(secs / 60);
         const seconds = secs % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
+
     return (
         <View style={styles.container}>
             <View style={styles.memberDetailsContainer}>
@@ -85,6 +138,7 @@ const StopWatch = ({ route, navigation }) => {
                             onPress={() => {
                                 setIsTimeoutModalVisible(false);
                                 setIsStarReviewModalVisible(true);
+                                if (alarmSound.current) alarmSound.current.stop(); // Stop the alarm when modal is closed
                             }}
                         >
                             <Text style={styles.modalButtonText}>Close</Text>
@@ -137,19 +191,18 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         marginVertical: 100,
         borderRadius: 20,
-        color: 'blue',
         alignItems:'center',
     },
     timer: {
         fontSize: 98,
         fontWeight: 'bold',
         color: 'black',
-        marginHorizontal: 30,
         marginVertical: 15,
     },
     buttonContainer: {
         flexDirection: 'row',
         marginTop: 55,
+        marginVertical: 15,
     },
     button: {
         backgroundColor: '#A3238F',

@@ -24,6 +24,7 @@ import OneMinPresentation from '../screens/OneMinPresentation';
 import Attendance from '../screens/Attendance';
 import StopWatch from '../screens/StopWatch';
 import CreatingMeeting from '../screens/Creatingmeeting';
+import CreateMeetingViewPage from '../screens/CreateMeetingViewPage';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
@@ -31,6 +32,7 @@ import Requirements from '../screens/Requirements';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
+
 const ProfileStack = createStackNavigator();
 
 function ProfileStackNavigator() {
@@ -136,6 +138,52 @@ function StackMeetingNavigator() {
       component={GeneratedQRScreen} 
       options={{ headerShown: true, title: 'QR Genrated'}}
       />
+      <Stack.Screen 
+      name="CreateMeetingViewPage" 
+      component={CreateMeetingViewPage} 
+      options={{ headerShown: true, title: 'Create meeting'}}
+      />
+      <Stack.Screen
+        name="OneMinPresentation"
+        component={OneMinPresentation}
+        options={({ navigation }) => ({
+              drawerLabel: 'One Min Presentation',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="microphone" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="microphone" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>ONE MIN PRESENTATION</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+      />
+      <Stack.Screen
+        name="StopWatch"
+        component={StopWatch}
+        options={({ navigation }) => ({
+              drawerLabel: 'One Min Presentation',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="microphone" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="microphone" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>ONE MIN PRESENTATION</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+      />
 
     </StackMeeting.Navigator>
   );
@@ -167,31 +215,31 @@ function StackPaymentNavigator() {
   );
 }
 
-const StackOneMinPresentation = createStackNavigator();
+// const StackOneMinPresentation = createStackNavigator();
 
-function StackOneMinPresentationNavigator() {
-  return (
-    <StackOneMinPresentation.Navigator
-      screenOptions={{
-        headerTintColor: '#000',
-        headerStyle: {
-          backgroundColor: '#fff',
-        },
-      }}
-    >
-      <StackOneMinPresentation.Screen
-        name="OneMinPresentation"
-        component={OneMinPresentation}
-        options={{ headerShown: false, title: 'OneMinPresentation'}}
-      />
-      <StackOneMinPresentation.Screen
-        name="StopWatch"
-        component={StopWatch}
-        options={{ headerShown: false, title: 'StopWatch'}}
-      />
-    </StackOneMinPresentation.Navigator>
-  );
-}
+// function StackOneMinPresentationNavigator() {
+//   return (
+//     <StackOneMinPresentation.Navigator
+//       screenOptions={{
+//         headerTintColor: '#000',
+//         headerStyle: {
+//           backgroundColor: '#fff',
+//         },
+//       }}
+//     >
+//       <StackOneMinPresentation.Screen
+//         name="OneMinPresentation"
+//         component={OneMinPresentation}
+//         options={{ headerShown: false, title: 'OneMinPresentation'}}
+//       />
+//       <StackOneMinPresentation.Screen
+//         name="StopWatch"
+//         component={StopWatch}
+//         options={{ headerShown: false, title: 'StopWatch'}}
+//       />
+//     </StackOneMinPresentation.Navigator>
+//   );
+// }
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -534,7 +582,7 @@ function DrawerNavigator() {
               ),
             })}
           />
-          <Drawer.Screen
+          {/* <Drawer.Screen
             name="OneMinPresentation"
             component={StackOneMinPresentationNavigator}
             options={({ navigation }) => ({
@@ -556,7 +604,7 @@ function DrawerNavigator() {
                 </View>
               ),
             })}
-          />
+          /> */}
       </>
       )}
     </Drawer.Navigator>
