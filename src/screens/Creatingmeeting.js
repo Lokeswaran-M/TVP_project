@@ -6,7 +6,6 @@ import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 
-
 const CreatingMeeting = () => {
   const navigation = useNavigation();
   const [activeIndex, setActiveIndex] = useState(null); 
@@ -15,15 +14,30 @@ const CreatingMeeting = () => {
   const [meetingData, setMeetingData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const userId = useSelector((state) => state.user?.userId);
+
   const handleCreateMeeting = () => {
     navigation.navigate('NewMeeting');
   };
+
+  const handleUpcomingMeet = (meeting) => {
+    // Pass the meeting details when navigating to CreateMeetingViewPage
+    navigation.navigate('CreateMeetingViewPage', { 
+      userId: meeting.userId, 
+      eventId: meeting.EventId, 
+      location: meeting.Location, 
+      slotId: meeting.SlotID, 
+      dateTime: meeting.DateTime 
+    });
+  };
+
   const toggleOptions = (index) => {
     setActiveIndex(activeIndex === index ? null : index); 
   };
+
   const closeOptions = () => {
     setActiveIndex(null);
   };
+
   const fetchProfileData = async () => {
     setLoading(true);
     try {
@@ -39,16 +53,15 @@ const CreatingMeeting = () => {
       setLoading(false);
     }
   };
+
   const fetchMeetingData = async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`);
-      console.log('response===========================',response)
       if (!response.ok) {
         throw new Error('Failed to fetch meeting data');
       }
       const data = await response.json();
-      console.log("MeetingData--------------", data);
       setMeetingData(data);
     } catch (error) {
       console.error('Error fetching meeting data:', error);
@@ -56,6 +69,7 @@ const CreatingMeeting = () => {
       setLoading(false);
     }
   };
+
   const handleDelete = async (eventId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
@@ -65,197 +79,86 @@ const CreatingMeeting = () => {
         throw new Error('Failed to delete the meeting');
       }
       const data = await response.json();
-      console.log('Meeting deleted:', data);
       setShowDeleteModal(false);
       fetchMeetingData();
     } catch (error) {
       console.error('Error deleting meeting:', error);
     }
   };
+
   useFocusEffect(
     useCallback(() => {
-
       closeOptions();
       fetchProfileData();
       fetchMeetingData();
     }, [userId])
   );
-    return (
-      <ScrollView>
-        <TouchableWithoutFeedback onPress={closeOptions}>
-          <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
-              <Text style={styles.buttonText}>Create New Meeting</Text>
-            </TouchableOpacity>
-            <Text style={styles.title}>Upcoming Business Meetup</Text>
-            {meetingData.length > 0 ? (
-              meetingData.map((meeting, index) => (
-                <View key={index} style={styles.meetingCard}>
-                  <View style={styles.meetingDetails}>
-                    <Text style={styles.meetingTitle}>
-                      <Icon name="calendar" size={18} /> {new Date(meeting.DateTime).toLocaleDateString()} {'   '}
-                      <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
-                    </Text>
-                    <Text style={styles.meetingInfo}>
-                      <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}
-                    </Text>
-                  </View>
-    
-                  <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
-                    <Icon name="ellipsis-h" size={20} color="#a3238f" />
-                  </TouchableOpacity>
-    
-                  {/* Render options menu when the specific meeting is active */}
-                  {activeIndex === index && (
-                    <View style={styles.optionsMenu}>
-                      <TouchableOpacity
-                        style={styles.optionButton}
-                        onPress={() =>
-                          navigation.navigate('EditMeeting', {
-                            eventId: meeting.EventId,
-                            date: new Date(meeting.DateTime).toLocaleDateString(),
-                            time: new Date(meeting.DateTime).toLocaleTimeString(),
-                            location: meeting.Location,
-                            locationId: meeting.LocationID,
-                          })
-                        }
-                      >
-                        <Text style={styles.optionText}>Edit</Text>
-                      </TouchableOpacity>
-    
-                      <TouchableOpacity
-                        style={styles.optionButton}
-                        onPress={() => {
-                          setShowDeleteModal(true);
-                          setActiveIndex(index);
-                        }}
-                      >
-                        <Text style={styles.optionText}>Delete</Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              ))
-            ) : (
-              <Text>No meetings found</Text>
-            )}
-          </View>
-        </TouchableWithoutFeedback>
-    
-        {/* Delete confirmation modal */}
-        <Modal
-          visible={showDeleteModal}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setShowDeleteModal(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Are You Sure?</Text>
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  style={styles.modalButtonYes}
-                  onPress={() => handleDelete(meetingData[activeIndex]?.EventId)}
-                >
-                  <Text style={styles.modalButtonText}>Yes</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.modalButtonNo}
-                  onPress={() => setShowDeleteModal(false)}
-                >
-                  <Text style={styles.modalButtonText}>No</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </ScrollView>
-    );
-  };       
 
-//   return (
-//     <ScrollView>
-//       <TouchableWithoutFeedback onPress={closeOptions}>
-//         <View style={styles.container}>
-//           <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
-//             <Text style={styles.buttonText}>Create New Meeting</Text>
-//           </TouchableOpacity>
-//           <Text style={styles.title}>Upcoming Business Meetup</Text>
-//           {meetingData.length > 0 ? (
-//             meetingData.map((meeting, index) => (
-//               <View key={index} style={styles.meetingCard}>
-//                 <View style={styles.meetingDetails}>
-//                   <Text style={styles.meetingTitle}>
-//                     <Icon name="calendar" size={18} /> {new Date(meeting.DateTime).toLocaleDateString()} {'   '}
-//                     <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
-//                   </Text>
-//                   <Text style={styles.meetingInfo}>
-//                     <Icon name="map-marker" size={14} /> {meeting.Location}               Slot ID - {meeting.SlotID}
-//                   </Text>
-//                 </View>
-//                 <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
-//                   <Icon name="ellipsis-h" size={20} color="#a3238f" />
-//                 </TouchableOpacity>
-//                 {activeIndex === index && (
-//   <View style={styles.optionsMenu}>
-//     <TouchableOpacity 
-//   style={styles.optionButton} 
-//   onPress={() => navigation.navigate('EditMeeting', { 
-//     eventId: meeting.EventId, 
-//     date: new Date(meeting.DateTime).toLocaleDateString(), 
-//     time: new Date(meeting.DateTime).toLocaleTimeString(), 
-//     location: meeting.Location, 
-//     locationId: meeting.LocationID
-//   })}
-// >
-//   <Text style={styles.optionText}>Edit</Text>
-// </TouchableOpacity>
-//     <TouchableOpacity 
-//       style={styles.optionButton} 
-//       onPress={() => {
-//         setShowDeleteModal(true);
-//         setActiveIndex(index);
-//       }}
-//     >
-//       <Text style={styles.optionText}>Delete</Text>
-//     </TouchableOpacity>
-//   </View>
-// )}
-//               </View>
-//             ))
-//           ) : (
-//             <Text>No meetings found</Text>
-//           )}
-//         </View>
-//       </TouchableWithoutFeedback>
-//       <Modal
-//         visible={showDeleteModal}
-//         transparent={true}
-//         animationType="fade"
-//         onRequestClose={() => setShowDeleteModal(false)}
-//       >
-//         <View style={styles.modalOverlay}>
-//           <View style={styles.modalContainer}>
-//             <Text style={styles.modalTitle}>Are You Sure?</Text>
-//             <View style={styles.modalButtonContainer}>
-//             <TouchableOpacity 
-//   style={styles.modalButtonYes} 
-//   onPress={() => handleDelete(meetingData[activeIndex]?.EventId)}
-// >
-//   <Text style={styles.modalButtonText}>Yes</Text>
-// </TouchableOpacity>
-//               <TouchableOpacity 
-//                 style={styles.modalButtonNo} 
-//                 onPress={() => setShowDeleteModal(false)}
-//               >
-//                 <Text style={styles.modalButtonText}>No</Text>
-//               </TouchableOpacity>
-//             </View>
-//           </View>
-//         </View>
-//       </Modal>
-//     </ScrollView>
-//   );
+  return (
+    <ScrollView>
+      <TouchableWithoutFeedback onPress={closeOptions}>
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.button} onPress={handleCreateMeeting}>
+            <Text style={styles.buttonText}>Create New Meeting</Text>
+          </TouchableOpacity>
+          <Text style={styles.title}>Upcoming Business Meetup</Text>
+          {meetingData.length > 0 ? (
+            meetingData.map((meeting, index) => (
+              <TouchableOpacity 
+                key={index} 
+                style={styles.meetingCard} 
+                onPress={() => handleUpcomingMeet(meeting)}
+              >
+                <View style={styles.meetingDetails}>
+                  <Text style={styles.meetingTitle}>
+                    <Icon name="calendar" size={18} /> {new Date(meeting.DateTime).toLocaleDateString()} {'   '}
+                    <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
+                  </Text>
+                  <Text style={styles.meetingInfo}>
+                    <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}
+                  </Text>
+                </View>
+                <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
+                  <Icon name="ellipsis-h" size={20} color="#a3238f" />
+                </TouchableOpacity>
+                {activeIndex === index && (
+                  <View style={styles.optionsMenu}>
+                    <TouchableOpacity
+                      style={styles.optionButton}
+                      onPress={() =>
+                        navigation.navigate('EditMeeting', {
+                          eventId: meeting.EventId,
+                          date: new Date(meeting.DateTime).toLocaleDateString(),
+                          time: new Date(meeting.DateTime).toLocaleTimeString(),
+                          location: meeting.Location,
+                          locationId: meeting.LocationID,
+                        })
+                      }
+                    >
+                      <Text style={styles.optionText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.optionButton}
+                      onPress={() => {
+                        setShowDeleteModal(true);
+                        setActiveIndex(index);
+                      }}
+                    >
+                      <Text style={styles.optionText}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))
+          ) : (
+            <Text>No meetings found</Text>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </ScrollView>
+  );
+};
+
 
 const styles = StyleSheet.create({
   container: {

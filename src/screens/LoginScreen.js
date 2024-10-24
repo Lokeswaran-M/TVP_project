@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/LoginStyle';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../Redux/action';
 import { API_BASE_URL } from '../constants/Config';
-
+import DeviceInfo from 'react-native-device-info';
 import { RadioButton } from 'react-native-paper'; 
 // import AuthContext from '../api/Auth';
 
@@ -17,11 +17,11 @@ const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logintype, setLogintype] = useState('1');
-
-
   const [usernameFocused, setUsernameFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [appVersion, setAppVersion] = useState('');
+
 
   // const [selectedLoginType, setSelectedLoginType] = useState('member'); 
 
@@ -37,6 +37,18 @@ const LoginScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState(''); 
+ 
+ 
+  useEffect(() => {
+  
+    const fetchAppInfo = async () => {
+      const version = DeviceInfo.getVersion();
+      setAppVersion(version);
+    };
+
+    fetchAppInfo();
+  }, []);
+
 
 
   const handleFocusUsername = () => {
@@ -201,7 +213,7 @@ const LoginScreen = ({ navigation }) => {
       console.error(error);
     }
   };
-
+  
   return ( 
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -291,11 +303,15 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
+          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text style={styles.registerText}>
               Don't have an account? <Text style={styles.signUpText}>Sign up.</Text>
             </Text>
           </TouchableOpacity>
+        
+        </View>
+        <View style={styles.appVersion}>
+        <Text style={styles.appVersionText}>Version: {appVersion}</Text>
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>

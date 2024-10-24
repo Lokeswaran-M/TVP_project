@@ -51,7 +51,7 @@ const HeadAdminLocation = ({ navigation }) => {
     location.LocationName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleViewPress = (location, place) => {
+  const handleViewPress = (location, place,IsActive) => {
     navigation.navigate('HeadAdminLocationView', { location, place,IsActive });
   };
 
