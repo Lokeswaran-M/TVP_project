@@ -233,17 +233,13 @@ const handlelocationChange = (selectedLocation) => {
     }
     if (isValid) {
       try {
-
-        // Step 1: Fetch userId when the Register button is clicked
         const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
         const userIdData = await userIdResponse.json();
         
         if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
           const generatedUserId = userIdData.NextuserId[0].UserId;
           console.log('Extracted UserId:', generatedUserId);
-          setUserId(generatedUserId); // Set userId in state
-
-          // Step 2: Register user with the generated userId
+          setUserId(generatedUserId);
           const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
             method: 'POST',
             headers: {
@@ -251,7 +247,7 @@ const handlelocationChange = (selectedLocation) => {
             },
             body: JSON.stringify({
               user: {
-                userId: generatedUserId,  // Use the generated userId here
+                userId: generatedUserId,
                 username,
                 Password: password,
                 Mobileno,
@@ -269,14 +265,9 @@ const handlelocationChange = (selectedLocation) => {
               }
             }),
           });
-
           const data = await response.json();
           console.log('Registration successful:', data);
-
-
-          // Navigate to the OTP screen with the mobile number
           navigation.navigate('Otpscreen', { Mobileno });
-
         } else {
           console.error('No UserId found in the response!');
         }
@@ -361,10 +352,7 @@ const handlelocationChange = (selectedLocation) => {
       />
       </View>
       {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
-       
       {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
-
-     
      <View style={styles.selectList}>
           <Picker
             selectedValue={selectedProfession}

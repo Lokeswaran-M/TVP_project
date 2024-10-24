@@ -156,7 +156,7 @@ function StackPaymentNavigator() {
       <StackPayment.Screen
         name="Payment"
         component={Payment}
-        options={{ headerShown: true, title: 'Payment'}}
+        options={{ headerShown: false, title: 'Payment'}}
       />
       <StackPayment.Screen
         name="PaymentWebview"
@@ -419,7 +419,7 @@ function DrawerNavigator() {
           drawerIcon: ({ color, size }) => (
             <Icon name="money" color={color} size={size} />
           ),
-          headerShown: false,
+          headerShown: true,
           header: () => (
             <View style={styles.topNav}>
               <TouchableOpacity onPress={() => navigation.toggleDrawer()}>

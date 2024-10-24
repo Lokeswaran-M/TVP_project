@@ -19,7 +19,7 @@ const Profile = () => {
   const [multiProfile, setMultiProfile] = useState({});
   const [overallAverage, setOverallAverage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState(require('../../assets/images/DefaultProfile.jpg'));
+  const [imageUrl, setImageUrl] = useState();
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
   const fetchProfileImage = async () => {
@@ -38,7 +38,7 @@ const Profile = () => {
     try {
         let response;
         const url = categoryID === 2 
-            ? `${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${profession}` 
+            ? `${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${profession}`
             : `${API_BASE_URL}/api/info_with_star_rating/${userId}`;
         console.log('Fetching URL:', url);
         response = await fetch(url);

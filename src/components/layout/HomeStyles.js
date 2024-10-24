@@ -57,18 +57,18 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       marginBottom: 5,
     },
-    viewMoreButton: {
-      marginTop: 10,
-      padding: 10,
-      backgroundColor: '#A3238F',
-      borderRadius: 5,
-      alignItems: 'center',
+    downArrowIcon: {
+      alignSelf: 'center',
+      marginVertical: 10,
+    },  
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center', 
+      justifyContent: 'space-between',
     },
-    
-    viewMoreText: {
-      color: 'white',
-      fontSize: 16,
-    }, 
+    arrowIcon: {
+      marginLeft: 10,
+    },      
     meetupInfo: {
       marginLeft: 5,
       marginRight: 15,

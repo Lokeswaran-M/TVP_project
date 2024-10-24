@@ -68,7 +68,6 @@ const HomeScreen = ({ route }) => {
         setRequirementsLoading(false);
       }
     };
-
     fetchEventData();
     fetchRequirementsData();
   }, [userId, route.params.locationId]);
@@ -79,7 +78,7 @@ const HomeScreen = ({ route }) => {
       return;
     }
     try {
-      const response = await fetch(ATTENDANCE_API_URL, {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -102,6 +101,33 @@ const HomeScreen = ({ route }) => {
       Alert.alert('Error', 'Network or server issue');
     }
   };
+  const handleAcknowledgeClick = async (requirement) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/requirements`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userId,
+          LocationID: route.params.locationId,
+          Slots: chapterType,
+        }),
+      });
+  
+      const data = await response.json();
+      console.log("Data for ack------------------------------",data);
+  
+      if (response.ok) {
+        Alert.alert('Success', 'Requirement acknowledged successfully');
+      } else {
+        Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
+      }
+    } catch (error) {
+      console.error("Acknowledge Error:", error);
+      Alert.alert('Error', 'Network or server issue');
+    }
+  };  
 
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -172,29 +198,33 @@ const HomeScreen = ({ route }) => {
         </View>
         
         <View style={styles.cards}>
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Requirements</Text>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => navigation.navigate('Requirements', {
-                businessName: route.title,
-                locationId: route.params.locationId,
-                chapterType: route.params.chapterType,
-              })}
-            >
-              <View style={styles.buttonContent}>
-                <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
-                <Text style={styles.addButtonText}>Add Requirement</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.header}>
+        <View style={styles.headerRow}>
+  <Text style={styles.headerText}>Requirements</Text>
+  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+  </TouchableOpacity>
+</View>
+  <TouchableOpacity
+    style={styles.addButton}
+    onPress={() => navigation.navigate('Requirements', {
+      businessName: route.title,
+      locationId: route.params.locationId,
+      chapterType: route.params.chapterType,
+    })}
+  >
+    <View style={styles.buttonContent}>
+      <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
+      <Text style={styles.addButtonText}>Add Requirement</Text>
+    </View>
+  </TouchableOpacity>
+</View>
           
           <View>
             <Text style={styles.line}>
               ________________________________________________
             </Text>
           </View>
-          
           {requirementsData.length > 0 ? (
   <>
     {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
@@ -208,17 +238,14 @@ const HomeScreen = ({ route }) => {
         </View>
         <View style={styles.requirementSection}>
           <Text style={styles.requirementText}>{requirement.Description}</Text>
-          <TouchableOpacity style={styles.acknowledgeButton}>
+          <TouchableOpacity 
+            style={styles.acknowledgeButton} 
+            onPress={() => handleAcknowledgeClick(requirement)}>
             <Text style={styles.acknowledgeText}>Acknowledge</Text>
           </TouchableOpacity>
         </View>
       </View>
     ))}
-    {!showAllRequirements && requirementsData.length > 1 && (
-      <TouchableOpacity style={styles.viewMoreButton} onPress={() => setShowAllRequirements(true)}>
-        <Text style={styles.viewMoreText}>View More</Text>
-      </TouchableOpacity>
-    )}
   </>
 ) : (
   <View style={styles.noMeetupCard}>
