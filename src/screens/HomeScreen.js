@@ -110,13 +110,13 @@ const HomeScreen = ({ route }) => {
         },
         body: JSON.stringify({
           userId: userId,
+          acknowledgedUserId: requirement.UserId,
           LocationID: route.params.locationId,
           Slots: chapterType,
         }),
       });
-  
       const data = await response.json();
-      console.log("Data for ack------------------------------",data);
+      console.log("Data for ack------------------------------", data);
   
       if (response.ok) {
         Alert.alert('Success', 'Requirement acknowledged successfully');
@@ -127,7 +127,7 @@ const HomeScreen = ({ route }) => {
       console.error("Acknowledge Error:", error);
       Alert.alert('Error', 'Network or server issue');
     }
-  };  
+  };   
 
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
