@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
+
   },
   logo: {
     width: width * 0.85, 
@@ -77,19 +78,35 @@ const styles = StyleSheet.create({
     color: '#a3238f',
     marginTop: height * 0.02, 
     fontSize: width * 0.035, 
+    paddingBottom:20,
   },
   registerLink: {
+
     position: 'absolute',
     bottom: height * 0.05, 
   },
   registerText: {
-    marginTop: 50,
     fontSize: width * 0.035, 
     color: '#888',
   },
   signUpText: {
+ 
     color: '#a3238f',
     fontWeight: 'bold',
+  },
+  appVersion:{
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: '#fff',
+    padding:8,
+    paddingTop:40,
+    },
+  appVersionText:{
+  color:'#888',
+  alignItems:'center',
+  justifyContent:'center',
+  fontSize:12,
+  fontWeight:'600',
   },
   errorText: {
     color: 'red',
