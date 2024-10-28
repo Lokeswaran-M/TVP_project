@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image, Button } from 'react-native';
+import { View, TextInput, FlatList, useWindowDimensions, ActivityIndicator, Text, TouchableOpacity, Image, Button, Alert } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { launchCamera } from 'react-native-image-picker';
 import { PERMISSIONS, request, RESULTS } from 'react-native-permissions';
-const MultiBusinessCamera = ({ navigation, profileData }) => {
+const MultiBusinessCamera = ({ navigation, chapterType, locationId }) => {
   const userId = useSelector((state) => state.user?.userId);
   const requestCameraPermission = async () => {
     const result = await request(PERMISSIONS.ANDROID.CAMERA);
@@ -21,22 +21,21 @@ const MultiBusinessCamera = ({ navigation, profileData }) => {
     }
   };
   const openCamera = () => {
+    console.log("chapterType::::::::::::::::::::::::::::::::::::::::", chapterType);
+    console.log("locationId::::::::::::::::::::::::::::::::::::::", locationId);
     const options = {
       mediaType: 'photo',
       cameraType: 'front',
     };
     launchCamera(options, async (response) => {
       if (response.didCancel) {
-        console.log('User cancelled image picker');
         navigation.navigate('Dashboard');
       } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorCode);
         navigation.navigate('Dashboard');
       } else if (response.assets && response.assets.length > 0) {
         const photoUri = response.assets[0].uri;
-        const userId = user?.userId;
-        const currentDateTime = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 12);
-        const fileName = `${userId}_${currentDateTime}.jpeg`;
+        const fileName = `${userId}_${chapterType}_${locationId}.jpeg`;
+  
         try {
           const formData = new FormData();
           formData.append('image', {
@@ -44,7 +43,7 @@ const MultiBusinessCamera = ({ navigation, profileData }) => {
             type: 'image/jpeg',
             name: fileName,
           });
-          const uploadResponse = await fetch(`${API_BASE_URL}/upload-meeting-photo?userId=${userId}`, {
+          const uploadResponse = await fetch(`${API_BASE_URL}/upload-meeting-photo?userId=${userId}&chapterType=${chapterType}&locationId=${locationId}`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -52,21 +51,27 @@ const MultiBusinessCamera = ({ navigation, profileData }) => {
             },
           });
           const result = await uploadResponse.json();
-          if (uploadResponse.ok) {
-            Alert.alert('Success', 'Photo uploaded successfully');
-          } else {
-            Alert.alert('Error', 'Photo upload failed');
-          }
-        } catch (error) {
+console.log("Result on the Camera Screen:", result);
+if (result.success) {
+    Alert.alert('Success', 'Photo uploaded successfully');
+} else {
+    Alert.alert('Error', 'Photo upload failed');
+}
+} catch (error) {
           Alert.alert('Error', 'Something went wrong during the upload');
         }
+  
         navigation.navigate('Dashboard');
       }
     });
-  };
+  };  
   return (
-    <View>
-         <Button title="Open Camera" onPress={requestCameraPermission} />
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={requestCameraPermission}>
+        <Icon name="camera" size={24} color="#FFF" style={styles.icon} />
+        <Text style={styles.buttonText}>Camera</Text>
+      </TouchableOpacity>
+      <Text style={styles.noteText}>*you are scanning for Boutique Business</Text>
     </View>
   );
 };
