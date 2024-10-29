@@ -9,6 +9,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     paddingHorizontal: width * 0.05, 
+    paddingVertical:width * 0.25,
+    paddingBottom:1,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    marginTop: height * 0.015, 
+    marginTop: height * 0.01, 
   },
   buttonText: {
     color: '#fff',
@@ -99,7 +101,6 @@ const styles = StyleSheet.create({
     alignItems:'center',
     backgroundColor: '#fff',
     padding:8,
-    paddingTop:40,
     },
   appVersionText:{
   color:'#888',
