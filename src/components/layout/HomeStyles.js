@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     },
     line: {
         margin: 15,
+        textAlign: 'center',
     },
     buttonContent: {
         flexDirection: 'row',

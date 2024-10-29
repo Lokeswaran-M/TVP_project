@@ -252,7 +252,32 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#A3238F',
     },
-
+    container: {
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    button: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#A3238F',
+      paddingVertical: 15,
+      paddingHorizontal: 30,
+      borderRadius: 10,
+    },
+    icon: {
+      marginRight: 10,
+    },
+    buttonText: {
+      color: '#FFF',
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    noteText: {
+      marginTop: 10,
+      color: '#A3238F',
+      fontSize: 14,
+      fontStyle: 'italic',
+    },
 });
 
 export default styles;

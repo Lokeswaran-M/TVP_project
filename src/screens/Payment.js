@@ -30,7 +30,7 @@ const Payment = () => {
     navigation.navigate('Pay');
   };  
 
-  return (
+  return ( 
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Business Meeting Entry Payment</Text>
       <View style={styles.topcon}>

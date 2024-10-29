@@ -23,6 +23,7 @@ const HomeScreen = ({ route }) => {
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [profileImages, setProfileImages] = useState({});
   const [requirementsData, setRequirementsData] = useState([]);
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [requirementsError, setRequirementsError] = useState(null);
@@ -30,6 +31,45 @@ const HomeScreen = ({ route }) => {
 
   const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
 
+  const refreshRequirements = async () => {
+    setRequirementsLoading(true);
+    try {
+      const locationId = route.params.locationId;
+      const slots = chapterType;
+      const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setRequirementsData(data);
+      } else {
+        setRequirementsError(data.error);
+      }
+    } catch (err) {
+      setRequirementsError('Failed to refresh requirements');
+    } finally {
+      setRequirementsLoading(false);
+    }
+  };
+  const fetchProfileImage = async (userId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+      const data = await response.json();
+      if (response.ok) {
+        setProfileImages((prevImages) => ({ ...prevImages, [userId]: data.imageUrl }));
+      } else {
+        console.error(`Failed to fetch profile image for UserId ${userId}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching profile image for UserId ${userId}:`, error);
+    }
+  };
+  useEffect(() => {
+    if (requirementsData.length > 0) {
+      requirementsData.forEach((requirement) => {
+        fetchProfileImage(requirement.UserId);
+      });
+    }
+  }, [requirementsData]);
   useEffect(() => {
     const fetchEventData = async () => {
       try {
@@ -68,6 +108,7 @@ const HomeScreen = ({ route }) => {
         setRequirementsLoading(false);
       }
     };
+
     fetchEventData();
     fetchRequirementsData();
   }, [userId, route.params.locationId]);
@@ -113,6 +154,7 @@ const HomeScreen = ({ route }) => {
           acknowledgedUserId: requirement.UserId,
           LocationID: route.params.locationId,
           Slots: chapterType,
+          Id: requirement.Id,
         }),
       });
       const data = await response.json();
@@ -120,6 +162,7 @@ const HomeScreen = ({ route }) => {
   
       if (response.ok) {
         Alert.alert('Success', 'Requirement acknowledged successfully');
+        refreshRequirements();
       } else {
         Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
       }
@@ -127,8 +170,8 @@ const HomeScreen = ({ route }) => {
       console.error("Acknowledge Error:", error);
       Alert.alert('Error', 'Network or server issue');
     }
-  };   
-
+  };
+    
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -158,6 +201,7 @@ const HomeScreen = ({ route }) => {
             style={styles.image}
           />
         </View>
+        {/* =======================Meetings=========================== */}
         <View style={styles.cards}>
           <Text style={styles.dashboardTitle}>Dashboard</Text>
 
@@ -196,7 +240,9 @@ const HomeScreen = ({ route }) => {
             </View>
           )}
         </View>
-        
+
+        {/* ===============================Requirements=============================== */}
+
         <View style={styles.cards}>
         <View style={styles.header}>
         <View style={styles.headerRow}>
@@ -222,7 +268,7 @@ const HomeScreen = ({ route }) => {
           
           <View>
             <Text style={styles.line}>
-              ________________________________________________
+              ____________________________
             </Text>
           </View>
           {requirementsData.length > 0 ? (
@@ -230,10 +276,10 @@ const HomeScreen = ({ route }) => {
     {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
       <View key={index} style={styles.card}>
         <View style={styles.profileSection}>
-          <Image
-            source={{ uri: 'https://via.placeholder.com/50' }}
-            style={styles.profileImage}
-          />
+        <Image
+  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+  style={styles.profileImage}
+/>
           <Text style={styles.profileName}>{requirement.Username}</Text>
         </View>
         <View style={styles.requirementSection}>
@@ -253,6 +299,62 @@ const HomeScreen = ({ route }) => {
   </View>
 )}
         </View>
+
+        {/* ===================================Reviews================================== */}
+        
+        <View style={styles.cards}>
+        <View style={styles.header}>
+        <View style={styles.headerRow}>
+  <Text style={styles.headerText}>Reviews</Text>
+  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+  </TouchableOpacity>
+</View>
+  <TouchableOpacity
+    style={styles.addButton}
+    onPress={() => navigation.navigate('Review', {
+      businessName: route.title,
+      locationId: route.params.locationId,
+      chapterType: route.params.chapterType,
+    })}
+  >
+    <View style={styles.buttonContent}>
+      <Icon name="pencil" size={16} color="#fff" style={styles.iconStyle} />
+      <Text style={styles.addButtonText}>Write a Review</Text>
+    </View>
+  </TouchableOpacity>
+</View>
+          
+          <View>
+            <Text style={styles.line}>
+            ____________________________
+            </Text>
+          </View>
+          {requirementsData.length > 0 ? (
+  <>
+    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+      <View key={index} style={styles.card}>
+        <View style={styles.profileSection}>
+        <Image
+  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+  style={styles.profileImage}
+/>
+          <Text style={styles.profileName}>{requirement.Username}</Text>
+        </View>
+        <View style={styles.requirementSection}>
+          <Text style={styles.requirementText}>{requirement.Description}</Text>
+          {/* Stars */}
+        </View>
+      </View>
+    ))}
+  </>
+) : (
+  <View style={styles.noMeetupCard}>
+    <Text style={styles.noMeetupText}>No Reviews Available</Text>
+  </View>
+)}
+        </View>
+        {/* ================================================ */}
       </View>
     </ScrollView>
   );

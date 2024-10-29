@@ -5,15 +5,12 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import Modal from 'react-native-modal';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import sunmoon from '../../assets/images/sunandmoon-icon.png';
-import sun from '../../assets/images/sun.png';
-import moon from '../../assets/images/moon.png';
-
+import ImagePicker from 'react-native-image-crop-picker';
+import { compressImage } from 'react-native-compressor'; 
 
 const CustomDrawerContent = (props) => {
   const user = useSelector((state) => state.user);
@@ -23,29 +20,7 @@ const CustomDrawerContent = (props) => {
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // console.log("user------------",user);
-
-  // useEffect(() => {
-  //   const fetchProfileImage = async () => {
-  //     try {
-  //       const response = await fetch(`${API_BASE_URL}/profile-image`);
-  //       const data = await response.json();
-  //       console.log('data-----------', data);
-  //       if (data.imageUrl) {
-  //         setProfileImage({ uri: data.imageUrl });
-  //         setPreviousProfileImageUri(data.imageUrl);
-  //       } else {
-  //         console.warn('No profile image found');
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to load profile image from API:', error);
-  //     }
-  //   };
-  // useEffect(() => {
     const fetchProfileImage = async () => {
-      // setLoading(true);
-      // try {
         const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
 
           method: 'GET',
@@ -53,46 +28,12 @@ const CustomDrawerContent = (props) => {
             'Content-Type': 'application/json',
           },
         });
-
-        // if (!response.ok) {
-        //   throw new Error('Failed to fetch image');
-        // }
         const data = await response.json();
         console.log("data---------------",data);
         const imageUrlWithTimestamp = `${data.imageUrl}?t=${new Date().getTime()}`;
         setProfileImage({ uri: imageUrlWithTimestamp });
         setPreviousProfileImageUri({ uri: imageUrlWithTimestamp });
-      // } catch (error) {
-      //   console.error('Error fetching profile image:', error);
-      // } finally {
-      //   setLoading(false);
-      // }
     };
-
-    // const fetchCategory = async () => {
-    //   try {
-    //     const response = await fetch(`${API_BASE_URL}/categoryIdfetch/${userId}`, {
-    //       method: 'GET',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //     });
-    
-    //     if (response.ok) {
-    //       const data = await response.json();
-    //       console.log('Category ID:', data.categoryId);
-    //     } else {
-    //       console.error('Failed to fetch Category ID, status:', response.status);
-    //     }
-    //   } catch (error) {
-    //     console.error('Failed to fetch the Category ID:', error);
-    //   }
-    // };
-               
-  //   fetchProfileImage();
-  //   // fetchCategory();
-  // }, []);
-
   const requestCameraPermission = async () => {
     try {
       const cameraPermission = await request(PERMISSIONS.ANDROID.CAMERA);
@@ -101,35 +42,39 @@ const CustomDrawerContent = (props) => {
       if (cameraPermission === 'granted' && storagePermission === 'granted') {
         console.log('Camera and Storage permissions granted');
       } 
-      // else {
-      //   Alert.alert('Permission Denied', 'Camera or Storage permission is required to take a photo.');
-      // }
     } catch (error) {
       console.error('Permission request error:', error);
     }
   };
-
   const handleImagePicker = async (type) => {
     await requestCameraPermission();
-    let result;
-    if (type === 'camera') {
-      result = await launchCamera({
-        mediaType: 'photo',
-        quality: 1,
-        saveToPhotos: true,
-      });
-    } else if (type === 'gallery') {
-      result = await launchImageLibrary({
-        mediaType: 'photo',
-        quality: 1,
-      });
-    }
-
-    if (result && result.assets && !result.didCancel) {
-      const { uri, type: fileType } = result.assets[0];
-      setPreviousProfileImageUri(profileImage); 
-      setProfileImage({ uri });
-      uploadImage(uri, fileType);
+    try {
+      let result;
+      if (type === 'camera') {
+        result = await ImagePicker.openCamera({
+          width: 500,
+          height: 500,
+          cropping: true,
+          cropperCircleOverlay: true,
+          mediaType: 'photo',
+        });
+      } else if (type === 'gallery') {
+        result = await ImagePicker.openPicker({
+          width: 500,
+          height: 500,
+          cropping: true,
+          cropperCircleOverlay: true,
+          mediaType: 'photo',
+        });
+      }
+      if (result && result.path) {
+        const { path, mime } = result;
+        setPreviousProfileImageUri(profileImage);
+        setProfileImage({ uri: path });
+        uploadImage(path, mime);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
     }
     setModalVisible(false);
   };
@@ -141,7 +86,6 @@ const CustomDrawerContent = (props) => {
       type: fileType,
       name: `photo.${fileType.split('/')[1]}`,
     });
-
     try {
       const response = await fetch(`${API_BASE_URL}/upload-profile?userId=${userId}`, {
         method: 'POST',
@@ -168,8 +112,7 @@ const CustomDrawerContent = (props) => {
     } finally {
       setLoading(false);
     }
-  };   
-
+  };
   const handleRemoveProfilePicture = async () => {
     setLoading(true);
     try {
@@ -195,14 +138,11 @@ const CustomDrawerContent = (props) => {
     }
     setModalVisible(false);
   };
-  
-
   useFocusEffect(
     useCallback(() => {
       fetchProfileImage();
     }, [userId])
   );
-
   return (
     <DrawerContentScrollView {...props}>
       <LinearGradient
