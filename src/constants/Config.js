@@ -11,7 +11,6 @@ export const API_BASE_URL = 'http://192.168.29.10:3000'; // nodejs API
 // export const API_BASE_URL = 'https://API.BMWBUSINESSCLUB.COM';
 
 
->>>>>>> Stashed changes
 
 
 //  export const API_BASE_URL = 'https://API.BMWBUSINESSCLUB.COM';
