@@ -142,7 +142,6 @@ const HomeScreen = ({ route }) => {
       Alert.alert('Error', 'Network or server issue');
     }
   };
-
   const handleAcknowledgeClick = async (requirement) => {
     try {
       const response = await fetch(`${API_BASE_URL}/requirements`, {
@@ -202,6 +201,7 @@ const HomeScreen = ({ route }) => {
             style={styles.image}
           />
         </View>
+        {/* =======================Meetings=========================== */}
         <View style={styles.cards}>
           <Text style={styles.dashboardTitle}>Dashboard</Text>
 
@@ -240,7 +240,9 @@ const HomeScreen = ({ route }) => {
             </View>
           )}
         </View>
-        
+
+        {/* ===============================Requirements=============================== */}
+
         <View style={styles.cards}>
         <View style={styles.header}>
         <View style={styles.headerRow}>
@@ -266,7 +268,7 @@ const HomeScreen = ({ route }) => {
           
           <View>
             <Text style={styles.line}>
-              ________________________________________________
+              ____________________________
             </Text>
           </View>
           {requirementsData.length > 0 ? (
@@ -297,6 +299,62 @@ const HomeScreen = ({ route }) => {
   </View>
 )}
         </View>
+
+        {/* ===================================Reviews================================== */}
+        
+        <View style={styles.cards}>
+        <View style={styles.header}>
+        <View style={styles.headerRow}>
+  <Text style={styles.headerText}>Reviews</Text>
+  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+  </TouchableOpacity>
+</View>
+  <TouchableOpacity
+    style={styles.addButton}
+    onPress={() => navigation.navigate('Review', {
+      businessName: route.title,
+      locationId: route.params.locationId,
+      chapterType: route.params.chapterType,
+    })}
+  >
+    <View style={styles.buttonContent}>
+      <Icon name="pencil" size={16} color="#fff" style={styles.iconStyle} />
+      <Text style={styles.addButtonText}>Write a Review</Text>
+    </View>
+  </TouchableOpacity>
+</View>
+          
+          <View>
+            <Text style={styles.line}>
+            ____________________________
+            </Text>
+          </View>
+          {requirementsData.length > 0 ? (
+  <>
+    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+      <View key={index} style={styles.card}>
+        <View style={styles.profileSection}>
+        <Image
+  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+  style={styles.profileImage}
+/>
+          <Text style={styles.profileName}>{requirement.Username}</Text>
+        </View>
+        <View style={styles.requirementSection}>
+          <Text style={styles.requirementText}>{requirement.Description}</Text>
+          {/* Stars */}
+        </View>
+      </View>
+    ))}
+  </>
+) : (
+  <View style={styles.noMeetupCard}>
+    <Text style={styles.noMeetupText}>No Reviews Available</Text>
+  </View>
+)}
+        </View>
+        {/* ================================================ */}
       </View>
     </ScrollView>
   );
