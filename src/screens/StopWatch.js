@@ -111,7 +111,7 @@ const StopWatch = ({ route, navigation }) => {
                     Stars: rating,
                     Profession: member.Profession,
                     RatingId: 2,
-                    DateTime: currentDateTime // Send the current date and time
+                   
                 })
             });
             console.log('--------------------post data -------------------',response);
