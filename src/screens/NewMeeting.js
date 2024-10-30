@@ -14,7 +14,7 @@ const NewMeeting = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
-  const [SlotID, setSlotID] = useState(null);
+  const [SlotIDs, setSlotIDs] = useState([]); // Track selected SlotIDs
   const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,6 @@ const NewMeeting = () => {
         throw new Error('Failed to fetch profile data');
       }
       const data = await response.json();
-      console.log("Location-----------",data);
       setProfileData(data);
     } catch (error) {
       console.error('Error fetching profile data:', error);
@@ -46,41 +45,55 @@ const NewMeeting = () => {
     }
   };
 
-  const createMeeting = async () => {
-    console.log("LocationID--------------",profileData.LocationID,selectedDate,date,SlotID);
-    if (!selectedDate || !date || !profileData.LocationID || SlotID === null) {
-      Alert.alert('Error', 'Please select a date, time, location, and slot.');
+  const createMeeting = async (slotIDs) => {
+    if (!selectedDate || !date || !profileData.LocationID || slotIDs.length === 0) {
+      Alert.alert('Error', 'Please select a date, time, location, and at least one slot.');
       return;
     }
-  
-    const meetingData = {
-      CreatedBy: userId,
-      LocationID: profileData.LocationID,
-      DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-      SlotID,
-    };
-    console.log("meetingData----------------",meetingData);
-  
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(meetingData),
-      });
-  
-      if (response.ok) {
-        Alert.alert('Success', 'Meeting created successfully!');
-        navigation.goBack();
-      } else {
-        throw new Error('Failed to create meeting');
+
+    const promises = slotIDs.map(async (SlotID) => {
+      const meetingData = {
+        CreatedBy: userId,
+        LocationID: profileData.LocationID,
+        DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+        SlotID,
+      };
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/meetings`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(meetingData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create meeting');
+        }
+      } catch (error) {
+        console.error(`Error creating meeting for SlotID ${SlotID}:`, error);
+        throw error;
       }
+    });
+
+    try {
+      await Promise.all(promises);
+      Alert.alert('Success', 'Meetings created successfully!');
+      navigation.goBack();
     } catch (error) {
-      console.error('Error creating meeting:', error);
-      Alert.alert('Error', 'Failed to create meeting. Please try again.');
+      Alert.alert('Error', 'Failed to create one or more meetings. Please try again.');
     }
-  };  
+  };
+
+  const handleSlotClick = (id) => {
+    if (SlotIDs.includes(id)) {
+      setSlotIDs((prev) => prev.filter((slotID) => slotID !== id)); // Remove from selected
+    } else {
+      setSlotIDs((prev) => [...prev, id]); // Add to selected
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
@@ -92,14 +105,14 @@ const NewMeeting = () => {
       <Text style={styles.title}>Create :</Text>
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotID === 1 && { backgroundColor: '#C23A8A' }]}
-          onPress={() => setSlotID(1)}
+          style={[styles.iconContainer, SlotIDs.includes(1) && { backgroundColor: '#C23A8A' }]}
+          onPress={() => handleSlotClick(1)}
         >
           <Image source={sun} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotID === 2 && { backgroundColor: '#C23A8A' }]}
-          onPress={() => setSlotID(2)}
+          style={[styles.iconContainer, SlotIDs.includes(2) && { backgroundColor: '#C23A8A' }]}
+          onPress={() => handleSlotClick(2)}
         >
           <Image source={moon} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
@@ -143,11 +156,11 @@ const NewMeeting = () => {
         </Text>
         <Icon name="map-marker" size={30} color="#C23A8A" />
       </View>
-      <TouchableOpacity style={styles.button} onPress={createMeeting}>
+      <TouchableOpacity style={styles.button} onPress={() => createMeeting(SlotIDs)}>
         <Text style={styles.buttonText}>Create Meeting</Text>
       </TouchableOpacity>
     </ScrollView>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
