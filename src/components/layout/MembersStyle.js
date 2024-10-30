@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     color: "black",
+    
   },
   filterSearchIconContainer: {
     position: 'absolute',
