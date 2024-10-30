@@ -20,8 +20,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 20,
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 30,
     alignItems: 'center',
+   
   },
   searchInput: {
     flex: 1,
@@ -253,10 +254,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#A3238F',
     },
-    container: {
-      alignItems: 'center',
-      marginTop: 20,
-    },
+
     button: {
       flexDirection: 'row',
       alignItems: 'center',
