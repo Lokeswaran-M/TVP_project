@@ -36,8 +36,6 @@ const SubstituteLogin = () => {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-    Alert.alert('Success', 'You have signed up successfully.');
-  
     try {
       const response = await fetch(`${API_BASE_URL}/updateSubUser?userId=${user.userId}`, {
         method: 'PUT',

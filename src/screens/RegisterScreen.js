@@ -164,9 +164,10 @@ const handlelocationChange = (selectedLocation) => {
       }
       const data = await response.json();
       console.log("Full Response:", data);
-      if (data.length > 0 && data[0].count !== undefined) {
-        console.log("Data----------", data[0].count);
-        if (data[0].count > 1) {
+    
+      if (data.count !== undefined) {
+        console.log("Count----------", data.count);
+        if (data.count > 0) {
           setUsernameError('Username already taken');
           Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
@@ -184,7 +185,7 @@ const handlelocationChange = (selectedLocation) => {
       console.error('Error:', err);
       setUsernameError('Error validating username');
       isValid = false;
-    }       
+    }          
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       isValid = false;
