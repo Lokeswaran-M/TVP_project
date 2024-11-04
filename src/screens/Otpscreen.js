@@ -71,7 +71,13 @@ const Otpscreen = ({ navigation }) => {
           message,
         }),
       });
+      
+      console.log('response=========sendotp============',response)
+      
+    
       const data = await response.json();
+      console.log('response status in sendotp ----------------:', response.status);
+      console.log('data=========sendotp============', data.message);
       if (response.ok) {
         setOtpSent(true);
         setOtpExpired(false);
@@ -205,7 +211,7 @@ const Otpscreen = ({ navigation }) => {
         </View>
         {!otpSent && (
           <TouchableOpacity 
-            onPress={handlePasswordReset} 
+            onPress={handlePasswordReset}  
             style={styles.button} 
             disabled={loading}
           >

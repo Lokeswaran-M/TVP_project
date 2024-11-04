@@ -10,7 +10,7 @@ import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
 
 // import PaymentWebView from '../screens/PaymentWebview';
-
+import HeadAdminPostPage from '../screens/HeadAdminPostPage';
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
 import MemberDetails from '../screens/MemberDetails';
 // import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
@@ -21,22 +21,31 @@ import HeadAdminLocation from '../screens/HeadAdminLocation';
 import HeadAdminLocationCreate from '../screens/HeadAdminLocationCreate';
 import HeadAdminLocationEdit from '../screens/HeadAdminLocationEdit';
 import HeadAdminLocationView from '../screens/HeadAdminLocationView';
-import { View, Text, StyleSheet, Dimensions,Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions,Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BMW from '../../assets/images/BMW.png';
+import { useNavigation } from '@react-navigation/native';
 // Get the width of the screen for responsiveness
 const { width } = Dimensions.get('window');
 const CustomHeaderBMWpng = () => {
+  const navigation = useNavigation();
+  const posticon = () => {
+    navigation.navigate('HeadAdminPostPage');
+  };
   return (
     <View style={styles.topNav}>
     <View >
-      <View>
+      <View style={styles.topNavlogohome}>
         {/* Use Image component */}
         <Image 
           source={BMW}  // Local image path
           style={styles.iconImage}
         />
+        <TouchableOpacity style={styles.topNaviconhome} onPress={posticon}>
+        <Ionicons name="chatbubble-ellipses" size={29} color="#A3238F" />
+        </TouchableOpacity>
+            
       </View>
   
     </View>
@@ -95,6 +104,18 @@ const CustomHeaderPayments = () => {
     </View>
   );
 };
+const CustomHeaderPost = () => {
+  return (
+    <View style={styles.topNav}>
+      <View style={styles.buttonNavtop}>
+        <View style={styles.topNavlogo}>
+        <Ionicons name="chatbubble-ellipses" size={28} color="#FFFFFF"/>
+        </View>
+        <Text style={styles.NavbuttonText}>MeetingPost</Text>
+      </View>
+    </View>
+  );
+};
 const Stack = createStackNavigator();
 const headerOptions = {
   headerStyle: { backgroundColor: '#a3238f' },
@@ -122,6 +143,7 @@ const AuthNavigator = () => {
         <Stack.Screen name="HeadAdminNewSubscribers" component={HeadAdminNewSubscribers} options={{ headerShown:true , header: () => <CustomHeaderSubscribers/>, headerLeft: () => null,  }} />
         <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
         <Stack.Screen name="AdminLocationstack" component={AdminLocationstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
+        <Stack.Screen name="HeadAdminPostPage" component={HeadAdminPostPage} options={{headerShown: true,header: () => <CustomHeaderPost/>, headerLeft: () => null,  }}/> 
     </Stack.Navigator>
 
   );
@@ -155,6 +177,17 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 15,
     borderBottomStartRadius: 15,
     justifyContent: 'center',
+
+  },
+  topNavlogohome:{
+    flexDirection: 'row',
+    alignItems: 'center',
+   transform:[{translateX:15}],
+
+   
+  },
+  topNaviconhome:{
+transform:[{translateX:15}],
   },
   buttonNavtop: {
     borderRadius: 25,

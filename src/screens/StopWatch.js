@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Sound from 'react-native-sound';
+import { API_BASE_URL } from '../constants/Config';
 
 const StopWatch = ({ route, navigation }) => {
     const { member } = route.params;
+    console.log('------------------------User Data------------------------', member);
     const [seconds, setSeconds] = useState(6);
     const [isRunning, setIsRunning] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -14,12 +16,10 @@ const StopWatch = ({ route, navigation }) => {
     const [isStarReviewModalVisible, setIsStarReviewModalVisible] = useState(false);
     const [rating, setRating] = useState(0);
     
-    // Use useRef to store sound instance
     const alarmSound = useRef(null);
 
-    // Load and prepare the alarm sound once
     useEffect(() => {
-        Sound.setCategory('Playback'); // Set category to ensure it works in background
+        Sound.setCategory('Playback');
         alarmSound.current = new Sound(require('../../assets/audio/audiosound.mp3'), Sound.MAIN_BUNDLE, (error) => {
             if (error) {
                 console.log('Failed to load the sound', error);
@@ -28,15 +28,13 @@ const StopWatch = ({ route, navigation }) => {
             console.log('Sound loaded successfully');
         });
 
-        // Cleanup when component unmounts
         return () => {
             if (alarmSound.current) {
-                alarmSound.current.release(); // Release the sound resources
+                alarmSound.current.release();
             }
         };
     }, []);
 
-    // Play the alarm sound
     const playAlarm = () => {
         if (alarmSound.current) {
             alarmSound.current.play((success) => {
@@ -57,11 +55,8 @@ const StopWatch = ({ route, navigation }) => {
                         clearInterval(id);
                         setIsRunning(false);
                         setIsTimeoutModalVisible(true);
-
-                        // Play alarm sound
                         playAlarm();
-
-                        return 6; // Reset time to 6 seconds
+                        return 6;
                     }
                     console.log(`Seconds left: ${prev - 1}`);
                     return prev - 1;
@@ -102,12 +97,51 @@ const StopWatch = ({ route, navigation }) => {
         const seconds = secs % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
+   
+    const postRating = async () => {
+      
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/ratings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    UserId: member.UserId,
+                    Stars: rating,
+                    Profession: member.Profession,
+                    RatingId: 2,
+                   
+                })
+            });
+            console.log('--------------------post data -------------------',response);
+            const result = await response.json();
+            if (response.ok) {
+                Alert.alert('Success', result.message);
+            } else {
+                Alert.alert('Error', result.error || 'Something went wrong');
+            }
+        } catch (error) {
+            console.error('Error posting rating:', error);
+            Alert.alert('Error', 'Failed to submit rating');
+        }
+    };
+   
+
+    const handleSubmitRating = () => {
+        if (rating === 0) {
+            Alert.alert('Error', 'Please select a rating before submitting');
+            return;
+        }
+        postRating();
+        setIsStarReviewModalVisible(false);
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.memberDetailsContainer}>
-                <Text style={styles.memberName}>{member.name}</Text>
-                <Text style={styles.memberRole}>{member.role}</Text>
+                <Text style={styles.memberName}>{member.Username}</Text>
+                <Text style={styles.memberRole}>{member.Profession}</Text>
             </View>
             <View style={styles.contentcontainer}>
                 <Text style={styles.timer}>{formatTime(seconds)}</Text>
@@ -138,7 +172,7 @@ const StopWatch = ({ route, navigation }) => {
                             onPress={() => {
                                 setIsTimeoutModalVisible(false);
                                 setIsStarReviewModalVisible(true);
-                                if (alarmSound.current) alarmSound.current.stop(); // Stop the alarm when modal is closed
+                                if (alarmSound.current) alarmSound.current.stop();
                             }}
                         >
                             <Text style={styles.modalButtonText}>Close</Text>
@@ -168,9 +202,7 @@ const StopWatch = ({ route, navigation }) => {
                         </View>
                         <TouchableOpacity
                             style={styles.modalButton}
-                            onPress={() => {
-                                setIsStarReviewModalVisible(false);
-                            }}
+                            onPress={handleSubmitRating}
                         >
                             <Text style={styles.modalButtonText}>Submit</Text>
                         </TouchableOpacity>

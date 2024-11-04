@@ -357,6 +357,7 @@ const handlelocationChange = (selectedLocation) => {
           <Picker
             selectedValue={selectedProfession}
             onValueChange={(itemValue) =>handleProfessionChange(itemValue)}
+            style={styles.picker}
              >
             <Picker.Item label="Select Profession" value="" />
             {profession.map((item) => (
@@ -375,6 +376,7 @@ const handlelocationChange = (selectedLocation) => {
           <Picker borderBottomWidth='1'
             selectedValue={selectedLocation}
             onValueChange={(itemValue) => handlelocationChange(itemValue)}
+            style={styles.picker}
           >
             <Picker.Item label="Select Location" value="" />
             {LocationID.map((item,index) => (
