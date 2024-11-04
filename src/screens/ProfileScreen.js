@@ -96,12 +96,14 @@ const Profile = () => {
                 source={{ uri: imageUrl }}
                 style={styles.image}
               />
-              <View style={styles.editIconWrapper}>
-                <Image 
-                  source={sunmoon} 
-                  style={{ width: 25, height: 25 }} 
-                />
-              </View>
+              {categoryID === 2 && (
+      <View style={styles.editIconWrapper}>
+        <Image 
+          source={sunmoon} 
+          style={{ width: 25, height: 25 }} 
+        />
+      </View>
+    )}
             </View>
           )}
           <Text style={styles.userId}>User ID: {userId} </Text>
@@ -133,6 +135,10 @@ const Profile = () => {
 <Text style={styles.info}>{multiProfile?.businessInfo?.BusinessName || 'None'}</Text>
 <Text style={styles.label}>Business Address</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.Address || 'None'}</Text>
+<Text style={styles.label}>Location</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.LocationName || 'None'}</Text>
+<Text style={styles.label}>Chapter Type</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.ChapterType || 'None'}</Text>
 <Text style={styles.label}>Email ID</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.Email || 'None'}</Text>
 <Text style={styles.label}>Description</Text>
@@ -157,6 +163,10 @@ const Profile = () => {
             <Text style={styles.info}>{profileData?.businessInfo?.BusinessName || 'None'}</Text>
             <Text style={styles.label}>Business Address</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.Address || 'None'}</Text>
+            <Text style={styles.label}>Location</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.LocationName || 'None'}</Text>
+            <Text style={styles.label}>Chapter Type</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.ChapterType || 'None'}</Text>
             <Text style={styles.label}>Email</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.Email || 'None'}</Text>
             <Text style={styles.label}>Mobile Number</Text>
