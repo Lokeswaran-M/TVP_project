@@ -492,15 +492,6 @@ const styles = StyleSheet.create({
     color: '#4b5059',
     // marginBottom: 10,
   },
-  picker: {
-    height: 50,
-    width: '100%',
-    color: 'black',
-    fontSize: 20,
-    paddingHorizontal: 10,
-    // backgroundColor: '#ccc',
-    borderColor : '#ccc'
-  },
     selectList: {
       borderWidth: 1,
       borderColor: '#ccc',

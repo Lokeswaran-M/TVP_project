@@ -33,17 +33,16 @@ export default StyleSheet.create({
         color: 'black',
         fontSize: 20,
         paddingHorizontal: 10,
-        borderColor : '#ccc'
       },
         selectList: {
           borderWidth: 1,
-          borderColor: '#ccc',
+          borderColor: '#a3238f',
           borderRadius:10,
           overflow: 'hidden',
           marginVertical: 10,
         },
         datePickerButton: {
-          borderColor: '#ccc',
+          borderColor: '#a3238f',
           borderWidth: 1,
           borderRadius: 5,
           padding: 15,
