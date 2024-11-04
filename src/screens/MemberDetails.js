@@ -14,16 +14,35 @@ const MemberDetails = () => {
   console.log("PROFESSION IN MEMBERS DETAILS--------------------------", Profession);
   const UserID = useSelector((state) => state.user?.userId);
   console.log("UserID using redux in MEMBERS DETAILS------------",UserID);
+  const [businessInfoo, setBusinessInfoo] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [overallAverage, setOverallAverage] = useState(0);
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [isPromoted, setIsPromoted] = useState(false);
-
+  const [RollID, setRollID] = useState(null);
+  console.log("Roll ID in the Member Detail for Promote button----------------------", RollID);
   useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user/Member-info/${UserID}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch business info');
+        }
+        const data = await response.json();
+        console.log("Data in the Member Details for business infos----------------------------------", data);
+        setRollID(data.RollId);
+        setBusinessInfoo(data);
+      } catch (error) {
+        console.error('Error fetching business info:', error);
+        Alert.alert('Error', 'Unable to fetch business info. Please try again.');
+      }
+    };
+    if (UserID) {
+      fetchBusinessInfo();
+    }
     const fetchUserDetails = async () => {
       try {
-        // Update API call to include userId and Profession
         const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
         if (!response.ok) {
           const errorData = await response.json();
@@ -33,7 +52,7 @@ const MemberDetails = () => {
         const data = await response.json();
         console.log("DATA in MEMBERSDETAILS----------------------------------------", data);
         console.log("RollId:---------------------------------------", data.businessInfo.RollId);
-
+  
         setUserDetails(data);
         if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
           const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
@@ -49,8 +68,9 @@ const MemberDetails = () => {
         setLoading(false);
       }
     };
+    
     fetchUserDetails();
-  }, [userId, Profession]); // Add Profession to dependency array
+  }, [UserID, userId, Profession]);  
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -180,7 +200,7 @@ const handleWhatsApp = () => {
             <Text style={styles.buttonText}>WhatsApp</Text>
           </TouchableOpacity>
         </View>
-        {businessInfo.RollId !== 3 && (
+        {RollID === 1 && (
           <View>
             <TouchableOpacity
               style={styles.promoteButton}
