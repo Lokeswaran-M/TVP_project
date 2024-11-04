@@ -155,7 +155,7 @@ useFocusEffect(
     if (isValid) {
         try {
             const LocationID = profileData.RollId === 2 ? profileData.LocationID : selectedLocation;
-            const adjustedChapterType = profileData.ChapterType === '1' ? '2' : '1';
+            const adjustedChapterType = profileData.ChapterType === 1 ? 2 : 1;
             const response = await fetch(`${API_BASE_URL}/AddBusiness/${userId}`, {
                 method: 'POST',
                 headers: {

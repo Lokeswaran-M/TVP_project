@@ -6,13 +6,14 @@ import { useRoute } from '@react-navigation/native';
 import Stars from '../screens/Stars';
 import styles from '../components/layout/MemberDetailsStyle';
 import { API_BASE_URL } from '../constants/Config';
-
+import { useSelector } from 'react-redux';
 const MemberDetails = () => {
   const route = useRoute();
-  const { userId, Profession } = route.params; // Get Profession from route params
+  const { userId, Profession } = route.params;
   console.log("USERID IN MEMBERS DETAILS------------------------------", userId);
   console.log("PROFESSION IN MEMBERS DETAILS--------------------------", Profession);
-  
+  const UserID = useSelector((state) => state.user?.userId);
+  console.log("UserID using redux in MEMBERS DETAILS------------",UserID);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [overallAverage, setOverallAverage] = useState(0);
@@ -179,7 +180,7 @@ const handleWhatsApp = () => {
             <Text style={styles.buttonText}>WhatsApp</Text>
           </TouchableOpacity>
         </View>
-        {businessInfo.RollId === 1 && (
+        {businessInfo.RollId !== 3 && (
           <View>
             <TouchableOpacity
               style={styles.promoteButton}
