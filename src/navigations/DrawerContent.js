@@ -20,20 +20,23 @@ const CustomDrawerContent = (props) => {
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
-    const fetchProfileImage = async () => {
-        const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
-
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        const data = await response.json();
-        console.log("data---------------",data);
-        const imageUrlWithTimestamp = `${data.imageUrl}?t=${new Date().getTime()}`;
-        setProfileImage({ uri: imageUrlWithTimestamp });
-        setPreviousProfileImageUri({ uri: imageUrlWithTimestamp });
-    };
+  const fetchProfileImage = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      const imageUrlWithTimestamp = `${data.imageUrl}?t=${new Date().getTime()}`;
+      setProfileImage({ uri: imageUrlWithTimestamp });
+      setPreviousProfileImageUri({ uri: imageUrlWithTimestamp });
+    } catch (error) {
+      console.error("Error fetching profile image:", error);
+    }
+  };  
   const requestCameraPermission = async () => {
     try {
       const cameraPermission = await request(PERMISSIONS.ANDROID.CAMERA);
@@ -96,6 +99,7 @@ const CustomDrawerContent = (props) => {
       });
 
       const data = await response.json();
+      console.log("Data in the uploaded Profile--------------------",data);
       if (data.newFilePath) {
         fetchProfileImage();
       } else {
