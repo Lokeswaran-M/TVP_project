@@ -7,13 +7,11 @@ import Stars from '../screens/Stars';
 import styles from '../components/layout/MemberDetailsStyle';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
+
 const MemberDetails = () => {
   const route = useRoute();
   const { userId, Profession } = route.params;
-  console.log("USERID IN MEMBERS DETAILS------------------------------", userId);
-  console.log("PROFESSION IN MEMBERS DETAILS--------------------------", Profession);
   const UserID = useSelector((state) => state.user?.userId);
-  console.log("UserID using redux in MEMBERS DETAILS------------",UserID);
   const [businessInfoo, setBusinessInfoo] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,7 +19,7 @@ const MemberDetails = () => {
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [isPromoted, setIsPromoted] = useState(false);
   const [RollID, setRollID] = useState(null);
-  console.log("Roll ID in the Member Detail for Promote button----------------------", RollID);
+
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -30,17 +28,19 @@ const MemberDetails = () => {
           throw new Error('Failed to fetch business info');
         }
         const data = await response.json();
-        console.log("Data in the Member Details for business infos----------------------------------", data);
         setRollID(data.RollId);
         setBusinessInfoo(data);
+        setIsPromoted(data.RollId === 2); // Assuming RollID 2 means "Admin"
       } catch (error) {
         console.error('Error fetching business info:', error);
         Alert.alert('Error', 'Unable to fetch business info. Please try again.');
       }
     };
+
     if (UserID) {
       fetchBusinessInfo();
     }
+
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
@@ -50,9 +50,6 @@ const MemberDetails = () => {
           throw new Error('Failed to fetch user details');
         }
         const data = await response.json();
-        console.log("DATA in MEMBERSDETAILS----------------------------------------", data);
-        console.log("RollId:---------------------------------------", data.businessInfo.RollId);
-  
         setUserDetails(data);
         if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
           const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average), 0);
@@ -68,53 +65,78 @@ const MemberDetails = () => {
         setLoading(false);
       }
     };
-    
-    fetchUserDetails();
-  }, [UserID, userId, Profession]);  
 
-  useEffect(() => {
-    const fetchProfileImage = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile image');
-        }
-        const data = await response.json();
-        const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
-        setProfileImageUrl(uniqueImageUrl);
-      } catch (error) {
-        console.error('Error fetching profile image:', error);
-        setProfileImageUrl(null);
-      }
-    };
-    
-    fetchProfileImage();
-  }, [userId]);
+    fetchUserDetails();
+  }, [UserID, userId, Profession]);
 
   const handleCall = () => {
     if (userDetails && userDetails.businessInfo.Mobileno) {
       Linking.openURL(`tel:${userDetails.businessInfo.Mobileno}`);
     }
   };
-  
-  const handlePromotionToggle = () => {
-    setIsPromoted(!isPromoted);
-    // Alert.alert(isPromoted ? 'Demoted' : 'Promoted', `User has been ${isPromoted ? 'demoted' : 'promoted'} to admin.`);
+
+  const handlePromotion = async () => {
+    const newRollId = 2; // Set RollId to 2 for promotion
+    console.log(`Attempting to promote user with RollId: ${newRollId}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/tbluser/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ RollId: newRollId }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', data.message);
+        setRollID(newRollId); // Update local RollID state
+        setIsPromoted(true); // Update the promotion state
+        console.log('User has been promoted to Admin.');
+      } else {
+        console.error('Failed to update RollId:', data.error);
+        Alert.alert('Error', data.error || 'Failed to update RollId');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      Alert.alert('Error', 'Network error, please try again');
+    }
   };
 
-const handleWhatsApp = () => {
-  if (userDetails && userDetails.businessInfo.Mobileno) {
-    const phoneNumber = userDetails.businessInfo.Mobileno;
-    const countryCode = "+91";
-    const formattedPhoneNumber = `${countryCode}${phoneNumber}`;
-    Linking.openURL(`whatsapp://send?phone=${formattedPhoneNumber}`);
-  }
-};
-//  const handleWhatsApp = () => {
-//     if (userDetails && userDetails.businessInfo.Mobileno) {
-//       Linking.openURL(whatsapp://send?phone=${userDetails.businessInfo.Mobileno});
-//     }
-//   };
+  const handleDemotion = async () => {
+    const newRollId = 3; // Set RollId to 3 for demotion
+    console.log(`Attempting to demote user with RollId: ${newRollId}`);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/tbluser/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ RollId: newRollId }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', data.message);
+        setRollID(newRollId); // Update local RollID state
+        setIsPromoted(false); // Update the promotion state
+        console.log('User has been demoted to User.');
+      } else {
+        console.error('Failed to update RollId:', data.error);
+        Alert.alert('Error', data.error || 'Failed to update RollId');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      Alert.alert('Error', 'Network error, please try again');
+    }
+  };
+
+  const handleWhatsApp = () => {
+    if (userDetails && userDetails.businessInfo.Mobileno) {
+      const phoneNumber = userDetails.businessInfo.Mobileno;
+      const countryCode = "+91";
+      const formattedPhoneNumber = `${countryCode}${phoneNumber}`;
+      Linking.openURL(`whatsapp://send?phone=${formattedPhoneNumber}`);
+    }
+  };
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -131,8 +153,8 @@ const handleWhatsApp = () => {
         <View style={styles.profileContainer}>
           <View style={styles.profilePic}>
             {profileImageUrl ? (
-              <Image 
-                source={{ uri: profileImageUrl }} 
+              <Image
+                source={{ uri: profileImageUrl }}
                 style={styles.profileImage}
               />
             ) : (
@@ -143,7 +165,7 @@ const handleWhatsApp = () => {
             <Text style={styles.labeltop1}>{businessInfo.Username}</Text>
             <Text style={styles.valuetop}>
               <Stars averageRating={overallAverage} />
-              <Text style={styles.valuetop}>{overallAverage} out of 5</Text> 
+              <Text style={styles.valuetop}>{overallAverage} out of 5</Text>
             </Text>
           </View>
         </View>
@@ -162,11 +184,11 @@ const handleWhatsApp = () => {
           <Text style={styles.value}>{businessInfo.Address}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Email ID</Text>
+          <Text style={styles.label}>Email ID:</Text>
           <Text style={styles.value}>{businessInfo.Email}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Mobile Number</Text>
+          <Text style={styles.label}>Mobile Number:</Text>
           <Text style={styles.value}>{businessInfo.Mobileno}</Text>
         </View>
         <View style={styles.infoContainer}>
@@ -200,19 +222,38 @@ const handleWhatsApp = () => {
             <Text style={styles.buttonText}>WhatsApp</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Show separate promote and demote buttons based on RollID */}
         {RollID === 1 && (
           <View>
-            <TouchableOpacity
-              style={styles.promoteButton}
-              onPress={handlePromotionToggle}
-            >
-              <Icon name="paper-plane" size={20} color="#fff" />
-              <Text style={styles.promoteButtonText}>
-                {isPromoted ? 'Demote to User' : 'Promote to Admin'}
-              </Text>
-            </TouchableOpacity>
+            {/* Promote Button */}
+            {!isPromoted && (
+              <TouchableOpacity
+                style={styles.promoteButton}
+                onPress={handlePromotion}
+              >
+                <Icon name="paper-plane" size={20} color="#fff" />
+                <Text style={styles.promoteButtonText}>
+                  Promote to Admin
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Demote Button */}
+            {isPromoted && (
+              <TouchableOpacity
+                style={styles.demoteButton}
+                onPress={handleDemotion}
+              >
+                <Icon name="arrow-down" size={20} color="#fff" />
+                <Text style={styles.demoteButtonText}>
+                  Demote to User
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
+
       </View>
     </ScrollView>
   );

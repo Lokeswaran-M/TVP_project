@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -51,8 +53,8 @@ const HeadAdminLocation = ({ navigation }) => {
     location.LocationName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleViewPress = (location, place,IsActive) => {
-    navigation.navigate('HeadAdminLocationView', { location, place,IsActive });
+  const handleViewPress = (location, place, IsActive) => {
+    navigation.navigate('HeadAdminLocationView', { location, place, IsActive });
   };
 
   const handleEditPress = (item) => {
@@ -69,6 +71,11 @@ const HeadAdminLocation = ({ navigation }) => {
 
   const handleMorePress = item => {
     setSelectedItem(selectedItem === item.LocationID ? null : item.LocationID);
+  };
+
+  // Close the menu if clicking outside of it
+  const handleOutsidePress = () => {
+    setSelectedItem(null);
   };
 
   // Handle update by making API call to set IsActive = 0
@@ -153,48 +160,48 @@ const HeadAdminLocation = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      {/* Search Input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search locations"
-          placeholderTextColor="black"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          color="#A3238F"
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.container}>
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search locations"
+            placeholderTextColor="black"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            color="#A3238F"
+          />
+          <View style={styles.searchIconContainer}>
+            <Icon name="search" size={23} color="#A3238F"/>
+          </View>
+        </View>
+
+        {/* Create New Location Button */}
+        <TouchableOpacity style={styles.locationCreateCon} onPress={handleNavPress2}>
+          <Octicons name="plus-circle" size={28} color="#FFFFFF"/>
+          <Text style={styles.locationCreateConName}>Create New Location</Text>
+        </TouchableOpacity>
+
+        <FlatList
+          data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
+          renderItem={renderLocation}
+          keyExtractor={item => item.LocationID.toString()}
+          contentContainerStyle={styles.LocationList}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={fetchLocations} // Call fetchLocations when refreshed
+            />
+          }
         />
-        <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F"/>
+
+        {/* Location Count */}
+        <View style={styles.memberCountContainer}>
+          <Text style={styles.memberCountText}>Count: {filteredLocations.length}</Text>
         </View>
       </View>
-
-      {/* Create New Location Button */}
-      <View style={styles.locationCreateCon}>
-        <TouchableOpacity onPress={handleNavPress2}>
-          <Octicons name="plus-circle" size={28} color="#FFFFFF"/>
-        </TouchableOpacity>
-        <Text style={styles.locationCreateConName}>Create New Location</Text>
-      </View>
-
-      <FlatList
-        data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
-        renderItem={renderLocation}
-        keyExtractor={item => item.LocationID.toString()}
-        contentContainerStyle={styles.LocationList}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={fetchLocations} // Call fetchLocations when refreshed
-          />
-        }
-      />
-
-      {/* Location Count */}
-      <View style={styles.memberCountContainer}>
-        <Text style={styles.memberCountText}>Count: {filteredLocations.length}</Text>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
