@@ -20,6 +20,7 @@ const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
   const { chapterType } = route.params;
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,6 +31,7 @@ const HomeScreen = ({ route }) => {
   const [showAllRequirements, setShowAllRequirements] = useState(false);
 
   const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
+  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/Pre-attendance`;
 
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
@@ -75,6 +77,7 @@ const HomeScreen = ({ route }) => {
       try {
         const response = await fetch(API_URL);
         const data = await response.json();
+        console.log("Data in the upcoming business meetup getUpcomingEvents--------------------------",data);
 
         if (response.ok) {
           setEventData(data.events[0]);
@@ -114,24 +117,27 @@ const HomeScreen = ({ route }) => {
   }, [userId, route.params.locationId]);
 
   const handleConfirmClick = async () => {
+    setIsConfirmed(true);
     if (!eventData) {
       Alert.alert('Error', 'No event data available');
       return;
     }
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(ATTENDANCE_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           UserId: userId,
-          LocationID: eventData.LocationID || '100003',
+          LocationID: eventData.LocationID,
+          SlotID: eventData.SlotID,
           EventId: eventData.EventId,
         }),
       });
 
       const data = await response.json();
+      console.log
       if (response.ok) {
         Alert.alert('Success', 'Attendance confirmed successfully');
       } else {
@@ -228,11 +234,11 @@ const HomeScreen = ({ route }) => {
               </View>
 
               <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
-                  <Icon name="check-circle" size={24} color="#28A745" />
-                  <Text style={styles.buttonText}>Click to Confirm</Text>
-                </TouchableOpacity>
-              </View>
+      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
+        <Icon name="check-circle" size={24} color="#28A745" />
+        <Text style={styles.buttonText}>{isConfirmed ? "Confirmed" : "Click to Confirm"}</Text>
+      </TouchableOpacity>
+    </View>
             </View>
           ) : (
             <View style={styles.noMeetupCard}>

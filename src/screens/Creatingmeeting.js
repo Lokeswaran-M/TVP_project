@@ -20,7 +20,6 @@ const CreatingMeeting = () => {
   };
 
   const handleUpcomingMeet = (meeting) => {
-    // Pass the meeting details when navigating to CreateMeetingViewPage
     navigation.navigate('CreateMeetingViewPage', { 
       userId: meeting.userId, 
       eventId: meeting.EventId, 
@@ -69,7 +68,6 @@ const CreatingMeeting = () => {
       setLoading(false);
     }
   };
-
   const handleDelete = async (eventId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
@@ -111,8 +109,14 @@ const CreatingMeeting = () => {
               >
                 <View style={styles.meetingDetails}>
                   <Text style={styles.meetingTitle}>
-                    <Icon name="calendar" size={18} /> {new Date(meeting.DateTime).toLocaleDateString()} {'   '}
-                    <Icon name="clock-o" size={18} /> {new Date(meeting.DateTime).toLocaleTimeString()}
+                    <Icon name="calendar" size={18} /> 
+{new Date(meeting.DateTime).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+})} {'   '}
+<Icon name="clock-o" size={18} /> 
+{new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </Text>
                   <Text style={styles.meetingInfo}>
                     <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}
