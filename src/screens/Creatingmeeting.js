@@ -26,6 +26,7 @@ const CreatingMeeting = () => {
       eventId: meeting.EventId, 
       location: meeting.Location, 
       slotId: meeting.SlotID, 
+      locationId: meeting.LocationID,
       dateTime: meeting.DateTime 
     });
   };

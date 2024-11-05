@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#A3238F',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -254,7 +253,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#A3238F',
     },
+    noResultsTextcon:{
+      justifyContent:'center',
+      alignItems:'center',
+   },
+    noResultsText:{
+      fontSize: 16,
+      fontWeight:'bold',
+       color:'black',
+       justifyContent:'center',
+       alignItems:'center',
 
+    },
     button: {
       flexDirection: 'row',
       alignItems: 'center',

@@ -6,7 +6,7 @@ import styles from '../components/layout/MembersStyle';
 import { API_BASE_URL } from '../constants/Config';
 
 const OneMinPresentation = ({ route, navigation }) => {
-  const { eventId } = route.params;
+  const { eventId, slotId, locationId } = route.params;
 
   const [searchQuery, setSearchQuery] = useState('');
   const [attendanceData, setAttendanceData] = useState([]);
@@ -15,12 +15,12 @@ const OneMinPresentation = ({ route, navigation }) => {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/attendance/${eventId}`);
+        const response = await fetch(`${API_BASE_URL}/attendance/${eventId}/${locationId}/${slotId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-
+        
         // Fetch profile images for each member
         const updatedMembers = await Promise.all(data.map(async (member) => {
           try {
@@ -30,10 +30,10 @@ const OneMinPresentation = ({ route, navigation }) => {
                 'Content-Type': 'application/json',
               },
             });
-  
+
             if (imageResponse.ok) {
               const imageData = await imageResponse.json();
-              const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+              const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`; // Cache busting
               member.profileImage = uniqueImageUrl; // Assign image URL to member
             } else {
               console.error('Failed to fetch profile image:', member.UserId);
@@ -55,7 +55,7 @@ const OneMinPresentation = ({ route, navigation }) => {
     };
 
     fetchAttendanceData();
-  }, [eventId]);
+  }, [eventId, locationId, slotId]); // Add locationId and slotId to dependencies
 
   const filteredMembers = attendanceData.filter(member =>
     member.Username && member.Username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -102,12 +102,19 @@ const OneMinPresentation = ({ route, navigation }) => {
             </View>
           </View>
 
-          <FlatList
-            data={filteredMembers}
-            renderItem={renderMember}
-            keyExtractor={(item) => item.UserId.toString()}
-            contentContainerStyle={styles.memberList}
-          />
+          {filteredMembers.length === 0 ? ( // Check if no members are found
+          <View style={styles.noResultsTextcon}>
+          <Text style={styles.noResultsText}>No users found</Text>
+          </View>
+           
+          ) : (
+            <FlatList
+              data={filteredMembers}
+              renderItem={renderMember}
+              keyExtractor={(item) => item.UserId.toString()}
+              contentContainerStyle={styles.memberList}
+            />
+          )}
 
           <View style={styles.memberCountContainer}>
             <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
@@ -133,4 +140,3 @@ const ProfilePic = ({ image, name }) => {
 };
 
 export default OneMinPresentation;
-

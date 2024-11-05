@@ -1,23 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
   Text,
   PermissionsAndroid,
   StyleSheet,
-  useWindowDimensions,
-  ActivityIndicator,
-  Alert, // Import Alert from react-native
+  Alert,
+  Platform,
 } from 'react-native';
 import { RNCamera as BarCodeScanner } from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
-import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
-const Scanner = ({ onScan }) => {
+
+const Scanner = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
-  const [isScanning, setIsScanning] = useState(true); // State to manage scanning status
+  const [isScanning, setIsScanning] = useState(true);
+  const scanningRef = useRef(true); // To prevent duplicate scans
+
+  // Get the user ID from the Redux store
+  const userId = useSelector((state) => state.user?.userId);
 
   // Toggle flash mode
   const handleFlashToggle = () => {
@@ -25,64 +28,90 @@ const Scanner = ({ onScan }) => {
   };
 
   // Handle QR code scan
-  const handleQRCodeScan = ({ data }) => {
-    if (!isScanning) return; // Prevent further scans if already scanned
-    console.log('QR Code Scanned:', data);
-    Alert.alert('Scan Successful', `Scanned Data: ${data}`); // Show alert message
+  const handleQRCodeScan = async ({ data }) => {
+    if (!scanningRef.current || !isScanning) return; // Prevent duplicate scans
+    scanningRef.current = false; // Block further scans
 
-    // Check if onScan is a function
-    if (typeof onScan === 'function') {
-      onScan(data); // Pass the scanned data to the parent component
-    } else {
-      console.warn('onScan is not a function:', onScan);
+    setIsScanning(false); // Stop scanning
+    const [eventId, locationId, slotId] = data.split('_');
+
+    if (!eventId || !locationId || !slotId) {
+      Alert.alert('Error', 'Invalid QR Code format');
+      setIsScanning(true);
+      scanningRef.current = true; // Allow scanning again
+      return;
     }
 
-    setIsScanning(false); // Stop further scans
+    // Send scanned data to backend
+    try {
+      const response = await fetch(`${API_BASE_URL}/post-attendance`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          eventId,
+          locationId,
+          slotId,
+        }),
+      });
+
+      const result = await response.json();
+      console.log('------------QR DATA----------------', result);
+
+      if (response.ok) {
+        Alert.alert('Success', 'Attendance recorded successfully');
+      } else {
+        Alert.alert('Error', result.message || 'Failed to record attendance');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Alert.alert('Error', 'Something went wrong');
+    } finally {
+      setIsScanning(true); // Allow re-scanning
+      scanningRef.current = true; // Reset scanning control
+    }
   };
 
   // Request camera permission
   const openQRScanner = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: 'Camera Permission',
-          message: 'App needs access to your camera to scan QR codes',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camera Permission',
+            message: 'App needs access to your camera to scan QR codes',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setIsScanning(true); // Allow scanning
+        } else {
+          Alert.alert('Permission Denied', 'Camera access is required to scan QR codes.');
         }
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        setIsScanning(true); // Allow scanning
-      } else {
-        console.log('Camera permission denied');
+      } catch (error) {
+        console.log('Error requesting camera permission:', error);
       }
-    } catch (error) {
-      console.log('Error requesting camera permission:', error);
+    } else {
+      setIsScanning(true); // iOS or web doesn't require explicit permission
     }
   };
 
   return (
     <View style={styles.container}>
-      {isScanning ? ( // Conditionally render scanner based on scanning state
+      {isScanning ? (
         <View style={styles.qrScannerContainer}>
           <BarCodeScanner
             ref={cameraRef}
             style={styles.qrScanner}
             onBarCodeRead={handleQRCodeScan}
             flashMode={isFlashOn ? 'torch' : 'off'}
-            barCodeScannerSettings={{
-              cameraProps: {
-                ratio: '16:9',
-                autoFocus: 'on',
-              },
-            }}
           />
-          <TouchableOpacity
-            style={styles.flashButton}
-            onPress={handleFlashToggle}
-          >
+          <TouchableOpacity style={styles.flashButton} onPress={handleFlashToggle}>
             <Icon name="lightbulb-o" size={40} color={isFlashOn ? 'yellow' : 'gray'} />
             <Text style={styles.tourchtext}>{isFlashOn ? 'Torch On' : 'Torch Off'}</Text>
           </TouchableOpacity>
@@ -101,6 +130,7 @@ const Scanner = ({ onScan }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

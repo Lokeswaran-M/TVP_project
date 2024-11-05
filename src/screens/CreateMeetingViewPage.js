@@ -5,13 +5,13 @@ import RNFS from 'react-native-fs';
 import { PERMISSIONS, request, check, RESULTS, openSettings } from 'react-native-permissions';
 
 const CreateMeetingViewPage = ({ route, navigation }) => {
-  const { userId, eventId, location, slotId, dateTime } = route.params;
+  const { userId, eventId,locationId,location, slotId, dateTime } = route.params;
   const qrCodeRef = useRef(null);
 
   const requestStoragePermission = async () => {
     if (Platform.OS === 'android') {
       const status = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
-      
+
       if (status === RESULTS.GRANTED) {
         return true; // Permission granted
       } else if (status === RESULTS.DENIED) {
@@ -70,9 +70,10 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
         <Text style={styles.value}>{location}</Text>
         <Text style={styles.label}>Event ID:</Text>
         <Text style={styles.value}>{eventId}</Text>
-        
+
         <View style={styles.qrContainer}>
-          <QRCode value={String(eventId)} size={150} getRef={qrCodeRef} />
+          {/* Correctly combine the values into a single string for the QR code */}
+          <QRCode value={`${eventId}_${locationId}_${slotId}`} size={150} getRef={qrCodeRef} />
         </View>
 
         <TouchableOpacity style={styles.downloadButton} onPress={downloadQRCode}>
@@ -80,13 +81,14 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       <View>
-        <TouchableOpacity style={styles.oneminButton} onPress={() => navigation.navigate('OneMinPresentation', { userId, eventId, location, slotId, dateTime })}>
+        <TouchableOpacity style={styles.oneminButton} onPress={() => navigation.navigate('OneMinPresentation', { userId, eventId, locationId, slotId, dateTime })}>
           <Text style={styles.downloadButtonText}>One Min Presentation</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -140,6 +142,45 @@ const styles = StyleSheet.create({
 });
 
 export default CreateMeetingViewPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
