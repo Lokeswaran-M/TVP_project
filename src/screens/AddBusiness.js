@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity,TextInput} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,TextInput, Alert} from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -112,6 +112,8 @@ useFocusEffect(
     setSelectedLocationError('');
     setSelecteddateError('');
     let isValid = true;
+
+    // Validation logic
     if (!email) {
         setEmailError('Email is required');
         isValid = false;
@@ -143,15 +145,16 @@ useFocusEffect(
         }
     }
     if (profileData.RollId === 2) {
-      if (selectedChapterType === '') {
-        setSelectedslotError('Slot is required');
-        isValid = false;
-      }
+        if (selectedChapterType === '') {
+            setSelectedslotError('Slot is required');
+            isValid = false;
+        }
     }
     if (!startDate) {
         setSelecteddateError('Date is required');
         isValid = false;
     }
+
     if (isValid) {
         try {
             const LocationID = profileData.RollId === 2 ? profileData.LocationID : selectedLocation;
@@ -174,7 +177,10 @@ useFocusEffect(
             });
             const data = await response.json();
             console.log('Registration successful:', data);
-            navigation.goBack();
+            Alert.alert('Success', 'Registration successful!', [{ text: 'OK' }]);
+            setTimeout(() => {
+              navigation.pop(2);
+            }, 3000);
         } catch (error) {
             console.error('Error registering data:', error);
         }
@@ -256,6 +262,7 @@ const onChangeStartDate = (event, selectedDate) => {
       <Picker
         selectedValue={selectedProfession}
         onValueChange={(itemValue) =>handleProfessionChange(itemValue)}
+        style={styles.picker}
          >
         <Picker.Item label="Select Profession" value="" />
         {profession.map((item) => (

@@ -164,9 +164,10 @@ const handlelocationChange = (selectedLocation) => {
       }
       const data = await response.json();
       console.log("Full Response:", data);
-      if (data.length > 0 && data[0].count !== undefined) {
-        console.log("Data----------", data[0].count);
-        if (data[0].count > 1) {
+    
+      if (data.count !== undefined) {
+        console.log("Count----------", data.count);
+        if (data.count > 0) {
           setUsernameError('Username already taken');
           Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
@@ -184,7 +185,7 @@ const handlelocationChange = (selectedLocation) => {
       console.error('Error:', err);
       setUsernameError('Error validating username');
       isValid = false;
-    }       
+    }          
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       isValid = false;
@@ -490,15 +491,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4b5059',
     // marginBottom: 10,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-    color: 'black',
-    fontSize: 20,
-    paddingHorizontal: 10,
-    // backgroundColor: '#ccc',
-    borderColor : '#ccc'
   },
     selectList: {
       borderWidth: 1,

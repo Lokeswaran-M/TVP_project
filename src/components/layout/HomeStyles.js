@@ -37,9 +37,10 @@ const styles = StyleSheet.create({
       elevation: 3,
     },
     dashboardTitle: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 5,
+      color: '#a3238f',
     },
     meetupCard: {
       backgroundColor: '#F3ECF3',
