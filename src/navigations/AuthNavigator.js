@@ -176,19 +176,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomEndRadius: 15,
     borderBottomStartRadius: 15,
-    justifyContent: 'center',
+    justifyContent:'center',
 
   },
   topNavlogohome:{
     flexDirection: 'row',
     alignItems: 'center',
-   transform:[{translateX:15}],
+  },
 
-   
-  },
-  topNaviconhome:{
-transform:[{translateX:15}],
-  },
   buttonNavtop: {
     borderRadius: 25,
     alignItems: 'center',

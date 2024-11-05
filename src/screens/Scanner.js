@@ -7,25 +7,37 @@ import {
   StyleSheet,
   useWindowDimensions,
   ActivityIndicator,
+  Alert, // Import Alert from react-native
 } from 'react-native';
 import { RNCamera as BarCodeScanner } from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
-
-const Scanner = () => {
-  const [isQRScannerVisible, setIsQRScannerVisible] = useState(false);
+const Scanner = ({ onScan }) => {
   const cameraRef = useRef(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
-  const handleQRCodeScan = ({ data }) => {
-    console.log('QR Code Scanned:', data);
-    setIsQRScannerVisible(false); 
-  };
+  const [isScanning, setIsScanning] = useState(true); // State to manage scanning status
 
   // Toggle flash mode
   const handleFlashToggle = () => {
     setIsFlashOn((prev) => !prev);
+  };
+
+  // Handle QR code scan
+  const handleQRCodeScan = ({ data }) => {
+    if (!isScanning) return; // Prevent further scans if already scanned
+    console.log('QR Code Scanned:', data);
+    Alert.alert('Scan Successful', `Scanned Data: ${data}`); // Show alert message
+
+    // Check if onScan is a function
+    if (typeof onScan === 'function') {
+      onScan(data); // Pass the scanned data to the parent component
+    } else {
+      console.warn('onScan is not a function:', onScan);
+    }
+
+    setIsScanning(false); // Stop further scans
   };
 
   // Request camera permission
@@ -42,7 +54,7 @@ const Scanner = () => {
         }
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        setIsQRScannerVisible(true);
+        setIsScanning(true); // Allow scanning
       } else {
         console.log('Camera permission denied');
       }
@@ -53,7 +65,7 @@ const Scanner = () => {
 
   return (
     <View style={styles.container}>
-      {isQRScannerVisible && (
+      {isScanning ? ( // Conditionally render scanner based on scanning state
         <View style={styles.qrScannerContainer}>
           <BarCodeScanner
             ref={cameraRef}
@@ -75,86 +87,20 @@ const Scanner = () => {
             <Text style={styles.tourchtext}>{isFlashOn ? 'Torch On' : 'Torch Off'}</Text>
           </TouchableOpacity>
         </View>
+      ) : (
+        <View style={styles.scannedMessageContainer}>
+          <Text style={styles.scannedMessageText}>Scan Complete!</Text>
+          <TouchableOpacity style={styles.restartButton} onPress={() => setIsScanning(true)}>
+            <Text style={styles.restartButtonText}>Scan Again</Text>
+          </TouchableOpacity>
+        </View>
       )}
-
       <TouchableOpacity style={styles.addButton} onPress={openQRScanner}>
         <Text style={styles.addButtonText}>Scan QR code</Text>
       </TouchableOpacity>
     </View>
   );
 };
-export default function TabViewExample({ navigation }) {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
-  const [routes, setRoutes] = useState([]);
-  const userId = useSelector((state) => state.user?.userId);
-  const [businessInfo, setBusinessInfo] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBusinessInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
-        const data = await response.json();
-
-        if (response.ok) {
-          const updatedRoutes = data.map((business, index) => ({
-            key: `business${index + 1}`,
-            title: business.BD,
-            chapterType: business.CT,
-            locationId: business.L,
-          }));
-          setRoutes(updatedRoutes);
-          setBusinessInfo(data);
-        } else {
-          console.error('Error fetching business info:', data.message);
-        }
-      } catch (error) {
-        console.error('API call error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBusinessInfo();
-  }, [userId]);
-
-  const renderScene = ({ route }) => {
-    const business = businessInfo.find((b) => b.BD === route.title);
-    return (
-      <Scanner
-        title={route.title}
-        chapterType={business?.CT}
-        locationId={business?.L}
-        userId={userId}
-        navigation={navigation}
-      />
-    );
-  };
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
-      style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
-      inactiveColor="gray"
-      labelStyle={{ fontSize: 14 }}
-    />
-  );
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-  return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
-    />
-  );
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,14 +108,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   qrScannerContainer: {
-    width: '100%',
-    height: '100%',
+    width: '80%',
+    height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative', // Ensure children are positioned relative to this container
   },
   qrScanner: {
     width: '100%',
     height: '100%',
+    borderRadius: 15, // Add rounded corners
+    overflow: 'hidden', // Ensure corners stay rounded
+    borderWidth: 2, // Add border
+    borderColor: '#A3238F', // Color of the border
   },
   flashButton: {
     position: 'absolute',
@@ -184,7 +135,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addButton: {
-    marginTop: 20,
+    marginTop: 80,
     backgroundColor: '#007BFF',
     padding: 15,
     borderRadius: 5,
@@ -193,12 +144,54 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
   },
+  scene: {
+    flex: 1,
+    padding: 10,
+  },
+  scannedDataContainer: {
+    marginTop: 10,
+    padding: 15,
+    borderRadius: 5,
+
+    alignItems: 'center',
+    backgroundColor:'#A3238F',
+  },
+  scannedDataText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color:'#ffffff',
+  },
+  scannedDataValue: {
+    fontSize: 18,
+    marginTop: 5,
+    color:'#ffffff',
+  },
+  scannedMessageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 70,
+    backgroundColor: '#A3238F',
+    borderRadius: 10,
+  },
+  scannedMessageText: {
+    color: '#FFFFFF',
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    
+  },
+  restartButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+  },
+  restartButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
 });
 
-
-
-
-
+export default Scanner;
 
 
 

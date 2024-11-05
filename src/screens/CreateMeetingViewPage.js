@@ -1,24 +1,45 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import RNFS from 'react-native-fs'; // File system for saving files
+import RNFS from 'react-native-fs';
+import { PERMISSIONS, request, check, RESULTS, openSettings } from 'react-native-permissions';
 
 const CreateMeetingViewPage = ({ route, navigation }) => {
   const { userId, eventId, location, slotId, dateTime } = route.params;
   const qrCodeRef = useRef(null);
 
-  const OneMinPress = () => {
-    // Pass data to OneMinPresentation
-    navigation.navigate('OneMinPresentation', {
-      userId,
-      eventId,
-      location,
-      slotId,
-      dateTime,
-    });
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android') {
+      const status = await check(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+      
+      if (status === RESULTS.GRANTED) {
+        return true; // Permission granted
+      } else if (status === RESULTS.DENIED) {
+        const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
+        return result === RESULTS.GRANTED; // Check if permission granted after request
+      } else if (status === RESULTS.BLOCKED) {
+        Alert.alert(
+          'Permission Denied',
+          'Storage permission is required to save the QR Code. Please enable it in settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => openSettings() },
+          ],
+        );
+        return false; // Permission blocked
+      }
+    }
+    return true; // iOS doesn’t need explicit storage permission
   };
 
-  const downloadQRCode = () => {
+  const downloadQRCode = async () => {
+    const hasPermission = await requestStoragePermission();
+
+    if (!hasPermission) {
+      Alert.alert('Permission Denied', 'Storage permission is required to save the QR Code.');
+      return;
+    }
+
     if (qrCodeRef.current) {
       qrCodeRef.current.toDataURL((data) => {
         if (!data) {
@@ -26,8 +47,7 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
           return;
         }
 
-        // Convert base64 string to a file
-        const filePath = `${RNFS.DownloadDirectoryPath}/event_qrcode.png`;
+        const filePath = `${RNFS.ExternalStorageDirectoryPath}/event_qrcode.png`;
         RNFS.writeFile(filePath, data, 'base64')
           .then(() => {
             Alert.alert('Success', `QR Code saved to: ${filePath}`);
@@ -46,37 +66,27 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
       <View style={styles.content}>
         <Text style={styles.label}>Date and Time:</Text>
         <Text style={styles.value}>{new Date(dateTime).toLocaleString()}</Text>
-
         <Text style={styles.label}>Location:</Text>
         <Text style={styles.value}>{location}</Text>
-          <Text style={styles.label}>Event ID:</Text>
-          <Text style={styles.value}>{eventId}</Text>
-
-        {/* QR Code */}
+        <Text style={styles.label}>Event ID:</Text>
+        <Text style={styles.value}>{eventId}</Text>
+        
         <View style={styles.qrContainer}>
-          <QRCode
-            value={String(eventId)} // Ensure eventId is a string
-            size={150} // Size of the QR code
-            getRef={qrCodeRef} // Reference for downloading
-          />
+          <QRCode value={String(eventId)} size={150} getRef={qrCodeRef} />
         </View>
 
-        {/* Download Button */}
         <TouchableOpacity style={styles.downloadButton} onPress={downloadQRCode}>
           <Text style={styles.downloadButtonText}>Download QR Code</Text>
         </TouchableOpacity>
       </View>
-
-      {/* One Min Presentation Button */}
       <View>
-        <TouchableOpacity style={styles.oneminButton} onPress={OneMinPress}>
+        <TouchableOpacity style={styles.oneminButton} onPress={() => navigation.navigate('OneMinPresentation', { userId, eventId, location, slotId, dateTime })}>
           <Text style={styles.downloadButtonText}>One Min Presentation</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
