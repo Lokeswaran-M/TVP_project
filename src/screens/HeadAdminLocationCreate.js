@@ -71,19 +71,19 @@ const HeadAdminLocationCreate = () => {
             style={styles.input}
             value={locationName}
             onChangeText={setLocationName}
-            placeholder="Enter location..."
+            placeholder="Enter Location..."
             placeholderTextColor="gray"
           />
         </View>
 
         {/* Place Name Input */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Place</Text>
+          <Text style={styles.label}>Meeting Place</Text>
           <TextInput
             style={styles.input}
             value={placeName}
             onChangeText={setPlaceName}
-            placeholder="Enter place..."
+            placeholder="Enter Meeting Place..."
             placeholderTextColor="gray"
           />
         </View>

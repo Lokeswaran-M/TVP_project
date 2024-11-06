@@ -294,7 +294,7 @@ const handlelocationChange = (selectedLocation) => {
     </View>
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconStyle}>
-              <Icon name={passwordVisible ? "eye" : "eye-slash"} size={24} color="#888" />
+              <Icon name={passwordVisible ? "eye" : "eye-slash"} size={24} color="black" />
             </TouchableOpacity>
         <AnimatedTextInput
           placeholder="Password"
@@ -306,7 +306,7 @@ const handlelocationChange = (selectedLocation) => {
       {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.iconStyle}>
-              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="#888" />
+              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="black" />
             </TouchableOpacity>
         <AnimatedTextInput
           placeholder="Confirm Password"
@@ -530,28 +530,14 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
     },
-    iconStyle: {
-      marginRight: 10,
-      // marginLeft: 'auto',
-      marginTop: 30,
-      position: 'absolute',
-      zIndex: 1,
-      // justifyContent: 'right',
-      // display : 'flex',
-      // float: 'right',
-      marginLeft: 325,
-    },
-    input: {
-      flex: 1,
-    },
-    errorText: {
-      color: 'red',
-      marginBottom: 8,
-    },
-    // image: {
-    //   width: 300,
-    //   height: 250, 
-    //   resizeMode: 'contain',
-    // },
+    
+iconStyle: {
+  color: 'black',
+  position: 'absolute',
+  right: 10, // Positions icon on the right side
+  top: 25,   // Adjust vertical position as needed
+  zIndex: 1,
+},
+
 });
 export default RegisterScreen;

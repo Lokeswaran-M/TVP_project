@@ -16,34 +16,32 @@ import { Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 const isPortrait = height > width;
+
 const Scanner = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [isScanning, setIsScanning] = useState(true);
-  const scanningRef = useRef(true); // To prevent duplicate scans
+  const scanningRef = useRef(true);
 
-  // Get the user ID from the Redux store
   const userId = useSelector((state) => state.user?.userId);
 
-  // Toggle flash mode
   const handleFlashToggle = () => {
     setIsFlashOn((prev) => !prev);
   };
 
-  // Handle QR code scan
   const handleQRCodeScan = async ({ data }) => {
-    if (!scanningRef.current || !isScanning) return; // Prevent duplicate scans
-    scanningRef.current = false; // Block further scans
+    if (!scanningRef.current || !isScanning) return;
+    scanningRef.current = false;
 
-    setIsScanning(false); // Stop scanning
     const [eventId, locationId, slotId] = data.split('_');
 
     if (!eventId || !locationId || !slotId) {
       Alert.alert('Error', 'Invalid QR Code format');
       setIsScanning(true);
-      scanningRef.current = true; // Allow scanning again
+      scanningRef.current = true;
       return;
     }
+
     try {
       const response = await fetch(`${API_BASE_URL}/Postattendance`, {
         method: 'POST',
@@ -57,12 +55,10 @@ const Scanner = ({ navigation }) => {
           slotId,
         }),
       });
-      const rawResponse = await response.text();
-console.log('Raw Response:', rawResponse);
 
-const result = JSON.parse(rawResponse);
-      // const result = await response.json();
-      console.log('------------QR DATA----------------', result);
+      const rawResponse = await response.text();
+      console.log('Raw Response:', rawResponse);
+      const result = JSON.parse(rawResponse);
 
       if (response.ok) {
         Alert.alert('Success', 'Attendance recorded successfully');
@@ -73,12 +69,11 @@ const result = JSON.parse(rawResponse);
       console.error('Error:', error);
       Alert.alert('Error', 'Something went wrong');
     } finally {
-      setIsScanning(true); 
-      scanningRef.current = true; 
+      setIsScanning(false); // Set to false to stop camera
+      scanningRef.current = true;
     }
   };
 
-  // Request camera permission
   const openQRScanner = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -93,7 +88,7 @@ const result = JSON.parse(rawResponse);
           }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          setIsScanning(true); // Allow scanning
+          setIsScanning(true);
         } else {
           Alert.alert('Permission Denied', 'Camera access is required to scan QR codes.');
         }
@@ -101,7 +96,7 @@ const result = JSON.parse(rawResponse);
         console.log('Error requesting camera permission:', error);
       }
     } else {
-      setIsScanning(true); // iOS or web doesn't require explicit permission
+      setIsScanning(true);
     }
   };
 
@@ -128,7 +123,6 @@ const result = JSON.parse(rawResponse);
           </TouchableOpacity>
         </View>
       )}
-    
     </View>
   );
 };
