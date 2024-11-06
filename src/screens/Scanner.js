@@ -12,7 +12,10 @@ import { RNCamera as BarCodeScanner } from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
+import { Dimensions } from 'react-native';
 
+const { width, height } = Dimensions.get('window');
+const isPortrait = height > width;
 const Scanner = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
@@ -125,9 +128,7 @@ const result = JSON.parse(rawResponse);
           </TouchableOpacity>
         </View>
       )}
-      <TouchableOpacity style={styles.addButton} onPress={openQRScanner}>
-        <Text style={styles.addButtonText}>Scan QR code</Text>
-      </TouchableOpacity>
+    
     </View>
   );
 };
@@ -139,25 +140,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   qrScannerContainer: {
-    width: '80%',
-    height: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative', // Ensure children are positioned relative to this container
-  },
-  qrScanner: {
+    flex: 1,
     width: '100%',
     height: '100%',
-    borderRadius: 15, // Add rounded corners
-    overflow: 'hidden', // Ensure corners stay rounded
-    borderWidth: 2, // Add border
-    borderColor: '#A3238F', // Color of the border
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: isPortrait ? 20 : 50, // Adjust padding based on orientation
   },
+  qrScanner: {
+    width: isPortrait ? width * 0.8 : width * 0.6, // 80% width in portrait, 60% in landscape
+    height: isPortrait ? height * 0.5 : height * 0.6, // 50% height in portrait, 60% in landscape
+    borderRadius: 15,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#A3238F',
+  },
+
   flashButton: {
+    flex:1,
     position: 'absolute',
     bottom: 30,
-    left: '50%',
-    transform: [{ translateX: -50 }],
+
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     padding: 10,
     borderRadius: 5,
@@ -165,16 +168,7 @@ const styles = StyleSheet.create({
   tourchtext: {
     textAlign: 'center',
   },
-  addButton: {
-    marginTop: 80,
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 5,
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-  },
+
   scene: {
     flex: 1,
     padding: 10,
