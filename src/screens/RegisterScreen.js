@@ -8,45 +8,29 @@ import { useNavigation } from '@react-navigation/native';
 import AnimatedTextInput from './AnimatedTextInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {API_BASE_URL} from '../constants/Config'
-// import Newteam from '../../assets/images/Newteam.png'; 
-
   const RegisterScreen = () => {
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState(''); 
-
   const [Mobileno, setMobileno] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [businessName, setBusinessName] = useState('');
-
   const [profession, setProfession] = useState([]); 
   const [selectedProfession, setSelectedProfession] = useState('');
-
   const [chapterType, setChapterType] = useState([]); 
   const [selectedChapterType, setSelectedChapterType] = useState('');
-
   const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
-
-  // const [availabledata, setAvailableData] = useState([]);
-  // const [availableLocation, setAvailableLocation] = useState(['']);
-
   const [referredBy, setReferredBy] = useState('');
-
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-
-  // const [loading, setLoading] = useState(true);
-
   const navigation = useNavigation();
-
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
-  
   const scrollViewRef = useRef(null);
   const usernameInputRef = useRef(null);
  const [usernameError, setUsernameError] = useState('');
@@ -65,11 +49,9 @@ import {API_BASE_URL} from '../constants/Config'
  const togglePasswordVisibility = () => {
   setPasswordVisible(!passwordVisible);
 };
-
 const togglePasswordVisibility1 = () => {
   setPasswordVisible1(!passwordVisible1);
 };
-
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`)
       .then((response) => response.json())
@@ -112,7 +94,6 @@ const handlelocationChange = (selectedLocation) => {
   }
  
 };
-
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
     if (selectedDate) {
@@ -125,7 +106,6 @@ const handlelocationChange = (selectedLocation) => {
       setEndDate(formattedEndDate);
     }
   };
-
   const onChangeEndDate = (event, selectedDate) => {
     setShowEndPicker(false);
     if (selectedDate) {
@@ -143,12 +123,10 @@ const handlelocationChange = (selectedLocation) => {
     setBusinessNameError('');
     setSelectedProfessionError('');
     setSelectedLocationError('');
+    setSelectedslotError('');
     setReferredByError('');
     setSelecteddateError('');
-
     let isValid = true;
-
-    // Validation checks
     if (!username) {
       setUsernameError('Username is required');
       isValid = false;
@@ -220,7 +198,7 @@ const handlelocationChange = (selectedLocation) => {
       setSelectedLocationError('Location is required');
       isValid = false;
     }
-    if (!chapterType) {
+    if (!selectedChapterType) {
       setSelectedslotError('Slot is required');
       isValid = false;
     }
@@ -353,7 +331,6 @@ const handlelocationChange = (selectedLocation) => {
       />
       </View>
       {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
-      {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
      <View style={styles.selectList}>
           <Picker
             selectedValue={selectedProfession}
@@ -365,14 +342,8 @@ const handlelocationChange = (selectedLocation) => {
               <Picker.Item key={item.Id} label={item.ProfessionName} value={item.ProfessionName} />
             ))}
           </Picker>
-
-          {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
         </View>
-
-        {selectedLocationError ? <Text style={styles.errorText}>{selectedLocationError}</Text> : null}
-
-   
-
+        {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
         <View style={styles.selectList}>
           <Picker borderBottomWidth='1'
             selectedValue={selectedLocation}
@@ -384,15 +355,8 @@ const handlelocationChange = (selectedLocation) => {
               <Picker.Item  key={index} label={item.location} value={item.value} />
             ))}
           </Picker>
-          {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
         </View>
-
-
-        {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-
-        {/* <Text style={styles.label}>Select Slot</Text> */}
-
-
+        {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
         <View style={styles.selectList}>
         <Picker
           selectedValue={selectedChapterType}
@@ -401,12 +365,11 @@ const handlelocationChange = (selectedLocation) => {
           >
           <Picker.Item label="Select Slot" value="" />
           {chapterType.map((slot) => (
-            <Picker.Item key={slot.id} label={slot.id} value={slot.id} />
+            <Picker.Item key={slot.id} label={slot.Slots} value={slot.id} />
           ))}
           </Picker>
           </View>
-
-      
+          {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
         <View style={styles.inputContainer}>
         <Icon name="user-plus" size={24} color="gray" style={styles.iconStyle} />
           <AnimatedTextInput
@@ -416,14 +379,10 @@ const handlelocationChange = (selectedLocation) => {
       />
       </View>
       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
-       
-        {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
-       {/* Start Date */}
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
         <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
       </TouchableOpacity>
-
       {showStartPicker && (
         <DateTimePicker
           value={startDate ? new Date(startDate) : new Date()}
@@ -432,28 +391,22 @@ const handlelocationChange = (selectedLocation) => {
           onChange={onChangeStartDate}
         />
       )}
-
-      {/* End Date */}
       <Text style={styles.label}>End Date</Text>
       <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton} disabled={true} >
         <Text style={styles.datePickerText}>{endDate ? endDate : 'Select End Date'}</Text>
       </TouchableOpacity>
-
       {showEndPicker && (
         <DateTimePicker
           value={endDate ? new Date(endDate) : new Date()}
           mode="date"
           display="default"
           onChange={onChangeEndDate}
-          
         />
       )}
-
+      {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
         <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
         <Text style={styles.registerButtonText}>Register</Text>
       </TouchableOpacity>
-   
-        {/* <Button title="Register" onPress={handleRegister} /> */}
       </View>
     </ScrollView>
   );

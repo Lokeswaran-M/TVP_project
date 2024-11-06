@@ -7,13 +7,7 @@ import { setUser } from '../Redux/action';
 import { API_BASE_URL } from '../constants/Config';
 import DeviceInfo from 'react-native-device-info';
 import { RadioButton } from 'react-native-paper'; 
-// import AuthContext from '../api/Auth';
-
-
 const LoginScreen = ({ navigation }) => {
-  // const { userRoleId, setRoleId } = useContext(AuthContext);
-  
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [logintype, setLogintype] = useState('1');
@@ -21,36 +15,20 @@ const LoginScreen = ({ navigation }) => {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [appVersion, setAppVersion] = useState('');
-
-
-  // const [selectedLoginType, setSelectedLoginType] = useState('member'); 
-
-
   const [usernamePlaceholderTop] = useState(new Animated.Value(11));
   const [usernameLabelScale] = useState(new Animated.Value(1));
-
   const [passwordPlaceholderTop] = useState(new Animated.Value(11));
   const [passwordLabelScale] = useState(new Animated.Value(1));
-
-
-  //  Validation error messages
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState(''); 
- 
- 
   useEffect(() => {
-  
     const fetchAppInfo = async () => {
       const version = DeviceInfo.getVersion();
       setAppVersion(version);
     };
-
     fetchAppInfo();
   }, []);
-
-
-
   const handleFocusUsername = () => {
     setUsernameFocused(true);
     Animated.parallel([
@@ -66,7 +44,6 @@ const LoginScreen = ({ navigation }) => {
       }),
     ]).start();
   };
-
   const handleBlurUsername = () => {
     if (passwordFocused) return;
     if (username.trim() === '') {
@@ -85,7 +62,6 @@ const LoginScreen = ({ navigation }) => {
     }
     setUsernameFocused(false);
   };
-
   const handleFocusPassword = () => {
     setPasswordFocused(true);
     Animated.parallel([
@@ -101,7 +77,6 @@ const LoginScreen = ({ navigation }) => {
       }),
     ]).start();
   };
-
   const handleBlurPassword = () => {
     if (usernameFocused) return;
     if (password.trim() === '') {
@@ -120,100 +95,65 @@ const LoginScreen = ({ navigation }) => {
     }
     setPasswordFocused(false);
   };
-
   const handleTouchOutside = () => {
     Keyboard.dismiss();
     handleBlurUsername();
     handleBlurPassword();
   };
-
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-
   const dispatch = useDispatch();
-
   const handleLogin = async () => {
-
-       // Reset error messages
-       setUsernameError('');
-       setPasswordError('');
-       setLoginError(''); 
-
-       let isValid = true;// Flag to track validation status
-
-       if (!username) {
-        setUsernameError('Username is required');
-        isValid = false;
-      }
-      if (!password) {
-        setPasswordError('Password is required');
-        isValid = false;
-
-      }
-  if (!isValid) return; // If not valid, do not proceed with the API call
+    setUsernameError('');
+    setPasswordError('');
+    setLoginError('');
+    
+    let isValid = true;
+    if (!username) {
+      setUsernameError('Username is required');
+      isValid = false;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      isValid = false;
+    }
+    if (!isValid) return;
+  
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
-        
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password ,logintype}),
+        body: JSON.stringify({ username, password, logintype }),
       });
-      console.log('response------------------------',response)
+      
       const result = await response.json();
-
-      console.log("Result-------------",result);
-
-      if (response.ok) {
-        console.log('Login successful:', result);
-
-        dispatch(setUser(result));
-        const { rollId } = result.user; 
-        console.log('rollId====================',result.user)
-        console.log('rollId====================',result.user.rollId)
-
-
-        // navigation.navigate('DrawerNavigator');
-
-
-          // // Navigate based on the selected login type
-          // if (selectedLoginType == 'member') {
-          //   navigation.navigate('DrawerNavigator');
-          // } else if (selectedLoginType == 'substitute') {
-          //   navigation.navigate('SubstitutePage');
-          // }
   
-        // Navigate based on the rollId
-        if (logintype === '1') { // Member login
-        if (rollId === 1) {
-          navigation.navigate('AdminPage');
-        } else if (rollId === 2) {
-          // navigation.navigate('ChapterAdministratorPage');
-          navigation.navigate('DrawerNavigator');
-
-        } else if (rollId === 3 ) {
-          navigation.navigate('DrawerNavigator');
-        } 
-        else {
-          // Handle other roles if needed
-          setLoginError('Invalid role ID');
+      if (response.ok) {
+        dispatch(setUser(result));
+        const { rollId } = result.user;
+        if (logintype === '1') {
+          if (rollId === 1) {
+            navigation.navigate('AdminPage');
+          } else if (rollId === 2 || rollId === 3) {
+            navigation.navigate('DrawerNavigator');
+          } else {
+            setLoginError('Invalid role ID');
+          }
+        } else if (logintype === '2') {
+          navigation.navigate('SubstitutePage');
         }
-      }
-       else if (logintype === '2') {
-        navigation.navigate('SubstitutePage'); 
-        }
+      } else if (response.status === 403) {
+        setLoginError('Username is not activated');
       } else {
-        setLoginError(result.error || 'Incorrect username or password'); 
+        setLoginError(result.error || 'Incorrect username or password');
       }
     } catch (error) {
-      setLoginError('An error occurred. Please try again.'); 
-      console.log("--------------");
-      console.error(error);
+      setLoginError('An error occurred. Please try again.');
     }
-  };
-  
+  };  
   return ( 
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -223,9 +163,6 @@ const LoginScreen = ({ navigation }) => {
             style={styles.logo} 
           />
           <Text style={styles.title}>Hello, Welcome Back!</Text>
-          
-         
-           {/* Radio Buttons for Login Type */}
            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <RadioButton.Group
               onValueChange={newValue => setLogintype(newValue)}
@@ -241,7 +178,6 @@ const LoginScreen = ({ navigation }) => {
               </View>
             </RadioButton.Group>
           </View>
-         
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
@@ -262,11 +198,9 @@ const LoginScreen = ({ navigation }) => {
             />
             <Icon name="user" size={20} color="#888" style={styles.icon} />
           </View>
-
           <View >
           {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
           </View>
-
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
@@ -286,7 +220,6 @@ const LoginScreen = ({ navigation }) => {
               onFocus={handleFocusPassword}
               onBlur={handleBlurPassword}
             />
-            
             <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
               <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#888" />
             </TouchableOpacity>

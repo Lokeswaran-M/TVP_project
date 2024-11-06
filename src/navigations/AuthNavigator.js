@@ -26,7 +26,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BMW from '../../assets/images/BMW.png';
 import { useNavigation } from '@react-navigation/native';
-// Get the width of the screen for responsiveness
 const { width } = Dimensions.get('window');
 const CustomHeaderBMWpng = () => {
   const navigation = useNavigation();
@@ -37,9 +36,8 @@ const CustomHeaderBMWpng = () => {
     <View style={styles.topNav}>
     <View >
       <View style={styles.topNavlogohome}>
-        {/* Use Image component */}
         <Image 
-          source={BMW}  // Local image path
+          source={BMW} 
           style={styles.iconImage}
         />
         <TouchableOpacity style={styles.topNaviconhome} onPress={posticon}>
@@ -111,7 +109,7 @@ const CustomHeaderPost = () => {
         <View style={styles.topNavlogo}>
         <Ionicons name="chatbubble-ellipses" size={28} color="#FFFFFF"/>
         </View>
-        <Text style={styles.NavbuttonText}>MeetingPost</Text>
+        <Text style={styles.NavbuttonText}>One Minute Presentation Post</Text>
       </View>
     </View>
   );
@@ -121,7 +119,6 @@ const headerOptions = {
   headerStyle: { backgroundColor: '#a3238f' },
   headerTintColor: '#fff',
 };
-
 const AuthNavigator = () => {
   return (
     <Stack.Navigator>
