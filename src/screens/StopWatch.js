@@ -97,7 +97,18 @@ const StopWatch = ({ route, navigation }) => {
         const seconds = secs % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
-   
+    const handleSubmitRating = () => {
+        if (rating === 0) {
+            Alert.alert('Error', 'Please select a rating before submitting');
+            return;
+        }
+        postRating(); // Call the function to post the rating
+    
+        // Close the star review modal
+        setIsStarReviewModalVisible(false);
+
+    };
+    
     const postRating = async () => {
       
         try {
@@ -118,6 +129,7 @@ const StopWatch = ({ route, navigation }) => {
             const result = await response.json();
             if (response.ok) {
                 Alert.alert('Success', result.message);
+                navigation.goBack();
             } else {
                 Alert.alert('Error', result.error || 'Something went wrong');
             }
@@ -127,15 +139,6 @@ const StopWatch = ({ route, navigation }) => {
         }
     };
    
-
-    const handleSubmitRating = () => {
-        if (rating === 0) {
-            Alert.alert('Error', 'Please select a rating before submitting');
-            return;
-        }
-        postRating();
-        setIsStarReviewModalVisible(false);
-    };
 
     return (
         <View style={styles.container}>
@@ -211,6 +214,7 @@ const StopWatch = ({ route, navigation }) => {
             </Modal>
         </View>
     );
+    
 };
 const styles = StyleSheet.create({
     container: {
