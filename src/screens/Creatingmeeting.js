@@ -111,13 +111,15 @@ const CreatingMeeting = () => {
                 <View style={styles.meetingDetails}>
                   <Text style={styles.meetingTitle}>
                     <Icon name="calendar" size={18} /> 
+                    <Text> </Text>
 {new Date(meeting.DateTime).toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric'
 })} {'   '}
-<Icon name="clock-o" size={18} /> 
-{new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+<Icon name="clock-o" size={20} /> 
+<Text> </Text>
+{new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                   </Text>
                   <Text style={styles.meetingInfo}>
                     <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}

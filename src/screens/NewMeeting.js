@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
-import DatePicker from 'react-native-date-picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { API_BASE_URL } from '../constants/Config';
 import sun from '../../assets/images/sun.png';
 import moon from '../../assets/images/moon.png';
@@ -16,7 +16,7 @@ const NewMeeting = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [SlotIDs, setSlotIDs] = useState([]); // Track selected SlotIDs
   const [date, setDate] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [loading, setLoading] = useState(true);
   const userId = useSelector((state) => state.user?.userId);
 
@@ -94,6 +94,14 @@ const NewMeeting = () => {
     }
   };
 
+  const showTimePicker = () => setTimePickerVisibility(true);
+  const hideTimePicker = () => setTimePickerVisibility(false);
+
+  const handleTimeConfirm = (selectedTime) => {
+    setDate(selectedTime);
+    hideTimePicker();
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
@@ -131,24 +139,19 @@ const NewMeeting = () => {
           }}
         />
       )}
-      <TouchableOpacity onPress={() => setOpen(true)}>
+      <TouchableOpacity onPress={showTimePicker}>
         <View style={styles.section}>
           <Text style={styles.label}>
-            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time'}
+            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true  }) : 'Time'}
           </Text>
           <Icon name="clock-o" size={30} color="#C23A8A" />
         </View>
       </TouchableOpacity>
-      <DatePicker
-        modal
+      <DateTimePickerModal
+        isVisible={isTimePickerVisible}
         mode="time"
-        open={open}
-        date={date || new Date()}
-        onConfirm={(selectedTime) => {
-          setOpen(false);
-          setDate(selectedTime);
-        }}
-        onCancel={() => setOpen(false)}
+        onConfirm={handleTimeConfirm}
+        onCancel={hideTimePicker}
       />
       <View style={styles.section}>
         <Text style={styles.label}>
