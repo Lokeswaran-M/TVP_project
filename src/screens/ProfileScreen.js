@@ -138,7 +138,7 @@ const Profile = () => {
 <Text style={styles.label}>Location</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.LocationName || 'None'}</Text>
 <Text style={styles.label}>Chapter Type</Text>
-<Text style={styles.info}>{multiProfile?.businessInfo?.ChapterType || 'None'}</Text>
+<Text style={styles.info}>{multiProfile?.businessInfo?.Slots || 'None'}</Text>
 <Text style={styles.label}>Email ID</Text>
 <Text style={styles.info}>{multiProfile?.businessInfo?.Email || 'None'}</Text>
 <Text style={styles.label}>Description</Text>
@@ -166,7 +166,7 @@ const Profile = () => {
             <Text style={styles.label}>Location</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.LocationName || 'None'}</Text>
             <Text style={styles.label}>Chapter Type</Text>
-            <Text style={styles.info}>{profileData?.businessInfo?.ChapterType || 'None'}</Text>
+            <Text style={styles.info}>{profileData?.businessInfo?.Slots || 'None'}</Text>
             <Text style={styles.label}>Email</Text>
             <Text style={styles.info}>{profileData?.businessInfo?.Email || 'None'}</Text>
             <Text style={styles.label}>Mobile Number</Text>
