@@ -306,7 +306,7 @@ const handlelocationChange = (selectedLocation) => {
       {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
       <View>
       <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.iconStyle}>
-              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="#888" />
+              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="black" />
             </TouchableOpacity>
         <AnimatedTextInput
           placeholder="Confirm Password"
@@ -531,7 +531,8 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
     },
     iconStyle: {
-      marginRight: 10,
+      color:'black',
+      
       // marginLeft: 'auto',
       marginTop: 30,
       position: 'absolute',
@@ -539,7 +540,7 @@ const styles = StyleSheet.create({
       // justifyContent: 'right',
       // display : 'flex',
       // float: 'right',
-      marginLeft: 325,
+     justifyContent:'flex-end',
     },
     input: {
       flex: 1,
