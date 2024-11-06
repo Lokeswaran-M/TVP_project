@@ -31,7 +31,7 @@ const HomeScreen = ({ route }) => {
   const [showAllRequirements, setShowAllRequirements] = useState(false);
 
   const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
-  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/Pre-attendance`;
+  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/Preattendance`;
 
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
@@ -119,35 +119,43 @@ const HomeScreen = ({ route }) => {
   const handleConfirmClick = async () => {
     setIsConfirmed(true);
     if (!eventData) {
-      Alert.alert('Error', 'No event data available');
-      return;
+        Alert.alert('Error', 'No event data available');
+        return;
     }
-    try {
-      const response = await fetch(ATTENDANCE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          UserId: userId,
-          LocationID: eventData.LocationID,
-          SlotID: eventData.SlotID,
-          EventId: eventData.EventId,
-        }),
-      });
 
-      const data = await response.json();
-      console.log
-      if (response.ok) {
+    try {
+        const response = await fetch(ATTENDANCE_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                UserId: userId,
+                LocationID: eventData.LocationID,
+                SlotID: eventData.SlotID,
+                EventId: eventData.EventId,
+            }),
+        });
+        const rawResponse = await response.text();
+        console.log("Raw Response:", rawResponse);
+        if (!response.ok) {
+            try {
+                const errorData = JSON.parse(rawResponse);
+                Alert.alert('Error', errorData.error || 'Failed to confirm attendance');
+            } catch (jsonError) {
+                Alert.alert('Error', 'Failed to parse server response');
+            }
+            return;
+        }
+        const data = JSON.parse(rawResponse);
+        console.log("Data for confirm:", data);
         Alert.alert('Success', 'Attendance confirmed successfully');
-      } else {
-        Alert.alert('Error', data.error || 'Failed to confirm attendance');
-      }
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Network or server issue');
+        console.error("Network or server error:", error);
+        Alert.alert('Error', 'Network or server issue. Please try again later.');
     }
-  };
+};
+
   const handleAcknowledgeClick = async (requirement) => {
     try {
       const response = await fetch(`${API_BASE_URL}/requirements`, {

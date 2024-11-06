@@ -143,14 +143,15 @@ const CreatingMeeting = () => {
                       <Text style={styles.optionText}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      style={styles.optionButton}
-                      onPress={() => {
-                        setShowDeleteModal(true);
-                        setActiveIndex(index);
-                      }}
-                    >
-                      <Text style={styles.optionText}>Delete</Text>
-                    </TouchableOpacity>
+  style={styles.optionButton}
+  onPress={() => {
+    setShowDeleteModal(true);
+    setActiveIndex(index);
+    handleDelete(meeting.EventId);
+  }}
+>
+  <Text style={styles.optionText}>Delete</Text>
+</TouchableOpacity>
                   </View>
                 )}
               </TouchableOpacity>

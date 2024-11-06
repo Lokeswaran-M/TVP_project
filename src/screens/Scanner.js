@@ -41,10 +41,8 @@ const Scanner = ({ navigation }) => {
       scanningRef.current = true; // Allow scanning again
       return;
     }
-
-    // Send scanned data to backend
     try {
-      const response = await fetch(`${API_BASE_URL}/post-attendance`, {
+      const response = await fetch(`${API_BASE_URL}/Postattendance`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,8 +54,11 @@ const Scanner = ({ navigation }) => {
           slotId,
         }),
       });
+      const rawResponse = await response.text();
+console.log('Raw Response:', rawResponse);
 
-      const result = await response.json();
+const result = JSON.parse(rawResponse);
+      // const result = await response.json();
       console.log('------------QR DATA----------------', result);
 
       if (response.ok) {
@@ -69,8 +70,8 @@ const Scanner = ({ navigation }) => {
       console.error('Error:', error);
       Alert.alert('Error', 'Something went wrong');
     } finally {
-      setIsScanning(true); // Allow re-scanning
-      scanningRef.current = true; // Reset scanning control
+      setIsScanning(true); 
+      scanningRef.current = true; 
     }
   };
 

@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 const MemberDetails = () => {
   const route = useRoute();
   const { userId, Profession } = route.params;
-  const UserID = useSelector((state) => state.user?.userId);
+  const AdminUserID = useSelector((state) => state.user?.userId);
   const [businessInfoo, setBusinessInfoo] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,9 +24,10 @@ const MemberDetails = () => {
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/user/Admin-info/${UserID}`);
+        const response = await fetch(`${API_BASE_URL}/api/user/Admin-info/${AdminUserID}`);
         if (!response.ok) throw new Error('Failed to fetch business info');
         const data = await response.json();
+        console.log("Data in business info------------------------",data);
         setRollID(data.RollId);
         setBusinessInfoo(data);
       } catch (error) {
@@ -56,11 +57,11 @@ const MemberDetails = () => {
       }
     };
 
-    if (UserID) {
+    if (AdminUserID) {
       fetchBusinessInfo();
       fetchUserDetails();
     }
-  }, [UserID, userId, Profession, refreshToggle]); 
+  }, [AdminUserID, userId, Profession, refreshToggle]); 
 
   const handlePromotion = async () => {
     let newRollId = 2;
@@ -218,3 +219,43 @@ const MemberDetails = () => {
   );
 };
 export default MemberDetails;
+
+
+
+
+// app.get('/api/user/Admin-info/:userId', async (req, res) => {
+//   const { userId } = req.params;
+//   console.log("UserID business info------------", userId);
+//   if (!userId) {
+//     return res.status(400).json({ message: 'User ID is required.' });
+//   }
+//   let connection;
+//   try {
+//     connection = await pool.getConnection(); 
+//     await connection.beginTransaction();
+    
+//     const businessQuery = `
+//       SELECT 
+//         U.Username,
+//         U.RollId
+//       FROM
+//         tbluser AS U
+//       WHERE
+//         U.UserId = ?
+//     `;
+//     const businessValues = [userId];
+//     const [rows] = await connection.query(businessQuery, businessValues);
+//     await connection.commit();
+//     if (rows.length === 0) {
+//       return res.status(404).json({ message: 'Profile not found.' });
+//     }
+//     res.status(200).json(rows[0]);
+
+//   } catch (error) {
+//     if (connection) await connection.rollback();
+//     console.error('Database error:', error);
+//     res.status(500).json({ error: 'Profile display failed. Please try again later.' });
+//   } finally {
+//     if (connection) connection.release(); 
+//   }
+// });
