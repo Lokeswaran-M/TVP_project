@@ -109,7 +109,6 @@ const LoginScreen = ({ navigation }) => {
     setUsernameError('');
     setPasswordError('');
     setLoginError('');
-    
     let isValid = true;
     if (!username) {
       setUsernameError('Username is required');
@@ -120,7 +119,6 @@ const LoginScreen = ({ navigation }) => {
       isValid = false;
     }
     if (!isValid) return;
-  
     try {
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
@@ -129,30 +127,55 @@ const LoginScreen = ({ navigation }) => {
         },
         body: JSON.stringify({ username, password, logintype }),
       });
-      
       const result = await response.json();
-  
-      if (response.ok) {
-        dispatch(setUser(result));
-        const { rollId } = result.user;
-        if (logintype === '1') {
-          if (rollId === 1) {
-            navigation.navigate('AdminPage');
-          } else if (rollId === 2 || rollId === 3) {
-            navigation.navigate('DrawerNavigator');
-          } else {
-            setLoginError('Invalid role ID');
-          }
-        } else if (logintype === '2') {
-          navigation.navigate('SubstitutePage');
-        }
-      } else if (response.status === 403) {
-        setLoginError('Username is not activated');
-      } else {
-        setLoginError(result.error || 'Incorrect username or password');
+      console.log("Data from login response:", result);
+      dispatch(setUser(result));
+      const { rollId } = result.user;
+      if (logintype === '2') {
+        navigation.navigate('SubstitutePage');
+        return;
       }
+      if (rollId === 2 || rollId === 3) {
+        const deviceId = await DeviceInfo.getUniqueId();
+        console.log('Device ID:', deviceId);
+        const deviceName = await DeviceInfo.getDeviceName();
+        console.log('Device Name:', deviceName);
+        const deviceResponse = await fetch(`${API_BASE_URL}/login`, { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            password,
+            logintype,
+            deviceId,
+            deviceName,
+          }),
+        });
+  
+        const deviceResult = await deviceResponse.json();
+        if (deviceResponse.ok) {
+          console.log('Device info saved successfully.');
+        } else {
+          console.error('Failed to save device info:', deviceResult.error);
+        }
+        navigation.navigate('DrawerNavigator');
+      } else if (logintype === '1') {
+        if (rollId === 1) {
+          navigation.navigate('AdminPage');
+        } else if (rollId === 2) {
+          navigation.navigate('DrawerNavigator');
+        } else if (rollId === 3) {
+          navigation.navigate('DrawerNavigator');
+        } else {
+          setLoginError('Invalid role ID');
+        }
+      }
+  
     } catch (error) {
       setLoginError('An error occurred. Please try again.');
+      console.error(error);
     }
   };  
   return ( 
@@ -170,11 +193,11 @@ const LoginScreen = ({ navigation }) => {
               value={logintype}
             >
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value="1" />
+                  <RadioButton value='1' />
                   <Text style={styles.radioButtonLabel}>Member Login</Text>
                 </View>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value="2" />
+                  <RadioButton value='2' />
                   <Text style={styles.radioButtonLabel}>Substitute Login</Text>
               </View>
             </RadioButton.Group>

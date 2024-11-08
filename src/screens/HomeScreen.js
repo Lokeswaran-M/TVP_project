@@ -6,6 +6,7 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
+import PushNotification from 'react-native-push-notification';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
@@ -131,34 +132,40 @@ const HomeScreen = ({ route }) => {
       Alert.alert('Error', 'Network or server issue. Please try again later.');
     }
   };
-  const handleAcknowledgeClick = async (requirement) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/requirements`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: userId,
-          acknowledgedUserId: requirement.UserId,
-          LocationID: route.params.locationId,
-          Slots: chapterType,
-          Id: requirement.Id,
-        }),
-      });
-      const data = await response.json();
-      console.log("Data for ack------------------------------", data);
-      if (response.ok) {
-        Alert.alert('Success', 'Requirement acknowledged successfully');
-        refreshRequirements();
-      } else {
-        Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
+const handleAcknowledgeClick = async (requirement) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/requirements`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: userId,
+        acknowledgedUserId: requirement.UserId,
+        LocationID: route.params.locationId,
+        Slots: chapterType,
+        Id: requirement.Id,
+      }),
+    });
+    const data = await response.json();
+    console.log("Data in updating the acknowledge-----------------",data);
+    if (response.ok) {
+      Alert.alert('Success', 'Requirement acknowledged successfully');
+      if (requirement.UserId !== userId) {
+        PushNotification.localNotification({
+          channelId: "default-channel-id",
+          title: "Acknowledgment Received",
+          message: `Thank you, ${requirement.Username} acknowledged your offer!`,
+        });
       }
-    } catch (error) {
-      console.error("Acknowledge Error:", error);
-      Alert.alert('Error', 'Network or server issue');
+      refreshRequirements();
+    } else {
+      Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
     }
-  };
+  } catch (error) {
+    console.error("Acknowledge Error:", error);
+    Alert.alert('Error', 'Network or server issue');
+  }
+};
+
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }

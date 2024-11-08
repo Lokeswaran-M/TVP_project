@@ -1,27 +1,58 @@
 
-import React, { useState,useContext } from 'react';
+// import React, { useState,useContext } from 'react';
+// import { NavigationContainer } from '@react-navigation/native';
+// import AppNavigator from '../src/navigations/AppNavigator';
+// import Toast from 'react-native-toast-message';
+// import { toastConfig } from './utils/toastConfig';
+// import { Provider } from 'react-redux';
+// import store from './Redux/store';
+// import PushNotification from 'react-native-push-notification';
+
+// const App = () => {
+//   return (
+
+//     <Provider store={store}>
+//       <NavigationContainer>
+//         <AppNavigator />
+//         {/* <Toast config={toastConfig} /> */}
+//         <Toast ref={(ref) => Toast.setRef(ref)} />
+//       </NavigationContainer>
+//     </Provider>
+
+//   );
+// };
+// export default App;
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from '../src/navigations/AppNavigator';
 import Toast from 'react-native-toast-message';
 import { toastConfig } from './utils/toastConfig';
 import { Provider } from 'react-redux';
 import store from './Redux/store';
-
-
+import PushNotification from 'react-native-push-notification';
 const App = () => {
-  return (
+  useEffect(() => {
+    PushNotification.createChannel(
+      {
+        channelId: "default-channel-id", // Channel ID
+        channelName: "Default Channel", // Channel Name
+      },
+      (created) => console.log(`CreateChannel returned '${created}'`) // Callback for debugging
+    );
+  }, []);
 
+  return (
     <Provider store={store}>
       <NavigationContainer>
         <AppNavigator />
-        {/* <Toast config={toastConfig} /> */}
         <Toast ref={(ref) => Toast.setRef(ref)} />
       </NavigationContainer>
     </Provider>
-
   );
 };
+
 export default App;
+
 
 
 // import React, { useState } from 'react';
