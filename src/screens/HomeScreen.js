@@ -149,13 +149,6 @@ const handleAcknowledgeClick = async (requirement) => {
     console.log("Data in updating the acknowledge-----------------",data);
     if (response.ok) {
       Alert.alert('Success', 'Requirement acknowledged successfully');
-      if (requirement.UserId !== userId) {
-        PushNotification.localNotification({
-          channelId: "default-channel-id",
-          title: "Acknowledgment Received",
-          message: `Thank you, ${requirement.Username} acknowledged your offer!`,
-        });
-      }
       refreshRequirements();
     } else {
       Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
