@@ -22,6 +22,7 @@ const LoginScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState(''); 
+  console.log("UserName----------------------",username);
   useEffect(() => {
     const fetchAppInfo = async () => {
       const version = DeviceInfo.getVersion();

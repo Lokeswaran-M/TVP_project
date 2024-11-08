@@ -36,16 +36,24 @@ const styles = StyleSheet.create({
       shadowRadius: 5,
       elevation: 3,
     },
+    dashboardContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
     dashboardTitle: {
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 5,
       color: '#a3238f',
     },
+    arrowIcon: {
+      marginLeft: 10,
+    },    
     meetupCard: {
       backgroundColor: '#F3ECF3',
       borderRadius: 10,
       padding: 15,
+      marginBottom: 10,
     },
     meetupTitle: {
       fontSize: 18,
@@ -66,10 +74,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center', 
       justifyContent: 'space-between',
-    },
-    arrowIcon: {
-      marginLeft: 10,
-    },      
+    },    
     meetupInfo: {
       marginLeft: 5,
       marginRight: 15,
