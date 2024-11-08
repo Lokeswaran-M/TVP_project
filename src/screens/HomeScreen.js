@@ -121,7 +121,8 @@ const HomeScreen = ({ route }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        Alert.alert('Success', 'Attendance confirmed successfully');
+        console.log("Attendance confirmed successfully")
+        // Alert.alert('Success', 'Attendance confirmed successfully');
       } else {
         Alert.alert('Error', data.error || 'Failed to confirm attendance');
       }
