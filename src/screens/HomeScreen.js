@@ -288,10 +288,18 @@ const HomeScreen = ({ route }) => {
         <View style={styles.requirementSection}>
           <Text style={styles.requirementText}>{requirement.Description}</Text>
           <TouchableOpacity 
-            style={styles.acknowledgeButton} 
-            onPress={() => handleAcknowledgeClick(requirement)}>
-            <Text style={styles.acknowledgeText}>Acknowledge</Text>
-          </TouchableOpacity>
+  style={[
+    styles.acknowledgeButton, 
+    requirement.IsAcknowledged === 1 ? styles.disabledButton : null
+  ]}
+  onPress={() => handleAcknowledgeClick(requirement)}
+  disabled={requirement.IsAcknowledged === 1}
+>
+  <Text style={styles.buttonText1}>
+    {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
+  </Text>
+</TouchableOpacity>
+
         </View>
       </View>
     ))}
@@ -302,7 +310,6 @@ const HomeScreen = ({ route }) => {
   </View>
 )}
         </View>
-
         {/* ===================================Reviews================================== */}
         
         <View style={styles.cards}>
@@ -326,8 +333,7 @@ const HomeScreen = ({ route }) => {
       <Text style={styles.addButtonText}>Write a Review</Text>
     </View>
   </TouchableOpacity>
-</View>
-          
+</View>    
           <View>
             <Text style={styles.line}>
             ____________________________
@@ -438,36 +444,3 @@ export default function TabViewExample({ navigation }) {
     />
   );
 }
-
-
-
-// app.post('/api/Preattendance', async (req, res) => {
-//   const { UserId, LocationID, SlotID, EventId } = req.body;
-//   let connection;
-//   try {
-//     connection = await pool.getConnection();
-//     await connection.beginTransaction();
-//     const PreAttendquery = `
-//       INSERT INTO tblattendance 
-//       (UserId, LocationID, InTime, OutTime, AttendanceTypeID, RatingId, SlotID, EventId, PreDateTime, IsConfirmed) 
-//       VALUES (?, ?, NULL, NULL, 2, NULL, ?, ?, NOW(), 1)
-//     `;
-//     const PreAttendValues = [UserId, LocationID, SlotID, EventId];
-//     await connection.query(PreAttendquery, PreAttendValues);
-    
-//     const PreRatingQuery = `
-//       INSERT INTO tblratingdetail (UserId, DateTime, Stars, Profession, RatingId) 
-//       VALUES (?, NOW(), 0, ?, 6)
-//     `;
-//     const PreRatingValues = [UserId, "Profession"];
-//     await connection.query(PreRatingQuery, PreRatingValues);
-//     await connection.commit();
-//     res.status(200).json({ message: 'Attendance and rating record inserted successfully' });
-//   } catch (error) {
-//     if (connection) await connection.rollback();
-//     console.error('Error inserting attendance or rating record:', error);
-//     res.status(500).json({ error: 'Failed to insert attendance or rating record' });
-//   } finally {
-//     if (connection) connection.release();
-//   }
-// });

@@ -106,11 +106,25 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 5,
     },
+    disabledButton: {
+      backgroundColor: '#B0B0B0',
+      opacity: 0.6,
+    },
     buttonText: {
       color: '#a3238f',
       marginLeft: 5,
       fontSize: 14,
     },
+    buttonText1: {
+      color: 'white',
+      marginLeft: 5,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    disabledButton: {
+      backgroundColor: '#B0B0B0',
+      opacity: 0.6,
+    },    
     headerContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',

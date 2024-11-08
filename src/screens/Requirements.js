@@ -74,7 +74,6 @@ const Requirements = ({ route }) => {
       UserId: userId,
       LocationID: businessInfo.LocationID, 
       Slots: chapterType,
-      Profession: businessName,
       Description: requirement.trim(),
       Member: selectedMember || null,
     };
