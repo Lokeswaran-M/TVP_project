@@ -7,6 +7,7 @@ import { setUser } from '../Redux/action';
 import { API_BASE_URL } from '../constants/Config';
 import DeviceInfo from 'react-native-device-info';
 import { RadioButton } from 'react-native-paper'; 
+import messaging from '@react-native-firebase/messaging';
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -140,6 +141,8 @@ const LoginScreen = ({ navigation }) => {
         console.log('Device ID:', deviceId);
         const deviceName = await DeviceInfo.getDeviceName();
         console.log('Device Name:', deviceName);
+        const FCMtoken = await messaging().getToken();
+  console.log('FCM Token:=============================', FCMtoken);
         const deviceResponse = await fetch(`${API_BASE_URL}/login`, { 
           method: 'POST',
           headers: {
@@ -151,10 +154,12 @@ const LoginScreen = ({ navigation }) => {
             logintype,
             deviceId,
             deviceName,
+            FCMtoken,
           }),
         });
   
         const deviceResult = await deviceResponse.json();
+        console.log('Device Result:', deviceResult); 
         if (deviceResponse.ok) {
           console.log('Device info saved successfully.');
         } else {

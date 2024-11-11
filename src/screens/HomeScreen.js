@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text,TouchableOpacity,useWindowDimensions,Alert, ActivityIndicator, ScrollView,Image,} from 'react-native';
+import { View, Text,TouchableOpacity,useWindowDimensions,Alert, ActivityIndicator, ScrollView,Image,PermissionsAndroid} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
+import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
@@ -21,16 +23,16 @@ const HomeScreen = ({ route }) => {
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [requirementsError, setRequirementsError] = useState(null);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(false);
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
       const locationId = route.params.locationId;
       const slots = chapterType;
       console.log("Requesting Requirements with params:", { locationId, slots, userId });
-
       const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
       const data = await response.json();
-
+      console.log("Data in the Requirements------------------------------",data);
       if (response.ok) {
         console.log("Requirements Data received:", data);
         setRequirementsData(data);
@@ -58,7 +60,15 @@ const HomeScreen = ({ route }) => {
       console.error(`Error fetching profile image for UserId ${userId}:`, error);
     }
   };
+  const requestNotificationPermissions = () => {
+    messaging().requestPermission()
+  .then(authStatus => {
+    console.log('Permission status:', authStatus);
+  })
+  .catch(error => console.error('Permission request failed:', error));
+  };
   useEffect(() => {
+    requestNotificationPermissions();
     if (requirementsData.length > 0) {
       requirementsData.forEach((requirement) => {
         fetchProfileImage(requirement.UserId);
@@ -132,33 +142,61 @@ const HomeScreen = ({ route }) => {
       Alert.alert('Error', 'Network or server issue. Please try again later.');
     }
   };
-const handleAcknowledgeClick = async (requirement) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/requirements`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: userId,
-        acknowledgedUserId: requirement.UserId,
-        LocationID: route.params.locationId,
-        Slots: chapterType,
-        Id: requirement.Id,
-      }),
-    });
-    const data = await response.json();
-    console.log("Data in updating the acknowledge-----------------",data);
-    if (response.ok) {
-      Alert.alert('Success', 'Requirement acknowledged successfully');
-      refreshRequirements();
-    } else {
-      Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
+  const handleAcknowledgeClick = async (requirement) => {
+    try {
+      // Send acknowledgement to the server first
+      const response = await fetch(`${API_BASE_URL}/requirements`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          acknowledgedUserId: requirement.UserId,
+          LocationID: route.params.locationId,
+          Slots: chapterType,
+          Id: requirement.Id,
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Alert.alert('Success', 'Requirement acknowledged successfully');
+        refreshRequirements();
+        const acknowledgeResponse = await fetch(`${API_BASE_URL}/acknowledge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            acknowledgedBy: userId,
+            Username: requirement.Username,
+            userId: requirement.UserId,
+          }),
+        });
+  
+        const acknowledgeData = await acknowledgeResponse.json();
+        console.log("Acknowledge Data-----------------------------",acknowledgeData);
+        if (acknowledgeResponse.ok) {
+          console.log('Acknowledgement and notification sent successfully');
+          PushNotification.localNotification({
+            channelId: 'acknowledgement-channel',
+            title: 'New Acknowledgement',
+            message: 'You have a new acknowledgement!',
+            playSound: true,
+            soundName: 'default',
+            vibrate: true,
+            vibration: 300,
+          });
+          
+        } else {
+          console.error('Error sending acknowledgement notification:', acknowledgeData.error);
+        }
+      } else {
+        Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
+      }
+    } catch (error) {
+      console.error('Acknowledge Error:', error);
+      Alert.alert('Error', 'Network or server issue');
     }
-  } catch (error) {
-    console.error("Acknowledge Error:", error);
-    Alert.alert('Error', 'Network or server issue');
-  }
-};
-
+  };       
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -189,7 +227,6 @@ const handleAcknowledgeClick = async (requirement) => {
         <View style={styles.cards}>
         <View style={styles.dashboardContainer}>
   <Text style={styles.dashboardTitle}>Dashboard</Text>
-
   <TouchableOpacity onPress={() => setShowAllEvents(!showAllEvents)}>
     <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
   </TouchableOpacity>
@@ -268,7 +305,6 @@ const handleAcknowledgeClick = async (requirement) => {
     </View>
   </TouchableOpacity>
 </View>
-          
           <View>
             <Text style={styles.line}>
               ____________________________
@@ -299,7 +335,6 @@ const handleAcknowledgeClick = async (requirement) => {
     {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
   </Text>
 </TouchableOpacity>
-
         </View>
       </View>
     ))}
@@ -311,7 +346,6 @@ const handleAcknowledgeClick = async (requirement) => {
 )}
         </View>
         {/* ===================================Reviews================================== */}
-        
         <View style={styles.cards}>
         <View style={styles.header}>
         <View style={styles.headerRow}>
