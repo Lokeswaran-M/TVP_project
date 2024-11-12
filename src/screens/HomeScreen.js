@@ -144,11 +144,11 @@ const HomeScreen = ({ route }) => {
   };
   const handleAcknowledgeClick = async (requirement) => {
     try {
-      // Send acknowledgement to the server first
       const response = await fetch(`${API_BASE_URL}/requirements`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          Id: requirement.Id,
           userId: userId,
           acknowledgedUserId: requirement.UserId,
           LocationID: route.params.locationId,
