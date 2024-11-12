@@ -97,12 +97,12 @@ const Profile = () => {
                 style={styles.image}
               />
               {categoryID === 2 && (
-      <View style={styles.editIconWrapper}>
+       <View style={styles.editIconWrapper}>
         <Image 
           source={sunmoon} 
           style={{ width: 25, height: 25 }} 
         />
-      </View>
+       </View>
     )}
             </View>
           )}

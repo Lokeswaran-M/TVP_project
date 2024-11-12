@@ -35,7 +35,6 @@ const MemberDetails = () => {
         Alert.alert('Error', 'Unable to fetch business info. Please try again.');
       }
     };
-
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
@@ -49,14 +48,19 @@ const MemberDetails = () => {
         } else {
           setOverallAverage(0);
         }
+        const profileImageResponse = await fetch(
+          `${API_BASE_URL}/profile-image?userId=${userId}`
+        );
+        if (!profileImageResponse.ok) throw new Error('Failed to fetch profile image');
+        const imageData = await profileImageResponse.json();
+        setProfileImageUrl(imageData.imageUrl);
       } catch (error) {
-        console.error('Error fetching user details:', error);
-        Alert.alert('Error', 'Unable to fetch user details. Please try again.');
+        console.error('Error fetching user details or profile image:', error);
+        Alert.alert('Error', 'Unable to fetch user details or profile image. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
     if (AdminUserID) {
       fetchBusinessInfo();
       fetchUserDetails();
@@ -219,43 +223,3 @@ const MemberDetails = () => {
   );
 };
 export default MemberDetails;
-
-
-
-
-// app.get('/api/user/Admin-info/:userId', async (req, res) => {
-//   const { userId } = req.params;
-//   console.log("UserID business info------------", userId);
-//   if (!userId) {
-//     return res.status(400).json({ message: 'User ID is required.' });
-//   }
-//   let connection;
-//   try {
-//     connection = await pool.getConnection(); 
-//     await connection.beginTransaction();
-    
-//     const businessQuery = `
-//       SELECT 
-//         U.Username,
-//         U.RollId
-//       FROM
-//         tbluser AS U
-//       WHERE
-//         U.UserId = ?
-//     `;
-//     const businessValues = [userId];
-//     const [rows] = await connection.query(businessQuery, businessValues);
-//     await connection.commit();
-//     if (rows.length === 0) {
-//       return res.status(404).json({ message: 'Profile not found.' });
-//     }
-//     res.status(200).json(rows[0]);
-
-//   } catch (error) {
-//     if (connection) await connection.rollback();
-//     console.error('Database error:', error);
-//     res.status(500).json({ error: 'Profile display failed. Please try again later.' });
-//   } finally {
-//     if (connection) connection.release(); 
-//   }
-// });

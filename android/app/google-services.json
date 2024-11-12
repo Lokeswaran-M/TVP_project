@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "124524699503",
+    "project_id": "businessmastersofworld",
+    "storage_bucket": "businessmastersofworld.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124524699503:android:4a3c5de71b95fbd1cc129a",
+        "android_client_info": {
+          "package_name": "com.bmw_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLiiBj1yncgqry9arF0R5aKkdXFEEuumw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

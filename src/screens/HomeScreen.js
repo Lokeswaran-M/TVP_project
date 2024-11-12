@@ -1,52 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  Alert,
-  ActivityIndicator,
-  ScrollView,
-  Image,
-} from 'react-native';
+import { View, Text,TouchableOpacity,useWindowDimensions,Alert, ActivityIndicator, ScrollView,Image,PermissionsAndroid} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
-
+import firebase from '@react-native-firebase/app';
+import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
   const { chapterType } = route.params;
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState({});
   const [eventData, setEventData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAllEvents, setShowAllEvents] = useState(false);
   const [profileImages, setProfileImages] = useState({});
   const [requirementsData, setRequirementsData] = useState([]);
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [requirementsError, setRequirementsError] = useState(null);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
-
-  const API_URL = `${API_BASE_URL}/getUpcomingEvents?userId=${userId}`;
-  const ATTENDANCE_API_URL = `${API_BASE_URL}/api/Preattendance`;
-
+  const [notificationPermission, setNotificationPermission] = useState(false);
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
       const locationId = route.params.locationId;
       const slots = chapterType;
+      console.log("Requesting Requirements with params:", { locationId, slots, userId });
       const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
       const data = await response.json();
-
+      console.log("Data in the Requirements------------------------------",data);
       if (response.ok) {
+        console.log("Requirements Data received:", data);
         setRequirementsData(data);
       } else {
+        console.error("Requirements Error:", data.error);
         setRequirementsError(data.error);
       }
     } catch (err) {
+      console.error("Failed to refresh requirements:", err);
       setRequirementsError('Failed to refresh requirements');
     } finally {
       setRequirementsLoading(false);
@@ -65,7 +60,15 @@ const HomeScreen = ({ route }) => {
       console.error(`Error fetching profile image for UserId ${userId}:`, error);
     }
   };
+  const requestNotificationPermissions = () => {
+    messaging().requestPermission()
+  .then(authStatus => {
+    console.log('Permission status:', authStatus);
+  })
+  .catch(error => console.error('Permission request failed:', error));
+  };
   useEffect(() => {
+    requestNotificationPermissions();
     if (requirementsData.length > 0) {
       requirementsData.forEach((requirement) => {
         fetchProfileImage(requirement.UserId);
@@ -75,26 +78,31 @@ const HomeScreen = ({ route }) => {
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        const response = await fetch(API_URL);
+        const locationId = route.params.locationId;
+        const slots = chapterType;
+        console.log("LocationID for getUpcomingEvents-------------------", locationId);
+        console.log("Slots for getUpcomingEvents-------------------------", slots);
+        const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
         const data = await response.json();
-        console.log("Data in the upcoming business meetup getUpcomingEvents--------------------------",data);
-
+        console.log("Data in the get Upcoming events---------------------------------###############################",data);
         if (response.ok) {
-          setEventData(data.events[0]);
+          setEventData(data.events);
         } else {
           setError(data.error);
         }
       } catch (err) {
+        console.error("Error fetching data", err);
         setError('Failed to fetch data');
       } finally {
         setLoading(false);
       }
-    };
-
+    };    
     const fetchRequirementsData = async () => {
       try {
         const locationId = route.params.locationId;
         const slots = chapterType;
+        console.log("LocationID-------------------",locationId);
+        console.log("Slots -------------------------",slots);
 
         const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
         const data = await response.json();
@@ -111,59 +119,36 @@ const HomeScreen = ({ route }) => {
         setRequirementsLoading(false);
       }
     };
-
     fetchEventData();
     fetchRequirementsData();
   }, [userId, route.params.locationId]);
-
-  const handleConfirmClick = async () => {
-    setIsConfirmed(true);
-    if (!eventData) {
-        Alert.alert('Error', 'No event data available');
-        return;
-    }
-
+  const handleConfirmClick = async (eventId, locationId, slotId) => {
+    setIsConfirmed((prevState) => ({ ...prevState, [eventId]: true }));
     try {
-        const response = await fetch(ATTENDANCE_API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                UserId: userId,
-                LocationID: eventData.LocationID,
-                SlotID: eventData.SlotID,
-                EventId: eventData.EventId,
-            }),
-        });
-        const rawResponse = await response.text();
-        console.log("Raw Response:", rawResponse);
-        if (!response.ok) {
-            try {
-                const errorData = JSON.parse(rawResponse);
-                Alert.alert('Error', errorData.error || 'Failed to confirm attendance');
-            } catch (jsonError) {
-                Alert.alert('Error', 'Failed to parse server response');
-            }
-            return;
-        }
-        const data = JSON.parse(rawResponse);
-        console.log("Data for confirm:", data);
-        Alert.alert('Success', 'Attendance confirmed successfully');
+      const response = await fetch(`${API_BASE_URL}/api/Preattendance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ UserId: userId, LocationID: locationId, SlotID: slotId, EventId: eventId }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Attendance confirmed successfully")
+        // Alert.alert('Success', 'Attendance confirmed successfully');
+      } else {
+        Alert.alert('Error', data.error || 'Failed to confirm attendance');
+      }
     } catch (error) {
-        console.error("Network or server error:", error);
-        Alert.alert('Error', 'Network or server issue. Please try again later.');
+      console.error("Network or server error:", error);
+      Alert.alert('Error', 'Network or server issue. Please try again later.');
     }
-};
-
+  };
   const handleAcknowledgeClick = async (requirement) => {
     try {
       const response = await fetch(`${API_BASE_URL}/requirements`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          Id: requirement.Id,
           userId: userId,
           acknowledgedUserId: requirement.UserId,
           LocationID: route.params.locationId,
@@ -171,25 +156,50 @@ const HomeScreen = ({ route }) => {
           Id: requirement.Id,
         }),
       });
+  
       const data = await response.json();
-      console.log("Data for ack------------------------------", data);
   
       if (response.ok) {
         Alert.alert('Success', 'Requirement acknowledged successfully');
         refreshRequirements();
+        const acknowledgeResponse = await fetch(`${API_BASE_URL}/acknowledge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            acknowledgedBy: userId,
+            Username: requirement.Username,
+            userId: requirement.UserId,
+          }),
+        });
+  
+        const acknowledgeData = await acknowledgeResponse.json();
+        console.log("Acknowledge Data-----------------------------",acknowledgeData);
+        if (acknowledgeResponse.ok) {
+          console.log('Acknowledgement and notification sent successfully');
+          PushNotification.localNotification({
+            channelId: 'acknowledgement-channel',
+            title: 'New Acknowledgement',
+            message: 'You have a new acknowledgement!',
+            playSound: true,
+            soundName: 'default',
+            vibrate: true,
+            vibration: 300,
+          });
+          
+        } else {
+          console.error('Error sending acknowledgement notification:', acknowledgeData.error);
+        }
       } else {
         Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
       }
     } catch (error) {
-      console.error("Acknowledge Error:", error);
+      console.error('Acknowledge Error:', error);
       Alert.alert('Error', 'Network or server issue');
     }
-  };
-    
+  };       
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-
   if (error) {
     return (
       <View style={styles.errorContainer}>
@@ -197,7 +207,6 @@ const HomeScreen = ({ route }) => {
       </View>
     );
   }
-
   if (requirementsError) {
     return (
       <View style={styles.errorContainer}>
@@ -205,7 +214,6 @@ const HomeScreen = ({ route }) => {
       </View>
     );
   }
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -217,46 +225,64 @@ const HomeScreen = ({ route }) => {
         </View>
         {/* =======================Meetings=========================== */}
         <View style={styles.cards}>
-          <Text style={styles.dashboardTitle}>Dashboard</Text>
-
-          {eventData ? (
-            <View style={styles.meetupCard}>
-              <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
-              <View style={styles.row}>
-                <Icon name="calendar" size={18} color="#6C757D" />
-                <Text style={styles.meetupInfo}>
-                  {new Date(eventData.DateTime).toLocaleDateString()}
-                </Text>
-                <Icon name="clock-o" size={18} color="#6C757D" />
-                <Text style={styles.meetupInfo}>
-                  {new Date(eventData.DateTime).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
+        <View style={styles.dashboardContainer}>
+  <Text style={styles.dashboardTitle}>Dashboard</Text>
+  <TouchableOpacity onPress={() => setShowAllEvents(!showAllEvents)}>
+    <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+  </TouchableOpacity>
+</View>
+          {eventData.length > 0 ? (
+            eventData.slice(0, showAllEvents ? eventData.length : 1).map((event, index) => (
+              <View key={event.EventId} style={styles.meetupCard}>
+                <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
+                <View style={styles.row}>
+                  <Icon name="calendar" size={18} color="#6C757D" />
+                  <Text style={styles.meetupInfo}>
+  {new Date(event.DateTime).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })}
+</Text>
+                  <Icon name="clock-o" size={18} color="#6C757D" />
+                  <Text style={styles.meetupInfo}>
+                    {new Date(event.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+                <View style={styles.row}>
+  <Icon name="map-marker" size={18} color="#6C757D" />
+  <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
+</View>
+                <View style={styles.buttonRow}>
+                <TouchableOpacity
+  style={[
+    styles.confirmButton,
+    isConfirmed[event.EventId] ? styles.disabledButton : null,
+  ]}
+  onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
+  disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
+>
+  <Icon
+    name="check-circle"
+    size={24}
+    color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
+  />
+  <Text style={styles.buttonText}>
+    {isConfirmed[event.EventId] || event.Isconfirm === 1
+      ? "Confirmed"
+      : "Click to Confirm"}
+  </Text>
+</TouchableOpacity>
+</View>
               </View>
-
-              <View style={styles.row}>
-                <Icon name="map-marker" size={18} color="#6C757D" />
-                <Text style={styles.locationText}>{eventData.Place || 'Unknown Location'}</Text>
-              </View>
-
-              <View style={styles.buttonRow}>
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmClick}>
-        <Icon name="check-circle" size={24} color="#28A745" />
-        <Text style={styles.buttonText}>{isConfirmed ? "Confirmed" : "Click to Confirm"}</Text>
-      </TouchableOpacity>
-    </View>
-            </View>
+            ))
           ) : (
             <View style={styles.noMeetupCard}>
               <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
             </View>
           )}
         </View>
-
         {/* ===============================Requirements=============================== */}
-
         <View style={styles.cards}>
         <View style={styles.header}>
         <View style={styles.headerRow}>
@@ -279,7 +305,6 @@ const HomeScreen = ({ route }) => {
     </View>
   </TouchableOpacity>
 </View>
-          
           <View>
             <Text style={styles.line}>
               ____________________________
@@ -299,10 +324,17 @@ const HomeScreen = ({ route }) => {
         <View style={styles.requirementSection}>
           <Text style={styles.requirementText}>{requirement.Description}</Text>
           <TouchableOpacity 
-            style={styles.acknowledgeButton} 
-            onPress={() => handleAcknowledgeClick(requirement)}>
-            <Text style={styles.acknowledgeText}>Acknowledge</Text>
-          </TouchableOpacity>
+  style={[
+    styles.acknowledgeButton, 
+    requirement.IsAcknowledged === 1 ? styles.disabledButton : null
+  ]}
+  onPress={() => handleAcknowledgeClick(requirement)}
+  disabled={requirement.IsAcknowledged === 1}
+>
+  <Text style={styles.buttonText1}>
+    {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
+  </Text>
+</TouchableOpacity>
         </View>
       </View>
     ))}
@@ -313,9 +345,7 @@ const HomeScreen = ({ route }) => {
   </View>
 )}
         </View>
-
         {/* ===================================Reviews================================== */}
-        
         <View style={styles.cards}>
         <View style={styles.header}>
         <View style={styles.headerRow}>
@@ -337,8 +367,7 @@ const HomeScreen = ({ route }) => {
       <Text style={styles.addButtonText}>Write a Review</Text>
     </View>
   </TouchableOpacity>
-</View>
-          
+</View>    
           <View>
             <Text style={styles.line}>
             ____________________________

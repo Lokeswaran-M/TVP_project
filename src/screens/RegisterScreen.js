@@ -160,7 +160,7 @@ const handlelocationChange = (selectedLocation) => {
         setUsernameError('Invalid response from server');
       }
     } catch (err) {
-      console.error('Error:', err);
+      // console.error('Error:', err);
       setUsernameError('Error validating username');
       isValid = false;
     }          

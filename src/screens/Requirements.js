@@ -7,6 +7,7 @@ import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
 const Requirements = ({ route }) => {
   const { businessName, locationId, chapterType } = route.params;
+  console.log("Chapter type in Requirements--------------------",chapterType);
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
   const [businessInfo, setBusinessInfo] = useState(null);
@@ -72,8 +73,7 @@ const Requirements = ({ route }) => {
     const requestData = {
       UserId: userId,
       LocationID: businessInfo.LocationID, 
-      Slots: 1,
-      Profession: businessName,
+      Slots: chapterType,
       Description: requirement.trim(),
       Member: selectedMember || null,
     };
