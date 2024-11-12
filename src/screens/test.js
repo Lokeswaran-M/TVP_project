@@ -1,4 +1,236 @@
-const handleRegister = async () => { 
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions,ScrollView } from 'react-native';
+import { API_BASE_URL } from '../constants/Config';
+import { TabView, TabBar } from 'react-native-tab-view';
+import { useSelector } from 'react-redux';
+import { launchCamera } from 'react-native-image-picker';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import styles from '../components/layout/MembersStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// TabContent Component - Displays list of members, photo upload functionality
+const TabContent = ({ chapterType, locationId, navigation }) => {
+  const userId = useSelector((state) => state.user?.userId);
+  console.log('---------------data userid--------------', userId);
+
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMeetId, setSelectedMeetId] = useState(null); // Store the MeetId of the selected member
+
+  // Fetching members data
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        console.log('Fetching members...');
+        const response = await fetch(`${API_BASE_URL}/list-members`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ LocationID: locationId, chapterType, userId }),
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch members');
+
+        const data = await response.json();
+        console.log('----------------------------------member data=------------------', data);
+
+        const updatedMembers = await Promise.all(data.members.map(async (member) => {
+          let totalStars = 0;
+          if (member.ratings?.length > 0) {
+            totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
+            member.totalAverage = totalStars / member.ratings.length;
+          } else {
+            member.totalAverage = 0;
+          }
+
+          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+          } else {
+            member.profileImage = null;
+          }
+
+          return member;
+        }));
+
+        setMembers(updatedMembers);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, [chapterType, locationId, userId]);
+
+  const filteredMembers = members.filter((member) =>
+    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Handle selecting a member and setting their MeetId
+  const handleMemberClick = (member) => {
+    const meetId = member.UserId; // Using the member's UserId as MeetId
+    setSelectedMeetId(meetId);
+    console.log('Selected MeetId:', meetId);
+    // You can also navigate to a new screen or show details here
+  };
+
+  // Insert meeting data
+  const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: photoUri,
+        type: 'image/jpeg',
+        // name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
+      });
+      // formData.append('UserId', userId);
+      formData.append('MeetId', meetId); 
+      formData.append('SlotID', chapterType);  
+      formData.append('LocationID', locationId);
+
+      console.log('==================fromdat===============', formData);
+      const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      const result = await uploadResponse.json();
+      // console.log("Data in the frontend:", result);
+
+      if (result.message === 'Member details and image uploaded successfully!') {
+        Alert.alert('Success', 'Photo and data uploaded successfully');
+        console.log('Data Inserted:', result);
+        // Handle successful upload here (e.g., update UI or navigate)
+      } else {
+        Alert.alert('Error', 'Photo and data upload failed');
+      }
+    } catch (error) {
+      console.error('Error during upload:', error);
+      Alert.alert('Error', 'Something went wrong while uploading data');
+    }
+  };
+
+  // Open camera to take a photo
+  const openCamera = () => {
+    const options = { mediaType: 'photo', cameraType: 'front' };
+    launchCamera(options, async (response) => {
+      if (response.didCancel || response.errorCode) return;
+      const photoUri = response.assets[0].uri; // Get the URI of the taken photo
+      if (selectedMeetId) {
+        await insertMeetingData(userId, selectedMeetId, chapterType, locationId, photoUri);
+      } else {
+        Alert.alert('Error', 'Please select a member first.');
+      }
+    });
+  };
+
+  const renderItem = ({ item }) => (
+  <View>
+    <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
+      <View style={styles.memberDetails}>
+        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+        <View style={styles.memberText}>
+          <Text style={styles.memberName}>{item.Username}</Text>
+          <Text style={styles.memberRole}>{item.Profession}</Text>
+        </View>
+      </View>
+      <View style={styles.alarmContainer}>
+        <TouchableOpacity onPress={openCamera}>
+          <Icon name="camera" size={24} color="#A3238F" />
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  </View>
+  
+    
+
+  );
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search members..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="black"
+          color="#A3238F"
+        />
+        <View style={styles.searchIconContainer}>
+          <Icon name="search" size={23} color="#A3238F" />
+        </View>
+      </View>
+  
+      {/* FlatList - Scrollable List of Members */}
+      <ScrollView style={{ flex: 1 }}>
+        <FlatList
+          data={filteredMembers}
+          keyExtractor={(item) => item.UserId.toString()}
+          contentContainerStyle={styles.memberList}
+          renderItem={renderItem}
+        />
+      </ScrollView>
+    </View>
+  );
+  
+}; 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ const handleRegister = async () => { 
     // Resetting validation errors
     setUsernameError('');
     setPasswordError('');

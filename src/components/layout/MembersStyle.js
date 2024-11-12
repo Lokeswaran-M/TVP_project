@@ -265,13 +265,17 @@ const styles = StyleSheet.create({
        alignItems:'center',
 
     },
+    buttoncon:{
+  
+    },
     button: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: '#A3238F',
-      paddingVertical: 15,
-      paddingHorizontal: 30,
+      justifyContent:'center',
       borderRadius: 10,
+      paddingVertical:10,
+      marginHorizontal:90,
     },
     icon: {
       marginRight: 10,

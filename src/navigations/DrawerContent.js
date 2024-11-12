@@ -97,7 +97,7 @@ const CustomDrawerContent = (props) => {
         },
         body: formData,
       });
-
+// f
       const data = await response.json();
       console.log("Data in the uploaded Profile--------------------",data);
       if (data.newFilePath) {

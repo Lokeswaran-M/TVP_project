@@ -1,221 +1,403 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { API_BASE_URL } from '../constants/Config';
+
 const HeadAdminPostPage = () => {
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchPhotos = async () => {
+    setRefreshing(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/get-meeting-photos`);
+      const data = await response.json();
+
+      if (data.success) {
+        const sortedPhotos = data.files.sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp));
+        
+        const photosWithProfileData = await Promise.all(
+          sortedPhotos.map(async (item) => {
+            const filename = item.imageUrl.split('/').pop();
+            const userId = filename.split('_')[0];
+
+            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+            const profileData = await profileResponse.json();
+
+            const usernameResponse = await fetch(`${API_BASE_URL}/post-username?userId=${userId}`);
+            const usernameData = await usernameResponse.json();
+
+            return { 
+              ...item, 
+              profileImage: profileData.imageUrl, 
+              username: usernameData.username || userId
+            };
+          })
+        );
+
+        setPhotos(photosWithProfileData);
+      } else {
+        throw new Error(data.error || 'Failed to fetch photos.');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPhotos();
+  }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchPhotos();
+  };
+
+  if (loading && !refreshing) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#A3238F" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.postContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.profileContainer}>
+            <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+            <Text style={styles.profileName}>{item.username}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Image 
+          source={{ uri: `${API_BASE_URL}${item.imageUrl}` }} 
+          style={styles.postImage} 
+          resizeMode="cover" 
+        />
+
+        <View style={styles.captionContainer}>
+          <Text style={styles.caption}>
+            <Text style={styles.profileName}>{item.username || userId} </Text>
+            {item.chapterType ? `| ${item.chapterType}` : ''} 
+            {item.locationId ? ` | ${item.locationId}` : ''} 
+            {item.date ? ` | ${item.date}` : ''}
+          </Text>
+        </View>
+
+        {item.timeStamp ? <Text style={styles.timestamp}>{item.timeStamp}</Text> : null}
+      </View>
+    );
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-
-      <View style={styles.header}>
-        <View style={styles.profileContainer}>
-          <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.profileImage} />
-          <Text style={styles.profileName}>Lokeswaran</Text>
-        </View>
-        <TouchableOpacity>
-          <MaterialIcons name="more-vert" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Post Image */}
-      <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.postImage} />
-
-      {/* Interaction Icons */}
-      {/* <View style={styles.iconContainer}>
-        <View style={styles.leftIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="heart-o" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="comment-o" size={24} color="black" />
-          </TouchableOpacity> 
-          <TouchableOpacity style={styles.iconButton}>
-            <MaterialIcons name="send" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-         <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="bookmark-o" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Like Count
-      <Text style={styles.likeCount}>1,234 likes</Text> */}
-
-      {/* Caption */}
-      <View style={styles.captionContainer}>
-        <Text style={styles.profileName}>Review: </Text>
-        <Text style={styles.caption}>This is the caption of the post with some hashtags </Text>
-      </View>
-
-      
-      {/* <TouchableOpacity>
-        <Text style={styles.viewComments}>View all 12 comments</Text>
-      </TouchableOpacity> */}
-
-      {/* Timestamp */}
-      <Text style={styles.timestamp}>2 hours ago</Text>
-      <View style={styles.header}>
-        <View style={styles.profileContainer}>
-          <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.profileImage} />
-          <Text style={styles.profileName}>Lokeswaran</Text>
-        </View>
-        <TouchableOpacity>
-          <MaterialIcons name="more-vert" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Post Image */}
-      <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.postImage} />
-
-      {/* Interaction Icons */}
-      {/* <View style={styles.iconContainer}>
-        <View style={styles.leftIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="heart-o" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="comment-o" size={24} color="black" />
-          </TouchableOpacity> 
-          <TouchableOpacity style={styles.iconButton}>
-            <MaterialIcons name="send" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-         <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="bookmark-o" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Like Count
-      <Text style={styles.likeCount}>1,234 likes</Text> */}
-
-      {/* Caption */}
-      <View style={styles.captionContainer}>
-        <Text style={styles.profileName}>Review: </Text>
-        <Text style={styles.caption}>This is the caption of the post with some hashtags </Text>
-      </View>
-
-      
-      {/* <TouchableOpacity>
-        <Text style={styles.viewComments}>View all 12 comments</Text>
-      </TouchableOpacity> */}
-
-      {/* Timestamp */}
-      <Text style={styles.timestamp}>2 hours ago</Text>
-      <View style={styles.header}>
-        <View style={styles.profileContainer}>
-          <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.profileImage} />
-          <Text style={styles.profileName}>Lokeswaran</Text>
-        </View>
-        <TouchableOpacity>
-          <MaterialIcons name="more-vert" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Post Image */}
-      <Image source={{ uri: 'https://w0.peakpx.com/wallpaper/319/554/HD-wallpaper-anime-school-girl-anime-landscape-clouds-scenic-summer-anime.jpg' }} style={styles.postImage} />
-
-      {/* Interaction Icons */}
-      {/* <View style={styles.iconContainer}>
-        <View style={styles.leftIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="heart-o" size={24} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="comment-o" size={24} color="black" />
-          </TouchableOpacity> 
-          <TouchableOpacity style={styles.iconButton}>
-            <MaterialIcons name="send" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-         <TouchableOpacity style={styles.iconButton}>
-          <FontAwesome name="bookmark-o" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
-
-      {/* Like Count
-      <Text style={styles.likeCount}>1,234 likes</Text> */}
-
-      {/* Caption */}
-      <View style={styles.captionContainer}>
-        <Text style={styles.profileName}>Review: </Text>
-        <Text style={styles.caption}>This is the caption of the post with some hashtags </Text>
-      </View>
-
-      
-      {/* <TouchableOpacity>
-        <Text style={styles.viewComments}>View all 12 comments</Text>
-      </TouchableOpacity> */}
-
-      {/* Timestamp */}
-      <Text style={styles.timestamp}>2 hours ago</Text>
-
-    </ScrollView>
+    <FlatList
+      data={photos}
+      renderItem={renderItem}
+      keyExtractor={(item, index) => index.toString()}
+      contentContainerStyle={styles.gridContainer}
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  loaderContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+  },
+  gridContainer: {
+    padding: 10,
+    backgroundColor: '#fff',
+  },
+  postContainer: {
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 10,
-    backgroundColor:'#ffffff',
   },
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-   
   },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
   },
   profileName: {
-    fontWeight: 'bold',
+    marginLeft: 10,
     fontSize: 16,
-    color:'#A3238F',
+    fontWeight: 'bold',
+    color: '#333',
   },
   postImage: {
     width: '100%',
-    height: 400,
+    height: 300,
+    borderRadius: 10,
   },
-  iconContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  leftIcons: {
-    flexDirection: 'row',
-  },
-  iconButton: {
-    marginRight: 15,
-  },
-
   captionContainer: {
-    flexDirection: 'row',
     paddingHorizontal: 10,
     paddingTop: 5,
   },
   caption: {
     fontSize: 14,
-    flex: 1,
+    color: '#333',
   },
-
   timestamp: {
-    color: 'gray',
-    marginLeft: 10,
     fontSize: 12,
-    paddingBottom: 10,
-    marginBottom:15,
+    color: '#888',
+    paddingHorizontal: 10,
+    paddingTop: 5,
   },
 });
 
 export default HeadAdminPostPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+// import { API_BASE_URL } from '../constants/Config';
+
+// const HeadAdminPostPage = () => {
+//   const [photos, setPhotos] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   // Fetch photos and profile images from the API
+//   const fetchPhotos = async () => {
+//     setRefreshing(true);
+//     try {
+//       const response = await fetch(`${API_BASE_URL}/get-meeting-photos`);
+//       const data = await response.json();
+
+//       if (data.success) {
+//         // Sort the photos array by timestamp in descending order
+//         const sortedPhotos = data.files.sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp));
+        
+//         // Fetch profile image URLs for each user
+//         const photosWithProfileImage = await Promise.all(
+//           sortedPhotos.map(async (item) => {
+//             const filename = item.imageUrl.split('/').pop();
+//             // Extract UserId from photo filename
+//             const userId = filename.split('_')[0];
+//             console.log('-------------------userId------------', userId);
+
+//             // Fetch profile image
+//             const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+//             const profileData = await profileResponse.json();
+
+//             return { ...item, profileImage: profileData.imageUrl }; // Add profileImage URL to each photo
+//           })
+//         );
+
+//         setPhotos(photosWithProfileImage);
+//       } else {
+//         throw new Error(data.error || 'Failed to fetch photos.');
+//       }
+//     } catch (err) {
+//       setError(err.message);
+//     } finally {
+//       setLoading(false);
+//       setRefreshing(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchPhotos();
+//   }, []);
+
+//   // Pull-to-refresh handler
+//   const handleRefresh = () => {
+//     setRefreshing(true);
+//     fetchPhotos();
+//   };
+
+//   if (loading && !refreshing) {
+//     return (
+//       <View style={styles.loaderContainer}>
+//         <ActivityIndicator size="large" color="#A3238F" />
+//       </View>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <View style={styles.errorContainer}>
+//         <Text style={styles.errorText}>{error}</Text>
+//       </View>
+//     );
+//   }
+
+//   const renderItem = ({ item }) => {
+//     const filename = item.imageUrl.split('/').pop();
+//     const userId = filename.split('_')[0];
+
+//     return (
+//       <View style={styles.postContainer}>
+//         {/* Post Header */}
+//         <View style={styles.header}>
+//           <TouchableOpacity style={styles.profileContainer}>
+//             <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+//             <Text style={styles.profileName}>{userId}</Text>
+//           </TouchableOpacity>
+//         </View>
+
+//         {/* Post Image */}
+//         <Image 
+//           source={{ uri: `${API_BASE_URL}${item.imageUrl}` }} 
+//           style={styles.postImage} 
+//           resizeMode="cover" 
+//         />
+
+//         {/* Caption */}
+//         <View style={styles.captionContainer}>
+//           <Text style={styles.caption}>
+//             <Text style={styles.profileName}>{userId} </Text>{item.chapterType} | {item.locationId} | {item.date}
+//           </Text>
+//         </View>
+
+//         {/* Timestamp */}
+//         <Text style={styles.timestamp}>{item.timeStamp}</Text>
+//       </View>
+//     );
+//   };
+
+//   return (
+//     <FlatList
+//       data={photos}
+//       renderItem={renderItem}
+//       keyExtractor={(item, index) => index.toString()}
+//       contentContainerStyle={styles.gridContainer}
+//       refreshing={refreshing}
+//       onRefresh={handleRefresh}
+//     />
+//   );
+// };
+
+
+
+
+// const styles = StyleSheet.create({
+//   loaderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: '#ccc',
+//   },
+//   errorContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   errorText: {
+//     color: 'red',
+//     fontSize: 16,
+//   },
+//   gridContainer: {
+//     padding: 10,
+//     backgroundColor: '#fff',
+//   },
+//   postContainer: {
+//     marginBottom: 20,
+//     backgroundColor: '#fff',
+//     borderRadius: 10,
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.3,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     padding: 10,
+//   },
+//   profileContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//   },
+//   profileImage: {
+//     width: 40,
+//     height: 40,
+//     borderRadius: 20,
+//   },
+//   profileName: {
+//     marginLeft: 10,
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     color: '#333',
+//   },
+//   postImage: {
+//     width: '100%',
+//     height: 300,
+//     borderRadius: 10,
+//   },
+//   captionContainer: {
+//     paddingHorizontal: 10,
+//     paddingTop: 5,
+//   },
+//   caption: {
+//     fontSize: 14,
+//     color: '#333',
+//   },
+//   timestamp: {
+//     fontSize: 12,
+//     color: '#888',
+//     paddingHorizontal: 10,
+//     paddingTop: 5,
+//   },
+// });
+
+// export default HeadAdminPostPage;
