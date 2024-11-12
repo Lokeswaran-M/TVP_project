@@ -35,7 +35,6 @@ const MemberDetails = () => {
         Alert.alert('Error', 'Unable to fetch business info. Please try again.');
       }
     };
-
     const fetchUserDetails = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
@@ -49,14 +48,19 @@ const MemberDetails = () => {
         } else {
           setOverallAverage(0);
         }
+        const profileImageResponse = await fetch(
+          `${API_BASE_URL}/profile-image?userId=${userId}`
+        );
+        if (!profileImageResponse.ok) throw new Error('Failed to fetch profile image');
+        const imageData = await profileImageResponse.json();
+        setProfileImageUrl(imageData.imageUrl);
       } catch (error) {
-        console.error('Error fetching user details:', error);
-        Alert.alert('Error', 'Unable to fetch user details. Please try again.');
+        console.error('Error fetching user details or profile image:', error);
+        Alert.alert('Error', 'Unable to fetch user details or profile image. Please try again.');
       } finally {
         setLoading(false);
       }
     };
-
     if (AdminUserID) {
       fetchBusinessInfo();
       fetchUserDetails();
