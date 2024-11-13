@@ -6,7 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
 const Requirements = ({ route }) => {
-  const { businessName, locationId, chapterType } = route.params;
+  const { Profession, locationId, chapterType } = route.params;
+  console.log("Profession in the Requirements----------------------------",Profession);
   console.log("Chapter type in Requirements--------------------",chapterType);
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
@@ -45,6 +46,7 @@ const Requirements = ({ route }) => {
             LocationID: locationId,
             chapterType: chapterType,
             userId: userId,
+            profession: Profession,
           }),
         });
 
@@ -64,7 +66,7 @@ const Requirements = ({ route }) => {
     }
   }, [userId]);
   const handleSubmit = async () => {
-    if (!businessInfo || !requirement.trim()) {
+    if (!businessInfo || !requirement.trim() || !Profession) {
       setValidationError('Please provide your requirement and select a member');
       return;
     }
@@ -76,6 +78,7 @@ const Requirements = ({ route }) => {
       Slots: chapterType,
       Description: requirement.trim(),
       Member: selectedMember || null,
+      profession: Profession,
     };
     try {
       const response = await fetch(`${API_BASE_URL}/requirements`, {
@@ -97,7 +100,7 @@ const Requirements = ({ route }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };  
   if (loading) {
     return (
       <View style={styles.container}>

@@ -8,6 +8,8 @@ import styles from '../components/layout/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
+import Dashboard from './Dashboard';
+import HomeRequirements from './homeRequirements';
 import messaging from '@react-native-firebase/messaging';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
@@ -125,14 +127,22 @@ const HomeScreen = ({ route }) => {
   const handleConfirmClick = async (eventId, locationId, slotId) => {
     setIsConfirmed((prevState) => ({ ...prevState, [eventId]: true }));
     try {
+      const profession = route.title;
+      console.log("Profession for pre attendence-----------------------",profession);
       const response = await fetch(`${API_BASE_URL}/api/Preattendance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ UserId: userId, LocationID: locationId, SlotID: slotId, EventId: eventId }),
+        body: JSON.stringify({
+          UserId: userId,
+          LocationID: locationId,
+          SlotID: slotId,
+          EventId: eventId,
+          Profession: profession,
+        }),
       });
       const data = await response.json();
       if (response.ok) {
-        console.log("Attendance confirmed successfully")
+        console.log("Attendance confirmed successfully");
         // Alert.alert('Success', 'Attendance confirmed successfully');
       } else {
         Alert.alert('Error', data.error || 'Failed to confirm attendance');
@@ -141,9 +151,11 @@ const HomeScreen = ({ route }) => {
       console.error("Network or server error:", error);
       Alert.alert('Error', 'Network or server issue. Please try again later.');
     }
-  };
+  };  
   const handleAcknowledgeClick = async (requirement) => {
     try {
+      const profession = route.title;
+      console.log("Profession for pre attendence-----------------------",profession);
       const response = await fetch(`${API_BASE_URL}/requirements`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -154,6 +166,7 @@ const HomeScreen = ({ route }) => {
           LocationID: route.params.locationId,
           Slots: chapterType,
           Id: requirement.Id,
+          Profession: profession,
         }),
       });
   
@@ -223,128 +236,21 @@ const HomeScreen = ({ route }) => {
             style={styles.image}
           />
         </View>
-        {/* =======================Meetings=========================== */}
-        <View style={styles.cards}>
-        <View style={styles.dashboardContainer}>
-  <Text style={styles.dashboardTitle}>Dashboard</Text>
-  <TouchableOpacity onPress={() => setShowAllEvents(!showAllEvents)}>
-    <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-  </TouchableOpacity>
-</View>
-          {eventData.length > 0 ? (
-            eventData.slice(0, showAllEvents ? eventData.length : 1).map((event, index) => (
-              <View key={event.EventId} style={styles.meetupCard}>
-                <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
-                <View style={styles.row}>
-                  <Icon name="calendar" size={18} color="#6C757D" />
-                  <Text style={styles.meetupInfo}>
-  {new Date(event.DateTime).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  })}
-</Text>
-                  <Icon name="clock-o" size={18} color="#6C757D" />
-                  <Text style={styles.meetupInfo}>
-                    {new Date(event.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Text>
-                </View>
-                <View style={styles.row}>
-  <Icon name="map-marker" size={18} color="#6C757D" />
-  <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
-</View>
-                <View style={styles.buttonRow}>
-                <TouchableOpacity
-  style={[
-    styles.confirmButton,
-    isConfirmed[event.EventId] ? styles.disabledButton : null,
-  ]}
-  onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
-  disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
->
-  <Icon
-    name="check-circle"
-    size={24}
-    color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
-  />
-  <Text style={styles.buttonText}>
-    {isConfirmed[event.EventId] || event.Isconfirm === 1
-      ? "Confirmed"
-      : "Click to Confirm"}
-  </Text>
-</TouchableOpacity>
-</View>
-              </View>
-            ))
-          ) : (
-            <View style={styles.noMeetupCard}>
-              <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
-            </View>
-          )}
-        </View>
-        {/* ===============================Requirements=============================== */}
-        <View style={styles.cards}>
-        <View style={styles.header}>
-        <View style={styles.headerRow}>
-  <Text style={styles.headerText}>Requirements</Text>
-  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-  </TouchableOpacity>
-</View>
-  <TouchableOpacity
-    style={styles.addButton}
-    onPress={() => navigation.navigate('Requirements', {
-      businessName: route.title,
-      locationId: route.params.locationId,
-      chapterType: route.params.chapterType,
-    })}
-  >
-    <View style={styles.buttonContent}>
-      <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
-      <Text style={styles.addButtonText}>Add Requirement</Text>
-    </View>
-  </TouchableOpacity>
-</View>
-          <View>
-            <Text style={styles.line}>
-              ____________________________
-            </Text>
-          </View>
-          {requirementsData.length > 0 ? (
-  <>
-    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
-      <View key={index} style={styles.card}>
-        <View style={styles.profileSection}>
-        <Image
-  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
-  style={styles.profileImage}
-/>
-          <Text style={styles.profileName}>{requirement.Username}</Text>
-        </View>
-        <View style={styles.requirementSection}>
-          <Text style={styles.requirementText}>{requirement.Description}</Text>
-          <TouchableOpacity 
-  style={[
-    styles.acknowledgeButton, 
-    requirement.IsAcknowledged === 1 ? styles.disabledButton : null
-  ]}
-  onPress={() => handleAcknowledgeClick(requirement)}
-  disabled={requirement.IsAcknowledged === 1}
->
-  <Text style={styles.buttonText1}>
-    {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
-  </Text>
-</TouchableOpacity>
-        </View>
-      </View>
-    ))}
-  </>
-) : (
-  <View style={styles.noMeetupCard}>
-    <Text style={styles.noMeetupText}>No Requirements Available</Text>
-  </View>
-)}
-        </View>
+        <Dashboard
+          eventData={eventData}
+          showAllEvents={showAllEvents}
+          setShowAllEvents={setShowAllEvents}
+          handleConfirmClick={handleConfirmClick}
+          isConfirmed={isConfirmed}
+        />
+         <HomeRequirements
+          requirementsData={requirementsData}
+          showAllRequirements={showAllRequirements}
+          setShowAllRequirements={setShowAllRequirements}
+          handleAcknowledgeClick={handleAcknowledgeClick}
+          profileImages={profileImages}
+          requirementsError={requirementsError}
+        />
         {/* ===================================Reviews================================== */}
         <View style={styles.cards}>
         <View style={styles.header}>

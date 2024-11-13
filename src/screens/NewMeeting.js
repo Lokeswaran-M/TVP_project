@@ -55,7 +55,7 @@ const NewMeeting = () => {
       const meetingData = {
         CreatedBy: userId,
         LocationID: profileData.LocationID,
-        DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+        DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' , hour12: false})}`,
         SlotID,
       };
 
