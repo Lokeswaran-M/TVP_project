@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     padding: 10,
-
+    backgroundColor:'black',
   },
   postContainer: {
     marginBottom: 20,
