@@ -83,7 +83,7 @@ const TabNavigator = () => {
     >
        <Tab.Screen name="Dashboard" component={Dashboard} options={{ title: 'Home' }} />
        <Tab.Screen name="Scanner" component={Scanner} options={{ title: 'Scanner' }} />
-       <Tab.Screen name="Post" component={Post} options={{ title: 'Post' }} />
+       <Tab.Screen name="Post" component={Post}    options={{ title: 'Post' }} />
         <Tab.Screen
           name="MultiBusinessCamera"
           component={MultiBusinessCamera}

@@ -141,6 +141,8 @@ const AuthNavigator = () => {
         <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
         <Stack.Screen name="AdminLocationstack" component={AdminLocationstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
         <Stack.Screen name="HeadAdminPostPage" component={HeadAdminPostPage} options={{headerShown: true,header: () => <CustomHeaderPost/>, headerLeft: () => null,  }}/> 
+        <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
+  
     </Stack.Navigator>
 
   );

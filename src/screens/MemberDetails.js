@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 const MemberDetails = () => {
   const route = useRoute();
   const { userId, Profession } = route.params;
+  console.log("Data in the Members details--------------------------",userId,Profession);
   const AdminUserID = useSelector((state) => state.user?.userId);
   const [businessInfoo, setBusinessInfoo] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
