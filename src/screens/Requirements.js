@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
+import PushNotification from 'react-native-push-notification';
+import messaging from '@react-native-firebase/messaging';
 const Requirements = ({ route }) => {
   const { locationId, Profession, chapterType } = route.params;
   console.log("Profession in the Requirements----------------------------",Profession);
@@ -66,6 +68,7 @@ const Requirements = ({ route }) => {
     }
   }, [userId]);
   const handleSubmit = async () => {
+    console.log("Validation-------------------",businessInfo, "Requirement" , requirement.trim(), "Profession" , Profession);
     if (!businessInfo || !requirement.trim() || !Profession) {
       setValidationError('Please provide your requirement and select a member');
       return;
@@ -74,7 +77,7 @@ const Requirements = ({ route }) => {
     setValidationError('');
     const requestData = {
       UserId: userId,
-      LocationID: businessInfo.LocationID, 
+      LocationID: businessInfo.LocationID,
       Slots: chapterType,
       Description: requirement.trim(),
       Member: selectedMember || null,
@@ -88,15 +91,41 @@ const Requirements = ({ route }) => {
         },
         body: JSON.stringify(requestData),
       });
+  
       if (!response.ok) {
         throw new Error('Failed to submit requirement');
       }
       const result = await response.json();
-      alert('Requirement Created Successfully');
+      console.log("Result of handleSubmit:", result);
+      Alert.alert('Success', 'Requirement Created Successfully');
       navigation.goBack();
+      const requirementsubmitResponse = await fetch(`${API_BASE_URL}/requirementsubmit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: selectedMember,
+        }),
+      });
+      const requirementsubmitData = await requirementsubmitResponse.json();
+      console.log("Requirement Submit Data:", requirementsubmitData);
+      if (requirementsubmitResponse.ok) {
+        console.log('Requirement submitted, notification sent successfully');
+        PushNotification.localNotification({
+          channelId: 'acknowledgement-channel',
+          title: 'New Notification',
+          message: 'You have a new acknowledgement!',
+          playSound: true,
+          soundName: 'default',
+          vibrate: true,
+          vibration: 300,
+        });
+      } else {
+        console.error('Error sending acknowledgement notification:', requirementsubmitData.error);
+      }
     } catch (error) {
       console.error('Error submitting requirement:', error);
       setError(error.message);
+      // Alert.alert('Error', 'An error occurred while submitting your requirement.');
     } finally {
       setIsSubmitting(false);
     }

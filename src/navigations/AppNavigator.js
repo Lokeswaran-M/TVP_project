@@ -19,9 +19,7 @@ import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import GeneratedQRScreen from '../screens/GeneratedQRScreen';
-import CreateQR from '../screens/CreateQR';
 import OneMinPresentation from '../screens/OneMinPresentation';
-import Attendance from '../screens/Attendance';
 import StopWatch from '../screens/StopWatch';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import CreateMeetingViewPage from '../screens/CreateMeetingViewPage';
@@ -30,6 +28,8 @@ import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
 import Requirements from '../screens/Requirements';
 import Review from '../screens/Review';
+import Notification from '../screens/Notification';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
@@ -40,6 +40,7 @@ function ProfileStackNavigator() {
   const user = useSelector((state) => state.user);
   const userId = useSelector((state) => state.user?.userId);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
   const [profileData, setProfileData] = useState({});
   console.log("PROFESSION IN PROFILE SCREEN-----------------",profileData?.Profession)
 
@@ -62,7 +63,6 @@ function ProfileStackNavigator() {
       setLoading(false);
     }
   };  
-  
   useFocusEffect(
     useCallback(() => {
       fetchProfileData();
@@ -189,9 +189,7 @@ function StackMeetingNavigator() {
     </StackMeeting.Navigator>
   );
 }
-
 const StackPayment = createStackNavigator();
-
 function StackPaymentNavigator() {
   return (
     <StackPayment.Navigator
@@ -215,44 +213,59 @@ function StackPaymentNavigator() {
     </StackPayment.Navigator>
   );
 }
-
-// const StackOneMinPresentation = createStackNavigator();
-
-// function StackOneMinPresentationNavigator() {
-//   return (
-//     <StackOneMinPresentation.Navigator
-//       screenOptions={{
-//         headerTintColor: '#000',
-//         headerStyle: {
-//           backgroundColor: '#fff',
-//         },
-//       }}
-//     >
-//       <StackOneMinPresentation.Screen
-//         name="OneMinPresentation"
-//         component={OneMinPresentation}
-//         options={{ headerShown: false, title: 'OneMinPresentation'}}
-//       />
-//       <StackOneMinPresentation.Screen
-//         name="StopWatch"
-//         component={StopWatch}
-//         options={{ headerShown: false, title: 'StopWatch'}}
-//       />
-//     </StackOneMinPresentation.Navigator>
-//   );
-// }
-
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-const HeaderImage = () => (
-  <Image
-    source={require('../../assets/images/BMW.png')} 
-    style={styles.headerImage}
-  />
-);
+// const HeaderImage = ({ navigation }) => (
+//   <View style={styles.topNavlogohome}>
+//     <Image 
+//       source={require('../../assets/images/BMW.png')} 
+//       style={styles.iconImage}
+//     />
+//     <TouchableOpacity onPress={handleNotificationPress} disabled={loading}>
+//       <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
+//     </TouchableOpacity>
+//   </View>
+// );
 
-const HeaderWithImage = () => ({
+const HeaderImage = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
+  const userID = useSelector((state) => state.user?.userId);
+
+  const handleNotificationPress = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/notifications/${userID}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+      navigation.navigate('Notification');
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      Alert.alert('Error', 'Unable to fetch notifications.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <View style={styles.topNavlogohome}>
+      <Image 
+        source={require('../../assets/images/BMW.png')} 
+        style={styles.iconImage}
+      />
+      <TouchableOpacity onPress={handleNotificationPress} disabled={loading}>
+        <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
+      </TouchableOpacity>
+    </View>
+  );
+};
+const HeaderWithImage = ({ navigation }) => ({
   headerBackground: () => (
     <LinearGradient
       colors={['#fff', '#fff']}
@@ -262,7 +275,7 @@ const HeaderWithImage = () => ({
     />
   ),
   headerTintColor: '#000',
-  headerTitle: () => <HeaderImage />,
+  headerTitle: () => <HeaderImage navigation={navigation} />,
 });
 
 const HeaderWithoutImage = ({ navigation }) => ({
@@ -365,16 +378,16 @@ function DrawerNavigator() {
       }}
     >
       <Drawer.Screen 
-        name="Home" 
-        component={TabNavigator} 
-        options={{
-          drawerLabel: 'Home',
-          drawerIcon: ({ color, size }) => (
-            <FontAwesome name="home" color={color} size={size} />
-          ),
-          ...HeaderWithImage(),
-        }} 
-      />
+  name="Home" 
+  component={TabNavigator} 
+  options={({ navigation }) => ({
+    drawerLabel: 'Home',
+    drawerIcon: ({ color, size }) => (
+      <FontAwesome name="home" color={color} size={size} />
+    ),
+    ...HeaderWithImage({ navigation }),
+  })}
+/>
       {profileData?.CategoryId === 1 && (
         <>
       <Drawer.Screen 
@@ -560,52 +573,6 @@ function DrawerNavigator() {
               ),
             })}
           />
-          <Drawer.Screen
-            name="Attendance"
-            component={Attendance}
-            options={({ navigation }) => ({
-              drawerLabel: 'Attendance',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="calendar-check-o" color={color} size={size} />
-              ),
-              header: () => (
-                <View style={styles.topNav}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                    <Icon name="navicon" size={20} color="black" />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buttonNavtop}>
-                    <View style={styles.topNavlogo}>
-                      <Icon name="calendar-check-o" size={28} color="#FFFFFF" />
-                    </View>
-                    <Text style={styles.NavbuttonText}>Attendence</Text>
-                  </TouchableOpacity>
-                </View>
-              ),
-            })}
-          />
-          {/* <Drawer.Screen
-            name="OneMinPresentation"
-            component={StackOneMinPresentationNavigator}
-            options={({ navigation }) => ({
-              drawerLabel: 'One Min Presentation',
-              drawerIcon: ({ color, size }) => (
-                <Icon name="microphone" color={color} size={size} />
-              ),
-              header: () => (
-                <View style={styles.topNav}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                    <Icon name="navicon" size={20} color="black" />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.buttonNavtop}>
-                    <View style={styles.topNavlogo}>
-                      <Icon name="microphone" size={28} color="#FFFFFF" />
-                    </View>
-                    <Text style={styles.NavbuttonText}>ONE MIN PRESENTATION</Text>
-                  </TouchableOpacity>
-                </View>
-              ),
-            })}
-          /> */}
       </>
       )}
     </Drawer.Navigator>
@@ -666,18 +633,36 @@ function AppNavigator() {
           ),
         }}
       />
+      <Stack.Screen
+        name="Notification"
+        component={Notification}
+        options={{
+          headerShown: true,
+          header: () => (
+            <View style={styles.topNav}>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="bell" size={26} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>Notification</Text>
+              </View>
+            </View>
+          ),
+        }}
+      />
     </Stack.Navigator>
-
   );
 }
-
 const styles = StyleSheet.create({
-  headerImage: {
+  topNavlogohome:{
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconImage:{
+    backgroundColor:'#FFFFFF',
     width: 300, 
-    height: 50, 
+    height: 55, 
     resizeMode: 'contain',
-    // backgroundColor:'black'
-    
   },
   topNav: {
     backgroundColor: '#FFFFFF',
@@ -727,7 +712,5 @@ const styles = StyleSheet.create({
   arrowIcon: {
     marginLeft: 10,
   },
-  
 });
-
 export default AppNavigator;

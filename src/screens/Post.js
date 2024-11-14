@@ -155,6 +155,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
   };
   
   return (
+
     <FlatList
       data={photos}
       renderItem={renderItem}
@@ -163,6 +164,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
       refreshing={refreshing}
       onRefresh={handleRefresh}
     />
+
   );
 };
 
