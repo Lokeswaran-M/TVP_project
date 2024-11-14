@@ -9,7 +9,6 @@ import HeadAdminPostPage from './HeadAdminPostPage';
 const Post = () => {
   return (
     <View>
-        <Text> Posts </Text>
         <HeadAdminPostPage/>
     </View>
   );
