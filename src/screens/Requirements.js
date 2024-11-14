@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
 const Requirements = ({ route }) => {
-  const { Profession, locationId, chapterType } = route.params;
+  const { locationId, Profession, chapterType } = route.params;
   console.log("Profession in the Requirements----------------------------",Profession);
   console.log("Chapter type in Requirements--------------------",chapterType);
   const userId = useSelector((state) => state.user?.userId);

@@ -4,11 +4,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
+import HeadAdminPostPage from './HeadAdminPostPage';
 
 const Post = () => {
   return (
     <View>
         <Text> Posts </Text>
+        <HeadAdminPostPage/>
     </View>
   );
 };

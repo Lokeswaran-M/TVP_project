@@ -17,6 +17,7 @@ const Review = ({ route }) => {
   const [review, setReview] = useState('');
   const [members, setMembers] = useState([]);
   const [ratings, setRatings] = useState([]);
+  const [errors, setErrors] = useState({});
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -68,7 +69,17 @@ const Review = ({ route }) => {
       fetchRatings();
     }
   }, [userId]);
+  const validateForm = () => {
+    const newErrors = {};
+    if (!selectedMember) newErrors.selectedMember = 'Please choose a member.';
+    if (!selectedRating) newErrors.selectedRating = 'Please select a rating type.';
+    if (!review.trim()) newErrors.review = 'Please enter a comment.';
+    if (rating === 0) newErrors.rating = 'Please select a rating.';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };  
   const submitReview = async () => {
+    if (!validateForm()) return;
     try {
       const response = await fetch(`${API_BASE_URL}/review`, {
         method: 'POST',
@@ -80,9 +91,9 @@ const Review = ({ route }) => {
           RatingId: selectedRating,
           Description: review,
           Member: selectedMember || null,
+          Profession: businessName,
         }),
       });
-
       if (response.ok) {
         alert('Review created successfully!');
         navigation.goBack();
@@ -93,37 +104,53 @@ const Review = ({ route }) => {
       console.error('Failed to submit review:', error);
     }
   };
-  const handleRating = (rate) => setRating(rate);
+  const handleRating = (rate) => {
+    setRating(rate);
+    setErrors((prevErrors) => ({ ...prevErrors, rating: '' }));
+  };
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Write A Review </Text>
-      <View style={styles.container1}>
-        <View style={styles.buttonContainer}>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedRating}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedRating(itemValue)}
-          >
-            <Picker.Item label="Choose Rating Type" value="" />
-            {ratings.map((rating) => (
-              <Picker.Item key={rating.Id} label={rating.RatingName} value={rating.RatingName} />
-            ))}
-          </Picker>
-        </View>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={selectedMember}
-              style={styles.picker}
-              onValueChange={(itemValue) => setSelectedMember(itemValue)}
-            >
-              <Picker.Item label="Choose Member" value="" />
-              {members.map((member) => (
-                <Picker.Item key={member.UserId} label={member.Username} value={member.UserId} />
-              ))}
-            </Picker>
-          </View>
-        </View>
+    <Text style={styles.title}>Write A Review </Text>
+    <View style={styles.container1}>
+      <View style={styles.pickerContainer}>
+      <Picker
+  selectedValue={selectedRating}
+  style={styles.picker}
+  onValueChange={(itemValue) => {
+    if (itemValue === "Receiving Business") {
+      setSelectedRating(8);
+    } else if (itemValue === "Successful Collaboration") {
+      setSelectedRating(9);
+    } else {
+      setSelectedRating(itemValue);
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, selectedRating: '' }));
+  }}
+>
+  <Picker.Item label="Choose Rating Type" value="" />
+  {ratings.map((rating) => (
+    <Picker.Item key={rating.Id} label={rating.RatingName} value={rating.Id} />
+  ))}
+</Picker>
+      </View>
+      {errors.selectedRating && <Text style={styles.errorText}>{errors.selectedRating}</Text>}
+      
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedMember}
+          style={styles.picker}
+          onValueChange={(itemValue) => {
+            setSelectedMember(itemValue);
+            setErrors((prevErrors) => ({ ...prevErrors, selectedMember: '' }));
+          }}
+        >
+          <Picker.Item label="Choose Member" value="" />
+          {members.map((member) => (
+            <Picker.Item key={member.UserId} label={member.Username} value={member.UserId} />
+          ))}
+        </Picker>
+      </View>
+      {errors.selectedMember && <Text style={styles.errorText}>{errors.selectedMember}</Text>}
         <Text style={styles.label}>Comment</Text>
         <TextInput
           style={styles.textInput}
@@ -132,8 +159,12 @@ const Review = ({ route }) => {
           value={review}
           placeholder="Write your comment here"
           placeholderTextColor="black"
-          onChangeText={setReview}
+          onChangeText={(text) => {
+            setReview(text);
+            setErrors((prevErrors) => ({ ...prevErrors, review: '' }));
+          }}
         />
+         {errors.review && <Text style={styles.errorText}>{errors.review}</Text>}
         <Text style={styles.label}>Give a rating</Text>
         <View style={styles.ratingContainer}>
           {[1, 2, 3, 4, 5].map((item) => (
@@ -147,15 +178,16 @@ const Review = ({ route }) => {
             </TouchableOpacity>
           ))}
         </View>
+        {errors.rating && <Text style={styles.errorText}>{errors.rating}</Text>}
       </View>
       <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.submitButton} onPress={submitReview}>
-          <Icon name="check" size={20} color="#fff" style={styles.icon} />
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={20} color="#fff" style={styles.icon} />
           <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.submitButton} onPress={submitReview}>
+          <Icon name="check" size={20} color="#fff" style={styles.icon} />
+          <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -180,11 +212,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pickerContainer: {
-    flex: 1,
     borderColor: '#a3238f',
     borderWidth: 1,
     borderRadius: 10,
-    marginLeft: 10,
+    marginBottom: 15,
+    backgroundColor: '#fff',
   },
   picker: {
     height: 50,
@@ -216,8 +248,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   label: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 20,
+    color: '#a3238f',
     marginBottom: 10,
   },
   textInput: {
@@ -264,6 +296,11 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 export default Review;

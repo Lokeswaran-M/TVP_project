@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const HomeRequirements = ({
   requirementsData,
+  route,
   showAllRequirements,
   setShowAllRequirements,
   handleAcknowledgeClick,
@@ -33,7 +34,11 @@ const HomeRequirements = ({
         </View>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('Requirements')}
+          onPress={() => navigation.navigate('Requirements', {
+            businessName: route.title,
+            locationId: route.params.locationId,
+            chapterType: route.params.chapterType,
+          })}
         >
           <View style={styles.buttonContent}>
             <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
