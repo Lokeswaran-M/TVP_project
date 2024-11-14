@@ -8,21 +8,17 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/MembersStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// TabContent Component - Displays list of members, photo upload functionality
 const TabContent = ({ chapterType, locationId, navigation }) => {
   const userId = useSelector((state) => state.user?.userId);
-  console.log('---------------data userid--------------', userId);
-
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMeetId, setSelectedMeetId] = useState(null); // Store the MeetId of the selected member
+  const [selectedMeetId, setSelectedMeetId] = useState(null); // Store MeetId of selected member
 
   // Fetching members data
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        console.log('Fetching members...');
         const response = await fetch(`${API_BASE_URL}/list-members`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -32,8 +28,7 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         if (!response.ok) throw new Error('Failed to fetch members');
 
         const data = await response.json();
-        console.log('----------------------------------member data=------------------', data);
-
+        
         const updatedMembers = await Promise.all(data.members.map(async (member) => {
           let totalStars = 0;
           if (member.ratings?.length > 0) {
@@ -65,6 +60,7 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
     fetchMembers();
   }, [chapterType, locationId, userId]);
 
+  // Filtering members based on the search query
   const filteredMembers = members.filter((member) =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -72,10 +68,11 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
   // Handle selecting a member and setting their MeetId
   const handleMemberClick = (member) => {
     const meetId = member.UserId; // Using the member's UserId as MeetId
+    console.log("Selected MeetId:", meetId); // Log selected MeetId
+
+    // Set the new selectedMeetId
     setSelectedMeetId(meetId);
-    console.log('Selected MeetId:', meetId);
-    openCamera();
-    // You can also navigate to a new screen or show details here
+    openCamera(meetId); // Pass MeetId directly to openCamera
   };
 
   // Insert meeting data
@@ -87,27 +84,20 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         type: 'image/jpeg',
         name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
       });
-      // formData.append('UserId', userId);
       formData.append('MeetId', meetId); 
       formData.append('SlotID', chapterType);  
       formData.append('LocationID', locationId);
 
-      console.log('==================fromdat===============', formData);
       const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
         method: 'POST',
         body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
   
       const result = await uploadResponse.json();
-      // console.log("Data in the frontend:", result);
 
       if (result.message === 'Member details and image uploaded successfully!') {
         Alert.alert('Success', 'Photo and data uploaded successfully');
-        console.log('Data Inserted:', result);
-        // Handle successful upload here (e.g., update UI or navigate)
       } else {
         Alert.alert('Error', 'Photo and data upload failed');
       }
@@ -118,21 +108,22 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
   };
 
   // Open camera to take a photo
-  const openCamera = () => {
+  const openCamera = (meetId) => {
+    if (!meetId) {
+      Alert.alert('Error', 'Please select a member first.');
+      return;
+    }
+
     const options = { mediaType: 'photo', cameraType: 'front' };
     launchCamera(options, async (response) => {
       if (response.didCancel || response.errorCode) return;
       const photoUri = response.assets[0].uri; // Get the URI of the taken photo
-      if (selectedMeetId) {
-        await insertMeetingData(userId, selectedMeetId, chapterType, locationId, photoUri);
-      } else {
-        Alert.alert('Error', 'Please select a member first.');
-      }
+      console.log("Uploading photo for MeetId:", meetId); // Log for debugging
+      await insertMeetingData(userId, meetId, chapterType, locationId, photoUri);
     });
   };
 
   const renderItem = ({ item }) => (
-  <View>
     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
       <View style={styles.memberDetails}>
         <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
@@ -142,15 +133,9 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         </View>
       </View>
       <View style={styles.alarmContainer}>
-        <TouchableOpacity onPress={() => handleMemberClick(item)}>
-          <Icon name="camera" size={24} color="#A3238F" />
-        </TouchableOpacity>
+        <Icon name="camera" size={24} color="#A3238F" />
       </View>
     </TouchableOpacity>
-  </View>
-  
-    
-
   );
 
   return (
@@ -169,20 +154,21 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
           <Icon name="search" size={23} color="#A3238F" />
         </View>
       </View>
-  
+
       {/* FlatList - Scrollable List of Members */}
-      <ScrollView style={{ flex: 1 }}>
-        <FlatList
-          data={filteredMembers}
-          keyExtractor={(item) => item.UserId.toString()}
-          contentContainerStyle={styles.memberList}
-          renderItem={renderItem}
-        />
-      </ScrollView>
+      <FlatList
+        data={filteredMembers}
+        keyExtractor={(item) => item.UserId.toString()}
+        contentContainerStyle={styles.memberList}
+        renderItem={renderItem}
+      />
     </View>
   );
-  
 };
+
+
+
+
 // Main TabView Example Component
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import styles from '../components/layout/PostStyles';
 const HeadAdminPostPage = ({ navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +29,7 @@ const HeadAdminPostPage = ({ navigation }) => {
             const profileData = await profileResponse.json();
   
             // Fetch User and Meet data
-            const usernameResponse = await fetch(`${API_BASE_URL}/post-username?userId=${userId}`);
+            const usernameResponse = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-admin?userId=${userId}`);
             const usernameData = await usernameResponse.json();
             console.log('----------------------all dataaaaaaaaaaaaaaaaaaaaaaaaaaaa--------------',usernameData);
             // Fetch MeetId profile using the MeetId from usernameData
@@ -174,128 +175,6 @@ const HeadAdminPostPage = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ccc',
- 
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#ccc',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
-  },
-  gridContainer: {
-    padding: 10,
-    backgroundColor:'black',
-  },
-  postContainer: {
-    marginBottom: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent:'flex-start',
-    padding: 10,
-  },
-  profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight:20,
-    position:'static',
-  },
-  businessContainer:{
-    flexDirection: 'row',
-    alignItems: 'center',
-    position:'static',
-    marginLeft: 10,
-  },
-  profileImageUser: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginTop:-10,
-    zIndex: 1,
-  },
-  profileImageMeet: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginBottom:-10,
-    marginLeft: -30, 
-    zIndex: 2,
-  },
-  profileName:{
-  fontSize:15,
-  paddingRight:8,
-  fontWeight:'500',
-  color:'#A3238F',
-  
-  },
-  profileNameUser: {
-    marginLeft: 12,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#A3238F',
-  },
-  profileNameMeet: {
-    marginLeft: 12,
-    marginRight:0,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#A3238F',
-  },
-  postImage: {
-    width: '100%',
-    height: 300,
-    borderRadius: 10,
-  },
-  
-  captionContainer: {
-    paddingHorizontal: 10,
-    paddingTop: 5,
-  },
-  caption: {
-    fontSize: 14,
-    color: '#333',
-  },
-  timestamp: {
-    fontSize: 12,
-    color: 'black',
-    paddingHorizontal: 10,
-    paddingVertical:5,
-    paddingTop: 5,
-    alignItems:'center',
-  },
-  userProfession: {
-    marginLeft: 2,
-    fontWeight: '400',
-   fontSize: 12,
-   color: '#b50098',
-},
-meetProfession: {
-  marginLeft: 2,
-  fontWeight: '400',
- fontSize: 12,
- color: '#b50098',
-},
-
-});
 
 export default HeadAdminPostPage;
 
