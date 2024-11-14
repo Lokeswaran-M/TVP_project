@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text,TouchableOpacity,useWindowDimensions,Alert, ActivityIndicator, ScrollView,Image,PermissionsAndroid} from 'react-native';
+import { View, Text,TouchableOpacity,useWindowDimensions,Alert, ActivityIndicator, ScrollView,Image,PermissionsAndroid, Platform} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
+import { showMessage } from 'react-native-flash-message'; 
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
@@ -67,6 +68,26 @@ const HomeScreen = ({ route }) => {
   })
   .catch(error => console.error('Permission request failed:', error));
   };
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('A new FCM message arrived!', remoteMessage);
+      if (Platform.OS === 'android') {
+        PushNotification.localNotification({
+          title: remoteMessage.notification?.title,
+          message: remoteMessage.notification?.body,
+          bigText: remoteMessage.notification?.body,
+        });
+      } else {
+        showMessage({
+          message: remoteMessage.notification?.title,
+          description: remoteMessage.notification?.body,
+          type: 'info',
+        });
+      }
+    });
+  
+    return unsubscribe;
+  }, []);  
   useEffect(() => {
     requestNotificationPermissions();
     if (requirementsData.length > 0) {

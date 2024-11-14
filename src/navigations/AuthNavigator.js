@@ -40,7 +40,7 @@ const CustomHeaderBMWpng = () => {
           source={BMW} 
           style={styles.iconImage}
         />
-        <TouchableOpacity style={styles.topNaviconhome} onPress={posticon}>
+        <TouchableOpacity onPress={posticon}>
         <Ionicons name="chatbubble-ellipses" size={29} color="#A3238F" />
         </TouchableOpacity>
             
