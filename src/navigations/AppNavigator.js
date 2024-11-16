@@ -229,38 +229,48 @@ const Drawer = createDrawerNavigator();
 //   </View>
 // );
 
-const HeaderImage = ({ navigation }) => {
+const HeaderImage = () => {
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
   const userID = useSelector((state) => state.user?.userId);
 
-  const handleNotificationPress = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${userID}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  useFocusEffect(
+    React.useCallback(() => {
+      const updateNotifications = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/notifications/${userID}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
-      }
-      navigation.navigate('Notification');
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-      Alert.alert('Error', 'Unable to fetch notifications.');
-    } finally {
-      setLoading(false);
-    }
-  };
+          if (!response.ok) {
+            throw new Error('Failed to fetch notifications');
+          }
+        } catch (error) {
+          console.error('Error updating notifications:', error);
+          Alert.alert('Error', 'Unable to update notifications.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      updateNotifications();
+    }, [userID])
+  );
+
   return (
     <View style={styles.topNavlogohome}>
-      <Image 
-        source={require('../../assets/images/BMW.png')} 
+      <Image
+        source={require('../../assets/images/BMW.png')}
         style={styles.iconImage}
       />
-      <TouchableOpacity onPress={handleNotificationPress} disabled={loading}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Notification')}
+        disabled={loading}
+      >
         <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
       </TouchableOpacity>
     </View>
