@@ -1,187 +1,498 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions,ScrollView } from 'react-native';
-import { API_BASE_URL } from '../constants/Config';
-import { TabView, TabBar } from 'react-native-tab-view';
-import { useSelector } from 'react-redux';
-import { launchCamera } from 'react-native-image-picker';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../components/layout/MembersStyle';
-import { SafeAreaView } from 'react-native-safe-area-context';
+// container: {
+//   flex: 1,
+//   backgroundColor: '#ccc',
+//   padding: 5,
+// }, scrollView: {
+//   width: width, // Full width of the screen
+// },
+// innerText3: {
+//   fontSize: 18,
+//   fontWeight: 'bold',
+//   color: '#000',
+//   padding: 20,
+// },
+// containermain: {
+//   justifyContent: 'flex-start',
+//   alignItems: 'center',
+//   backgroundColor: '#ccc',
+// },
+// iconImage: {
 
-// TabContent Component - Displays list of members, photo upload functionality
-const TabContent = ({ chapterType, locationId, navigation }) => {
-  const userId = useSelector((state) => state.user?.userId);
-  console.log('---------------data userid--------------', userId);
+//   width: 300,
+//   height: 50,
+//   resizeMode: 'contain',
+// },
+// topNav: {
+//   backgroundColor: '#FFFFFF',
+//   paddingVertical: 10,
+//   alignItems: 'center',
+//   borderBottomEndRadius: 15,
+//   borderBottomStartRadius: 15,
+//   justifyContent: 'center',
+// },
 
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMeetId, setSelectedMeetId] = useState(null); // Store the MeetId of the selected member
 
-  // Fetching members data
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        console.log('Fetching members...');
-        const response = await fetch(`${API_BASE_URL}/list-members`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ LocationID: locationId, chapterType, userId }),
-        });
+// topContainer1: {
+//   width: '90%',
+//   height: height * 0.25,
+//   backgroundColor: '#fff',
+//   marginBottom: 25,
+//   borderRadius: 15,
+//   marginTop: 25,
+//   padding: 8,
+// },
+// topContainer2: {
+//   width: '90%',
+//   height: height * 0.25,
+//   backgroundColor: '#fff',
+//   borderRadius: 15,
+//   padding: 8,
+// },
+// topText: {
+//   color: '#A3238F',
+//   fontSize: 15,
+//   fontWeight: 'bold',
+// },
+// underline: {
+//   height: 1,
+//   backgroundColor: 'black',
+//   width: '100%',
+//   marginTop: 5,
+// },
+// innerContainer1: {
+//   margin: 5,
+//   backgroundColor: '#f0e1eb',
+//   borderRadius: 8,
+//   height: 150,
+//   justifyContent: 'center',
 
-        if (!response.ok) throw new Error('Failed to fetch members');
+// },
+// innerContainer2: {
+//   margin: 5,
+//   backgroundColor: '#f0e1eb',
+//   borderRadius: 8,
+//   height: 150,
+//   flexDirection: 'row',
+//   paddingRight: 10,
+//   paddingLeft: 10,
+// },
+// innerTextcon1: {
+//   color: '#A3238F',
+//   fontSize: 15,
+//   height: 85,
+//   width: '93.5%',
+//   backgroundColor: '#fff',
+//   padding: 5,
+//   borderRadius: 8,
+//   marginHorizontal: 10,
+// },
+// innerpictexcon: {
+//   flexDirection: 'row',
+//   alignItems: 'center',
+// },
+// innerText3: {
+//   color: 'black',
+// },
+// innerTextcon2: {
+//   backgroundColor: '#fff',
+//   height: 110,
+//   width: '78%',
+//   borderRadius: 8,
+//   padding: 5,
+//   marginLeft: 5,
+//   alignItems: 'flex-start',
+//   marginTop: 25,
 
-        const data = await response.json();
-        console.log('----------------------------------member data=------------------', data);
+// },
+// profileImage1: {
+//   height: 35,
+//   width: 35,
+//   borderRadius: 50,
+//   margin: 10,
+//   marginRight: 5,
 
-        const updatedMembers = await Promise.all(data.members.map(async (member) => {
-          let totalStars = 0;
-          if (member.ratings?.length > 0) {
-            totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
-            member.totalAverage = totalStars / member.ratings.length;
-          } else {
-            member.totalAverage = 0;
-          }
+// },
+// profileImage2: {
+//   height: 55,
+//   width: 55,
+//   borderRadius: 50,
+//   marginRight: 5,
+//   alignSelf: 'center',
+//   marginTop: 15,
+// },
+// profileName1: {
+//   color: '#A3238F',
+//   fontSize: 15,
+//   fontWeight: 'bold',
+// },
+// profileName2: {
+//   position: 'absolute',
+//   color: '#A3238F',
+//   fontSize: 15,
+//   marginLeft: 10,
+//   paddingTop: 2,
+//   fontWeight: 'bold',
+// },
+// buttonContainer: {
+//   flexDirection: 'row',
+//   justifyContent: 'space-evenly',
+//   borderRadius: 8,
+//   width: '90%',
+//   backgroundColor: '#fff',
+//   padding: 10,
+//   marginTop: 25,
+// },
+// leftButtons: {
+//   flex: 1,
+//   justifyContent: 'space-around',
+// },
+// rightButtons: {
+//   flex: 1,
+//   justifyContent: 'space-around',
+// },
+// button: {
+//   backgroundColor: '#A3238F',
+//   paddingVertical: 15,
+//   paddingHorizontal: 20,
+//   borderRadius: 8,
+//   elevation: 3,
+//   marginVertical: 5,
+//   marginHorizontal: 5,
+//   alignItems: 'center',
+// },
+// icon: {
+//   marginRight: 5,
+// },
+// buttonText: {
+//   color: 'white',
+//   fontSize: 16,
+//   textAlign: 'center',
+//   fontWeight: 'bold',
+// },
+// ratingContainer: {
+//   flexDirection: 'row',
+// },
+// cards: {
+//   backgroundColor: 'white',
+//   borderRadius: 10,
+//   padding: 15,
+//   margin: 0,
+//   marginBottom: 10,
+//   shadowColor: '#000',
+//   shadowOffset: { width: 0, height: 2 },
+//   shadowOpacity: 0.1,
+//   shadowRadius: 5,
+//   elevation: 3,
+// },
+// headerRow: {
+//   flexDirection: 'row',
+//   alignItems: 'center', 
+//   justifyContent: 'space-between',
+// },    
+// arrowIcon: {
+//   marginLeft: 10,
+// },    
+// addButton: {
+//   backgroundColor: '#a3238f',
+//   paddingVertical: 8,
+//   paddingHorizontal: 15,
+//   borderRadius: 20,
+// },
+// buttonContent: {
+//   flexDirection: 'row',
+//   alignItems: 'center',
+// },
+// line: {
+//   margin: 15,
+//   textAlign: 'center',
+// },
+// card: {
+// backgroundColor: '#F6EDF7',
+// borderRadius: 10,
+// padding: 20,
+// shadowColor: '#000',
+// shadowOffset: { width: 0, height: 2 },
+// shadowOpacity: 0.1,
+// shadowRadius: 5,
+// marginBottom: 20,
+// },
+// profileSection: {
+// flexDirection: 'row',
+// alignItems: 'center',
+// marginBottom: 10,
+// },
+// profileImage: {
+// width: 50,
+// height: 50,
+// borderRadius: 25,
+// marginRight: 10,
+// },
+// requirementSection: {
+// backgroundColor: '#fff',
+// borderRadius: 10,
+// padding: 15,
+// },
+// requirementText: {
+// fontSize: 14,
+// color: '#7E3F8F',
+// lineHeight: 22,
+// },
+// noMeetupCard: {
+// padding: 20,
+// backgroundColor: '#f8f9fa',
+// borderRadius: 10,
+// alignItems: 'center',
+// marginTop: 20,
+// },
+// noMeetupText: {
+// fontSize: 16,
+// color: '#6C757D',
+// },
+// header: {
+//   flexDirection: 'row',
+//   justifyContent: 'space-between',
+//   alignItems: 'center',
+// },
+// headerRow: {
+//   flexDirection: 'row',
+//   alignItems: 'center', 
+//   justifyContent: 'space-between',
+// },   
+// });
 
-          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
-          if (imageResponse.ok) {
-            const imageData = await imageResponse.json();
-            member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
-          } else {
-            member.profileImage = null;
-          }
+// export default AdminPage;
 
-          return member;
-        }));
 
-        setMembers(updatedMembers);
-      } catch (error) {
-        console.error('Error fetching members:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchMembers();
-  }, [chapterType, locationId, userId]);
 
-  const filteredMembers = members.filter((member) =>
-    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
-  // Handle selecting a member and setting their MeetId
-  const handleMemberClick = (member) => {
-    const meetId = member.UserId; // Using the member's UserId as MeetId
-    setSelectedMeetId(meetId);
-    console.log('Selected MeetId:', meetId);
-    // You can also navigate to a new screen or show details here
-  };
 
-  // Insert meeting data
-  const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', {
-        uri: photoUri,
-        type: 'image/jpeg',
-        // name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
-      });
-      // formData.append('UserId', userId);
-      formData.append('MeetId', meetId); 
-      formData.append('SlotID', chapterType);  
-      formData.append('LocationID', locationId);
 
-      console.log('==================fromdat===============', formData);
-      const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions,ScrollView } from 'react-native';
+// import { API_BASE_URL } from '../constants/Config';
+// import { TabView, TabBar } from 'react-native-tab-view';
+// import { useSelector } from 'react-redux';
+// import { launchCamera } from 'react-native-image-picker';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+// import styles from '../components/layout/MembersStyle';
+// import { SafeAreaView } from 'react-native-safe-area-context';
+
+// // TabContent Component - Displays list of members, photo upload functionality
+// const TabContent = ({ chapterType, locationId, navigation }) => {
+//   const userId = useSelector((state) => state.user?.userId);
+//   console.log('---------------data userid--------------', userId);
+
+//   const [members, setMembers] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [searchQuery, setSearchQuery] = useState('');
+//   const [selectedMeetId, setSelectedMeetId] = useState(null); // Store the MeetId of the selected member
+
+//   // Fetching members data
+//   useEffect(() => {
+//     const fetchMembers = async () => {
+//       try {
+//         console.log('Fetching members...');
+//         const response = await fetch(`${API_BASE_URL}/list-members`, {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ LocationID: locationId, chapterType, userId }),
+//         });
+
+//         if (!response.ok) throw new Error('Failed to fetch members');
+
+//         const data = await response.json();
+//         console.log('----------------------------------member data=------------------', data);
+
+//         const updatedMembers = await Promise.all(data.members.map(async (member) => {
+//           let totalStars = 0;
+//           if (member.ratings?.length > 0) {
+//             totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
+//             member.totalAverage = totalStars / member.ratings.length;
+//           } else {
+//             member.totalAverage = 0;
+//           }
+
+//           const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+//           if (imageResponse.ok) {
+//             const imageData = await imageResponse.json();
+//             member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+//           } else {
+//             member.profileImage = null;
+//           }
+
+//           return member;
+//         }));
+
+//         setMembers(updatedMembers);
+//       } catch (error) {
+//         console.error('Error fetching members:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchMembers();
+//   }, [chapterType, locationId, userId]);
+
+//   const filteredMembers = members.filter((member) =>
+//     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
+//   );
+
+//   // Handle selecting a member and setting their MeetId
+//   const handleMemberClick = (member) => {
+//     const meetId = member.UserId; // Using the member's UserId as MeetId
+//     setSelectedMeetId(meetId);
+//     console.log('Selected MeetId:', meetId);
+//     // You can also navigate to a new screen or show details here
+//   };
+
+//   // Insert meeting data
+//   const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
+//     try {
+//       const formData = new FormData();
+//       formData.append('image', {
+//         uri: photoUri,
+//         type: 'image/jpeg',
+//         // name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
+//       });
+//       // formData.append('UserId', userId);
+//       formData.append('MeetId', meetId); 
+//       formData.append('SlotID', chapterType);  
+//       formData.append('LocationID', locationId);
+
+//       console.log('==================fromdat===============', formData);
+//       const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
+//         method: 'POST',
+//         body: formData,
+//         headers: {
+//           'Content-Type': 'multipart/form-data',
+//         },
+//       });
   
-      const result = await uploadResponse.json();
-      // console.log("Data in the frontend:", result);
+//       const result = await uploadResponse.json();
+//       // console.log("Data in the frontend:", result);
 
-      if (result.message === 'Member details and image uploaded successfully!') {
-        Alert.alert('Success', 'Photo and data uploaded successfully');
-        console.log('Data Inserted:', result);
-        // Handle successful upload here (e.g., update UI or navigate)
-      } else {
-        Alert.alert('Error', 'Photo and data upload failed');
-      }
-    } catch (error) {
-      console.error('Error during upload:', error);
-      Alert.alert('Error', 'Something went wrong while uploading data');
-    }
-  };
+//       if (result.message === 'Member details and image uploaded successfully!') {
+//         Alert.alert('Success', 'Photo and data uploaded successfully');
+//         console.log('Data Inserted:', result);
+//         // Handle successful upload here (e.g., update UI or navigate)
+//       } else {
+//         Alert.alert('Error', 'Photo and data upload failed');
+//       }
+//     } catch (error) {
+//       console.error('Error during upload:', error);
+//       Alert.alert('Error', 'Something went wrong while uploading data');
+//     }
+//   };
 
-  // Open camera to take a photo
-  const openCamera = () => {
-    const options = { mediaType: 'photo', cameraType: 'front' };
-    launchCamera(options, async (response) => {
-      if (response.didCancel || response.errorCode) return;
-      const photoUri = response.assets[0].uri; // Get the URI of the taken photo
-      if (selectedMeetId) {
-        await insertMeetingData(userId, selectedMeetId, chapterType, locationId, photoUri);
-      } else {
-        Alert.alert('Error', 'Please select a member first.');
-      }
-    });
-  };
+//   // Open camera to take a photo
+//   const openCamera = () => {
+//     const options = { mediaType: 'photo', cameraType: 'front' };
+//     launchCamera(options, async (response) => {
+//       if (response.didCancel || response.errorCode) return;
+//       const photoUri = response.assets[0].uri; // Get the URI of the taken photo
+//       if (selectedMeetId) {
+//         await insertMeetingData(userId, selectedMeetId, chapterType, locationId, photoUri);
+//       } else {
+//         Alert.alert('Error', 'Please select a member first.');
+//       }
+//     });
+//   };
 
-  const renderItem = ({ item }) => (
-  <View>
-    <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
-      <View style={styles.memberDetails}>
-        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
-        <View style={styles.memberText}>
-          <Text style={styles.memberName}>{item.Username}</Text>
-          <Text style={styles.memberRole}>{item.Profession}</Text>
-        </View>
-      </View>
-      <View style={styles.alarmContainer}>
-        <TouchableOpacity onPress={openCamera}>
-          <Icon name="camera" size={24} color="#A3238F" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  </View>
+//   const renderItem = ({ item }) => (
+//   <View>
+//     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
+//       <View style={styles.memberDetails}>
+//         <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+//         <View style={styles.memberText}>
+//           <Text style={styles.memberName}>{item.Username}</Text>
+//           <Text style={styles.memberRole}>{item.Profession}</Text>
+//         </View>
+//       </View>
+//       <View style={styles.alarmContainer}>
+//         <TouchableOpacity onPress={openCamera}>
+//           <Icon name="camera" size={24} color="#A3238F" />
+//         </TouchableOpacity>
+//       </View>
+//     </TouchableOpacity>
+//   </View>
   
     
 
-  );
+//   );
 
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search members..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="black"
-          color="#A3238F"
-        />
-        <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
-        </View>
-      </View>
+//   return (
+//     <View style={{ flex: 1 }}>
+//       {/* Search Bar */}
+//       <View style={styles.searchContainer}>
+//         <TextInput
+//           style={styles.searchInput}
+//           placeholder="Search members..."
+//           value={searchQuery}
+//           onChangeText={setSearchQuery}
+//           placeholderTextColor="black"
+//           color="#A3238F"
+//         />
+//         <View style={styles.searchIconContainer}>
+//           <Icon name="search" size={23} color="#A3238F" />
+//         </View>
+//       </View>
   
-      {/* FlatList - Scrollable List of Members */}
-      <ScrollView style={{ flex: 1 }}>
-        <FlatList
-          data={filteredMembers}
-          keyExtractor={(item) => item.UserId.toString()}
-          contentContainerStyle={styles.memberList}
-          renderItem={renderItem}
-        />
-      </ScrollView>
-    </View>
-  );
+//       {/* FlatList - Scrollable List of Members */}
+//       <ScrollView style={{ flex: 1 }}>
+//         <FlatList
+//           data={filteredMembers}
+//           keyExtractor={(item) => item.UserId.toString()}
+//           contentContainerStyle={styles.memberList}
+//           renderItem={renderItem}
+//         />
+//       </ScrollView>
+//     </View>
+//   );
   
-}; 
+// }; 
  
  
  

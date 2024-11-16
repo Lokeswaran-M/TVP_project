@@ -67,7 +67,7 @@ const TabNavigator = () => {
           } else if (route.name === 'Camera') {
             iconName = 'camera';
           } else if (route.name === 'MultiBusinessCamera') {
-            iconName = 'camera';
+            iconName = 'meetup';
           }
           const iconSize = focused ? size + 5 : size;
           return (
@@ -87,7 +87,7 @@ const TabNavigator = () => {
         <Tab.Screen
           name="MultiBusinessCamera"
           component={MultiBusinessCamera}
-          options={{ title: 'Camera' }}
+          options={{ title: 'Meet' }}
         />
       <Tab.Screen
           name="MultiBusinessMembers"

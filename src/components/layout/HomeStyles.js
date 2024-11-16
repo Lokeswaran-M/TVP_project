@@ -228,6 +228,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#a3238f',
       },
+      profileImage: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 10,
+      },
       requirementSection: {
         backgroundColor: '#fff',
         borderRadius: 10,

@@ -160,7 +160,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
           color="#A3238F"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="black" />
+          <Icon name="search" size={23} color="#100E09" />
         </View>
         <TouchableOpacity
           style={[styles.filterButton, { backgroundColor: isFilterPressed ? '#c452b3' : '#A3238F' }]}
@@ -214,7 +214,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
                 ))}
               </Picker>
               <View style={styles.searchIconContainer}>
-                <Icon name="search" size={23} color="black" />
+                <Icon name="search" size={23} color="#100E09" />
               </View>
             </View>
           </View>

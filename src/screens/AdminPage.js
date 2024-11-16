@@ -1,23 +1,59 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions, InputText, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Icons from 'react-native-vector-icons/FontAwesome5';
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
-// import { Assets } from 'react-navigation-stack';
-
+import { API_BASE_URL } from '../constants/Config';
 
 const { width, height } = Dimensions.get('window');
 
 const AdminPage = () => {
   const navigation = useNavigation();
+  const [requirementsData, setRequirementsData] = useState([]);
+  const [profileImages, setProfileImages] = useState({});
+  const [requirementsLoading, setRequirementsLoading] = useState(true);
+  const [showAllRequirements, setShowAllRequirements] = useState(false);
 
+  // Fetch Requirements Data and Profile Images
+  const fetchRequirementsData = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/requirements`);
+      const data = await response.json();
+      console.log('==========================data========================', data);
+
+      const profiles = {};
+      for (let requirement of data) {
+        const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${requirement.UserId}`);
+        const profileData = await profileResponse.json();
+        console.log('==========================profileData========================', profileData);
+        profiles[requirement.UserId] = profileData.imageUrl;
+      }
+
+
+      if (response.ok) {
+        setRequirementsData(data);
+        setProfileImages(profiles); // Set profile images once all are fetched
+      } else {
+        console.error('Error fetching requirements:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching requirements:', error);
+    } finally {
+      setRequirementsLoading(false);
+    }
+  };
+
+  // Handle acknowledging a requirement
+
+
+  // Handle navigation actions
   const handleNavPress1 = () => {
     navigation.navigate('AdminMemberstack');
   };
   const handleNavPress2 = () => {
     navigation.navigate('AdminLocationstack');
   };
-
   const handleNavPress3 = () => {
     navigation.navigate('HeadAdminNewSubscribers');
   };
@@ -25,65 +61,21 @@ const AdminPage = () => {
     navigation.navigate('HeadAdminPaymentsPage');
   };
 
+  useEffect(() => {
+    fetchRequirementsData();
+  }, []);
+
   return (
-    <View style={styles.container}>
-
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
+    
       <View style={styles.containermain}>
-
-        <View style={styles.topContainer1}>
-          <Text style={styles.topText}>Requirements</Text>
-          <View style={styles.underline} />
-          <View style={styles.innerContainer1}>
-            <View style={styles.innerpictexcon}>
-              <Image
-                source={{
-                  uri: 'https://i.pinimg.com/736x/52/af/bf/52afbfeb6294f24e715a00367be3cdf3.jpg',
-                }}
-                style={styles.profileImage1}
-              />
-              <Text style={styles.profileName1}>Logeshwaran</Text>
-
-            </View>
-            <View style={styles.innerTextcon1}>
-              <ScrollView>
-                <Text style={styles.innerText3}>
-                  to build mobile apps.   Reviews React Native all    Reviews React Native allows developers who know React to create native apps.
-                  Reviews React Native allows developers who know React to create native apps.ows developers who know React to create native apps.
-                </Text>
-              </ScrollView>
-            </View>
-
-
-          </View>
+       <View style={styles.cardimg}>
+          <Image
+            source={require('../../assets/images/Homepage_BMW.jpg')}
+            style={styles.image}
+          />
         </View>
-
-        <View style={styles.topContainer2}>
-          <Text style={styles.topText}>Reviews</Text>
-          <View style={styles.underline} />
-          <View style={styles.innerContainer2}>
-            <Text style={styles.profileName2}>Logeshwaran</Text>
-            <Image
-              source={{
-                uri: 'https://i.pinimg.com/736x/52/af/bf/52afbfeb6294f24e715a00367be3cdf3.jpg',
-              }}
-              style={styles.profileImage2}
-            />
-            <View style={styles.innerTextcon2}>
-              <View style={styles.ratingContainer}>
-                <Icon name="star" size={18} color="gold" />
-              </View>
-              <ScrollView>
-                <Text style={styles.innerText3}>
-                  Reviews React Native allows developers who know React to create native apps.
-                  Reviews React Native allows developers who know React to create native apps.
-                </Text>
-              </ScrollView>
-            </View>
-          </View>
-        </View>
-
-
-        <View style={styles.buttonContainer}>
+       <View style={styles.buttonContainer}>
           <View style={styles.leftButtons}>
             <TouchableOpacity style={styles.button} onPress={handleNavPress1}>
               <Icon name="users" size={20} color="white" style={styles.icon} />
@@ -106,155 +98,251 @@ const AdminPage = () => {
             </TouchableOpacity>
           </View>
         </View>
+        {/* ===============================Requirements=============================== */}
+        <View style={styles.cards}>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <Text style={styles.headerText}>Requirements</Text>
+              <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View><Text style={styles.line}>_______________________________________________________________________________</Text></View>
+          {requirementsData.length > 0 ? (
+            <>
+              {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+                <View key={index} style={styles.card}>
+                  <View style={styles.profileSection}>
+                    {/* Ensure the image URL exists */}
+                    <Image
+                      source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+                      style={styles.profileImage}
+                    />
+                    <Text style={styles.profileName}>{requirement.Username}</Text>
+                  </View>
+                  <View style={styles.requirementSection}>
+                    <Text style={styles.requirementText}>{requirement.Description}</Text>
+          
+                  </View>
+                </View>
+              ))}
+            </>
+          ) : (
+            <View style={styles.noMeetupCard}>
+              <Text style={styles.noMeetupText}>No Requirements Available</Text>
+            </View>
+          )}
+        </View>
+
+        {/* ===================================Reviews================================== */}
+        <View style={styles.cards}>
+          <View style={styles.header}>
+            <View style={styles.headerRow}>
+              <Text style={styles.headerText}>Reviews</Text>
+              <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View><Text style={styles.line}>_______________________________________________________________________________</Text></View>
+          {requirementsData.length > 0 ? (
+            <>
+              {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+                <View key={index} style={styles.card}>
+                  <View style={styles.profileSection}>
+                    {/* Ensure the image URL exists */}
+                    <Image
+                      source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+                      style={styles.profileImage}
+                    />
+                    <Text style={styles.profileName}>{requirement.Username}</Text>
+                  </View>
+                  <View style={styles.requirementSection}>
+                    <Text style={styles.requirementText}>{requirement.Description}</Text>
+                    {/* Stars or reviews could go here */}
+                  </View>
+                </View>
+              ))}
+            </>
+          ) : (
+            <View style={styles.noMeetupCard}>
+              <Text style={styles.noMeetupText}>No Reviews Available</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Admin Navigation Buttons */}
+        {/* <View style={styles.buttonContainer}>
+          <View style={styles.leftButtons}>
+            <TouchableOpacity style={styles.button} onPress={handleNavPress1}>
+              <Icon name="users" size={20} color="white" style={styles.icon} />
+              <Text style={styles.buttonText}>Members</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleNavPress2}>
+              <Feather name="map-pin" size={20} color="white" style={styles.icon} />
+              <Text style={styles.buttonText}>Locations</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.rightButtons}>
+            <TouchableOpacity style={styles.button} onPress={handleNavPress3}>
+              <Feather name="users" size={20} color="white" style={styles.icon} />
+              <Text style={styles.buttonText}>New Sub</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleNavPress4}>
+              <Icon name="money" size={20} color="white" style={styles.icon} />
+              <Text style={styles.buttonText}>Payments</Text>
+            </TouchableOpacity>
+          </View>
+        </View> */}
       </View>
-    </View>
+    </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ccc',
     padding: 5,
-  }, scrollView: {
-    width: width, // Full width of the screen
-  },
-  innerText3: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    padding: 20,
   },
   containermain: {
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#ccc',
   },
-  iconImage: {
-
-    width: 300,
-    height: 50,
-    resizeMode: 'contain',
+  cards: {
+    width: '90%',
+    marginVertical: 10,
   },
-  topNav: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 10,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomStartRadius: 15,
-    justifyContent: 'center',
-  },
-
-
-  topContainer1: {
-    width: '90%',
-    height: height * 0.25,
     backgroundColor: '#fff',
-    marginBottom: 25,
-    borderRadius: 15,
-    marginTop: 25,
-    padding: 8,
+    padding: 10,
+    borderRadius: 10,
   },
-  topContainer2: {
-    width: '90%',
-    height: height * 0.25,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    padding: 8,
-  },
-  topText: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  underline: {
-    height: 1,
-    backgroundColor: 'black',
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
-    marginTop: 5,
+    alignItems: 'center',
   },
-  innerContainer1: {
-    margin: 5,
-    backgroundColor: '#f0e1eb',
-    borderRadius: 8,
-    height: 150,
-    justifyContent: 'center',
-
-  },
-  innerContainer2: {
-    margin: 5,
-    backgroundColor: '#f0e1eb',
-    borderRadius: 8,
-    height: 150,
-    flexDirection: 'row',
-    paddingRight: 10,
-    paddingLeft: 10,
-  },
-  innerTextcon1: {
+  headerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: '#A3238F',
-    fontSize: 15,
-    height: 85,
-    width: '93.5%',
-    backgroundColor: '#fff',
-    padding: 5,
-    borderRadius: 8,
-    marginHorizontal: 10,
   },
-  innerpictexcon: {
+  arrowIcon: {
+    marginLeft: 10,
+  },
+  addButton: {
+    flexDirection: 'row',
+    backgroundColor: '#A3238F',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  innerText3: {
-    color: 'black',
+  iconStyle: {
+    marginRight: 5,
   },
-  innerTextcon2: {
+  addButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  line: {
+    marginVertical: 10,
+    fontSize: 10,
+    fontWeight:'900',
+    color: '#A3238F',
+  },
+  card: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
-    height: 110,
-    width: '78%',
-    borderRadius: 8,
-    padding: 5,
-    marginLeft: 5,
-    alignItems: 'flex-start',
-    marginTop: 25,
-
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: 'red',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
   },
-  profileImage1: {
-    height: 35,
-    width: 35,
-    borderRadius: 50,
-    margin: 10,
-    marginRight: 5,
-
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  profileImage2: {
-    height: 55,
-    width: 55,
-    borderRadius: 50,
-    marginRight: 5,
-    alignSelf: 'center',
-    marginTop: 15,
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
-  profileName1: {
-    color: '#A3238F',
-    fontSize: 15,
-    fontWeight: 'bold',
-  },
-  profileName2: {
-    position: 'absolute',
-    color: '#A3238F',
-    fontSize: 15,
+  profileName: {
+    fontSize: 16,
     marginLeft: 10,
-    paddingTop: 2,
-    fontWeight: 'bold',
+    color: '#333',
   },
-  buttonContainer: {
+  requirementSection: {
+    marginLeft: 15,
+    flex: 1,
+  },
+  requirementText: {
+    fontSize: 14,
+    color: '#100E09',
+    marginBottom: 5,
+  },
+  acknowledgeButton: {
+    backgroundColor: '#a3238f',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#bbb',
+  },
+  buttonText1: {
+    color: '#fff',
+  },
+  noMeetupCard: {
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  noMeetupText: {
+    textAlign: 'center',
+    color: '#999',
+    fontSize: 16,
+  },
+
+  leftButtons: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  rightButtons: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     borderRadius: 8,
     width: '90%',
     backgroundColor: '#fff',
     padding: 10,
-    marginTop: 25,
+    marginTop: 15,
+    marginBottom:10,
   },
   leftButtons: {
     flex: 1,
@@ -286,6 +374,35 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
   },
+  image: {
+    width: width * 0.835, // 80% of screen width
+    height: 150,        // Set a smaller height
+    resizeMode:'cover', // Avoid cropping
+    borderRadius: 10,
+  },
+
+  cardimg: {
+    backgroundColor: '#F6EDF7',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    margin:10,
+    marginBottom:5,
+  },
+  // card: {
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  //   padding: 10,
+  //   marginBottom: 20,
+  //   shadowColor: '#000',
+  //   shadowOpacity: 0.1,
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowRadius: 8,
+  //   elevation: 5,
+  // },
 });
 
 export default AdminPage;

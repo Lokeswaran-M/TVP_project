@@ -23,6 +23,7 @@ import OneMinPresentation from '../screens/OneMinPresentation';
 import StopWatch from '../screens/StopWatch';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import CreateMeetingViewPage from '../screens/CreateMeetingViewPage';
+import MemberDetails from '../screens/MemberDetails';
 import NewMeeting from '../screens/NewMeeting';
 import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
@@ -599,6 +600,7 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
+
       <Stack.Screen
         name="Requirements"
         component={Requirements}
@@ -648,6 +650,13 @@ function AppNavigator() {
               </View>
             </View>
           ),
+        }}
+      />
+        <Stack.Screen
+        name="MemberDetails"
+        component={MemberDetails}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
