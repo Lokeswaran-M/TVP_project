@@ -91,6 +91,7 @@ const Review = ({ route }) => {
           RatingId: selectedRating,
           Description: review,
           Member: selectedMember || null,
+          Stars: rating, 
           Profession: businessName,
         }),
       });
@@ -103,7 +104,7 @@ const Review = ({ route }) => {
     } catch (error) {
       console.error('Failed to submit review:', error);
     }
-  };
+  };  
   const handleRating = (rate) => {
     setRating(rate);
     setErrors((prevErrors) => ({ ...prevErrors, rating: '' }));
