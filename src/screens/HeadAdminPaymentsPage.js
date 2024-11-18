@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   memberItem: {
     backgroundColor: '#FFFFFF',
     padding: 8,
-    paddingVertical:15,
+    paddingVertical:20,
     borderRadius: 10,
     marginBottom: 8,
     elevation: 2,

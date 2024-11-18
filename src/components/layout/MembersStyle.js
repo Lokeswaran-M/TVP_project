@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-
+import { StyleSheet,Dimensions } from 'react-native';
+const { width, height } = Dimensions.get('window'); 
 const styles = StyleSheet.create({
 
   container: {
@@ -237,22 +237,21 @@ const styles = StyleSheet.create({
   alarmContainer: {
     margin: 11,
   },
- memberCountContainer: {
-        position: 'absolute',
-        backgroundColor: 'rgba(250, 250, 250, 0.8)',
-        padding: 10,
-        alignItems: 'center',
-        borderRadius: 20,
-        borderWidth: 2,
-        borderColor: '#A3238F',
-        marginLeft: 250,
-        marginTop: 600,
-    },
-    memberCountText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#A3238F',
-    },
+  memberCountContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: width * 0.75,
+    backgroundColor: 'rgba(250, 250, 250, 0.8)',
+    padding: 10,
+    borderRadius: 20,
+    borderColor: '#A3238F',
+    borderWidth: 2,
+  },
+  memberCountText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#A3238F',
+  },
     noResultsTextcon:{
       justifyContent:'center',
       alignItems:'center',

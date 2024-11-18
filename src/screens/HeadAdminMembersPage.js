@@ -18,7 +18,7 @@ import styles from '../components/layout/MembersStyle';
 import Stars from '../screens/Stars';
 import { API_BASE_URL } from '../constants/Config';
 
-const { width, height } = Dimensions.get('window');
+
 
 const HeadAdminMembersPage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
