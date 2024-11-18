@@ -251,7 +251,7 @@ const HeaderImage = () => {
           }
         } catch (error) {
           console.error('Error updating notifications:', error);
-          Alert.alert('Error', 'Unable to update notifications.');
+          // Alert.alert('Error', 'Unable to update notifications.');
         } finally {
           setLoading(false);
         }
@@ -676,6 +676,7 @@ const styles = StyleSheet.create({
   topNavlogohome:{
     flexDirection: 'row',
     alignItems: 'center',
+    right: 20,
   },
   iconImage:{
     backgroundColor:'#FFFFFF',

@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
+import CurrencyInput from 'react-currency-input-field';
 const Review = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const { businessName, locationId, chapterType } = route.params;
@@ -18,6 +19,8 @@ const Review = ({ route }) => {
   const [members, setMembers] = useState([]);
   const [ratings, setRatings] = useState([]);
   const [errors, setErrors] = useState({});
+  const [showAmountInput, setShowAmountInput] = useState(false);
+const [amount, setAmount] = useState('');
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {

@@ -14,7 +14,7 @@ const NewMeeting = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
-  const [SlotIDs, setSlotIDs] = useState([]); // Track selected SlotIDs
+  const [SlotIDs, setSlotIDs] = useState([]);
   const [date, setDate] = useState(null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [loading, setLoading] = useState(true);
