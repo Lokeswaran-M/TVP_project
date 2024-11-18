@@ -85,15 +85,13 @@ const NewMeeting = () => {
       Alert.alert('Error', 'Failed to create one or more meetings. Please try again.');
     }
   };
-
   const handleSlotClick = (id) => {
     if (SlotIDs.includes(id)) {
-      setSlotIDs((prev) => prev.filter((slotID) => slotID !== id)); // Remove from selected
+      setSlotIDs((prev) => prev.filter((slotID) => slotID !== id));
     } else {
-      setSlotIDs((prev) => [...prev, id]); // Add to selected
+      setSlotIDs((prev) => [...prev, id]);
     }
   };
-
   const showTimePicker = () => setTimePickerVisibility(true);
   const hideTimePicker = () => setTimePickerVisibility(false);
 
