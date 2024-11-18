@@ -450,8 +450,7 @@ console.log("Chapter Type (Slots) value:", slots);
           </View>
         </View>
         <View style={styles.requirementSection}>
-          <Text style={styles.rating}>Reviewed By {review.ReviewerUsername} for {review.RatingName}</Text>
-          <Text style={styles.requirementText}>
+        <Text style={styles.requirementText}>
             {review.Description} 
           </Text>
           {review.Amount !== null && (
@@ -462,6 +461,7 @@ console.log("Chapter Type (Slots) value:", slots);
     }).format(review.Amount)}
   </Text>
 )}
+          <Text style={styles.rating}>Reviewed By {review.ReviewerUsername} for {review.RatingName}</Text>
         </View>
       </View>
     ))}

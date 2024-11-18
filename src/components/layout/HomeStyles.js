@@ -242,9 +242,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 15,
       },
+      rating: {
+        fontSize: 14,
+        color: 'grey',
+        lineHeight: 22,
+      },
       requirementText: {
         fontSize: 14,
-        color: '#7E3F8F',
+        color: '#a3238f',
         lineHeight: 22,
       },
       acknowledgeButton: {
