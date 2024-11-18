@@ -19,6 +19,9 @@ const styles = StyleSheet.create({
       shadowRadius: 8,
       elevation: 5,
     },
+    starIcon: {
+      marginLeft: 5,
+    },    
     image: {
       width: '100%',
       height: 150, 

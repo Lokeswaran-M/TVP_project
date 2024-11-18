@@ -10,6 +10,8 @@ import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
 import { showMessage } from 'react-native-flash-message'; 
+import Stars from '../screens/Stars';
+import profileImage from '../../assets/images/DefaultProfile.jpg';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const navigation = useNavigation();
@@ -24,6 +26,11 @@ const HomeScreen = ({ route }) => {
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [requirementsError, setRequirementsError] = useState(null);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
+
+  const [reviewsData, setReviewsData] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState(null);
+  const [showAllReviews, setShowAllReviews] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState(false);
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
@@ -140,8 +147,30 @@ const HomeScreen = ({ route }) => {
         setRequirementsLoading(false);
       }
     };
+    const fetchReviewsData = async () => {
+      try {
+        const locationId = route.params.locationId;
+        const slots = chapterType;
+console.log("Chapter Type (Slots) value:", slots);
+        console.log("LocationID in Review View-------------------", locationId);
+        console.log("Slots in Review View-------------------------", slots,userId);
+        const response = await fetch(`${API_BASE_URL}/reviewView?locationId=${locationId}&slot=${slots}&UserId=${userId}`);
+        const data = await response.json();
+        console.log("Review View Details in the Home page----------------------------", data);
+        if (response.ok) {
+          setReviewsData(data);
+        } else {
+          setReviewsError(data.error);
+        }
+      } catch (err) {
+        setReviewsError('Failed to fetch requirements');
+      } finally {
+        setReviewsLoading(false);
+      }
+    };    
     fetchEventData();
     fetchRequirementsData();
+    fetchReviewsData();
   }, [userId, route.params.locationId]);
   const handleConfirmClick = async (eventId, locationId, slotId) => {
         setIsConfirmed((prevState) => ({ ...prevState, [eventId]: true }));
@@ -344,8 +373,8 @@ const HomeScreen = ({ route }) => {
     {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
       <View key={index} style={styles.card}>
         <View style={styles.profileSection}>
-        <Image
-  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+<Image
+  source={profileImages[requirement.UserId] ? { uri: profileImages[requirement.UserId] } : profileImage}
   style={styles.profileImage}
 />
           <Text style={styles.profileName}>{requirement.Username}</Text>
@@ -376,46 +405,63 @@ const HomeScreen = ({ route }) => {
         </View>
         {/* ===================================Reviews================================== */}
         <View style={styles.cards}>
-        <View style={styles.header}>
+      <View style={styles.header}>
         <View style={styles.headerRow}>
-  <Text style={styles.headerText}>Reviews</Text>
-  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-  </TouchableOpacity>
-</View>
-  <TouchableOpacity
-    style={styles.addButton}
-    onPress={() => navigation.navigate('Review', {
-      businessName: route.title,
-      locationId: route.params.locationId,
-      chapterType: route.params.chapterType,
-    })}
-  >
-    <View style={styles.buttonContent}>
-      <Icon name="pencil" size={16} color="#fff" style={styles.iconStyle} />
-      <Text style={styles.addButtonText}>Write a Review</Text>
-    </View>
-  </TouchableOpacity>
-</View>    
-          <View>
-            <Text style={styles.line}>
-            ____________________________
-            </Text>
+          <Text style={styles.headerText}>Reviews</Text>
+          <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
+            <Icon name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('Review', {
+            businessName: route.title,
+            locationId: route.params.locationId,
+            chapterType: route.params.chapterType,
+          })}
+        >
+          <View style={styles.buttonContent}>
+            <Icon name="pencil" size={16} color="#fff" style={styles.iconStyle} />
+            <Text style={styles.addButtonText}>Write a Review</Text>
           </View>
-          {requirementsData.length > 0 ? (
+        </TouchableOpacity>
+      </View>
+
+      <View>
+        <Text style={styles.line}>____________________________</Text>
+      </View>
+
+      {reviewsLoading ? (
+  <Text>Loading reviews...</Text>
+) : reviewsError ? (
+  <Text style={styles.errorText}>{reviewsError}</Text>
+) : reviewsData.length > 0 ? (
   <>
-    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+    {reviewsData.slice(0, showAllReviews ? reviewsData.length : 1).map((review, index) => (
       <View key={index} style={styles.card}>
         <View style={styles.profileSection}>
-        <Image
-  source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
-  style={styles.profileImage}
-/>
-          <Text style={styles.profileName}>{requirement.Username}</Text>
+          <Image
+            source={profileImages[review.Reviewed_user_id] ? { uri: profileImages[review.Reviewed_user_id] } : profileImage}
+            style={styles.profileImage}
+          />
+          <View>
+            <Text style={styles.profileName}>{review.ReviewedUsername}</Text>
+            <Stars averageRating={review.Stars} />
+          </View>
         </View>
         <View style={styles.requirementSection}>
-          <Text style={styles.requirementText}>{requirement.Description}</Text>
-          {/* Stars */}
+          <Text style={styles.rating}>Reviewed By {review.ReviewerUsername} for {review.RatingName}</Text>
+          <Text style={styles.requirementText}>
+            {review.Description} 
+          </Text>
+          {review.Amount !== null && (
+  <Text style={styles.requirementText}>
+    {new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+    }).format(review.Amount)}
+  </Text>
+)}
         </View>
       </View>
     ))}
@@ -425,6 +471,7 @@ const HomeScreen = ({ route }) => {
     <Text style={styles.noMeetupText}>No Reviews Available</Text>
   </View>
 )}
+
         </View>
         {/* ================================================ */}
       </View>

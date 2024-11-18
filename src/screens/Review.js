@@ -88,6 +88,7 @@ const Review = ({ route }) => {
       if (!amount) {
         newErrors.amount = 'Please enter an amount.';
       }
+      console.log("Amount--------------------------",amount);
     }
     
     if (!review.trim()) newErrors.review = 'Please enter a comment.';
@@ -98,6 +99,8 @@ const Review = ({ route }) => {
   };    
   const submitReview = async () => {
     if (!validateForm()) return;
+    const formattedAmount = amount.replace(/,/g, '');
+  
     try {
       const response = await fetch(`${API_BASE_URL}/review`, {
         method: 'POST',
@@ -109,10 +112,12 @@ const Review = ({ route }) => {
           RatingId: selectedRating,
           Description: review,
           Member: selectedMember || null,
-          Stars: rating, 
+          Stars: rating,
           Profession: businessName,
+          Amount: formattedAmount,
         }),
       });
+  
       if (response.ok) {
         alert('Review created successfully!');
         navigation.goBack();
@@ -170,16 +175,21 @@ const Review = ({ route }) => {
         </Picker>
       </View>
       {errors.selectedMember && <Text style={styles.errorText}>{errors.selectedMember}</Text>}
-      <Text style={styles.label}>Enter Amount</Text>
-      <TextInput
-        style={styles.textInput1}
-        value={amount}
-        placeholder="₹ Enter the amount"
-        placeholderTextColor="black"
-        keyboardType="numeric"
-        onChangeText={handleChange}
-      />
-{errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+      
+      {selectedRating === 9 && (
+  <View>
+    {/* <Text style={styles.label}>Enter Amount</Text> */}
+    <TextInput
+      style={styles.textInput1}
+      value={amount}
+      placeholder="₹ Enter the amount"
+      placeholderTextColor="black"
+      keyboardType="numeric"
+      onChangeText={handleChange}
+    />
+    {errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
+  </View>
+)}
         <Text style={styles.label}>Comment</Text>
         <TextInput
           style={styles.textInput}
