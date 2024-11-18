@@ -471,7 +471,6 @@ console.log("Chapter Type (Slots) value:", slots);
     <Text style={styles.noMeetupText}>No Reviews Available</Text>
   </View>
 )}
-
         </View>
         {/* ================================================ */}
       </View>
