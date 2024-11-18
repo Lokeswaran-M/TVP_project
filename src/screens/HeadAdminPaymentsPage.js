@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     left: width * 0.75,
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
-    borderRadius: 20,
+    borderRadius: 19,
     borderColor: '#A3238F',
     borderWidth: 2,
   },
