@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
-import CurrencyInput from 'react-currency-input-field';
+import { MaskedTextInput } from 'react-native-mask-text';
 const Review = ({ route }) => {
   const userId = useSelector((state) => state.user?.userId);
   const { businessName, locationId, chapterType } = route.params;
@@ -19,8 +19,15 @@ const Review = ({ route }) => {
   const [members, setMembers] = useState([]);
   const [ratings, setRatings] = useState([]);
   const [errors, setErrors] = useState({});
-  const [showAmountInput, setShowAmountInput] = useState(false);
-const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState('');
+  const formatAmount = (value) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+  const handleChange = (text) => {
+    const formattedValue = formatAmount(text);
+    setAmount(formattedValue);
+  };
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -76,11 +83,19 @@ const [amount, setAmount] = useState('');
     const newErrors = {};
     if (!selectedMember) newErrors.selectedMember = 'Please choose a member.';
     if (!selectedRating) newErrors.selectedRating = 'Please select a rating type.';
+    console.log("Validation----------------",selectedRating)
+    if (selectedRating === 9) {
+      if (!amount) {
+        newErrors.amount = 'Please enter an amount.';
+      }
+    }
+    
     if (!review.trim()) newErrors.review = 'Please enter a comment.';
     if (rating === 0) newErrors.rating = 'Please select a rating.';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };  
+  };    
   const submitReview = async () => {
     if (!validateForm()) return;
     try {
@@ -155,6 +170,16 @@ const [amount, setAmount] = useState('');
         </Picker>
       </View>
       {errors.selectedMember && <Text style={styles.errorText}>{errors.selectedMember}</Text>}
+      <Text style={styles.label}>Enter Amount</Text>
+      <TextInput
+        style={styles.textInput1}
+        value={amount}
+        placeholder="₹ Enter the amount"
+        placeholderTextColor="black"
+        keyboardType="numeric"
+        onChangeText={handleChange}
+      />
+{errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
         <Text style={styles.label}>Comment</Text>
         <TextInput
           style={styles.textInput}
@@ -255,6 +280,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#a3238f',
     marginBottom: 10,
+  },
+  textInput1: {
+    borderColor: '#a3238f',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#fff',
   },
   textInput: {
     height: 100,
