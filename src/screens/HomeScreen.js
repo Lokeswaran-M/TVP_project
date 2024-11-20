@@ -221,35 +221,41 @@ console.log("Chapter Type (Slots) value:", slots);
     };
     const totalAmounts = groupAndSumAmounts(topFiveData);
     totalAmounts.forEach(user => {
-      console.log(`User ${user.Username} (${user.UserId}): Total Amount: ₹${user.Amount}`);
+      user.formattedAmount = user.Amount.toLocaleString('en-IN');
+      console.log(`User ${user.Username} (${user.UserId}): Total Amount: ₹${user.formattedAmount}`);
     });
     const sortedData = totalAmounts.sort((a, b) => b.Amount - a.Amount);
     setProcessedData(sortedData);
-}, [topFiveData]);  
-useEffect(() => {
-  console.log("Event Data before processing:", topFiveData);
-  const reviewerAmounts = (data) => {
-    const groupedData = data.reduce((acc, curr) => {
-      const userId = curr.Reviewed_user_id;
-      const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
-      const username = curr.ReviewedUser; 
-      if (acc[userId]) {
-        acc[userId].Amount += amount;
-      } else {
-        acc[userId] = { UserId: userId, Amount: amount, Username: username };
-      }
-      return acc;
-    }, {});
-    return Object.values(groupedData);
-  };
-
-  const totalAmounts = reviewerAmounts(topFiveData);
-  totalAmounts.forEach(user => {
-    console.log(`ReviewedUser ${user.Username} (${user.UserId}): Total Amount: ₹${user.Amount}`);
-  });
-  const sortedAmounts = totalAmounts.sort((a, b) => b.Amount - a.Amount);
-  setProcessedReviewerData(sortedAmounts);
-}, [topFiveData]); 
+  }, [topFiveData]);
+     
+  useEffect(() => {
+    console.log("Event Data before processing:", topFiveData);
+  
+    const reviewerAmounts = (data) => {
+      const groupedData = data.reduce((acc, curr) => {
+        const userId = curr.Reviewed_user_id;
+        const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
+        const username = curr.ReviewedUser; 
+        if (acc[userId]) {
+          acc[userId].Amount += amount;
+        } else {
+          acc[userId] = { UserId: userId, Amount: amount, Username: username };
+        }
+        return acc;
+      }, {});
+      return Object.values(groupedData);
+    };
+  
+    const totalAmounts = reviewerAmounts(topFiveData);
+  
+    totalAmounts.forEach(user => {
+      user.formattedAmount = user.Amount.toLocaleString('en-IN');
+      console.log(`ReviewedUser ${user.Username} (${user.UserId}): Total Amount: ${user.formattedAmount}`);
+    });
+  
+    const sortedAmounts = totalAmounts.sort((a, b) => b.Amount - a.Amount);
+    setProcessedReviewerData(sortedAmounts);
+  }, [topFiveData]);   
   const handleButtonClick = (buttonType) => {
     setButtonClicked(buttonType);
   };
@@ -306,7 +312,7 @@ useEffect(() => {
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 acknowledgedBy: userId,
-                Username: requirement.Username,
+                // Username: requirement.Username,
                 userId: requirement.UserId,
               }),
             });
@@ -344,13 +350,13 @@ useEffect(() => {
                 style={styles.profileImage} 
               />
               <Text style={styles.usernameText}>{item.Username}</Text>
-              <Text style={styles.amountText}>₹{item.Amount.toFixed(2)}</Text>
+              <Text style={styles.amountText}>₹{item.formattedAmount}</Text>
             </View>
           ))
         ) : (
           <Text>No data found</Text>
         );
-      };      
+      };           
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
