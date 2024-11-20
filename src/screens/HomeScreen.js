@@ -64,8 +64,9 @@ const HomeScreen = ({ route }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
       const data = await response.json();
+      const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
       if (response.ok) {
-        setProfileImages((prevImages) => ({ ...prevImages, [userId]: data.imageUrl }));
+        setProfileImages((prevImages) => ({ ...prevImages, [userId]: uniqueImageUrl }));
       } else {
         console.error(`Failed to fetch profile image for UserId ${userId}`);
       }
