@@ -62,7 +62,15 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
   };
 
   return (
+
+    
     <View style={styles.container}>
+
+            <View>
+        <TouchableOpacity style={styles.AttendanceButton} onPress={() => navigation.navigate('PreAttendanceViewPage', { eventId,slotId })}>
+          <Text style={styles.downloadButtonText}>One Min Presentation</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.content}>
         <Text style={styles.label}>Date and Time:</Text>
         <Text style={styles.value}>{new Date(dateTime).toLocaleString()}</Text>
@@ -135,19 +143,24 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 50,
   },
+  AttendanceButton: {
+    position: 'absolute',
+    bottom: 30, 
+    left: 20, 
+    backgroundColor: '#a3238f',
+    padding: 10,
+    borderRadius: 9,
+    borderTopLeftRadius:20,
+  },
   downloadButtonText: {
     color: 'white',
     fontWeight: 'bold',
+    paddingHorizontal:20,
+
   },
 });
 
 export default CreateMeetingViewPage;
-
-
-
-
-
-
 
 
 

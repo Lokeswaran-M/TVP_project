@@ -62,7 +62,7 @@ const OneMinPresentation = ({ route, navigation }) => {
   );
 
   const renderMember = ({ item }) => (
-    <View style={styles.memberItem}>
+    <TouchableOpacity style={styles.memberItem} onPress={() => handleAlarmPress(item)} >
       <View style={styles.memberDetails}>
         <ProfilePic image={item.profileImage} name={item.Username} />
         <View style={styles.memberText}>
@@ -75,7 +75,7 @@ const OneMinPresentation = ({ route, navigation }) => {
           <MaterialIcons name="alarm" size={28} color="#A3238F" />
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const handleAlarmPress = (member) => {

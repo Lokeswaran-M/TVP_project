@@ -18,31 +18,44 @@ const AdminPage = () => {
   // Fetch Requirements Data and Profile Images
   const fetchRequirementsData = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/requirements`);
+      setRequirementsLoading(true);
+  
+      const response = await fetch(`${API_BASE_URL}/admin/requirements`);
       const data = await response.json();
-      console.log('==========================data========================', data);
-
-      const profiles = {};
-      for (let requirement of data) {
-        const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${requirement.UserId}`);
-        const profileData = await profileResponse.json();
-        console.log('==========================profileData========================', profileData);
-        profiles[requirement.UserId] = profileData.imageUrl;
-      }
+      
+      console.log('Fetched Requirements Data:', data);
+      // if (!response.ok) throw new Error('Failed to fetch requirements data.');
+  
 
 
-      if (response.ok) {
-        setRequirementsData(data);
-        setProfileImages(profiles); // Set profile images once all are fetched
-      } else {
-        console.error('Error fetching requirements:', data.error);
-      }
+  
+      const profiles = await Promise.all(
+        data.map(async (requirement) => {
+          try {
+            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${requirement.UserId}`);
+            const profileData = await profileResponse.json();
+            return { userId: requirement.UserId, imageUrl: profileData.imageUrl || 'https://via.placeholder.com/50' };
+          } catch (error) {
+            console.error(`Error fetching profile image for user ${requirement.UserId}:`, error);
+            return { userId: requirement.UserId, imageUrl: 'https://via.placeholder.com/50' };
+          }
+        })
+      );
+  
+      const profileMap = profiles.reduce((map, profile) => {
+        map[profile.userId] = profile.imageUrl;
+        return map;
+      }, {});
+  
+      setRequirementsData(data);
+      setProfileImages(profileMap);
     } catch (error) {
-      console.error('Error fetching requirements:', error);
+      console.error('Error fetching requirements data:', error);
     } finally {
       setRequirementsLoading(false);
     }
   };
+  
 
   // Handle acknowledging a requirement
 
@@ -108,7 +121,7 @@ const AdminPage = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <View><Text style={styles.line}>_______________________________________________________________________________</Text></View>
+          <View><Text style={styles.line}></Text></View>
           {requirementsData.length > 0 ? (
             <>
               {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
@@ -119,9 +132,12 @@ const AdminPage = () => {
                       source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
                       style={styles.profileImage}
                     />
-                    <Text style={styles.profileName}>{requirement.Username}</Text>
+
+
                   </View>
                   <View style={styles.requirementSection}>
+                  <Text style={styles.profileName}>{requirement.Username}</Text>
+
                     <Text style={styles.requirementText}>{requirement.Description}</Text>
           
                   </View>
@@ -145,7 +161,7 @@ const AdminPage = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <View><Text style={styles.line}>_______________________________________________________________________________</Text></View>
+          <View><Text style={styles.line}></Text></View>
           {requirementsData.length > 0 ? (
             <>
               {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
@@ -156,11 +172,13 @@ const AdminPage = () => {
                       source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
                       style={styles.profileImage}
                     />
-                    <Text style={styles.profileName}>{requirement.Username}</Text>
+                  
                   </View>
                   <View style={styles.requirementSection}>
+                  <Text style={styles.profileName}>{requirement.Username}</Text>
+
                     <Text style={styles.requirementText}>{requirement.Description}</Text>
-                    {/* Stars or reviews could go here */}
+          
                   </View>
                 </View>
               ))}
@@ -172,30 +190,7 @@ const AdminPage = () => {
           )}
         </View>
 
-        {/* Admin Navigation Buttons */}
-        {/* <View style={styles.buttonContainer}>
-          <View style={styles.leftButtons}>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress1}>
-              <Icon name="users" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Members</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress2}>
-              <Feather name="map-pin" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Locations</Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.rightButtons}>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress3}>
-              <Feather name="users" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>New Sub</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress4}>
-              <Icon name="money" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Payments</Text>
-            </TouchableOpacity>
-          </View>
-        </View> */}
       </View>
     </ScrollView>
   );
@@ -260,11 +255,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+
   line: {
-    marginVertical: 10,
-    fontSize: 10,
-    fontWeight:'900',
-    color: '#A3238F',
+    marginVertical: 15,
+    width: '100%', 
+    height: 2, 
+    backgroundColor: '#A3238F',
   },
   card: {
     flexDirection: 'row',
@@ -290,7 +286,8 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#333',
+    color: '#a3238f',
+    fontWeight:'bold',
   },
   requirementSection: {
     marginLeft: 15,
@@ -302,7 +299,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   acknowledgeButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#A3238f',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -375,16 +372,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   image: {
-    width: width * 0.835, // 80% of screen width
-    height: 150,        // Set a smaller height
-    resizeMode:'cover', // Avoid cropping
+    width: width * 0.790, 
+    height: 150,        
+    resizeMode:'cover',
     borderRadius: 10,
   },
 
   cardimg: {
     backgroundColor: '#F6EDF7',
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

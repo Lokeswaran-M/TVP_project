@@ -20,6 +20,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
 import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import OneMinPresentation from '../screens/OneMinPresentation';
+import PreAttendanceViewPage from '../screens/PreAttendanceViewPage';
 import StopWatch from '../screens/StopWatch';
 import CreatingMeeting from '../screens/Creatingmeeting';
 import CreateMeetingViewPage from '../screens/CreateMeetingViewPage';
@@ -166,6 +167,28 @@ function StackMeetingNavigator() {
               ),
             })}
       />
+         <Stack.Screen
+        name="PreAttendanceViewPage"
+        component={PreAttendanceViewPage}
+        options={({ navigation }) => ({
+              drawerLabel: 'One Min Presentation',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="microphone" color={color} size={size} />
+              ),
+              header: () => (
+                <View style={styles.topNav}>
+                  
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Ionicons name="checkmark-done-circle" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>Pre - Attendance</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+      />
+      
       <Stack.Screen
         name="StopWatch"
         component={StopWatch}
