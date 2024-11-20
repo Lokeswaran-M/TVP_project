@@ -17,7 +17,10 @@ const HomeScreen = ({ route }) => {
   const navigation = useNavigation();
   const { chapterType } = route.params;
   const [isConfirmed, setIsConfirmed] = useState({});
-  const [eventData, setEventData] = useState(null);
+  const [topFiveData, setTopFiveData] = useState([]);
+  const [topFiveerror, settopFiveError] = useState(null);
+  const [showAlltopFive, setShowAlltopFive] = useState(false);
+  const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAllEvents, setShowAllEvents] = useState(false);
@@ -26,11 +29,13 @@ const HomeScreen = ({ route }) => {
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [requirementsError, setRequirementsError] = useState(null);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
-
   const [reviewsData, setReviewsData] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(true);
   const [reviewsError, setReviewsError] = useState(null);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [processedData, setProcessedData] = useState([]);
+  const [processedReviewerData, setProcessedReviewerData] = useState([]);
+  const [buttonClicked, setButtonClicked] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(false);
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
@@ -97,13 +102,38 @@ const HomeScreen = ({ route }) => {
   }, []);  
   useEffect(() => {
     requestNotificationPermissions();
-    if (requirementsData.length > 0) {
-      requirementsData.forEach((requirement) => {
-        fetchProfileImage(requirement.UserId);
-      });
-    }
-  }, [requirementsData]);
+    const dataArrays = [requirementsData, reviewsData, processedData, processedReviewerData];
+    dataArrays.forEach((dataArray) => {
+      if (dataArray.length > 0) {
+        dataArray.forEach((data) => {
+          fetchProfileImage(data.UserId);
+        });
+      }
+    });
+  }, [requirementsData, reviewsData, processedData, processedReviewerData]);  
   useEffect(() => {
+    const fetchTopFiveData = async () => {
+      try {
+        const locationId = route.params.locationId;
+        const slots = chapterType;
+        console.log("LocationID for getUpcomingEvents-------------------", locationId);
+        console.log("Slots for getUpcomingEvents-------------------------", slots);
+        const response = await fetch(`${API_BASE_URL}/TopFive?locationId=${locationId}&slot=${slots}`);
+        const data = await response.json();
+        console.log("Top Five Data--------------------------------------", data);
+    
+        if (response.ok) {
+          setTopFiveData(data);
+        } else {
+          settopFiveError(data.error);
+        }
+      } catch (err) {
+        console.error("Error fetching data", err);
+        settopFiveError('Failed to fetch data');
+      } finally {
+        setLoading(false);
+      }
+    };    
     const fetchEventData = async () => {
       try {
         const locationId = route.params.locationId;
@@ -114,9 +144,9 @@ const HomeScreen = ({ route }) => {
         const data = await response.json();
         console.log("Data in the get Upcoming events---------------------------------###############################",data);
         if (response.ok) {
-          setEventData(data.events);
+          setEventData(data.events || []);
         } else {
-          setError(data.error);
+          setEventData([]);
         }
       } catch (err) {
         console.error("Error fetching data", err);
@@ -168,10 +198,61 @@ console.log("Chapter Type (Slots) value:", slots);
         setReviewsLoading(false);
       }
     };    
+    fetchTopFiveData();
     fetchEventData();
     fetchRequirementsData();
     fetchReviewsData();
   }, [userId, route.params.locationId]);
+  useEffect(() => {
+    console.log("Event Data before processing:", topFiveData);
+    const groupAndSumAmounts = (data) => {
+      const groupedData = data.reduce((acc, curr) => {
+        const userId = curr.UserId;
+        const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
+        const username = curr.Username;
+        if (acc[userId]) {
+          acc[userId].Amount += amount;
+        } else {
+          acc[userId] = { UserId: userId, Amount: amount, Username: username };
+        }
+        return acc;
+      }, {});
+      return Object.values(groupedData);
+    };
+    const totalAmounts = groupAndSumAmounts(topFiveData);
+    totalAmounts.forEach(user => {
+      console.log(`User ${user.Username} (${user.UserId}): Total Amount: ₹${user.Amount}`);
+    });
+    const sortedData = totalAmounts.sort((a, b) => b.Amount - a.Amount);
+    setProcessedData(sortedData);
+}, [topFiveData]);  
+useEffect(() => {
+  console.log("Event Data before processing:", topFiveData);
+  const reviewerAmounts = (data) => {
+    const groupedData = data.reduce((acc, curr) => {
+      const userId = curr.Reviewed_user_id;
+      const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
+      const username = curr.ReviewedUser; 
+      if (acc[userId]) {
+        acc[userId].Amount += amount;
+      } else {
+        acc[userId] = { UserId: userId, Amount: amount, Username: username };
+      }
+      return acc;
+    }, {});
+    return Object.values(groupedData);
+  };
+
+  const totalAmounts = reviewerAmounts(topFiveData);
+  totalAmounts.forEach(user => {
+    console.log(`ReviewedUser ${user.Username} (${user.UserId}): Total Amount: ₹${user.Amount}`);
+  });
+  const sortedAmounts = totalAmounts.sort((a, b) => b.Amount - a.Amount);
+  setProcessedReviewerData(sortedAmounts);
+}, [topFiveData]); 
+  const handleButtonClick = (buttonType) => {
+    setButtonClicked(buttonType);
+  };
   const handleConfirmClick = async (eventId, locationId, slotId) => {
         setIsConfirmed((prevState) => ({ ...prevState, [eventId]: true }));
         try {
@@ -191,7 +272,6 @@ console.log("Chapter Type (Slots) value:", slots);
           const data = await response.json();
           if (response.ok) {
             console.log("Attendance confirmed successfully");
-            // Alert.alert('Success', 'Attendance confirmed successfully');
           } else {
             Alert.alert('Error', data.error || 'Failed to confirm attendance');
           }
@@ -254,7 +334,23 @@ console.log("Chapter Type (Slots) value:", slots);
           console.error('Acknowledge Error:', error);
           Alert.alert('Error', 'Network or server issue');
         }
-      };         
+      };   
+      const renderData = (data) => {
+        return data.length > 0 ? (
+          data.map((item) => (
+            <View key={item.UserId} style={styles.userContainer}>
+              <Image 
+                source={profileImages[item.UserId] ? { uri: profileImages[item.UserId] } : profileImage} 
+                style={styles.profileImage} 
+              />
+              <Text style={styles.usernameText}>{item.Username}</Text>
+              <Text style={styles.amountText}>₹{item.Amount.toFixed(2)}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>No data found</Text>
+        );
+      };      
   if (loading || requirementsLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -281,6 +377,29 @@ console.log("Chapter Type (Slots) value:", slots);
             style={styles.image}
           />
         </View>
+        <View style={styles.cards}>
+  <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
+
+  <TouchableOpacity style={styles.addButton1}  onPress={() => handleButtonClick('given')}>
+    <Text style={styles.buttonText1}>GIVEN</Text>
+  </TouchableOpacity>
+  <TouchableOpacity style={styles.addButton1} onPress={() => handleButtonClick('taken')}>
+    <Text style={styles.buttonText1}>TAKEN</Text>
+  </TouchableOpacity>
+  <View style={styles.rankingTable}>
+    <View style={styles.tableHeader}>
+      <Text style={styles.tableHeaderText}>#RANK</Text>
+      <Text style={styles.tableHeaderText}>AMOUNT</Text>
+    </View>
+    <View style={styles.container1}>
+    {buttonClicked === 'given' || buttonClicked === 'taken' ? (
+      renderData(buttonClicked === 'given' ? processedData : processedReviewerData)
+    ) : (
+      renderData(processedData)
+    )}
+</View>
+  </View>
+</View>
         {/* =======================Meetings=========================== */}
         <View style={styles.cards}>
         <View style={styles.dashboardContainer}>
