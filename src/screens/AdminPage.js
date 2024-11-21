@@ -11,10 +11,12 @@ const { width, height } = Dimensions.get('window');
 const AdminPage = () => {
   const navigation = useNavigation();
   const [requirementsData, setRequirementsData] = useState([]);
+  const [reviewData, setreviewData] = useState([]);
   const [profileImages, setProfileImages] = useState({});
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
-
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  
   // Fetch Requirements Data and Profile Images
   const fetchRequirementsData = async () => {
     try {
@@ -26,8 +28,9 @@ const AdminPage = () => {
       console.log('Fetched Requirements Data:', data);
       // if (!response.ok) throw new Error('Failed to fetch requirements data.');
   
-
-
+      const responsereviwe = await fetch(`${API_BASE_URL}/admin/reviews`);
+      const review = await responsereviwe.json();
+      console.log('Fetched review Data:', review);
   
       const profiles = await Promise.all(
         data.map(async (requirement) => {
@@ -48,6 +51,7 @@ const AdminPage = () => {
       }, {});
   
       setRequirementsData(data);
+      setreviewData(review);
       setProfileImages(profileMap);
     } catch (error) {
       console.error('Error fetching requirements data:', error);
@@ -113,82 +117,77 @@ const AdminPage = () => {
         </View>
         {/* ===============================Requirements=============================== */}
         <View style={styles.cards}>
-          <View style={styles.header}>
-            <View style={styles.headerRow}>
-              <Text style={styles.headerText}>Requirements</Text>
-              <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-              </TouchableOpacity>
-            </View>
+  <View style={styles.header}>
+    <View style={styles.headerRow}>
+      <Text style={styles.headerText}>Requirements</Text>
+      <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+        <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    </View>
+  </View>
+  <View><Text style={styles.line}></Text></View>
+  {requirementsData.length > 0 ? (
+    <>
+      {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+        <View key={index} style={styles.card}>
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+              style={styles.profileImage}
+            />
           </View>
-          <View><Text style={styles.line}></Text></View>
-          {requirementsData.length > 0 ? (
-            <>
-              {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
-                <View key={index} style={styles.card}>
-                  <View style={styles.profileSection}>
-                    {/* Ensure the image URL exists */}
-                    <Image
-                      source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
-                      style={styles.profileImage}
-                    />
-
-
-                  </View>
-                  <View style={styles.requirementSection}>
-                  <Text style={styles.profileName}>{requirement.Username}</Text>
-
-                    <Text style={styles.requirementText}>{requirement.Description}</Text>
-          
-                  </View>
-                </View>
-              ))}
-            </>
-          ) : (
-            <View style={styles.noMeetupCard}>
-              <Text style={styles.noMeetupText}>No Requirements Available</Text>
-            </View>
-          )}
+          <View style={styles.requirementSection}>
+            <Text style={styles.profileName}>{requirement.Username}</Text>
+            <Text style={styles.requirementText}>{requirement.Description}</Text>
+          </View>
         </View>
+      ))}
+    </>
+  ) : (
+    <View style={styles.noMeetupCard}>
+      <Text style={styles.noMeetupText}>No Requirements Available</Text>
+    </View>
+  )}
+</View>
+
 
         {/* ===================================Reviews================================== */}
-        <View style={styles.cards}>
-          <View style={styles.header}>
-            <View style={styles.headerRow}>
-              <Text style={styles.headerText}>Reviews</Text>
-              <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View><Text style={styles.line}></Text></View>
-          {requirementsData.length > 0 ? (
-            <>
-              {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
-                <View key={index} style={styles.card}>
-                  <View style={styles.profileSection}>
-                    {/* Ensure the image URL exists */}
-                    <Image
-                      source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
-                      style={styles.profileImage}
-                    />
-                  
-                  </View>
-                  <View style={styles.requirementSection}>
-                  <Text style={styles.profileName}>{requirement.Username}</Text>
 
-                    <Text style={styles.requirementText}>{requirement.Description}</Text>
-          
-                  </View>
-                </View>
-              ))}
-            </>
-          ) : (
-            <View style={styles.noMeetupCard}>
-              <Text style={styles.noMeetupText}>No Reviews Available</Text>
-            </View>
-          )}
+        <View style={styles.cards}>
+  <View style={styles.header}>
+    <View style={styles.headerRow}>
+      <Text style={styles.headerText}>Reviews</Text>
+      <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
+        <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    </View>
+  </View>
+  <View><Text style={styles.line}></Text></View>
+  {reviewData.length > 0 ? (
+    <>
+      {reviewData.slice(0, showAllReviews ? reviewData.length : 1).map((review, index) => (
+        <View key={index} style={styles.card}>
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: profileImages[review.UserId] || 'https://via.placeholder.com/50' }}
+              style={styles.profileImage}
+            />
+          </View>
+          <View style={styles.requirementSection}>
+            <Text style={styles.profileName}>{review.Username || "Unknown User"}</Text>
+            <Text style={styles.requirementText}>{review.Description || "No description provided."}</Text>
+          </View>
         </View>
+      ))}
+    </>
+  ) : (
+    <View style={styles.noMeetupCard}>
+      <Text style={styles.noMeetupText}>No Reviews Available</Text>
+    </View>
+  )}
+</View>
+
+
 
 
       </View>
@@ -201,7 +200,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ccc',
-    padding: 5,
+    // padding: 5,
   },
   containermain: {
     justifyContent: 'flex-start',

@@ -128,7 +128,7 @@ const AuthNavigator = () => {
       <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',  ...headerOptions}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown: true,  ...headerOptions}} />
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown:false,  ...headerOptions}} />
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
