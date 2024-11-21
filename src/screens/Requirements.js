@@ -103,7 +103,8 @@ const Requirements = ({ route }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: selectedMember,
+          userId: userId,
+          Member: selectedMember || null,
         }),
       });
       const requirementsubmitData = await requirementsubmitResponse.json();

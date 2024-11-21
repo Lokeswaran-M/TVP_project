@@ -239,51 +239,34 @@ function StackPaymentNavigator() {
 }
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-
-// const HeaderImage = ({ navigation }) => (
-//   <View style={styles.topNavlogohome}>
-//     <Image 
-//       source={require('../../assets/images/BMW.png')} 
-//       style={styles.iconImage}
-//     />
-//     <TouchableOpacity onPress={handleNotificationPress} disabled={loading}>
-//       <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
-//     </TouchableOpacity>
-//   </View>
-// );
-
 const HeaderImage = () => {
   const [loading, setLoading] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0); 
   const navigation = useNavigation();
-  const userID = useSelector((state) => state.user?.userId);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const updateNotifications = async () => {
+  const userID = useSelector((state) => state.user?.userId); 
+  console.log("UserId for notification count-----------------------",userID);
+  useEffect(() => {
+    if (userID) {
+      const fetchNotificationCount = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${API_BASE_URL}/api/notifications/${userID}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch notifications');
+          const response = await fetch(`${API_BASE_URL}/api/notifications/count/${userID}`);
+          const data = await response.json();
+          console.log("Data for Notification Count------------------------",data);
+          if (response.ok) {
+            setNotificationCount(data.notificationCount);
+          } else {
+            console.error('Error fetching notification count:', data.message || 'Unknown error');
           }
         } catch (error) {
-          console.error('Error updating notifications:', error);
-          // Alert.alert('Error', 'Unable to update notifications.');
+          console.error('Error fetching notification count:', error);
         } finally {
           setLoading(false);
         }
       };
-
-      updateNotifications();
-    }, [userID])
-  );
-
+      fetchNotificationCount();
+    }
+  }, [userID]);
   return (
     <View style={styles.topNavlogohome}>
       <Image
@@ -295,6 +278,9 @@ const HeaderImage = () => {
         disabled={loading}
       >
         <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
+        {notificationCount > 0 && (
+          <Text style={styles.notificationCount}>{notificationCount}</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -700,6 +686,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     right: 20,
+  },
+  notificationCount: {
+    borderColor: "white",
+    borderWidth: 1,
+    position: 'absolute',
+    top: -4,
+    right: -8,
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    textAlign: 'center',
+    fontSize: 12,
   },
   iconImage:{
     backgroundColor:'#FFFFFF',

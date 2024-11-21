@@ -220,22 +220,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
       },
-      profileImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 10,
-      },
       profileName: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#a3238f',
-      },
-      profileImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 10,
       },
       requirementSection: {
         backgroundColor: '#fff',
@@ -286,7 +274,6 @@ const styles = StyleSheet.create({
       borderRadius: 4,
       marginHorizontal: 4,
     },
-  
     noMeetupCard: {
       padding: 20,
       backgroundColor: '#f8f9fa',
@@ -297,6 +284,96 @@ const styles = StyleSheet.create({
     noMeetupText: {
       fontSize: 16,
       color: '#6C757D',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+      alignContent: 'center',
+      color: '#a3238f',
+    },
+    buttonContainer: {
+      flexDirection: 'row',  
+      justifyContent: 'space-between',
+      marginBottom: 20,
+    },
+    addButton1: {
+      backgroundColor: '#a3238f',
+      padding: 10,
+      borderRadius: 5,
+      marginBottom: 20,
+    },
+    buttonText1: {
+      color: '#fff',
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    rankingTable: {
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 5,
+      padding: 10,
+    },
+    tableHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },
+    tableHeaderText: {
+      fontWeight: 'bold',
+      color: '#a3238f',
+    },
+    tableRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },
+    usernameText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginRight: 10,
+    },
+    container1: {
+      flex: 1,
+      padding: 10,
+      backgroundColor: '#F3ECF3',
+      margin: 8,
+      borderRadius: 10,
+    },
+    userContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 15,
+      padding: 10,
+      backgroundColor: 'white',
+      borderRadius: 10,
+    },
+    rankContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      margin: 5,
+    },
+    rankText: {
+      marginRight: 10,
+      fontWeight: 'bold',
+      color: '#a3238f',
+    },
+    nameText: {
+      fontWeight: 'bold',
+      color: '#a3238f',
+    },
+    amountText: {
+      fontWeight: 'bold',
+      color: '#a3238f',
+      textAlign: 'right', 
+      width: 100,
+    },
+    dataContainer: {
+      marginBottom: 10,
+      padding: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
     },
   });
   export default styles;
