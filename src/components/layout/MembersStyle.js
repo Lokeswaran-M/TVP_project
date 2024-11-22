@@ -132,9 +132,7 @@ const styles = StyleSheet.create({
   },
 
   
-  alarmContainer: {
-    margin: 11,
-  },
+
   filterButton: {
     paddingVertical: 5,
     paddingHorizontal: 8,
@@ -238,6 +236,7 @@ const styles = StyleSheet.create({
   },
   alarmContainer: {
     margin: 11,
+    paddingLeft:60,
   },
   memberCountContainer: {
     position: 'absolute',

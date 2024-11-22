@@ -103,13 +103,24 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
   };
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
-      <View style={styles.memberDetails}>
-        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
-        <View style={styles.memberText}>
-          <Text style={styles.memberName}>{item.Username}</Text>
-          <Text style={styles.memberRole}>{item.Profession}</Text>
-        </View>
-      </View>
+ <View style={styles.imageColumn}>
+
+<Image
+ source={{ uri: item.profileImage }} // Use item.profileImage instead of image
+  style={[
+    styles.profileImage,
+
+  ]}
+/>
+</View>
+
+{/* Text Column */}
+<View style={styles.textColumn}>
+<Text style={styles.memberName}>{item.Username}</Text>
+<Text style={styles.memberRole} numberOfLines={1}>
+  {item.Profession} {/* Change item.Profession instead of member.Profession */}
+</Text>
+</View>
       <View style={styles.alarmContainer}>
         <Icon name="camera" size={24} color="#A3238F" />
       </View>
