@@ -15,14 +15,14 @@ const Stars = ({ averageRating }) => {
   const starColor = isNegative ? negativeStarColor : positiveStarColor;
 
   const stars = Array(filledStars).fill(0).map((_, index) => (
-    <Icon key={index} name="star" size={22} color={starColor} style={styles.starIcon} />
+    <Icon key={index} name="star" size={18} color={starColor} style={styles.starIcon} />
   ));
   if (hasHalfStar) {
     stars.push(
       <Icon
         key="half"
         name="star-half-full"
-        size={22}
+        size={18}
         color={starColor}
         style={styles.starIcon}
       />
@@ -34,7 +34,7 @@ const Stars = ({ averageRating }) => {
       <Icon
         key="full"
         name="star"
-        size={22}
+        size={18}
         color={starColor}
         style={styles.starIcon}
       />
@@ -46,7 +46,7 @@ const Stars = ({ averageRating }) => {
     <Icon
       key={filledStars + index + (hasHalfStar ? 1 : 0) + (hasAdditionalFullStar ? 1 : 0)}
       name="star-o"
-      size={22}
+      size={18}
       color={starColor}
       style={styles.starIcon}
     />

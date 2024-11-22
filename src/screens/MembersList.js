@@ -104,38 +104,47 @@ const TabContent = ({ chapterType, locationId, userId }) => {
   keyExtractor={(item) => item.UserId.toString()}
   contentContainerStyle={styles.memberList}
   renderItem={({ item }) => (
-    <TouchableOpacity
-      style={styles.memberItem}
-      onPress={() =>
-        navigation.navigate('MemberDetails', {
-          userId: item.UserId,
-          Profession: item.Profession,
-        })
-      }
-    >
-     <View style={styles.memberDetails}>
-  {item.RollId === 2 && (
-    <View style={styles.crownContainer}>
-      <FontAwesome6 name="crown" size={18} color="#FFD700" />
+    <View>
+      <TouchableOpacity
+        style={styles.memberItem}
+        onPress={() =>
+          navigation.navigate('MemberDetails', {
+            userId: item.UserId,
+            Profession: item.Profession,
+          })
+        }
+      >
+        {/* Image and Icon Column */}
+        <View style={styles.imageColumn}>
+          {item.RollId === 2 && (
+            <View style={styles.crownContainer}>
+              <FontAwesome6 name="crown" size={18} color="#FFD700" />
+            </View>
+          )}
+          <Image
+            source={{ uri: item.profileImage }}
+            style={[
+              styles.profileImage,
+              item.RollId === 2 && styles.profileImageWithBorder,
+            ]}
+          />
+        </View>
+  
+        {/* Text Column */}
+        <View style={styles.textColumn}>
+          <Text style={styles.memberName}>{item.Username}</Text>
+          <Text style={styles.memberRole} numberOfLines={1}>
+            {item.Profession}
+          </Text>
+        </View>
+  
+        {/* Rating Column */}
+        <View style={styles.ratingColumn}>
+          <Stars averageRating={item.totalAverage} />
+        </View>
+      </TouchableOpacity>
     </View>
-  )}
-  <Image
-    source={{ uri: item.profileImage }}
-    style={[
-      styles.profileImage,
-      item.RollId === 2 && styles.profileImageWithBorder,
-    ]}
-  />
-  <View style={styles.memberText}>
-    <Text style={styles.memberName}>{item.Username}</Text>
-    <Text style={styles.memberRole}>{item.Profession}</Text>
-  </View>
-</View>
-<View style={styles.ratingContainer}>
-  <Stars averageRating={item.totalAverage} />
-</View>
-    </TouchableOpacity>
-  )}
+  )}  
 />
       <View style={styles.memberCountContainer}>
         <Text style={styles.memberCountText}>
