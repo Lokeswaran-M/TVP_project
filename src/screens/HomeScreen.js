@@ -313,7 +313,6 @@ console.log("Chapter Type (Slots) value:", slots);
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 acknowledgedBy: userId,
-                // Username: requirement.Username,
                 userId: requirement.UserId,
               }),
             });
@@ -385,28 +384,57 @@ console.log("Chapter Type (Slots) value:", slots);
           />
         </View>
         <View style={styles.cards}>
-  <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
-
-  <TouchableOpacity style={styles.addButton1}  onPress={() => handleButtonClick('given')}>
-    <Text style={styles.buttonText1}>GIVEN</Text>
-  </TouchableOpacity>
-  <TouchableOpacity style={styles.addButton1} onPress={() => handleButtonClick('taken')}>
-    <Text style={styles.buttonText1}>TAKEN</Text>
-  </TouchableOpacity>
-  <View style={styles.rankingTable}>
-    <View style={styles.tableHeader}>
-      <Text style={styles.tableHeaderText}>#RANK</Text>
-      <Text style={styles.tableHeaderText}>AMOUNT</Text>
+      <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
+      <View style={styles.home}>
+        <TouchableOpacity
+          style={[
+            styles.addButton1,
+            buttonClicked === 'taken' && styles.disabledButton,
+          ]}
+          onPress={() => handleButtonClick('given')}
+        >
+          <Text
+            style={[
+              styles.buttonText1,
+              buttonClicked === 'taken' && styles.disabledButtonText,
+            ]}
+          >
+            OFFERED
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.addButton2,
+            buttonClicked === 'given' && styles.disabledButton,
+          ]}
+          onPress={() => handleButtonClick('taken')}
+        >
+          <Text
+            style={[
+              styles.buttonText1,
+              buttonClicked === 'given' && styles.disabledButtonText,
+            ]}
+          >
+            RECEIVED
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.rankingTable}>
+        <View style={styles.tableHeader}>
+          <Text style={styles.tableHeaderText}>#RANK</Text>
+          <Text style={styles.tableHeaderText}>AMOUNT</Text>
+        </View>
+        <View style={styles.container1}>
+          {buttonClicked === 'given' || buttonClicked === 'taken' ? (
+            renderData(
+              buttonClicked === 'given' ? processedData : processedReviewerData
+            )
+          ) : (
+            renderData(processedData)
+          )}
+        </View>
+      </View>
     </View>
-    <View style={styles.container1}>
-    {buttonClicked === 'given' || buttonClicked === 'taken' ? (
-      renderData(buttonClicked === 'given' ? processedData : processedReviewerData)
-    ) : (
-      renderData(processedData)
-    )}
-</View>
-  </View>
-</View>
         {/* =======================Meetings=========================== */}
         <View style={styles.cards}>
         <View style={styles.dashboardContainer}>
@@ -548,7 +576,7 @@ console.log("Chapter Type (Slots) value:", slots);
         >
           <View style={styles.buttonContent}>
             <Icon name="pencil" size={16} color="#fff" style={styles.iconStyle} />
-            <Text style={styles.addButtonText}>Write a Review</Text>
+            <Text style={styles.addButtonText}>Business Offer / Review</Text>
           </View>
         </TouchableOpacity>
       </View>

@@ -7,28 +7,22 @@ import { launchCamera } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/MembersStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 const TabContent = ({ chapterType, locationId, navigation }) => {
   const userId = useSelector((state) => state.user?.userId);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMeetId, setSelectedMeetId] = useState(null); // Store MeetId of selected member
-
-  // Fetching members data
+  const [selectedMeetId, setSelectedMeetId] = useState(null);
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/list-members`, {
+        const response = await fetch(`${API_BASE_URL}/list-memberscamera`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ LocationID: locationId, chapterType, userId }),
         });
-
         if (!response.ok) throw new Error('Failed to fetch members');
-
         const data = await response.json();
-        
         const updatedMembers = await Promise.all(data.members.map(async (member) => {
           let totalStars = 0;
           if (member.ratings?.length > 0) {
@@ -37,7 +31,6 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
           } else {
             member.totalAverage = 0;
           }
-
           const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
           if (imageResponse.ok) {
             const imageData = await imageResponse.json();
@@ -56,26 +49,17 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         setLoading(false);
       }
     };
-
     fetchMembers();
   }, [chapterType, locationId, userId]);
-
-  // Filtering members based on the search query
   const filteredMembers = members.filter((member) =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  // Handle selecting a member and setting their MeetId
   const handleMemberClick = (member) => {
-    const meetId = member.UserId; // Using the member's UserId as MeetId
-    console.log("Selected MeetId:", meetId); // Log selected MeetId
-
-    // Set the new selectedMeetId
+    const meetId = member.UserId;
+    console.log("Selected MeetId:", meetId);
     setSelectedMeetId(meetId);
-    openCamera(meetId); // Pass MeetId directly to openCamera
+    openCamera(meetId); 
   };
-
-  // Insert meeting data
   const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
     try {
       const formData = new FormData();
@@ -93,9 +77,7 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         body: formData,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-  
       const result = await uploadResponse.json();
-
       if (result.message === 'Member details and image uploaded successfully!') {
         Alert.alert('Success', 'Photo and data uploaded successfully');
       } else {
@@ -106,23 +88,19 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
       Alert.alert('Error', 'Something went wrong while uploading data');
     }
   };
-
-  // Open camera to take a photo
   const openCamera = (meetId) => {
     if (!meetId) {
       Alert.alert('Error', 'Please select a member first.');
       return;
     }
-
     const options = { mediaType: 'photo', cameraType: 'front' };
     launchCamera(options, async (response) => {
       if (response.didCancel || response.errorCode) return;
-      const photoUri = response.assets[0].uri; // Get the URI of the taken photo
-      console.log("Uploading photo for MeetId:", meetId); // Log for debugging
+      const photoUri = response.assets[0].uri;
+      console.log("Uploading photo for MeetId:", meetId);
       await insertMeetingData(userId, meetId, chapterType, locationId, photoUri);
     });
   };
-
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
       <View style={styles.memberDetails}>
@@ -137,10 +115,8 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
       </View>
     </TouchableOpacity>
   );
-
   return (
     <View style={{ flex: 1 }}>
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -154,8 +130,6 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
           <Icon name="search" size={23} color="#A3238F" />
         </View>
       </View>
-
-      {/* FlatList - Scrollable List of Members */}
       <FlatList
         data={filteredMembers}
         keyExtractor={(item) => item.UserId.toString()}
@@ -165,11 +139,6 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
     </View>
   );
 };
-
-
-
-
-// Main TabView Example Component
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -177,7 +146,6 @@ export default function TabViewExample({ navigation }) {
   const userId = useSelector((state) => state.user?.userId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -202,10 +170,8 @@ export default function TabViewExample({ navigation }) {
         setLoading(false);
       }
     };
-
     fetchBusinessInfo();
   }, [userId]);
-
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
     return (
@@ -217,7 +183,6 @@ export default function TabViewExample({ navigation }) {
       />
     );
   };
-
   const renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -228,11 +193,9 @@ export default function TabViewExample({ navigation }) {
       labelStyle={{ fontSize: 14 }}
     />
   );
-
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-
   return (
     <TabView
       navigationState={{ index, routes }}

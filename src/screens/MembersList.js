@@ -6,6 +6,7 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import Stars from './Stars';
 import styles from '../components/layout/MembersStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 
 const TabContent = ({ chapterType, locationId, userId }) => {
@@ -34,8 +35,10 @@ const TabContent = ({ chapterType, locationId, userId }) => {
         }
 
         const data = await membersResponse.json();
-        console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------", data);
-
+        console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------",data, data.RollId);
+        data.members.forEach(member => {
+          console.log("MEMBER RollId:", member.RollId);
+        });
         const updatedMembers = await Promise.all(data.members.map(async (member) => {
           let totalStars = 0;
           if (member.ratings && member.ratings.length > 0) {
@@ -97,28 +100,44 @@ const TabContent = ({ chapterType, locationId, userId }) => {
         </View>
       </View>
       <FlatList
-        data={filteredMembers}
-        keyExtractor={(item) => item.UserId.toString()}
-        contentContainerStyle={styles.memberList}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.memberItem}
-            onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
-          >
-            <View style={styles.memberDetails}>
-              <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
-              <View style={styles.memberText}>
-                <Text style={styles.memberName}>{item.Username}</Text>
-                <Text style={styles.memberRole}>{item.Profession}</Text>
-              </View>
-            </View>
-            <View style={styles.ratingContainer}>
-              <Stars averageRating={item.totalAverage} />
-            </View>
-          </TouchableOpacity>
-        )}
-
-      />
+  data={filteredMembers}
+  keyExtractor={(item) => item.UserId.toString()}
+  contentContainerStyle={styles.memberList}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.memberItem}
+      onPress={() =>
+        navigation.navigate('MemberDetails', {
+          userId: item.UserId,
+          Profession: item.Profession,
+        })
+      }
+    >
+     <View style={styles.memberDetails}>
+  {item.RollId === 2 && (
+    <View style={styles.crownContainer}>
+      {/* <Icon name="trophy" size={30} color="#FFD700" /> */}
+      <MaterialIcons name="crown" size={28} color="#FFD700" />
+    </View>
+  )}
+  <Image
+    source={{ uri: item.profileImage }}
+    style={[
+      styles.profileImage,
+      item.RollId === 2 && styles.profileImageWithBorder,
+    ]}
+  />
+  <View style={styles.memberText}>
+    <Text style={styles.memberName}>{item.Username}</Text>
+    <Text style={styles.memberRole}>{item.Profession}</Text>
+  </View>
+</View>
+<View style={styles.ratingContainer}>
+  <Stars averageRating={item.totalAverage} />
+</View>
+    </TouchableOpacity>
+  )}
+/>
       <View style={styles.memberCountContainer}>
         <Text style={styles.memberCountText}>
           Count: {members.length}

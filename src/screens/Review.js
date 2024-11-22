@@ -84,23 +84,20 @@ const Review = ({ route }) => {
     if (!selectedMember) newErrors.selectedMember = 'Please choose a member.';
     if (!selectedRating) newErrors.selectedRating = 'Please select a rating type.';
     console.log("Validation----------------",selectedRating)
-    if (selectedRating === 9) {
+    if (selectedRating === 9 || selectedRating === 10 ) {
       if (!amount) {
         newErrors.amount = 'Please enter an amount.';
       }
       console.log("Amount--------------------------",amount);
     }
-    
     if (!review.trim()) newErrors.review = 'Please enter a comment.';
     if (rating === 0) newErrors.rating = 'Please select a rating.';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };    
   const submitReview = async () => {
     if (!validateForm()) return;
     const formattedAmount = amount.replace(/,/g, '');
-  
     try {
       const response = await fetch(`${API_BASE_URL}/review`, {
         method: 'POST',
@@ -117,7 +114,6 @@ const Review = ({ route }) => {
           Amount: formattedAmount,
         }),
       });
-  
       if (response.ok) {
         alert('Review created successfully!');
         navigation.goBack();
@@ -145,6 +141,8 @@ const Review = ({ route }) => {
       setSelectedRating(8);
     } else if (itemValue === "Successful Collaboration") {
       setSelectedRating(9);
+    } else if (itemValue === "Business Offer") {
+      setSelectedRating(10);
     } else {
       setSelectedRating(itemValue);
     }
@@ -158,7 +156,6 @@ const Review = ({ route }) => {
 </Picker>
       </View>
       {errors.selectedRating && <Text style={styles.errorText}>{errors.selectedRating}</Text>}
-      
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={selectedMember}
@@ -175,10 +172,8 @@ const Review = ({ route }) => {
         </Picker>
       </View>
       {errors.selectedMember && <Text style={styles.errorText}>{errors.selectedMember}</Text>}
-      
-      {selectedRating === 9 && (
+      {(selectedRating === 9 || selectedRating === 10) && (
   <View>
-    {/* <Text style={styles.label}>Enter Amount</Text> */}
     <TextInput
       style={styles.textInput1}
       value={amount}

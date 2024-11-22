@@ -46,6 +46,7 @@ import {API_BASE_URL} from '../constants/Config'
  const [dateError,setSelecteddateError]= useState('');
  const [referredByError, setReferredByError] = useState('');
  const [isUsernameValid, setIsUsernameValid] = useState(false);
+ const [referMembers, setreferMembers] = useState([]);
  const togglePasswordVisibility = () => {
   setPasswordVisible(!passwordVisible);
 };
@@ -69,7 +70,28 @@ const togglePasswordVisibility1 = () => {
       } catch (error) {
         console.error('Error fetching locations:', error);
       }
+  }; 
+  const fetchReferMembers = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/ReferMembers`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText);
+      const data = JSON.parse(responseText);
+      console.log("Data for refer members--------------------", data);
+      setreferMembers(data.members);
+    } catch (error) {
+      console.error('Error fetching refer members:', error);
+    }
   };
+  
+  useEffect(() => {
+    fetchReferMembers();
+  }, []);
   const handleProfessionChange = (profession) => {
     setSelectedProfession(profession); 
     setSelectedLocation(null);
@@ -92,7 +114,6 @@ const handlelocationChange = (selectedLocation) => {
   if(selectedProfession && selectedLocation){
     fetchChapterTypes(selectedLocation, selectedProfession);
   }
- 
 };
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
@@ -160,8 +181,7 @@ const handlelocationChange = (selectedLocation) => {
         setUsernameError('Invalid response from server');
       }
     } catch (err) {
-      // console.error('Error:', err);
-      setUsernameError('Error validating username');
+      setUsernameError('Username is required');
       isValid = false;
     }          
     if (password !== confirmPassword) {
@@ -200,10 +220,6 @@ const handlelocationChange = (selectedLocation) => {
     }
     if (!selectedChapterType) {
       setSelectedslotError('Slot is required');
-      isValid = false;
-    }
-    if (!referredBy) {
-      setReferredByError('Referred By is required');
       isValid = false;
     }
     if (!startDate) {
@@ -370,15 +386,20 @@ const handlelocationChange = (selectedLocation) => {
           </Picker>
           </View>
           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
-        <View style={styles.inputContainer}>
-        <Icon name="user-plus" size={24} color="gray" style={styles.iconStyle} />
-          <AnimatedTextInput
-        placeholder="Referred By"
-        value={referredBy}
-        onChangeText={setReferredBy}
-      />
-      </View>
+          <View style={styles.selectList}>
+          <Picker
+      selectedValue={referredBy}
+      onValueChange={(itemValue) => setReferredBy(itemValue)}
+      style={styles.picker}
+    >
+      <Picker.Item label="Select Referred By" value="" />
+      {referMembers.map((member, index) => (
+        <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
+      ))}
+    </Picker>
+    </View>
       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+      
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
         <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
@@ -411,16 +432,11 @@ const handlelocationChange = (selectedLocation) => {
     </ScrollView>
   );
 };
-
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   container1: {
     justifyContent: 'center',
@@ -431,7 +447,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
   pickerContainer: {
     borderColor: '#ccc',
     borderWidth: 1,
@@ -443,11 +458,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#4b5059',
-    // marginBottom: 10,
   },
     selectList: {
-      borderWidth: 1,
-      borderColor: '#ccc',
+      borderWidth: 2,
+      borderColor: '#a3238f',
       borderRadius:10,
       overflow: 'hidden',
       marginVertical: 10,
@@ -459,7 +473,6 @@ const styles = StyleSheet.create({
       padding: 15,
       width: '100%',
       alignItems: 'center',
-      // backgroundColor: '#fff',
     },
     datePickerText: {
       fontSize: 16,
@@ -483,12 +496,11 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
     },
-    
 iconStyle: {
   color: 'black',
   position: 'absolute',
-  right: 10, // Positions icon on the right side
-  top: 25,   // Adjust vertical position as needed
+  right: 10, 
+  top: 25,  
   zIndex: 1,
 },
 
