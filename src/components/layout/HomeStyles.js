@@ -297,16 +297,31 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       marginBottom: 20,
     },
+    home: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+    },
     addButton1: {
+      backgroundColor: '#a3238f',
+      padding: 10,
+      paddingHorizontal: 50,
+      borderRadius: 5,
+      marginBottom: 20,
+    },
+    addButton2: {
       backgroundColor: '#a3238f',
       padding: 10,
       borderRadius: 5,
       marginBottom: 20,
+      paddingHorizontal: 50,
     },
     buttonText1: {
       color: '#fff',
       fontWeight: 'bold',
       textAlign: 'center',
+    },
+    disabledButtonText: {
+      color: '#666',
     },
     rankingTable: {
       borderWidth: 1,

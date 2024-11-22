@@ -56,6 +56,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  crownContainer: {
+    position: 'absolute',
+    top: -15,
+    left: '50%',
+    transform: [{ translateX: -15 }],
+    zIndex: 1,
+  },
+  profileImageWithBorder: {
+    borderWidth: 3,
+    borderColor: '#FFD700',
+  },
+  memberText: {
+    marginLeft: 10,
+  },
   profilePicContainer: {
     width: 50,
     height: 50,
@@ -70,11 +89,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   profilePicImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  profileImage: {
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -204,9 +218,6 @@ const styles = StyleSheet.create({
   memberDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  memberText: {
-    marginLeft: 10,
   },
   memberName: {
     fontSize: 16,

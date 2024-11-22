@@ -222,10 +222,6 @@ const handlelocationChange = (selectedLocation) => {
       setSelectedslotError('Slot is required');
       isValid = false;
     }
-    if (!referredBy) {
-      setReferredByError('Referred By is required');
-      isValid = false;
-    }
     if (!startDate) {
       setSelecteddateError('Date is required');
       isValid = false;
