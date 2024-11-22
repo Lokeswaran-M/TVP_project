@@ -17,7 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 import styles from '../components/layout/MembersStyle';
 import Stars from '../screens/Stars';
 import { API_BASE_URL } from '../constants/Config';
-
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 
 
 const HeadAdminMembersPage = ({ navigation }) => {
@@ -252,23 +252,41 @@ const HeadAdminMembersPage = ({ navigation }) => {
 
       {/* Members List */}
       <FlatList 
-       
+  
         data={filteredMembers.sort((a, b) => b.LocationID - a.LocationID)}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.memberItem}
             onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
           >
-            <View style={styles.memberDetails}>
-              <Image source={{ uri: item.profileImageUrl }} style={styles.profileImage} />
-              <View style={styles.memberText}>
-                <Text style={styles.memberName}>{item.Username}</Text>
-                <Text style={styles.memberRole}>{item.Profession}</Text>
-              </View>
+           {/* Image and Icon Column */}
+        <View style={styles.imageColumn}>
+          {item.RollId === 2 && (
+            <View style={styles.crownContainer}>
+              <FontAwesome6 name="crown" size={18} color="#FFD700" />
             </View>
-            <View style={styles.ratingContainer}>
-                    <Stars averageRating={item.totalAverage} />
-                </View>
+          )}
+          <Image
+            source={{ uri: item.profileImageUrl  }}
+            style={[
+              styles.profileImage,
+              item.RollId === 2 && styles.profileImageWithBorder,
+            ]}
+          />
+        </View>
+  
+        {/* Text Column */}
+        <View style={styles.textColumn}>
+          <Text style={styles.memberName}>{item.Username}</Text>
+          <Text style={styles.memberRole} numberOfLines={1}>
+            {item.Profession}
+          </Text>
+        </View>
+  
+        {/* Rating Column */}
+        <View style={styles.ratingColumn}>
+          <Stars averageRating={item.totalAverage} />
+        </View>
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.memberList}
