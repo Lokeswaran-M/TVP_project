@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import profileImage from '../../assets/images/DefaultProfile.jpg';
@@ -16,7 +16,6 @@ const Notification = () => {
           const response = await fetch(`${API_BASE_URL}/notifications?UserID=${userId}`);
           if (response.ok) {
             const data = await response.json();
-            console.log("Data for notification--------------------------", data);
             setNotifications(data);
             await updateNotifications(userId);
 
@@ -38,7 +37,6 @@ const Notification = () => {
           const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
           const data = await response.json();
           const uniqueImageUrl = `${data.imageUrl}?t=${new Date().getTime()}`;
-          console.log("Data for Profile in Notifications------------------------------", data);
 
           if (response.ok) {
             setProfileImages((prevImages) => ({
@@ -52,6 +50,7 @@ const Notification = () => {
           console.error(`Error fetching profile image for UserId ${userId}:`, error);
         }
       };
+
       const updateNotifications = async (userId) => {
         try {
           const response = await fetch(`${API_BASE_URL}/api/notifications/${userId}`, {
@@ -73,8 +72,24 @@ const Notification = () => {
     }
   }, [userId]);
 
+  const getRelativeTime = (SentDateTime) => {
+    const now = new Date();
+    const sentDate = new Date(SentDateTime);
+    const diffInSeconds = Math.floor((now - sentDate) / 1000);
+    const secondsInMinute = 60;
+    const secondsInHour = 3600;
+    const secondsInDay = 86400;
+    const secondsInMonth = secondsInDay * 30; 
+    const secondsInYear = secondsInDay * 365;
+    if (diffInSeconds < secondsInMinute) return `${diffInSeconds} sec ago`;
+    if (diffInSeconds < secondsInHour) return `${Math.floor(diffInSeconds / secondsInMinute)} min ago`;
+    if (diffInSeconds < secondsInDay) return `${Math.floor(diffInSeconds / secondsInHour)} hr ago`;
+    if (diffInSeconds < secondsInMonth) return `${Math.floor(diffInSeconds / secondsInDay)} day${Math.floor(diffInSeconds / secondsInDay) > 1 ? 's' : ''} ago`;
+    if (diffInSeconds < secondsInYear) return `${Math.floor(diffInSeconds / secondsInMonth)} month${Math.floor(diffInSeconds / secondsInMonth) > 1 ? 's' : ''} ago`;
+    return `${Math.floor(diffInSeconds / secondsInYear)} year${Math.floor(diffInSeconds / secondsInYear) > 1 ? 's' : ''} ago`;
+  };
+  
   const renderData = (data) => {
-    console.log("data in the render data of the notification-------------------", data.UserID);
     return data.length > 0 ? (
       data.map((item) => (
         <View key={item.Id} style={styles.notificationItem}>
@@ -83,8 +98,8 @@ const Notification = () => {
             style={styles.profileImage}
           />
           <View style={styles.notificationText}>
-            <Text style={styles.title}>{item.Title}</Text>
             <Text style={styles.body}>{item.Message}</Text>
+            <Text style={styles.time}>{getRelativeTime(item.SentDateTime)}</Text>
           </View>
         </View>
       ))
@@ -92,7 +107,6 @@ const Notification = () => {
       <Text>No data found</Text>
     );
   };
-
   return (
     <View style={styles.container}>
       {loading ? (
@@ -100,14 +114,13 @@ const Notification = () => {
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : notifications.length > 0 ? (
-        renderData(notifications)
+        <ScrollView>{renderData(notifications)}</ScrollView>
       ) : (
         <Text>No notifications available</Text>
       )}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -125,15 +138,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: 'relative',
   },
-  unseenDot: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#a3238f',
-  },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -142,6 +146,11 @@ const styles = StyleSheet.create({
   body: {
     fontSize: 14,
     color: 'black',
+  },
+  time: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
   },
   errorText: {
     color: 'red',
