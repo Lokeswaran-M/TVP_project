@@ -6,7 +6,7 @@ import { TabView, TabBar } from 'react-native-tab-view';
 import Stars from './Stars';
 import styles from '../components/layout/MembersStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
 
 const TabContent = ({ chapterType, locationId, userId }) => {
@@ -116,8 +116,7 @@ const TabContent = ({ chapterType, locationId, userId }) => {
      <View style={styles.memberDetails}>
   {item.RollId === 2 && (
     <View style={styles.crownContainer}>
-      {/* <Icon name="trophy" size={30} color="#FFD700" /> */}
-      <MaterialIcons name="crown" size={28} color="#FFD700" />
+      <FontAwesome6 name="crown" size={18} color="#FFD700" />
     </View>
   )}
   <Image
