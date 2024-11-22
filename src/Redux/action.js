@@ -13,3 +13,6 @@ export const logoutUser = () => {
     type: LOGOUT_USER, // Dispatch the logout action
   };
 };
+
+
+

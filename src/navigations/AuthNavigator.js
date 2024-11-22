@@ -8,7 +8,7 @@ import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
 import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
-
+import Scanner from '../screens/Scanner';
 // import PaymentWebView from '../screens/PaymentWebview';
 import HeadAdminPostPage from '../screens/HeadAdminPostPage';
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
@@ -129,6 +129,7 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown:false,  ...headerOptions}} />
+      <Stack.Screen  name="Scanner"  component={Scanner}/>
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
