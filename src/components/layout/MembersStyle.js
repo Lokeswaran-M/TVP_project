@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
   },
   memberItem: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     padding: 15,
     backgroundColor: '#FFFFFF',
@@ -51,32 +52,52 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     elevation: 2,
   },
-  memberDetails: {
-    flexDirection: 'row',
+  imageColumn: {
+    flex: 0.2,
     alignItems: 'center',
-    flex: 1,
+    justifyContent: 'center',
+  },
+  textColumn: {
+    flex: 0.6,
+    justifyContent: 'center',
+    marginLeft: 10,
+  },
+  ratingColumn: {
+    flex: 0.2,
+    alignItems: 'flex-end', 
+    justifyContent: 'center',
   },
   profileImage: {
     width: 50,
     height: 50,
     borderRadius: 25,
   },
-  crownContainer: {
-    position: 'absolute',
-    top: -10,
-    right: '80%',
-    transform: [
-      { translateX: -15 },
-      { rotate: '-35deg' },
-    ],
-    zIndex: 1,
-  },  
   profileImageWithBorder: {
     borderWidth: 3,
     borderColor: '#FFD700',
   },
-  memberText: {
-    marginLeft: 10,
+  crownContainer: {
+    position: 'absolute',
+    top: -10,
+    zIndex: 1,
+    transform: [
+      { translateX: -15 },
+      { rotate: '-35deg' },
+    ],
+  },
+  memberName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: 'black',
+  },
+  memberRole: {
+    fontSize: 14,
+    color: 'gray',
+    marginTop: 4,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   profilePicContainer: {
     width: 50,
@@ -132,7 +153,6 @@ const styles = StyleSheet.create({
   filterSearchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
   },
   filterSearchInput: {
     backgroundColor: '#fff',
@@ -143,7 +163,6 @@ const styles = StyleSheet.create({
   },
   picker: {
     color: "black",
-    
   },
   filterSearchIconContainer: {
     position: 'absolute',
@@ -164,7 +183,6 @@ const styles = StyleSheet.create({
     paddingLeft: 6.5,
     paddingRight: 6.5,
     borderRadius: 50,
-
   },
   filterOption: {
     width: 100,
@@ -173,7 +191,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#A3238F',
   },
-
   filterOptionText: {
     fontSize: 16,
     color: '#A3238F',
@@ -191,7 +208,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     textAlign: 'center',
-
   },
   Bottoncon: {
     alignItems: 'flex-end',
@@ -208,42 +224,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 10,
   },
-
-  memberItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 15,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    marginVertical: 5,
-    elevation: 2,
-  },
-  memberDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  memberName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: 'black',
-  },
-  memberRole: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
   iconWrapper: {
-    width: 40, // Adjust the width as needed
-    height: 40, // Adjust the height as needed
-    borderRadius: 25, // This makes it round
+    width: 40,
+    height: 40,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 10, // Space between icons
-    elevation: 5, // Add shadow for elevation on Android
+    marginHorizontal: 10,
+    elevation: 5,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
@@ -276,10 +264,8 @@ const styles = StyleSheet.create({
        color:'black',
        justifyContent:'center',
        alignItems:'center',
-
     },
     buttoncon:{
-  
     },
     button: {
       flexDirection: 'row',
