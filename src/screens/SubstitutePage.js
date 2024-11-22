@@ -1,51 +1,97 @@
-import React, { useState } from 'react';
-import {View,Text,TextInput,StyleSheet,TouchableOpacity,ScrollView,Alert,Modal,Pressable} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  Alert,
+  Image,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';  
+import { API_BASE_URL } from '../constants/Config';
+import { logoutUser } from '../Redux/action';  
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [conPassword, setConPassword] = useState('');
+  const dispatch = useDispatch();
+  const navigation = useNavigation();  // To navigate after logout
+
+  const userId = useSelector((state) => state.user?.userId);
+  console.log("UserID in substitute:", userId);
+
+  const username = useSelector((state) => state.user?.username);
+  console.log("username in substitute:", username);
+
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-  const [selectedNav, setSelectedNav] = useState('home');
-
-  const handleSignup = () => {
-    if (!username || !password || !conPassword) {
-      Alert.alert('Error', 'All fields are required.');
-      return;
-    }
-
-    if (password !== conPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
-      return;
-    }
-
-    Alert.alert('Success', 'You have signed up successfully.');
-    setUsername('');
-    setPassword('');
-    setConPassword('');
-  };
+  const [profileData, setProfileData] = useState(null);
 
   const toggleSidebar = () => setSidebarVisible(!sidebarVisible);
   const showLogoutModal = () => setLogoutModalVisible(true);
   const hideLogoutModal = () => setLogoutModalVisible(false);
 
-  const handleLogout = () => {
-    // Implement your logout logic here
-    // Alert.alert('Logged Out', 'You have been logged out.');
-    hideLogoutModal();
+  const fetchProfileData = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile data");
+      }
+      const data = await response.json();
+      console.log('----------------pic data --------------',data);
+      setProfileData(data);
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    }
   };
 
-  const handleNavPress = (navItem) => {
-    setSelectedNav(navItem);
+  useEffect(() => {
+    if (userId) {
+      fetchProfileData();
+    }
+  }, [userId]);
+
+  const handleLogout = () => {
+
+    dispatch(logoutUser());
+
+
+    navigation.navigate('Login'); 
+    
+
+    hideLogoutModal();
+    Alert.alert('Logged Out', 'You have been logged out.');
+  };
+  // const handleLogout = () => {
+  //   dispatch(logoutUser());
+  
+  //   // Go back to the previous screen
+  //   navigation.goBack(); 
+  
+  //   hideLogoutModal();
+  //   Alert.alert('Logged Out', 'You have been logged out.');
+  // };
+  
+  const handleScannerPress = () => {
+    navigation.navigate("Scanner");
   };
 
   return (
     <View style={styles.container}>
-      <Sidebar visible={sidebarVisible} onClose={toggleSidebar} onLogout={showLogoutModal} />
+      {/* Sidebar Component */}
+      <Sidebar
+        visible={sidebarVisible}
+        onClose={toggleSidebar}
+        onLogout={showLogoutModal}
+        profileData={profileData} // Pass profile data here
+        username={username}
+      />
 
+      {/* Top Navigation */}
       <View style={styles.topNav}>
         <TouchableOpacity onPress={toggleSidebar}>
           <Icon name="navicon" style={styles.topNavi} size={25} color="black" />
@@ -58,21 +104,39 @@ const LoginScreen = () => {
           <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Scanner Section */}
+      <View style={styles.scannerContainer}>
+        <TouchableOpacity style={styles.scanButton} onPress={handleScannerPress}>
+          <Icon name="qrcode" size={30} color="#FFF" />
+          <Text style={styles.scanButtonText}>Start Scanning</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Logout Modal */}
       <Modal
         transparent={true}
-        animationType='fade'
+        animationType="fade"
         visible={logoutModalVisible}
         onRequestClose={hideLogoutModal}
       >
         <Pressable style={styles.modalOverlay} onPress={hideLogoutModal}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Confirm Logout</Text>
-            <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+            <Text style={styles.modalMessage}>
+              Are you sure you want to logout?
+            </Text>
             <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleLogout}
+              >
                 <Text style={styles.modalButtonText}>Yes</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButton} onPress={hideLogoutModal}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={hideLogoutModal}
+              >
                 <Text style={styles.modalButtonText}>No</Text>
               </TouchableOpacity>
             </View>
@@ -82,25 +146,29 @@ const LoginScreen = () => {
     </View>
   );
 };
-const Sidebar = ({ visible, onClose, onLogout }) => (
+
+const Sidebar = ({ visible, onClose, onLogout, profileData, username }) => (
   <Modal
     transparent={true}
-    animationType='fade'
+    animationType="fade"
     visible={visible}
     onRequestClose={onClose}
   >
     <Pressable style={styles.sidebarOverlay} onPress={onClose}>
       <View style={styles.sidebarContainer1}>
         <TouchableOpacity style={styles.sidebarItemstyle} onPress={onClose}>
-          <MaterialIcons name="person-add-alt-1" size={45} color="#FFFFFF" />
+          {profileData?.imageUrl ? (
+            <Image
+              source={{ uri: profileData.imageUrl }} // Replace 'imageUrl' with the actual key for the image URL
+              style={styles.profileImage}
+            />
+          ) : null}
         </TouchableOpacity>
-        <Text style={styles.sidebarItemText1}>YOUR NAME</Text>
+        <Text style={styles.sidebarItemText1}>
+          {username || 'YOUR NAME'}
+        </Text>
       </View>
       <View style={styles.sidebarContainer}>
-        <TouchableOpacity style={styles.sidebarItem} onPress={onClose}>
-          <MaterialIcons name="account-circle" size={20} color="#A3238F" />
-          <Text style={styles.sidebarItemText}>VIEW PROFILE</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.sidebarItem} onPress={onLogout}>
           <MaterialIcons name="logout" size={20} color="#A3238F" />
           <Text style={styles.sidebarItemText}>LOGOUT</Text>
@@ -113,13 +181,19 @@ const Sidebar = ({ visible, onClose, onLogout }) => (
     </Pressable>
   </Modal>
 );
+
+
+
+
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#CCC',
     flex: 1,
+    backgroundColor: '#CCC',
   },
-  topNavi: {
-    padding: 10,
+  profileImage: {
+    width: 90, // Adjust size as needed
+    height: 90,
+    borderRadius:50, // Makes the image circular
   },
   topNav: {
     backgroundColor: '#FFFFFF',
@@ -129,19 +203,21 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 15,
     borderBottomStartRadius: 15,
   },
+  topNavi: {
+    padding: 10,
+  },
   buttonNavtop: {
-    borderRadius: 25,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 30,
+    justifyContent:"center",
+    marginLeft: 60,
     borderColor: '#A3238F',
     borderWidth: 2,
-    flexDirection: 'row',
+    borderRadius: 25,
   },
   topNavlogo: {
     backgroundColor: '#A3238F',
-    padding: 4,
-    paddingRight: 5,
-    paddingLeft: 5,
+    padding: 5,
     borderRadius: 50,
   },
   NavbuttonText: {
@@ -150,72 +226,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 7,
   },
-  scrollViewContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  content: {
-    padding: 40,
-    paddingTop: 25,
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 30,
-    marginVertical: 80,
-    borderRadius: 20,
-  },
-  inputContainer: {
-    marginBottom: 15,
-  },
-  Blabel: {
-    fontSize: 25,
-    color: '#A3238F',
-    fontWeight: 'bold',
-    paddingBottom: 30,
-  },
-  label: {
-    fontSize: 17,
-    marginBottom: 5,
-    color: '#A3238F',
-  },
-  input: {
-    height: 40,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
-    borderColor: 'black',
-    borderWidth: 1,
-    fontSize: 15,
-  },
-  passwordInput: {
+  scannerContainer: {
     flex: 1,
-  },
-  button: {
-    backgroundColor: '#A3238F',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 33,
   },
-  buttonText: {
-    color: '#FFFFFF',
+  scannerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 30,
+  },
+  scanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#A3238F',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  scanButtonText: {
+    color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#FFFFFF',
-    padding: 5,
-    borderTopStartRadius: 15,
-    borderTopEndRadius: 15,
-    marginTop: 14,
-  },
-  bottomNavicon: {
-    alignItems: 'center',
-  },
-  bottomNavtext: {
-    fontWeight: 'bold',
-    fontSize: 13,
+    marginLeft: 10,
   },
   sidebarOverlay: {
     flex: 1,
@@ -234,16 +268,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#A3238F',
     alignItems: 'center',
     borderRadius: 50,
-    padding: 16,
+    padding:2,
     marginBottom: 4,
     marginTop: 50,
+  },
+  sidebarItemText1: {
+    fontSize: 20,
+    color: '#A3238F',
+    textAlign: 'center',
+    paddingTop: 10,
+    fontWeight: 'bold',
   },
   sidebarContainer: {
     backgroundColor: '#FFFFFF',
     width: 240,
     borderBottomRightRadius: 20,
     height: '65%',
-    flexDirection: 'column',
     paddingTop: 35,
   },
   sidebarItem: {
@@ -251,13 +291,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 20,
-  },
-  sidebarItemText1: {
-    fontSize: 14,
-    color: '#A3238F',
-    textAlign: 'center',
-    paddingTop: 10,
-    fontWeight: 'bold',
   },
   sidebarItemText: {
     fontSize: 14,
@@ -305,4 +338,156 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
 export default LoginScreen;
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from 'react';
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   TouchableOpacity,
+//   Modal,
+//   Pressable,
+//   Alert,
+// } from 'react-native';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+// import { useSelector } from 'react-redux';
+// import { API_BASE_URL } from '../constants/Config';
+
+// const LoginScreen = ({ navigation }) => {
+//   const userId = useSelector((state) => state.user?.userId);
+//   console.log("UserID in substitute:", userId);
+
+//   const [sidebarVisible, setSidebarVisible] = useState(false);
+//   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+//   const [profileData, setProfileData] = useState(null);
+
+//   const toggleSidebar = () => setSidebarVisible(!sidebarVisible);
+//   const showLogoutModal = () => setLogoutModalVisible(true);
+//   const hideLogoutModal = () => setLogoutModalVisible(false);
+
+//   const fetchProfileData = async () => {
+//     try {
+//       const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+
+//       if (!response.ok) {
+//         throw new Error("Failed to fetch profile data");
+//       }
+//       const data = await response.json();
+      
+//       console.log('----------------pic data --------------',data);
+//       setProfileData(data);
+//     } catch (error) {
+//       console.error("Error fetching profile data:", error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (userId) {
+//       fetchProfileData();
+//     }
+//   }, [userId]);
+
+//   const handleLogout = () => {
+//     Alert.alert('Logged Out', 'You have been logged out.');
+//     hideLogoutModal();
+//   };
+
+//   const handleScannerPress = () => {
+//     navigation.navigate("Scanner");
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       {/* Sidebar Component */}
+//       <Sidebar
+//         visible={sidebarVisible}
+//         onClose={toggleSidebar}
+//         onLogout={showLogoutModal}
+//         profileData={profileData} // Pass profile data to Sidebar if needed
+//       />
+
+//       {/* Top Navigation */}
+//       <View style={styles.topNav}>
+//         <TouchableOpacity onPress={toggleSidebar}>
+//           <Icon name="navicon" style={styles.topNavi} size={25} color="black" />
+//         </TouchableOpacity>
+
+//         <TouchableOpacity style={styles.buttonNavtop}>
+//           <View style={styles.topNavlogo}>
+//             <MaterialIcons name="person-add-alt" size={28} color="#FFFFFF" />
+//           </View>
+//           <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
+//         </TouchableOpacity>
+//       </View>
+
+//       {/* Scanner Section */}
+//       <View style={styles.scannerContainer}>
+//         <Text style={styles.scannerTitle}>Scanner</Text>
+//         <TouchableOpacity style={styles.scanButton} onPress={handleScannerPress}>
+//           <Icon name="qrcode" size={30} color="#FFF" />
+//           <Text style={styles.scanButtonText}>Start Scanning</Text>
+//         </TouchableOpacity>
+//       </View>
+
+//       {/* Logout Modal */}
+//       <Modal
+//         transparent={true}
+//         animationType="fade"
+//         visible={logoutModalVisible}
+//         onRequestClose={hideLogoutModal}
+//       >
+//         <Pressable style={styles.modalOverlay} onPress={hideLogoutModal}>
+//           <View style={styles.modalContainer}>
+//             <Text style={styles.modalTitle}>Confirm Logout</Text>
+//             <Text style={styles.modalMessage}>
+//               Are you sure you want to logout?
+//             </Text>
+//             <View style={styles.modalButtons}>
+//               <TouchableOpacity
+//                 style={styles.modalButton}
+//                 onPress={handleLogout}
+//               >
+//                 <Text style={styles.modalButtonText}>Yes</Text>
+//               </TouchableOpacity>
+//               <TouchableOpacity
+//                 style={styles.modalButton}
+//                 onPress={hideLogoutModal}
+//               >
+//                 <Text style={styles.modalButtonText}>No</Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         </Pressable>
+//       </Modal>
+//     </View>
+//   );
+// };
+
+// // Sidebar Component (optional if required)
+// const Sidebar = ({ visible, onClose, onLogout, profileData }) => (
+//   <Modal
+//     transparent={true}
+//     animationType="fade"
+//     visible={visible}
+//     onRequestClose={onClose}
+//   >
+//     <Pressable style={styles.sidebarOverlay} onPress={onClose}>
+//       <View style={styles.sidebarContainer}>
+//         {/* Display profileData here if needed */}
+//         <Text>{profileData?.name || "User Name"}</Text>
+//         <TouchableOpacity style={styles.sidebarItem} onPress={onLogout}>
+//           <Text style={styles.sidebarItemText}>Logout</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </Pressable>
+//   </Modal>
+// );
