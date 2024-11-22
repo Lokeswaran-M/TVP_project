@@ -10,33 +10,37 @@ import { TabView, TabBar } from 'react-native-tab-view';
 
 const Post = ({ chapterType, locationId, navigation }) => {
   const [photos, setPhotos] = useState([]);
+  const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [monthYearVisible, setMonthYearVisible] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
+  // Function to fetch photos from the API
   const fetchPhotos = async () => {
     setRefreshing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-subadmin?locationId=${locationId}&slotId=${chapterType}`);
       const data = await response.json();
-  
+
       if (response.ok && data.data) {
         const photosWithProfileData = await Promise.all(
           data.data.map(async (item) => {
             // Fetch User Profile Image
             const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.UserId}`);
             const profileData = await profileResponse.json();
-  
+
             // Fetch Meet Profile Image
             const meetProfileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.MeetId}`);
             const meetProfileData = await meetProfileResponse.json();
-  
+
             // Fetch Post Image
             const ProfileResponseImgPath = await fetch(`${API_BASE_URL}/one-profile-image?userId=${item.Img_Path}`);
             const ProfileDataImgPath = await ProfileResponseImgPath.json();
-  
+
             return {
               ...item,
               profileImage: profileData.imageUrl,
@@ -47,19 +51,23 @@ const Post = ({ chapterType, locationId, navigation }) => {
               userProfession: item.UserProfession,
               meetProfession: item.MeetProfession,
               userBusinessName: item.userbuisnessname,
-              dateTime: item.DateTime, // Ensure correct date format is used
+              dateTime: item.DateTime,
             };
           })
         );
-  
-        // Sort and filter photos based on date
-        const filteredPhotos = selectedDate
-          ? photosWithProfileData.filter((photo) => 
-              new Date(photo.dateTime).toDateString() === new Date(selectedDate).toDateString()
-            )
-          : photosWithProfileData;
-  
-        setPhotos(filteredPhotos);
+        photosWithProfileData.sort((a, b) => {
+          const dateA = new Date(a.dateTime);
+          const dateB = new Date(b.dateTime);
+          return dateB - dateA; // Descending order (most recent first)
+        });
+
+        // Apply the date range filter if both start and end dates are selected
+        if (startDate && endDate) {
+          filterPhotosByDateRange(startDate, endDate, photosWithProfileData);
+        } else {
+          setPhotos(photosWithProfileData);
+          setFilteredPhotos(photosWithProfileData);
+        }
       } else {
         setError(data.error || 'Failed to fetch data.');
       }
@@ -70,32 +78,81 @@ const Post = ({ chapterType, locationId, navigation }) => {
       setRefreshing(false);
     }
   };
-  
-  useEffect(() => {
-    if (locationId && chapterType) {
-      fetchPhotos();
-    }
-  }, [locationId, chapterType, selectedDate]);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setDatePickerVisible(false);
-    fetchPhotos();
+  // Filtering photos based on selected date range
+  const filterPhotosByDateRange = (start, end, photosToFilter) => {
+    const filtered = photosToFilter.filter(photo => {
+      const photoDate = new Date(photo.dateTime);
+      return photoDate >= start && photoDate <= end;
+    });
+    setFilteredPhotos(filtered);
   };
 
+  // Handle start date change
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+    if (endDate) {
+      filterPhotosByDateRange(date, endDate, photos);
+    }
+  };
+
+  // Handle end date change
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+    if (startDate) {
+      filterPhotosByDateRange(startDate, date, photos);
+    }
+  };
+
+  // Handle month/year change
+  const handleMonthYearChange = (date) => {
+    const selectedMonthYear = new Date(date);
+    setSelectedMonth(selectedMonthYear);
+    filterPhotosByMonthYear(selectedMonthYear);
+  };
+
+  // Filter photos by selected month and year
+  const filterPhotosByMonthYear = (monthYear) => {
+    const filtered = photos.filter(photo => {
+      const photoDate = new Date(photo.dateTime);
+      return (
+        photoDate.getMonth() === monthYear.getMonth() && photoDate.getFullYear() === monthYear.getFullYear()
+      );
+    });
+    setFilteredPhotos(filtered);
+  };
+
+  // Refresh photos when user pulls to refresh
   const handleRefresh = () => {
     setRefreshing(true);
     fetchPhotos();
   };
 
+  // UseEffect to fetch photos when locationId or chapterType change
+  useEffect(() => {
+    if (locationId && chapterType) {
+      fetchPhotos();
+    }
+  }, [locationId, chapterType, startDate, endDate]);
+
+  // Loading and error handling
   if (loading && !refreshing) {
-    return <ActivityIndicator size="large" color="#A3238F" />;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#A3238F" />
+      </View>
+    );
   }
 
   if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
   }
-  
+
+  // Render each photo item
   const renderItem = ({ item }) => {
     const formattedDate = item.dateTime
       ? new Date(item.dateTime).toLocaleDateString('en-IN', {
@@ -103,7 +160,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
           month: 'long'
         })
       : 'Date not available';
-    
+
     return (
       <View style={styles.postContainer}>
         <View style={styles.header}>
@@ -118,7 +175,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
                     Profession: item.UserProfession,
                   })
                 }
-              > 
+              >
                 <Text style={styles.profileNameUser}>{item.userName}</Text> 
               </TouchableOpacity>
               <View style={styles.businessContainer}>  
@@ -139,7 +196,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
                     Profession: item.meetProfession,
                   })
                 }
-              > 
+              >
                 <Text style={styles.profileNameMeet}>{item.meetUsername}</Text> 
               </TouchableOpacity>
               <View style={styles.businessContainer}>  
@@ -162,41 +219,44 @@ const Post = ({ chapterType, locationId, navigation }) => {
       </View>
     );
   };
-  
+
   return (
     <View style={styles.filterContainer}>
       <View>
-        <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.filterButton}>
-          <Text style={styles.filterButtonText}>Filter by Date</Text>
-          <MaterialIcons name="filter-list" size={26} color="#A3238F" />
+        <TouchableOpacity onPress={() => setMonthYearVisible(true)} style={styles.filterButton}>
+          <Text style={styles.filterButtonText}>Month/Year</Text>
         </TouchableOpacity>
       </View>
 
-      {datePickerVisible && (
+      {/* Date Picker Modal for Month/Year selection */}
+      {monthYearVisible && (
         <DatePicker
           modal
-          open={datePickerVisible}
-          date={selectedDate || new Date()}
+          open={monthYearVisible}
+          date={selectedMonth || new Date(new Date().getFullYear(), new Date().getMonth(), 1)} // Default to 1st of current month
           mode="date"
-          onConfirm={handleDateChange}
-          onCancel={() => setDatePickerVisible(false)}
+          onConfirm={(date) => {
+            handleMonthYearChange(date);
+            setMonthYearVisible(false); // Close after selection
+          }}
+          onCancel={() => setMonthYearVisible(false)}
         />
       )}
 
+      {/* Display the filtered photos */}
       <FlatList
-        data={photos}
+        data={filteredPhotos}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.gridContainer}
         refreshing={refreshing}
         onRefresh={handleRefresh}
-            showsVerticalScrollIndicator={false} 
+        showsVerticalScrollIndicator={false} 
         showsHorizontalScrollIndicator={false} 
       />
     </View>
   );
 };
-
 
 
 const TabViewExample = ({ navigation }) => {
