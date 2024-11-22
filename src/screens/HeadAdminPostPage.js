@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import DatePicker from 'react-native-date-picker';
+import DatePicker from 'react-native-date-picker';
 import styles from '../components/layout/PostStyles';
 
 const HeadAdminPostPage = ({ navigation }) => {

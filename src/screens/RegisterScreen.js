@@ -24,6 +24,9 @@ import {API_BASE_URL} from '../constants/Config'
   const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
   const [referredBy, setReferredBy] = useState('');
+  const [referChapterType, setReferChapterType] = useState('');
+  const [referLocationId, setReferLocationId] = useState('');
+  const [referProfession, setreferProfession] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showStartPicker, setShowStartPicker] = useState(false);
@@ -107,6 +110,17 @@ const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
     console.log('Fetched slot details:=========', data);
   } catch (error) {
     console.error('Error fetching slots:', error);
+  }
+};
+const handleReferredByChange = (itemValue) => {
+  setReferredBy(itemValue);
+
+  // Find the selected member's details
+  const selectedMember = referMembers.find((member) => member.UserId === itemValue);
+  if (selectedMember) {
+    setReferChapterType(selectedMember.ChapterType);
+    setReferLocationId(selectedMember.LocationID);
+    setreferProfession(selectedMember.Profession);
   }
 };
 const handlelocationChange = (selectedLocation) => {
@@ -255,6 +269,9 @@ const handlelocationChange = (selectedLocation) => {
                 chapterType: selectedChapterType,
                 LocationID: selectedLocation,
                 referredBy,
+                referChapterType, 
+        referLocationId,
+        referProfession,
                 startDate,
                 endDate
               }
@@ -388,15 +405,15 @@ const handlelocationChange = (selectedLocation) => {
           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
           <View style={styles.selectList}>
           <Picker
-      selectedValue={referredBy}
-      onValueChange={(itemValue) => setReferredBy(itemValue)}
-      style={styles.picker}
-    >
-      <Picker.Item label="Select Referred By" value="" />
-      {referMembers.map((member, index) => (
-        <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
-      ))}
-    </Picker>
+        selectedValue={referredBy}
+        onValueChange={handleReferredByChange}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Referred By" value="" />
+        {referMembers.map((member, index) => (
+          <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
+        ))}
+      </Picker>
     </View>
       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
       
