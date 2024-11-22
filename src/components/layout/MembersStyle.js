@@ -63,11 +63,14 @@ const styles = StyleSheet.create({
   },
   crownContainer: {
     position: 'absolute',
-    top: -15,
-    left: '50%',
-    transform: [{ translateX: -15 }],
+    top: -10,
+    right: '80%',
+    transform: [
+      { translateX: -15 },
+      { rotate: '-35deg' },
+    ],
     zIndex: 1,
-  },
+  },  
   profileImageWithBorder: {
     borderWidth: 3,
     borderColor: '#FFD700',
