@@ -114,8 +114,6 @@ const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
 };
 const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
-
-  // Find the selected member's details
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
   if (selectedMember) {
     setReferChapterType(selectedMember.ChapterType);
@@ -403,20 +401,21 @@ const handlelocationChange = (selectedLocation) => {
           </Picker>
           </View>
           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
-          <View style={styles.selectList}>
-          <Picker
-        selectedValue={referredBy}
-        onValueChange={handleReferredByChange}
-        style={styles.picker}
-      >
-        <Picker.Item label="Select Referred By" value="" />
-        {referMembers.map((member, index) => (
-          <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
-        ))}
-      </Picker>
-    </View>
-      {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
-      
+          {referMembers && referMembers.length > 0 && (
+  <View style={styles.selectList}>
+    <Picker
+      selectedValue={referredBy}
+      onValueChange={handleReferredByChange}
+      style={styles.picker}
+    >
+      <Picker.Item label="Select Referred By" value="" />
+      {referMembers.map((member, index) => (
+        <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
+      ))}
+    </Picker>
+  </View>
+)}
+{referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
         <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
