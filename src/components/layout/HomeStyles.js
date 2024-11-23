@@ -299,12 +299,12 @@ const styles = StyleSheet.create({
     },
     home: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'space-between',
     },
     addButton1: {
       backgroundColor: '#a3238f',
       padding: 10,
-      paddingHorizontal: 50,
+      paddingHorizontal: 40,
       borderRadius: 5,
       marginBottom: 20,
     },
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderRadius: 5,
       marginBottom: 20,
-      paddingHorizontal: 50,
+      paddingHorizontal: 40,
     },
     buttonText1: {
       color: '#fff',

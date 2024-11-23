@@ -277,7 +277,7 @@ const HeaderImage = () => {
         onPress={() => navigation.navigate('Notification')}
         disabled={loading}
       >
-        <Ionicons name="notifications-sharp" size={26} color="#A3238F" />
+        <Ionicons name="notifications-sharp" size={26} color="#A3238F" left = {0} />
         {notificationCount > 0 && (
           <Text style={styles.notificationCount}>{notificationCount}</Text>
         )}
@@ -685,7 +685,9 @@ const styles = StyleSheet.create({
   topNavlogohome:{
     flexDirection: 'row',
     alignItems: 'center',
-    right: 20,
+    justifyContent:'space-around',
+
+    // paddingRight:5,
   },
   notificationCount: {
     borderColor: "white",

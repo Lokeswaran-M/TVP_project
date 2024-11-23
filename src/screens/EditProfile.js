@@ -99,11 +99,11 @@ const EditProfile = () => {
         alert('Profile updated successfully');
         navigation.goBack();
       } else {
-        alert(`Error: ${result.error}`);
+        alert('Fill all the Feilds');
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('An error occurred while updating profile');
+      alert('Network Error');
     }
   };
   useFocusEffect(

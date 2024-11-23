@@ -37,6 +37,13 @@ const HomeScreen = ({ route }) => {
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
   const [buttonClicked, setButtonClicked] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(false);
+const isWithin12Hours = (eventDateTime) => {
+  const now = new Date();
+  const eventTime = new Date(eventDateTime);
+  const diffInMs = eventTime - now;
+  const diffInHours = diffInMs / (1000 * 60 * 60);
+  return diffInHours <= 12 && diffInHours > 0;
+};
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
@@ -98,7 +105,6 @@ const HomeScreen = ({ route }) => {
         });
       }
     });
-  
     return unsubscribe;
   }, []);  
   useEffect(() => {
@@ -155,7 +161,7 @@ const HomeScreen = ({ route }) => {
       } finally {
         setLoading(false);
       }
-    };    
+    };   
     const fetchRequirementsData = async () => {
       try {
         const locationId = route.params.locationId;
@@ -228,10 +234,8 @@ console.log("Chapter Type (Slots) value:", slots);
     const sortedData = totalAmounts.sort((a, b) => b.Amount - a.Amount);
     setProcessedData(sortedData);
   }, [topFiveData]);
-     
   useEffect(() => {
     console.log("Event Data before processing:", topFiveData);
-  
     const reviewerAmounts = (data) => {
       const groupedData = data.reduce((acc, curr) => {
         const userId = curr.Reviewed_user_id;
@@ -246,14 +250,11 @@ console.log("Chapter Type (Slots) value:", slots);
       }, {});
       return Object.values(groupedData);
     };
-  
     const totalAmounts = reviewerAmounts(topFiveData);
-  
     totalAmounts.forEach(user => {
       user.formattedAmount = user.Amount.toLocaleString('en-IN');
       console.log(`ReviewedUser ${user.Username} (${user.UserId}): Total Amount: ${user.formattedAmount}`);
     });
-  
     const sortedAmounts = totalAmounts.sort((a, b) => b.Amount - a.Amount);
     setProcessedReviewerData(sortedAmounts);
   }, [topFiveData]);   
@@ -443,56 +444,58 @@ console.log("Chapter Type (Slots) value:", slots);
     <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
   </TouchableOpacity>
 </View>
-          {eventData.length > 0 ? (
-            eventData.slice(0, showAllEvents ? eventData.length : 1).map((event, index) => (
-              <View key={event.EventId} style={styles.meetupCard}>
-                <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
-                <View style={styles.row}>
-                  <Icon name="calendar" size={18} color="#6C757D" />
-                  <Text style={styles.meetupInfo}>
-  {new Date(event.DateTime).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-  })}
-</Text>
-                  <Icon name="clock-o" size={18} color="#6C757D" />
-                  <Text style={styles.meetupInfo}>
-                    {new Date(event.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </Text>
-                </View>
-                <View style={styles.row}>
-  <Icon name="map-marker" size={18} color="#6C757D" />
-  <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
-</View>
-                <View style={styles.buttonRow}>
-                <TouchableOpacity
-  style={[
-    styles.confirmButton,
-    // isConfirmed[event.EventId] ? styles.disabledButton : null,
-  ]}
-  onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
-  disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
->
-  <Icon
-    name="check-circle"
-    size={24}
-    color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
-  />
-  <Text style={styles.buttonText}>
-    {isConfirmed[event.EventId] || event.Isconfirm === 1
-      ? "Confirmed"
-      : "Click to Confirm"}
-  </Text>
-</TouchableOpacity>
-</View>
-              </View>
-            ))
-          ) : (
-            <View style={styles.noMeetupCard}>
-              <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
-            </View>
-          )}
+{eventData.length > 0 ? (
+  eventData.slice(0, showAllEvents ? eventData.length : 1).map((event) => (
+    <View key={event.EventId} style={styles.meetupCard}>
+      <Text style={styles.meetupTitle}>Upcoming Business Meetup</Text>
+      <View style={styles.row}>
+        <Icon name="calendar" size={18} color="#6C757D" />
+        <Text style={styles.meetupInfo}>
+          {new Date(event.DateTime).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          })}
+        </Text>
+        <Icon name="clock-o" size={18} color="#6C757D" />
+        <Text style={styles.meetupInfo}>
+          {new Date(event.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+      <View style={styles.row}>
+        <Icon name="map-marker" size={18} color="#6C757D" />
+        <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
+      </View>
+      <View style={styles.buttonRow}>
+        {!isWithin12Hours(event.DateTime) && (
+          <TouchableOpacity
+            style={[
+              styles.confirmButton,
+              isConfirmed[event.EventId] ? styles.disabledButton : null,
+            ]}
+            onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
+            disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
+          >
+            <Icon
+              name="check-circle"
+              size={24}
+              color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
+            />
+            <Text style={styles.buttonText}>
+              {isConfirmed[event.EventId] || event.Isconfirm === 1
+                ? "Confirmed"
+                : "Click to Confirm"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  ))
+) : (
+  <View style={styles.noMeetupCard}>
+    <Text style={styles.noMeetupText}>No Upcoming Business Meetups</Text>
+  </View>
+)}
         </View>
         {/* ===============================Requirements=============================== */}
         <View style={styles.cards}>
