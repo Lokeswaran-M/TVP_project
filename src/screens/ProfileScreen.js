@@ -73,7 +73,7 @@ const Profile = () => {
             }
         }
     } catch (error) {
-        console.error('Error fetching profile data:', error.message);
+        console.error('Error fetching profile data in Profile Screen:', error.message);
     } finally {
         setLoading(false);
     }

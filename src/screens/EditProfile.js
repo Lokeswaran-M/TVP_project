@@ -53,7 +53,7 @@ const EditProfile = () => {
         setAddress(data.Address || '');
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      console.error('Error fetching profile data in edit Profile:', error);
     } finally {
       setLoading(false);
     }

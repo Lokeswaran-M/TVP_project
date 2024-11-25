@@ -39,7 +39,7 @@ const NewMeeting = () => {
       const data = await response.json();
       setProfileData(data);
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      console.error('Error fetching profile data in New Meeting:', error);
     } finally {
       setLoading(false);
     }

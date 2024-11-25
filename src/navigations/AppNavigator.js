@@ -60,7 +60,7 @@ function ProfileStackNavigator() {
         setProfileData(data);
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      console.error('Error fetching profile data in App Navigator Profile Stack Navigator:', error);
     } finally {
       setLoading(false);
     }
@@ -364,7 +364,7 @@ function DrawerNavigator() {
         setProfileData(data);
       }
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      console.error('Error fetching profile data in AppNavigator Drawer:', error);
     } finally {
       setLoading(false);
     }

@@ -4,8 +4,6 @@ import AnimatedTextInput from './AnimatedTextInput';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
 import {API_BASE_URL} from '../constants/Config';
 import { useSelector } from 'react-redux';
-
-
 const SubstituteLogin = () => {
   const [S_User, setUsername] = useState('');
   const [S_Password, setPassword] = useState('');
@@ -200,3 +198,4 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
 });
+export default SubstituteLogin;

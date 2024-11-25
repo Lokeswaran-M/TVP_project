@@ -31,7 +31,7 @@ const TabNavigator = () => {
       const profileData = await profileResponse.json();
       setProfileData(profileData);
     } catch (error) {
-      console.error('Error fetching profile data:', error);
+      console.error('Error fetching profile data in TabNavigator:', error);
     }
   };
   useEffect(() => {

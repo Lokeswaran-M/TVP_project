@@ -45,7 +45,7 @@ const LoginScreen = () => {
       console.log('----------------pic data --------------',data);
       setProfileData(data);
     } catch (error) {
-      console.error("Error fetching profile data:", error);
+      console.error("Error fetching profile data in Substitute Page:", error);
     }
   };
 
