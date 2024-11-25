@@ -37,13 +37,6 @@ const HomeScreen = ({ route }) => {
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
   const [buttonClicked, setButtonClicked] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(false);
-const isWithin12Hours = (eventDateTime) => {
-  const now = new Date();
-  const eventTime = new Date(eventDateTime);
-  const diffInMs = eventTime - now;
-  const diffInHours = diffInMs / (1000 * 60 * 60);
-  return diffInHours <= 12 && diffInHours > 0;
-};
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
@@ -467,28 +460,28 @@ console.log("Chapter Type (Slots) value:", slots);
         <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
       </View>
       <View style={styles.buttonRow}>
-        {!isWithin12Hours(event.DateTime) && (
-          <TouchableOpacity
-            style={[
-              styles.confirmButton,
-              isConfirmed[event.EventId] ? styles.disabledButton : null,
-            ]}
-            onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
-            disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
-          >
-            <Icon
-              name="check-circle"
-              size={24}
-              color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
-            />
-            <Text style={styles.buttonText}>
-              {isConfirmed[event.EventId] || event.Isconfirm === 1
-                ? "Confirmed"
-                : "Click to Confirm"}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+  {event.TimeDifferenceGreaterThan12 === 1 && (
+    <TouchableOpacity
+      style={[
+        styles.confirmButton,
+        isConfirmed[event.EventId] ? styles.disabledButton : null,
+      ]}
+      onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
+      disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
+    >
+      <Icon
+        name="check-circle"
+        size={24}
+        color={isConfirmed[event.EventId] || event.Isconfirm === 1 ? "#B0B0B0" : "#28A745"} 
+      />
+      <Text style={styles.buttonText}>
+        {isConfirmed[event.EventId] || event.Isconfirm === 1
+          ? "Confirmed"
+          : "Click to Confirm"}
+      </Text>
+    </TouchableOpacity>
+  )}
+</View>
     </View>
   ))
 ) : (

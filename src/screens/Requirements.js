@@ -51,11 +51,9 @@ const Requirements = ({ route }) => {
             profession: Profession,
           }),
         });
-
         if (!response.ok) {
           throw new Error('Failed to fetch members');
         }
-
         const data = await response.json();
         setMembers(data.members);
       } catch (error) {
