@@ -41,6 +41,7 @@ const MemberDetails = () => {
         const response = await fetch(`${API_BASE_URL}/api/user/info_with_star_rating2/${userId}/profession/${Profession}`);
         if (!response.ok) throw new Error('Failed to fetch user details');
         const data = await response.json();
+        console.log("Data in member details----------------------",data);
         setRollIDMem(data.businessInfo?.RollId || null);
         setUserDetails(data);
         if (data.ratings?.length > 0) {
@@ -100,8 +101,8 @@ const MemberDetails = () => {
       const data = await response.json();
       if (response.ok) {
         Alert.alert('Success', data.message);
-        setRollID(newRollId); // Update the Roll ID to reflect demotion
-        setRefreshToggle(!refreshToggle); // Toggle to refresh the component
+        setRollID(newRollId);
+        setRefreshToggle(!refreshToggle);
       } else {
         Alert.alert('Error', data.error || 'Failed to update RollId');
       }
@@ -153,6 +154,10 @@ const MemberDetails = () => {
         </View>
       </View>
       <View style={styles.card}>
+      <View style={styles.infoContainer}>
+          <Text style={styles.label}>User ID</Text>
+          <Text style={styles.value}>{businessInfo.UserId}</Text>
+        </View>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Profession:</Text>
           <Text style={styles.value}>{businessInfo.Profession}</Text>
