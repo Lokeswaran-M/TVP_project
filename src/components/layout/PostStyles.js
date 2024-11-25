@@ -132,7 +132,7 @@ justifyContent:'center',
 borderRadius:25,
 alignItems:'flex-end',
 padding:10,
-marginLeft:250,
+
 marginRight:10,
 margin:5,
   },

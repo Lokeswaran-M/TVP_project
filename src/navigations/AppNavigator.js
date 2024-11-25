@@ -18,7 +18,7 @@ import Subscription from '../screens/Subscription';
 import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
-import GeneratedQRScreen from '../screens/GeneratedQRScreen';
+// import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import OneMinPresentation from '../screens/OneMinPresentation';
 import PreAttendanceViewPage from '../screens/PreAttendanceViewPage';
 import StopWatch from '../screens/StopWatch';
@@ -136,11 +136,11 @@ function StackMeetingNavigator() {
         component={EditMeeting}
         options={{ headerShown: true, title: 'Edit Meeting'}}
       />
-      <Stack.Screen 
+      {/* <Stack.Screen 
       name="GeneratedQRScreen" 
       component={GeneratedQRScreen} 
       options={{ headerShown: true, title: 'QR Genrated'}}
-      />
+      /> */}
       <Stack.Screen 
       name="CreateMeetingViewPage" 
       component={CreateMeetingViewPage} 
