@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import PushNotification from 'react-native-push-notification';
 import messaging from '@react-native-firebase/messaging';
+import Subscription from './Subscription';
 import { showMessage } from 'react-native-flash-message'; 
 import Stars from '../screens/Stars';
 import profileImage from '../../assets/images/DefaultProfile.jpg';
@@ -639,14 +640,14 @@ export default function TabViewExample({ navigation }) {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
         const data = await response.json();
-        console.log("Data in the Home Screen Drawer-----------------------------",data);
-
+        console.log("Data in the Home Screen Drawer-----------------------------", data);
         if (response.ok) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
             title: business.BD,
             chapterType: business.CT,
             locationId: business.L,
+            isPaid: business.IsPaid,
           }));
           setRoutes(updatedRoutes);
           setBusinessInfo(data);
@@ -663,6 +664,9 @@ export default function TabViewExample({ navigation }) {
   }, [userId]);
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
+    if (business?.IsPaid === 0) {
+      return <Subscription navigation={navigation} />;
+    }
     return (
       <HomeScreen
         title={route.title}

@@ -517,7 +517,7 @@ function DrawerNavigator() {
           ),
         })}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Subscription"
         component={Subscription}
         options={({ navigation }) => ({
@@ -539,7 +539,7 @@ function DrawerNavigator() {
             </View>
           ),
         })}
-      />
+      /> */}
       {profileData?.CategoryId === 1 && (
         <>
       <Drawer.Screen
@@ -619,7 +619,11 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
-
+      <StackPayment.Screen
+        name="PaymentWebview"
+        component={PaymentWebview}
+        options={{ headerShown: false, title: 'PaymentWebview'}}
+      />
       <Stack.Screen
         name="Requirements"
         component={Requirements}

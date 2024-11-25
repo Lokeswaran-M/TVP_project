@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { launchCamera } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/MembersStyle';
+import Subscription from './Subscription';
 import { SafeAreaView } from 'react-native-safe-area-context';
 const TabContent = ({ chapterType, locationId, navigation }) => {
   const userId = useSelector((state) => state.user?.userId);
@@ -185,6 +186,9 @@ export default function TabViewExample({ navigation }) {
   }, [userId]);
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
+    if (business?.IsPaid === 0) {
+      return <Subscription navigation={navigation} />;
+    }
     return (
       <TabContent
         chapterType={business?.CT}

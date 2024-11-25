@@ -8,6 +8,7 @@ import styles from '../components/layout/MembersStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
+import Subscription from './Subscription';
 
 const TabContent = ({ chapterType, locationId, userId }) => {
   const navigation = useNavigation();
@@ -192,6 +193,9 @@ export default function TabViewExample({ navigation }) {
 
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
+    if (business?.IsPaid === 0) {
+      return <Subscription navigation={navigation} />;
+    }
     return (
       <TabContent
         title={route.title}
