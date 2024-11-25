@@ -7,7 +7,6 @@ import Stars from '../screens/Stars';
 import styles from '../components/layout/MemberDetailsStyle';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
-
 const MemberDetails = () => {
   const route = useRoute();
   const { userId, Profession } = route.params;
@@ -21,7 +20,6 @@ const MemberDetails = () => {
   const [RollID, setRollID] = useState(null);
   const [RollIDMem, setRollIDMem] = useState(null);
   const [refreshToggle, setRefreshToggle] = useState(false);
-
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
@@ -68,7 +66,6 @@ const MemberDetails = () => {
       fetchUserDetails();
     }
   }, [AdminUserID, userId, Profession, refreshToggle]); 
-
   const handlePromotion = async () => {
     let newRollId = 2;
     try {
@@ -88,8 +85,7 @@ const MemberDetails = () => {
     } catch (error) {
       Alert.alert('Error', 'Network error, please try again');
     }
-  };  
-  
+  };
   const handleDemotion = async () => {
     let newRollId = 3;
     try {
@@ -110,13 +106,11 @@ const MemberDetails = () => {
       Alert.alert('Error', 'Network error, please try again');
     }
   };
-
   const handleCall = () => {
     if (userDetails && userDetails.businessInfo.Mobileno) {
       Linking.openURL(`tel:${userDetails.businessInfo.Mobileno}`);
     }
   };
-
   const handleWhatsApp = () => {
     if (userDetails && userDetails.businessInfo.Mobileno) {
       const phoneNumber = userDetails.businessInfo.Mobileno;
