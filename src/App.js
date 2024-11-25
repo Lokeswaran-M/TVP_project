@@ -53,7 +53,7 @@ const App = () => {
 
         // Request Storage Permission
         const storageGranted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_INTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
           {
             title: 'Storage Permission',
             message: 'This app needs access to your storage to save files.',
