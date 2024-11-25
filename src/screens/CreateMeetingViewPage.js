@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f2f2f2',
     padding:40,
+    paddingTop:50
   },
   content: {
     backgroundColor: '#fff',
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   AttendanceButton: {
-    position: 'absolute',
+    marginRight:-160,
     bottom: 30,
     left: 20,
     backgroundColor: '#a3238f',
