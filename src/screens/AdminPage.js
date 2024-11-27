@@ -2,205 +2,541 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/FontAwesome5';
+import { Picker } from '@react-native-picker/picker'; // Import Picker
 import Feather from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 
 const { width, height } = Dimensions.get('window');
-
 const AdminPage = () => {
   const navigation = useNavigation();
   const [requirementsData, setRequirementsData] = useState([]);
-  const [reviewData, setreviewData] = useState([]);
+  const [reviewData, setReviewData] = useState([]);
   const [profileImages, setProfileImages] = useState({});
   const [requirementsLoading, setRequirementsLoading] = useState(true);
   const [showAllRequirements, setShowAllRequirements] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
-  
-  // Fetch Requirements Data and Profile Images
+  const [locations, setLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState('');
+  const [slots, setSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState('');
+  const [loadingTopFive, setLoadingTopFive] = useState(false);
+  const [topFiveData, setTopFiveData] = useState([]);
+  const [buttonClicked, setButtonClicked] = useState(null);
+  const [processedData, setProcessedData] = useState([]);
+  const [processedReviewerData, setProcessedReviewerData] = useState([]);
+
+
+  const fetchLocationData = async () => {
+    try {
+      console.log("Fetching location data...");
+      const locationsResponse = await fetch(`${API_BASE_URL}/api/locations-and-slots`);
+
+      if (!locationsResponse.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const locationsData = await locationsResponse.json();
+      console.log("Fetched locations and slots:", locationsData);
+
+      setLocations(locationsData.locations || []);
+      setSlots(locationsData.slots || []);
+
+      if (locationsData.locations?.length > 0) {
+        setSelectedLocation(locationsData.locations[0].LocationID);
+      }
+      if (locationsData.slots?.length > 0) {
+        setSelectedSlot(locationsData.slots[0].Id);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const fetchTopFiveData = async () => {
+    if (!selectedLocation || !selectedSlot) {
+      console.log('Location or Slot not selected yet.');
+      return;
+    }
+
+    try {
+      setLoadingTopFive(true);
+
+      const response = await fetch(
+        `${API_BASE_URL}/TopFive?locationId=${selectedLocation}&slot=${selectedSlot}`
+      );
+      const data = await response.json();
+      console.log("----------------------------response data-----------------", selectedLocation, selectedSlot)
+      console.log("----------------------------top 5 data-----------------", data)
+
+      if (Array.isArray(data)) {
+        setTopFiveData(data); // Only set the data if it's an array
+      } else {
+        console.error('API returned non-array data:', data);
+        setTopFiveData([]); // Fallback to empty array to prevent errors
+      }
+    } catch (error) {
+      console.error('Error fetching Top Five data:', error);
+      setTopFiveData([]); // Fallback to empty array to prevent errors
+    } finally {
+      setLoadingTopFive(false);
+    }
+  };
+
   const fetchRequirementsData = async () => {
     try {
       setRequirementsLoading(true);
-  
-      const response = await fetch(`${API_BASE_URL}/admin/requirements`);
-      const data = await response.json();
-      
-      console.log('Fetched Requirements Data:', data);
-      // if (!response.ok) throw new Error('Failed to fetch requirements data.');
-  
-      const responsereviwe = await fetch(`${API_BASE_URL}/admin/reviews`);
-      const review = await responsereviwe.json();
-      console.log('Fetched review Data:', review);
-  
+      const requirementsResponse = await fetch(`${API_BASE_URL}/admin/requirements`);
+      const requirements = await requirementsResponse.json();
+
+      const reviewsResponse = await fetch(`${API_BASE_URL}/admin/reviews`);
+      const reviews = await reviewsResponse.json();
+
+      const allUsers = [...requirements, ...reviews];
+
       const profiles = await Promise.all(
-        data.map(async (requirement) => {
+        allUsers.map(async (user) => {
           try {
-            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${requirement.UserId}`);
+            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${user.UserId}`);
             const profileData = await profileResponse.json();
-            return { userId: requirement.UserId, imageUrl: profileData.imageUrl || 'https://via.placeholder.com/50' };
+            return { userId: user.UserId, imageUrl: profileData.imageUrl || 'https://via.placeholder.com/50' };
           } catch (error) {
-            console.error(`Error fetching profile image for user ${requirement.UserId}:`, error);
-            return { userId: requirement.UserId, imageUrl: 'https://via.placeholder.com/50' };
+            return { userId: user.UserId, imageUrl: 'https://via.placeholder.com/50' };
           }
         })
       );
-  
+
       const profileMap = profiles.reduce((map, profile) => {
         map[profile.userId] = profile.imageUrl;
         return map;
       }, {});
-  
-      setRequirementsData(data);
-      setreviewData(review);
+
+      setRequirementsData(requirements);
+      setReviewData(reviews);
       setProfileImages(profileMap);
     } catch (error) {
-      console.error('Error fetching requirements data:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setRequirementsLoading(false);
     }
   };
-  
+  const renderData = (data) => {
+    return data.map((user, index) => (
+      <View key={user.UserId} style={styles.userContainer}>
+        {/* <Image 
+            source={profileImages[user.UserId] ? { uri: profileImages[user.UserId] } : profileImages} 
+            style={styles.profileImage} 
+          /> */}
+        <Image
+          source={
+            profileImages[user.UserId]
+              ? { uri: profileImages[user.UserId] }
+              : require('../../assets/images/DefaultProfile.jpg')
+          }
+          style={styles.profileImage}
+        />
 
-  // Handle acknowledging a requirement
 
-
-  // Handle navigation actions
-  const handleNavPress1 = () => {
-    navigation.navigate('AdminMemberstack');
-  };
-  const handleNavPress2 = () => {
-    navigation.navigate('AdminLocationstack');
-  };
-  const handleNavPress3 = () => {
-    navigation.navigate('HeadAdminNewSubscribers');
-  };
-  const handleNavPress4 = () => {
-    navigation.navigate('HeadAdminPaymentsPage');
+        <Text style={styles.usernameText}> No.{index + 1} </Text>
+        <Text style={styles.usernameText}>{user.Username}</Text>
+        <Text style={styles.amountText}>₹{user.formattedAmount}</Text>
+      </View>
+    ));
   };
 
   useEffect(() => {
+    fetchLocationData();
     fetchRequirementsData();
   }, []);
 
+  useEffect(() => {
+    fetchTopFiveData();
+  }, [selectedLocation, selectedSlot]);
+
+  const handleButtonClick = (buttonType) => {
+    const groupAndSumAmounts = (data) => {
+      const groupedData = data.reduce((acc, curr) => {
+        const userId = curr.UserId;
+        const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
+        const username = curr.Username;
+        if (acc[userId]) {
+          acc[userId].Amount += amount;
+        } else {
+          acc[userId] = { UserId: userId, Amount: amount, Username: username };
+        }
+        return acc;
+      }, {});
+      return Object.values(groupedData);
+    };
+
+
+
+
+
+
+
+
+
+    const totalAmounts = groupAndSumAmounts(topFiveData);
+    totalAmounts.forEach(user => {
+      user.formattedAmount = user.Amount.toLocaleString('en-IN');
+      console.log(`User ${user.Username} (${user.UserId}): Total Amount: ₹${user.formattedAmount}`);
+    });
+    const sortedData = totalAmounts.sort((a, b) => b.Amount - a.Amount);
+    setProcessedData(sortedData);
+
+    const reviewerAmounts = (data) => {
+      const groupedData = data.reduce((acc, curr) => {
+        const userId = curr.Reviewed_user_id;
+        const amount = curr.Amount ? parseFloat(curr.Amount) : 0;
+        const username = curr.ReviewedUser;
+        if (acc[userId]) {
+          acc[userId].Amount += amount;
+        } else {
+          acc[userId] = { UserId: userId, Amount: amount, Username: username };
+        }
+        return acc;
+      }, {});
+      return Object.values(groupedData);
+    };
+
+    const totalReviewerAmounts = reviewerAmounts(topFiveData);
+    totalReviewerAmounts.forEach(user => {
+      user.formattedAmount = user.Amount.toLocaleString('en-IN');
+      console.log(`ReviewedUser ${user.Username} (${user.UserId}): Total Amount: ₹${user.formattedAmount}`);
+    });
+    const sortedReviewerData = totalReviewerAmounts.sort((a, b) => b.Amount - a.Amount);
+    setProcessedReviewerData(sortedReviewerData);
+
+    setButtonClicked(buttonType);
+  };
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} showsHorizontalScrollIndicator={false}>
-    
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.containermain}>
-       <View style={styles.cardimg}>
-          <Image
-            source={require('../../assets/images/Homepage_BMW.jpg')}
-            style={styles.image}
-          />
+        <View style={styles.cardimg}>
+          <Image source={require('../../assets/images/Homepage_BMW.jpg')} style={styles.image} />
         </View>
-       <View style={styles.buttonContainer}>
+
+        <View style={styles.buttonContainer}>
           <View style={styles.leftButtons}>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress1}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
               <Icon name="users" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>Members</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress2}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLocationstack')}>
               <Feather name="map-pin" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>Locations</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.rightButtons}>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress3}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminNewSubscribers')}>
               <Feather name="users" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>New Sub</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleNavPress4}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
               <Icon name="money" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>Payments</Text>
             </TouchableOpacity>
           </View>
         </View>
-        {/* ===============================Requirements=============================== */}
+        {/* Requirements Section */}
         <View style={styles.cards}>
-  <View style={styles.header}>
-    <View style={styles.headerRow}>
-      <Text style={styles.headerText}>Requirements</Text>
-      <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-        <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-      </TouchableOpacity>
-    </View>
-  </View>
-  <View><Text style={styles.line}></Text></View>
-  {requirementsData.length > 0 ? (
-    <>
-      {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
-        <View key={index} style={styles.card}>
-          <View style={styles.profileSection}>
-            <Image
-              source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
-              style={styles.profileImage}
-            />
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Requirements</Text>
+            <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+              <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+            </TouchableOpacity>
           </View>
-          <View style={styles.requirementSection}>
-            <Text style={styles.profileName}>{requirement.Username}</Text>
-            <Text style={styles.requirementText}>{requirement.Description}</Text>
+          <View><Text style={styles.line}></Text></View>
+          {requirementsData.length > 0 ? (
+            requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.profileSection}>
+                  <Image
+                    source={{ uri: profileImages[requirement.UserId] || 'https://via.placeholder.com/50' }}
+                    style={styles.profileImage}
+                  />
+                </View>
+                <View style={styles.requirementSection}>
+                  <Text style={styles.profileName}>{requirement.Username}</Text>
+                  <Text style={styles.requirementText}>{requirement.Description}</Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            <View style={styles.noMeetupCard}>
+              <Text style={styles.noMeetupText}>No Requirements Available</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Reviews Section */}
+        <View style={styles.cards}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Reviews</Text>
+            <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
+              <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+            </TouchableOpacity>
+          </View>
+          <View><Text style={styles.line}></Text></View>
+          {reviewData.length > 0 ? (
+            reviewData.slice(0, showAllReviews ? reviewData.length : 1).map((review, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.profileSection}>
+                  <Image
+                    source={{ uri: profileImages[review.UserId] || 'https://via.placeholder.com/50' }}
+                    style={styles.profileImage}
+                  />
+                </View>
+                <View style={styles.requirementSection}>
+                  <Text style={styles.profileName}>{review.Username || "Unknown User"}</Text>
+                  <Text style={styles.requirementText}>{review.Description || "No description provided."}</Text>
+                </View>
+              </View>
+            ))
+          ) : (
+            <View style={styles.noMeetupCard}>
+              <Text style={styles.noMeetupText}>No Reviews Available</Text>
+            </View>
+          )}
+        </View>
+
+
+        {/*    
+<View style={styles.dropdownContainer}>
+
+  <Picker
+    selectedValue={selectedLocation}
+    onValueChange={(itemValue) => {
+      setSelectedLocation(itemValue); // Update location
+      fetchTopFiveData(); // Fetch top 5 data after selecting location
+    }}
+    style={styles.picker}
+  >
+    <Picker.Item label="Select Location" value="" />
+    {locations.map((location) => (
+      <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
+    ))}
+  </Picker>
+
+
+  <Picker
+    selectedValue={selectedSlot}
+    onValueChange={(itemValue) => {
+      setSelectedSlot(itemValue); // Update slot
+      fetchTopFiveData(); // Fetch top 5 data after selecting slot
+    }}
+    style={styles.picker}
+  >
+    <Picker.Item label="Select Slot" value="" />
+    {slots.map((slot) => (
+      <Picker.Item key={slot.Id} label={slot.Slots} value={slot.Id} />
+    ))}
+  </Picker>
+</View> */}
+
+        <View style={styles.topcards}>
+
+          <View style={styles.dropdownContainer}>
+
+            <Picker
+              selectedValue={selectedLocation}
+              onValueChange={(itemValue) => {
+                setSelectedLocation(itemValue); // Update location
+                fetchTopFiveData(); // Fetch top 5 data after selecting location
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Location" value="" />
+              {locations.map((location) => (
+                <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
+              ))}
+            </Picker>
+
+
+            <Picker
+              selectedValue={selectedSlot}
+              onValueChange={(itemValue) => {
+                setSelectedSlot(itemValue); // Update slot
+                fetchTopFiveData(); // Fetch top 5 data after selecting slot
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Slot" value="" />
+              {slots.map((slot) => (
+                <Picker.Item key={slot.Id} label={slot.Slots} value={slot.Id} />
+              ))}
+            </Picker>
+          </View>
+
+          <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
+          <View style={styles.home}>
+            <TouchableOpacity
+              style={[styles.addButton, buttonClicked === 'taken' && styles.disabledButton]}
+              onPress={() => handleButtonClick('given')}
+            >
+              <Text style={[styles.buttonText1, buttonClicked === 'taken' && styles.disabledButtonText]}>
+                OFFERED
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.addButton, buttonClicked === 'given' && styles.disabledButton]}
+              onPress={() => handleButtonClick('taken')}
+            >
+              <Text style={[styles.buttonText1, buttonClicked === 'given' && styles.disabledButtonText]}>
+                RECEIVED
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.rankingTable}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.tableHeaderText}>#RANK</Text>
+              <Text style={styles.tableHeaderText}>#AMOUNT</Text>
+            </View>
+            <View style={styles.container1}>
+              {buttonClicked === 'given' || buttonClicked === 'taken' ? (
+                renderData(buttonClicked === 'given' ? processedData : processedReviewerData)
+              ) : (
+                renderData(processedData)
+              )}
+            </View>
           </View>
         </View>
-      ))}
-    </>
-  ) : (
-    <View style={styles.noMeetupCard}>
-      <Text style={styles.noMeetupText}>No Requirements Available</Text>
-    </View>
-  )}
-</View>
-
-
-        {/* ===================================Reviews================================== */}
-
-        <View style={styles.cards}>
-  <View style={styles.header}>
-    <View style={styles.headerRow}>
-      <Text style={styles.headerText}>Reviews</Text>
-      <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-        <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-      </TouchableOpacity>
-    </View>
-  </View>
-  <View><Text style={styles.line}></Text></View>
-  {reviewData.length > 0 ? (
-    <>
-      {reviewData.slice(0, showAllReviews ? reviewData.length : 1).map((review, index) => (
-        <View key={index} style={styles.card}>
-          <View style={styles.profileSection}>
-            <Image
-              source={{ uri: profileImages[review.UserId] || 'https://via.placeholder.com/50' }}
-              style={styles.profileImage}
-            />
-          </View>
-          <View style={styles.requirementSection}>
-            <Text style={styles.profileName}>{review.Username || "Unknown User"}</Text>
-            <Text style={styles.requirementText}>{review.Description || "No description provided."}</Text>
-          </View>
-        </View>
-      ))}
-    </>
-  ) : (
-    <View style={styles.noMeetupCard}>
-      <Text style={styles.noMeetupText}>No Reviews Available</Text>
-    </View>
-  )}
-</View>
-
-
-
 
       </View>
+
     </ScrollView>
   );
 };
+
+
+
 
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ccc',
-    // padding: 5,
+
+  },
+
+  topcards: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    width: '90%',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#a3238f',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  home: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  addButton: {
+    backgroundColor: '#a3238f',
+    padding: 10,
+    paddingHorizontal: 40,
+    borderRadius: 15,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: '#B0B0B0',
+    opacity: 0.6,
+  },
+  disabledButtonText: {
+    color: '#666',
+  },
+  usernameText: {
+
+    color: 'black',
+    fontWeight: 'bold',
+
+  },
+  rankingTable: {
+    borderWidth: 2,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  tableHeaderText: {
+    fontWeight: 'bold',
+    color: '#a3238f',
+  },
+  container1: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#F3ECF3',
+    margin: 8,
+    borderRadius: 10,
+  },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 10,
+  },
+  rankText: {
+    marginRight: 10,
+    fontWeight: 'bold',
+    color: '#a3238f',
+  },
+  nameText: {
+    fontWeight: 'bold',
+    color: '#a3238f',
+  },
+  amountText: {
+    fontWeight: 'bold',
+    color: '#a3238f',
+    textAlign: 'right',
+    width: 100,
+  },
+  dropdownContainer: {
+    marginBottom: 20,
+    paddingHorizontal: 15,
+    flexDirection: "row",
+    justifyContent: 'space-between',
+
+  },
+  dropdownLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+
+  },
+  picker: {
+    height: 50,
+    width: '48%',
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    marginBottom: 20,
+    paddingLeft: 10, 
+    
   },
   containermain: {
     justifyContent: 'flex-start',
@@ -257,8 +593,8 @@ const styles = StyleSheet.create({
 
   line: {
     marginVertical: 15,
-    width: '100%', 
-    height: 2, 
+    width: '100%',
+    height: 2,
     backgroundColor: '#A3238F',
   },
   card: {
@@ -286,7 +622,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     color: '#a3238f',
-    fontWeight:'bold',
+    fontWeight: 'bold',
   },
   requirementSection: {
     marginLeft: 15,
@@ -330,7 +666,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'flex-end',
   },
-   buttonContainer: {
+  buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     borderRadius: 8,
@@ -338,7 +674,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     marginTop: 15,
-    marginBottom:10,
+    marginBottom: 10,
   },
   leftButtons: {
     flex: 1,
@@ -371,9 +707,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   image: {
-    width: width * 0.790, 
-    height: 150,        
-    resizeMode:'cover',
+    width: width * 0.790,
+    height: 150,
+    resizeMode: 'cover',
     borderRadius: 10,
   },
 
@@ -385,8 +721,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    margin:10,
-    marginBottom:5,
+    margin: 10,
+    marginBottom: 5,
   },
   // card: {
   //   backgroundColor: '#fff',

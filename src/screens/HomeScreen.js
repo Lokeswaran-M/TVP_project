@@ -102,6 +102,7 @@ const HomeScreen = ({ route }) => {
   }, []);  
   useEffect(() => {
     requestNotificationPermissions();
+    
     const dataArrays = [requirementsData, reviewsData, processedData, processedReviewerData];
     dataArrays.forEach((dataArray) => {
       if (dataArray.length > 0) {
