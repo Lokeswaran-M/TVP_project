@@ -114,12 +114,13 @@ const EditProfile = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.row}>
-        <Text style={styles.label}>Name</Text>
+        <Text style={styles.label}>Username</Text>
       </View>
       <TextInput
-        style={styles.input}
+        style={styles.inputProfession}
         value={username}
         onChangeText={setName}
+        editable={false}
       />
       <View style={styles.row}>
         <Text style={styles.label}>Profession</Text>
