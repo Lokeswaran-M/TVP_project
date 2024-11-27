@@ -112,13 +112,14 @@ useFocusEffect(
     setSelectedLocationError('');
     setSelecteddateError('');
     let isValid = true;
-
-    // Validation logic
     if (!email) {
         setEmailError('Email is required');
         isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
         setEmailError('Invalid email format');
+        isValid = false;
+      } else if (email !== email.toLowerCase()) {
+        setEmailError('Email should be in lowercase');
         isValid = false;
     }
     if (!address) {

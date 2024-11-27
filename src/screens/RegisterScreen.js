@@ -180,7 +180,10 @@ const handlelocationChange = (selectedLocation) => {
         console.log("Count----------", data.count);
         if (data.count > 0) {
           setUsernameError('Username already taken');
-          Alert.alert("Error", "Username already taken");
+          Alert.alert(
+            "Error",
+            "Username already taken. If you need to use the same name, please login and activate your account. Otherwise, enter a different username."
+          );          
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -213,6 +216,11 @@ const handlelocationChange = (selectedLocation) => {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Invalid email format');
       isValid = false;
+    } else if (email !== email.toLowerCase()) {
+      setEmailError('Email should be in lowercase');
+      isValid = false;
+    } else {
+      setEmailError(''); 
     }
     if (!address) {
       setAddressError('Address is required');

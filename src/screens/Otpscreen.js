@@ -12,6 +12,7 @@ import { useRoute } from '@react-navigation/native';
 const Otpscreen = ({ navigation }) => {
   const route = useRoute();
   const { Mobileno } = route.params || {}; 
+  console.log("Mobile number in OTP Screen-------------------------",Mobileno);
 
   // const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');

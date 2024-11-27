@@ -23,6 +23,7 @@ const LoginScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState(''); 
+  const [mobileNo, setMobileNo] = useState('');
   console.log("UserName----------------------",username);
   useEffect(() => {
     const fetchAppInfo = async () => {
@@ -106,10 +107,14 @@ const LoginScreen = ({ navigation }) => {
     setPasswordVisible(!passwordVisible);
   };
   const dispatch = useDispatch();
+   
   const handleLogin = async () => {
+    // Reset error states
     setUsernameError('');
     setPasswordError('');
     setLoginError('');
+  
+    // Input validation
     let isValid = true;
     if (!username) {
       setUsernameError('Username is required');
@@ -120,7 +125,9 @@ const LoginScreen = ({ navigation }) => {
       isValid = false;
     }
     if (!isValid) return;
+  
     try {
+      // Send login request
       const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
@@ -129,59 +136,76 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ username, password, logintype }),
       });
       const result = await response.json();
-      console.log("Data from login response:", result);
+      console.log('Data from login response:', result);
+      if (!response.ok) {
+        if (result.activateOption) {
+          setLoginError(result.error);
+          setMobileNo(result.mobileNo); 
+        }
+         else {
+          setLoginError(result.error || 'Login failed. Please try again.');
+        }
+        return;
+      }
+      setMobileNo(result.mobileNo);
       dispatch(setUser(result));
       const { rollId } = result.user;
       if (logintype === '2') {
         navigation.navigate('SubstitutePage');
         return;
       }
+
       if (rollId === 2 || rollId === 3) {
-        const deviceId = await DeviceInfo.getUniqueId();
-        console.log('Device ID:', deviceId);
-        const deviceName = await DeviceInfo.getDeviceName();
-        console.log('Device Name:', deviceName);
-        const FCMtoken = await messaging().getToken();
-  console.log('FCM Token:=============================', FCMtoken);
-        const deviceResponse = await fetch(`${API_BASE_URL}/login`, { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username,
-            password,
-            logintype,
-            deviceId,
-            deviceName,
-            FCMtoken,
-          }),
-        });
+        try {
+          const deviceId = await DeviceInfo.getUniqueId();
+          console.log('Device ID:', deviceId);
   
-        const deviceResult = await deviceResponse.json();
-        console.log('Device Result:', deviceResult); 
-        if (deviceResponse.ok) {
-          console.log('Device info saved successfully.');
-        } else {
-          console.error('Failed to save device info:', deviceResult.error);
+          const deviceName = await DeviceInfo.getDeviceName();
+          console.log('Device Name:', deviceName);
+  
+          const FCMtoken = await messaging().getToken();
+          console.log('FCM Token:', FCMtoken);
+  
+          const deviceResponse = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              username,
+              password,
+              logintype,
+              deviceId,
+              deviceName,
+              FCMtoken,
+            }),
+          });
+  
+          const deviceResult = await deviceResponse.json();
+          if (deviceResponse.ok) {
+            console.log('Device info saved successfully.');
+          } else {
+            console.error('Failed to save device info:', deviceResult.error);
+          }
+        } catch (deviceError) {
+          console.error('Error saving device info:', deviceError);
         }
-        navigation.navigate('DrawerNavigator');
-      } else if (logintype === '1') {
+      }
+  
+      // Navigate based on role and logintype
+      if (logintype === '1') {
         if (rollId === 1) {
           navigation.navigate('AdminPage');
-        } else if (rollId === 2) {
-          navigation.navigate('DrawerNavigator');
-        } else if (rollId === 3) {
+        } else if (rollId === 2 || rollId === 3) {
           navigation.navigate('DrawerNavigator');
         } else {
           setLoginError('Invalid role ID');
         }
       }
-  
     } catch (error) {
       setLoginError('An error occurred. Please try again.');
-      console.error(error);
-    }
+      console.error('Login error:', error);
+    }  
   };  
   return ( 
     <TouchableWithoutFeedback onPress={handleTouchOutside}>
@@ -256,7 +280,28 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.errorcontainer}>
           {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
           </View>
-          {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} 
+          {/* {loginError ? <Text style={styles.errorText}>{loginError}</Text> : null} 
+          <TouchableOpacity onPress={() => navigation.navigate('Otpscreen')}>
+            <Text style={styles.registerText}>
+            Do you want to activate the user? <Text style={styles.signUpText}>Activate.</Text>
+            </Text>
+          </TouchableOpacity> */}
+        {loginError ? (
+  <View>
+    <Text style={styles.errorText}>{loginError}</Text>
+    <TouchableOpacity
+      onPress={() => {
+        console.log("Mobile number to pass:", mobileNo);
+        navigation.navigate('Otpscreen', { Mobileno: mobileNo });
+      }}
+    >
+      <Text style={styles.registerText}>
+        Do you want to activate the user?{' '}
+        <Text style={styles.signUpText}>Activate.</Text>
+      </Text>
+    </TouchableOpacity>
+  </View>
+) : null}
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
@@ -280,3 +325,170 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 export default LoginScreen;
+
+
+
+
+
+
+
+ // const handleLogin = async () => {
+  //   setUsernameError('');
+  //   setPasswordError('');
+  //   setLoginError('');
+  //   let isValid = true;
+  //   if (!username) {
+  //     setUsernameError('Username is required');
+  //     isValid = false;
+  //   }
+  //   if (!password) {
+  //     setPasswordError('Password is required');
+  //     isValid = false;
+  //   }
+  //   if (!isValid) return;
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/login`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ username, password, logintype }),
+  //     });
+    
+  //     const result = await response.json();
+  //     console.log("Data from login response:", result);
+  //     setMobileNo(result.mobileNo);
+  //     console.log("MobileNo Data from login response:", mobileNo);
+    
+  //     if (!response.ok) {
+  //       if (result.activateOption) {
+  //         setLoginError(result.error);
+  //       } else {
+  //         setLoginError('Login failed. Please try again.');
+  //       }
+  //       return; 
+  //     }
+  //     setMobileNo(result.mobileNo); 
+  //     dispatch(setUser(result));
+  //     const { rollId } = result.user;
+    
+  //     if (logintype === '2') {
+  //       navigation.navigate('SubstitutePage');
+  //       return;
+  //     }
+    
+  //     if (rollId === 2 || rollId === 3) {
+  //       const deviceId = await DeviceInfo.getUniqueId();
+  //       console.log('Device ID:', deviceId);
+    
+  //       const deviceName = await DeviceInfo.getDeviceName();
+  //       console.log('Device Name:', deviceName);
+    
+  //       const FCMtoken = await messaging().getToken();
+  //       console.log('FCM Token:', FCMtoken);
+    
+  //       const deviceResponse = await fetch(`${API_BASE_URL}/login`, { 
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           username,
+  //           password,
+  //           logintype,
+  //           deviceId,
+  //           deviceName,
+  //           FCMtoken,
+  //         }),
+  //       });
+    
+  //       const deviceResult = await deviceResponse.json();
+  //       console.log('Device Result:', deviceResult); 
+    
+  //       if (deviceResponse.ok) {
+  //         console.log('Device info saved successfully.');
+  //       } else {
+  //         console.error('Failed to save device info:', deviceResult.error);
+  //       }
+    
+  //       navigation.navigate('DrawerNavigator');
+  //     } else if (logintype === '1') {
+  //       if (rollId === 1) {
+  //         navigation.navigate('AdminPage');
+  //       } else if (rollId === 2 || rollId === 3) {
+  //         navigation.navigate('DrawerNavigator');
+  //       } else {
+  //         setLoginError('Invalid role ID');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     setLoginError('An error occurred. Please try again.');
+  //     console.error(error);
+  //   } 
+
+
+
+
+
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/login`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ username, password, logintype }),
+  //     });
+  //     const result = await response.json();
+  //     console.log("Data from login response:", result);
+  //     dispatch(setUser(result));
+  //     const { rollId } = result.user;
+  //     if (logintype === '2') {
+  //       navigation.navigate('SubstitutePage');
+  //       return;
+  //     }
+  //     if (rollId === 2 || rollId === 3) {
+  //       const deviceId = await DeviceInfo.getUniqueId();
+  //       console.log('Device ID:', deviceId);
+  //       const deviceName = await DeviceInfo.getDeviceName();
+  //       console.log('Device Name:', deviceName);
+  //       const FCMtoken = await messaging().getToken();
+  // console.log('FCM Token:=============================', FCMtoken);
+  //       const deviceResponse = await fetch(`${API_BASE_URL}/login`, { 
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({
+  //           username,
+  //           password,
+  //           logintype,
+  //           deviceId,
+  //           deviceName,
+  //           FCMtoken,
+  //         }),
+  //       });
+  
+  //       const deviceResult = await deviceResponse.json();
+  //       console.log('Device Result:', deviceResult); 
+  //       if (deviceResponse.ok) {
+  //         console.log('Device info saved successfully.');
+  //       } else {
+  //         console.error('Failed to save device info:', deviceResult.error);
+  //       }
+  //       navigation.navigate('DrawerNavigator');
+  //     } else if (logintype === '1') {
+  //       if (rollId === 1) {
+  //         navigation.navigate('AdminPage');
+  //       } else if (rollId === 2) {
+  //         navigation.navigate('DrawerNavigator');
+  //       } else if (rollId === 3) {
+  //         navigation.navigate('DrawerNavigator');
+  //       } else {
+  //         setLoginError('Invalid role ID');
+  //       }
+  //     }
+  
+  //   } catch (error) {
+  //     setLoginError('An error occurred. Please try again.');
+  //     console.error(error);
+  //   }

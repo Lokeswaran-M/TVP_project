@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, ActivityIndicator, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
@@ -7,7 +6,7 @@ import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
 import styles from '../components/layout/PostStyles';
 import { TabView, TabBar } from 'react-native-tab-view';
-
+import Subscription from './Subscription';
 const Post = ({ chapterType, locationId, navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
@@ -60,8 +59,6 @@ const Post = ({ chapterType, locationId, navigation }) => {
           const dateB = new Date(b.dateTime);
           return dateB - dateA; // Descending order (most recent first)
         });
-
-        // Apply the date range filter if both start and end dates are selected
         if (startDate && endDate) {
           filterPhotosByDateRange(startDate, endDate, photosWithProfileData);
         } else {
@@ -257,28 +254,26 @@ const Post = ({ chapterType, locationId, navigation }) => {
     </View>
   );
 };
-
-
-const TabViewExample = ({ navigation }) => {
+export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([]);
   const userId = useSelector((state) => state.user?.userId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchBusinessInfo = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
         const data = await response.json();
-
+        console.log("Data in the Home Screen Drawer-----------------------------", data);
         if (response.ok) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
             title: business.BD,
             chapterType: business.CT,
             locationId: business.L,
+            isPaid: business.IsPaid,
           }));
           setRoutes(updatedRoutes);
           setBusinessInfo(data);
@@ -291,12 +286,13 @@ const TabViewExample = ({ navigation }) => {
         setLoading(false);
       }
     };
-
     fetchBusinessInfo();
   }, [userId]);
-
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
+    if (business?.IsPaid === 0) {
+      return <Subscription navigation={navigation} />;
+    }
     return (
       <Post
         chapterType={business?.CT}
@@ -305,7 +301,6 @@ const TabViewExample = ({ navigation }) => {
       />
     );
   };
-
   const renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -316,11 +311,9 @@ const TabViewExample = ({ navigation }) => {
       labelStyle={{ fontSize: 14 }}
     />
   );
-
   if (loading) {
-    return <ActivityIndicator size="large" color="#A3238F" />;
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
-
   return (
     <TabView
       navigationState={{ index, routes }}
@@ -330,9 +323,82 @@ const TabViewExample = ({ navigation }) => {
       renderTabBar={renderTabBar}
     />
   );
-};
+}
 
-export default TabViewExample;
+// const TabViewExample = ({ navigation }) => {
+//   const layout = useWindowDimensions();
+//   const [index, setIndex] = useState(0);
+//   const [routes, setRoutes] = useState([]);
+//   const userId = useSelector((state) => state.user?.userId);
+//   const [businessInfo, setBusinessInfo] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchBusinessInfo = async () => {
+//       try {
+//         const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+//         const data = await response.json();
+
+//         if (response.ok) {
+//           const updatedRoutes = data.map((business, index) => ({
+//             key: `business${index + 1}`,
+//             title: business.BD,
+//             chapterType: business.CT,
+//             locationId: business.L,
+//           }));
+//           setRoutes(updatedRoutes);
+//           setBusinessInfo(data);
+//         } else {
+//           console.error('Error fetching business info:', data.message);
+//         }
+//       } catch (error) {
+//         console.error('API call error:', error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchBusinessInfo();
+//   }, [userId]);
+
+  // const renderScene = ({ route }) => {
+  //   const business = businessInfo.find((b) => b.BD === route.title);
+  //   return (
+  //     <Post
+  //       chapterType={business?.CT}
+  //       locationId={business?.L}
+  //       navigation={navigation}
+  //     />
+  //   );
+  // };
+
+  // const renderTabBar = (props) => (
+  //   <TabBar
+  //     {...props}
+  //     indicatorStyle={{ backgroundColor: '#A3238F' }}
+  //     style={{ backgroundColor: '#F3ECF3' }}
+  //     activeColor="#A3238F"
+  //     inactiveColor="gray"
+  //     labelStyle={{ fontSize: 14 }}
+  //   />
+  // );
+
+//   if (loading) {
+//     return <ActivityIndicator size="large" color="#A3238F" />;
+//   }
+
+//   return (
+//     <TabView
+//       navigationState={{ index, routes }}
+//       renderScene={renderScene}
+//       onIndexChange={setIndex}
+//       initialLayout={{ width: layout.width }}
+//       renderTabBar={renderTabBar}
+//     />
+//   );
+// };
+
+// export default TabViewExample;
 
 
 

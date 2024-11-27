@@ -10,6 +10,7 @@ const Payment = () => {
   const navigation = useNavigation();
   // const { userID } = useContext(AuthContext); // Assume you're using user context
   const userId = useSelector((state) => state.user?.userId);
+  console.log("User ID for home subscription------------------------------",userId);
   const handlePayment = () => {
     try {
       const paymentAmount = isOffMonth ? 1500 : 3000;

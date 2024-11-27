@@ -132,8 +132,6 @@ justifyContent:'center',
 borderRadius:25,
 alignItems:'flex-end',
 padding:10,
-
-marginRight:10,
 margin:5,
   },
   filterButtonText:{

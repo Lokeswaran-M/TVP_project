@@ -12,7 +12,6 @@ const App = () => {
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        // Request Notification Permission
         if (Platform.OS === 'android' && Platform.Version >= 33) {
           const notificationGranted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
@@ -25,15 +24,12 @@ const App = () => {
               buttonPositive: 'OK',
             }
           );
-
           if (notificationGranted === PermissionsAndroid.RESULTS.GRANTED) {
             console.log('Notification permission granted');
           } else {
             console.log('Notification permission denied');
           }
         }
-
-        // Request Camera Permission
         const cameraGranted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA,
           {
