@@ -286,22 +286,15 @@ const LoginScreen = ({ navigation }) => {
             Do you want to activate the user? <Text style={styles.signUpText}>Activate.</Text>
             </Text>
           </TouchableOpacity> */}
-        {loginError ? (
-  <View>
-    <Text style={styles.errorText}>{loginError}</Text>
-    <TouchableOpacity
-      onPress={() => {
-        console.log("Mobile number to pass:", mobileNo);
-        navigation.navigate('Otpscreen', { Mobileno: mobileNo });
-      }}
-    >
-      <Text style={styles.registerText}>
-        Do you want to activate the user?{' '}
-        <Text style={styles.signUpText}>Activate.</Text>
-      </Text>
-    </TouchableOpacity>
-  </View>
-) : null}
+         {loginError && <Text style={styles.errorText}>{loginError}</Text>}
+{loginError === 'User is not activated.' && (
+  <Text style={styles.registerText}>
+    Do you want to activate the user?{' '}
+    <Text style={styles.signUpText} onPress={() => navigation.navigate('ActivateScreen', { mobileNo })}>
+      Activate.
+    </Text>
+  </Text>
+)}
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
           </TouchableOpacity>
