@@ -83,14 +83,22 @@ const togglePasswordVisibility1 = () => {
         },
       });
       const responseText = await response.text();
-      console.log("Raw response text:", responseText);
       const data = JSON.parse(responseText);
-      console.log("Data for refer members--------------------", data);
       setreferMembers(data.members);
+  
+      // Set a default reference
+      if (data.members && data.members.length > 0) {
+        const defaultReference = data.members[0]; // Logic to choose the default
+        setReferredBy(defaultReference.UserId);
+        setReferChapterType(defaultReference.ChapterType);
+        setReferLocationId(defaultReference.LocationID);
+        setreferProfession(defaultReference.Profession);
+      }
     } catch (error) {
       console.error('Error fetching refer members:', error);
     }
   };
+  
   
   useEffect(() => {
     fetchReferMembers();
