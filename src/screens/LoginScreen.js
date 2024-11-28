@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loginError, setLoginError] = useState(''); 
-  const [mobileNo, setMobileNo] = useState('');
+  const [Mobileno, setMobileNo] = useState('');
   console.log("UserName----------------------",username);
   useEffect(() => {
     const fetchAppInfo = async () => {
@@ -140,14 +140,15 @@ const LoginScreen = ({ navigation }) => {
       if (!response.ok) {
         if (result.activateOption) {
           setLoginError(result.error);
-          setMobileNo(result.mobileNo); 
+          setMobileNo(result.mobileNo);
+          console.log("Mobile number-------------------",Mobileno);
         }
          else {
           setLoginError(result.error || 'Login failed. Please try again.');
         }
         return;
       }
-      setMobileNo(result.mobileNo);
+      // setMobileNo(result.mobileNo);
       dispatch(setUser(result));
       const { rollId } = result.user;
       if (logintype === '2') {
@@ -286,14 +287,14 @@ const LoginScreen = ({ navigation }) => {
             Do you want to activate the user? <Text style={styles.signUpText}>Activate.</Text>
             </Text>
           </TouchableOpacity> */}
-         {loginError && <Text style={styles.errorText}>{loginError}</Text>}
-{loginError === 'User is not activated.' && (
+       {loginError && <Text style={styles.errorText}>{loginError}</Text>}
+{loginError === 'User already exists but is not activated.' && (
+   <TouchableOpacity onPress={() => navigation.navigate('Otpscreen', { Mobileno })}>
   <Text style={styles.registerText}>
     Do you want to activate the user?{' '}
-    <Text style={styles.signUpText} onPress={() => navigation.navigate('ActivateScreen', { mobileNo })}>
-      Activate.
-    </Text>
+  <Text style={styles.signUpText}>Activate</Text>
   </Text>
+  </TouchableOpacity>
 )}
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Log In</Text>
