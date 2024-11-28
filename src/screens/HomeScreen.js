@@ -464,13 +464,29 @@ console.log("Chapter Type (Slots) value:", slots);
       <View style={styles.buttonRow}>
   {event.TimeDifferenceGreaterThan12 === 1 && (
     <TouchableOpacity
-      style={[
-        styles.confirmButton,
-        isConfirmed[event.EventId] ? styles.disabledButton : null,
-      ]}
-      onPress={() => handleConfirmClick(event.EventId, event.LocationID, event.SlotID)}
-      disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
-    >
+  style={[
+    styles.confirmButton,
+    isConfirmed[event.EventId] ? styles.disabledButton : null,
+  ]}
+  onPress={() => {
+    Alert.alert(
+      "Confirmation",
+      "Are you sure you want to confirm this event?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel", // Adds emphasis to the cancel button
+          onPress: () => console.log("Confirmation canceled"), // No action on cancel
+        },
+        {
+          text: "OK",
+          onPress: () => handleConfirmClick(event.EventId, event.LocationID, event.SlotID), // Run the function on OK
+        },
+      ]
+    );
+  }}
+  disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
+>
       <Icon
         name="check-circle"
         size={24}
@@ -533,14 +549,31 @@ console.log("Chapter Type (Slots) value:", slots);
         </View>
         <View style={styles.requirementSection}>
           <Text style={styles.requirementText}>{requirement.Description}</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
   style={[
-    styles.acknowledgeButton, 
+    styles.acknowledgeButton,
     requirement.IsAcknowledged === 1 ? styles.disabledButton : null
   ]}
-  onPress={() => handleAcknowledgeClick(requirement)}
+  onPress={() => {
+    Alert.alert(
+      "Confirmation",
+      "Are you sure you want to acknowledge this requirement?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel", // Optional: Makes the button text appear bold
+          onPress: () => console.log("Acknowledgement canceled"), // Log or perform no action
+        },
+        {
+          text: "OK",
+          onPress: () => handleAcknowledgeClick(requirement), // Execute the function
+        },
+      ]
+    );
+  }}
   disabled={requirement.IsAcknowledged === 1}
 >
+
   <Text style={styles.buttonText1}>
     {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
   </Text>
