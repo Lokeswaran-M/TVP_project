@@ -95,12 +95,13 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
         </View>
       </ViewShot>
 
-      <TouchableOpacity style={styles.downloadButton} onPress={downloadPoster}>
-        <Text style={styles.downloadButtonText}>Download Poster</Text>
-      </TouchableOpacity>
-
+      <View style={styles.downloadContainer}>
+        <TouchableOpacity style={styles.downloadButton} onPress={downloadPoster}>
+          <Text style={styles.downloadButtonText}>Download Poster</Text>
+        </TouchableOpacity>
+      </View>
  
-      <View>
+      <View style={styles.navigationButtons}>
         <TouchableOpacity style={styles.oneminButton} onPress={() => navigation.navigate('OneMinPresentation', { userId, eventId, locationId, slotId, dateTime })}>
           <Text style={styles.downloadButtonText}>One Min Presentation</Text>
         </TouchableOpacity>
@@ -112,11 +113,12 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',  // Make space between the sections
     alignItems: 'center',
     backgroundColor: '#f2f2f2',
-    padding:40,
-    paddingTop:50
+    paddingTop: 50,
+    paddingBottom: 40, // Padding on the bottom
+    paddingHorizontal: 20, // Ensure content is not too close to edges
   },
   content: {
     backgroundColor: '#fff',
@@ -127,9 +129,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 3,
-    width: '80%',
+    width: '100%', // Ensure it fills the screen width
     alignItems: 'center',
-
+    marginBottom: 20,
   },
   label: {
     fontWeight: 'bold',
@@ -151,6 +153,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
   },
+  downloadContainer: {
+    alignItems: 'center',
+    marginBottom: 30, // Give some space before next section
+  },
+
   oneminButton: {
     backgroundColor: '#a3238f',
     padding: 10,
@@ -165,6 +172,11 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 9,
     borderTopLeftRadius: 20,
+  },
+  navigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: '100%',
   },
   downloadButtonText: {
     color: 'white',
