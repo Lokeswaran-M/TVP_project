@@ -573,7 +573,7 @@ function DrawerNavigator() {
             name="Creatingmeeting"
             component={StackMeetingNavigator}
             options={({ navigation }) => ({
-              drawerLabel: 'Create meeting',
+              drawerLabel: 'Create Meeting',
               drawerIcon: ({ color, size }) => (
                 <Icon name="comments" color={color} size={size} />
               ),
