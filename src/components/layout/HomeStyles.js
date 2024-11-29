@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
       fontWeight: '600',
     },
     disabledButton: {
-      backgroundColor: '#B0B0B0',
-      opacity: 0.6,
+      backgroundColor: 'white',
+      // opacity: 0.6,
     },    
     headerContainer: {
       flexDirection: 'row',
@@ -389,6 +389,11 @@ const styles = StyleSheet.create({
       padding: 10,
       borderBottomWidth: 1,
       borderBottomColor: '#ddd',
+    },
+    note: {
+      color: '#F06183',
+      fontSize: 12,
+      margin: 2,
     },
   });
   export default styles;
