@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.05, 
     fontWeight: 'bold',
     marginBottom: height * 0.035,
-    color: 'black',
+    color: '#a3238f',
     textAlign:'center',
   },
   inputContainer: {
@@ -126,16 +126,14 @@ const styles = StyleSheet.create({
   radioButtonItem: {
     flexDirection: 'row', 
     alignItems: 'center',
-    marginRight: 20, 
+    marginRight: 20,
+    marginBottom: 15, 
   },
   radioButtonLabel: {
     fontSize: 16,
     marginLeft: 8, 
     color:'black',
   },
-
-
-
 });
 
 export default styles;

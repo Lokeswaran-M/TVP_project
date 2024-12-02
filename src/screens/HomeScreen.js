@@ -464,6 +464,9 @@ console.log("Chapter Type (Slots) value:", slots);
         <Icon name="map-marker" size={18} color="#6C757D" />
         <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
       </View>
+      <View >
+      <Text style={styles.note}>Note: You cannot confirm the event if it is within 12 hours.</Text>
+      </View>
       <View style={styles.buttonRow}>
   {event.TimeDifferenceGreaterThan12 === 1 && (
     <TouchableOpacity
@@ -478,12 +481,12 @@ console.log("Chapter Type (Slots) value:", slots);
       [
         {
           text: "Cancel",
-          style: "cancel", // Adds emphasis to the cancel button
-          onPress: () => console.log("Confirmation canceled"), // No action on cancel
+          style: "cancel",
+          onPress: () => console.log("Confirmation canceled"),
         },
         {
           text: "OK",
-          onPress: () => handleConfirmClick(event.EventId, event.LocationID, event.SlotID), // Run the function on OK
+          onPress: () => handleConfirmClick(event.EventId, event.LocationID, event.SlotID),
         },
       ]
     );
