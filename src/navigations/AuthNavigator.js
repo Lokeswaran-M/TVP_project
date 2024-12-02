@@ -14,7 +14,7 @@ import HeadAdminPostPage from '../screens/HeadAdminPostPage';
 import HeadAdminMembersPage from '../screens/HeadAdminMembersPage';
 import MemberDetails from '../screens/MemberDetails';
 // import HeadAdminMemberViewPage from '../screens/HeadAdminMemberViewPage';
-
+import HeadAdminProfession from '../screens/HeadAdminProfession';
 import HeadAdminNewSubscribers from '../screens/HeadAdminNewSubscribers';
 import HeadAdminPaymentsPage from '../screens/HeadAdminPaymentsPage';
 import HeadAdminLocation from '../screens/HeadAdminLocation';
@@ -29,9 +29,9 @@ import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 const CustomHeaderBMWpng = () => {
   const navigation = useNavigation();
-  const posticon = () => {
-    navigation.navigate('HeadAdminPostPage');
-  };
+  // const posticon = () => {
+  //   navigation.navigate('HeadAdminPostPage');
+  // };
   return (
     <View style={styles.topNav}>
     <View >
@@ -40,9 +40,9 @@ const CustomHeaderBMWpng = () => {
           source={BMW} 
           style={styles.iconImage}
         />
-        <TouchableOpacity onPress={posticon}>
+        {/* <TouchableOpacity onPress={posticon}>
         <Ionicons name="chatbubble-ellipses" size={29} color="#A3238F" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
             
       </View>
   
@@ -114,6 +114,18 @@ const CustomHeaderPost = () => {
     </View>
   );
 };
+const CustomAdminProfession = () => {
+  return (
+    <View style={styles.topNav}>
+      <View style={styles.buttonNavtop}>
+        <View style={styles.topNavlogo}>
+        <MaterialIcons name="business-center" size={28} color="white" style={styles.icon} />
+        </View>
+        <Text style={styles.NavbuttonText}>profession</Text>
+      </View>
+    </View>
+  );
+};
 const Stack = createStackNavigator();
 const headerOptions = {
   headerStyle: { backgroundColor: '#a3238f' },
@@ -141,9 +153,10 @@ const AuthNavigator = () => {
         <Stack.Screen name="HeadAdminNewSubscribers" component={HeadAdminNewSubscribers} options={{ headerShown:true , header: () => <CustomHeaderSubscribers/>, headerLeft: () => null,  }} />
         <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
         <Stack.Screen name="AdminLocationstack" component={AdminLocationstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
+        <Stack.Screen name="AdminProfessionstack" component={AdminProfessionstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
         <Stack.Screen name="HeadAdminPostPage" component={HeadAdminPostPage} options={{headerShown: true,header: () => <CustomHeaderPost/>, headerLeft: () => null,  }}/> 
         <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
-  
+     
     </Stack.Navigator>
 
   );
@@ -160,6 +173,11 @@ const AdminLocationstack = () => (
     <Stack.Screen name="HeadAdminLocationCreate" component={HeadAdminLocationCreate} options={{ headerShown: true,header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
     <Stack.Screen name="HeadAdminLocationEdit" component={HeadAdminLocationEdit} options={{ headerShown: true ,header: () => <CustomHeaderLocation/>, headerLeft: () => null,}} />
     <Stack.Screen name="HeadAdminLocationView" component={HeadAdminLocationView} options={{ headerShown: true ,header: () => <CustomHeaderLocation/>, headerLeft: () => null, }} />
+  </Stack.Navigator>
+);
+const AdminProfessionstack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="HeadAdminProfession" component={HeadAdminProfession} options={{ headerShown: true, header: () => <CustomAdminProfession/>, headerLeft: () => null,  }} />
   </Stack.Navigator>
 );
 const styles = StyleSheet.create({

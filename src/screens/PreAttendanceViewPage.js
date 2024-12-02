@@ -33,6 +33,8 @@ const PreAttendanceViewPage = ({ route, navigation }) => {
       }
       const data = await response.json();
 
+      console.log('---------------------------Pre data--------------',data);
+
       const updatedMembers = await Promise.all(
         data.map(async (member) => {
           try {

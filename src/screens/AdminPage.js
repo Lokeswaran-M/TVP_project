@@ -4,9 +4,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 const { width, height } = Dimensions.get('window');
 const AdminPage = () => {
   const navigation = useNavigation();
@@ -228,6 +229,10 @@ const AdminPage = () => {
               <Feather name="map-pin" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>Locations</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminProfessionstack')}>
+              <MaterialIcons name="business-center" size={20} color="white" style={styles.icon} />
+              <Text style={styles.buttonText}>Profession</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.rightButtons}>
@@ -238,6 +243,10 @@ const AdminPage = () => {
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
               <Icon name="money" size={20} color="white" style={styles.icon} />
               <Text style={styles.buttonText}>Payments</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPostPage')}>
+            <Ionicons name="chatbubble-ellipses" size={20} color="white" />
+              <Text style={styles.buttonText}>Post</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -686,7 +695,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#A3238F',
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     elevation: 3,

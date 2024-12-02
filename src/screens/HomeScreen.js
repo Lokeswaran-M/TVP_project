@@ -38,6 +38,9 @@ const HomeScreen = ({ route }) => {
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
   const [buttonClicked, setButtonClicked] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {

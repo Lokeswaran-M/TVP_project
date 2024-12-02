@@ -116,9 +116,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',  // Make space between the sections
     alignItems: 'center',
     backgroundColor: '#f2f2f2',
-    paddingTop: 50,
-    paddingBottom: 40, // Padding on the bottom
-    paddingHorizontal: 20, // Ensure content is not too close to edges
+    padding: 20,
+
   },
   content: {
     backgroundColor: '#fff',
