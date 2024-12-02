@@ -217,21 +217,22 @@ const LoginScreen = ({ navigation }) => {
             style={styles.logo} 
           />
           <Text style={styles.title}>Hello, Welcome Back!</Text>
-           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+           
             <RadioButton.Group
               onValueChange={newValue => setLogintype(newValue)}
               value={logintype}
             >
+         <View style={{ flexDirection: 'row'}}>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value='1' />
+                  <RadioButton value='1' color='#a3238f' />
                   <Text style={styles.radioButtonLabel}>Member Login</Text>
                 </View>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value='2' />
+                  <RadioButton value='2' color='#a3238f' />
                   <Text style={styles.radioButtonLabel}>Substitute Login</Text>
               </View>
+              </View>
             </RadioButton.Group>
-          </View>
           <View style={styles.inputContainer}>
             <Animated.Text
               style={[
