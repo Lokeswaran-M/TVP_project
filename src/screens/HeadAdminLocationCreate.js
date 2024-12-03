@@ -10,9 +10,8 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../constants/Config'; // Import your API base URL
+import { API_BASE_URL } from '../constants/Config'; 
 
-// Get screen dimensions
 const { width, height } = Dimensions.get('window');
 
 const HeadAdminLocationCreate = () => {
@@ -20,15 +19,14 @@ const HeadAdminLocationCreate = () => {
   const [locationName, setLocationName] = useState('');
   const [placeName, setPlaceName] = useState('');
 
-  // Handle Cancel action
+
   const handleCancel = () => {
-    navigation.navigate('HeadAdminLocation'); // Navigate back to the previous screen
+    navigation.navigate('HeadAdminLocation'); 
   };
 
-  // Handle Save action
   const handleSave = async () => {
     if (!locationName || !placeName) {
-      Alert.alert('Error', 'Please fill out all fields.');
+      Alert.alert('Please fill out all fields');
       return;
     }
 
@@ -60,11 +58,10 @@ const HeadAdminLocationCreate = () => {
 
   return (
     <View style={styles.container}>
-      {/* Scrollable content */}
+
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.Blabel}>Create New Location</Text>
 
-        {/* Location Name Input */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Location</Text>
           <TextInput
@@ -75,8 +72,6 @@ const HeadAdminLocationCreate = () => {
             placeholderTextColor="gray"
           />
         </View>
-
-        {/* Place Name Input */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Meeting Place</Text>
           <TextInput
@@ -88,53 +83,58 @@ const HeadAdminLocationCreate = () => {
           />
         </View>
 
-        {/* Button Row */}
         <View style={styles.buttonCon}>
+        <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleCancel}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
+
         </View>
       </ScrollView>
     </View>
   );
 };
 
-// Responsive styles
+
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: '#CCC',
   },
+
   content: {
     paddingHorizontal: 20,
     paddingVertical: 25,
     justifyContent: 'center',
-    marginTop: height * 0.20, // Adjust margin dynamically based on screen height
+    marginTop: height * 0.20,
     marginBottom: height * 0.05,
     marginLeft: height * 0.03,
     marginRight: height * 0.03,
     backgroundColor:'#FFFFFF',
     borderRadius:10,
-
   },
+
   Blabel: {
     fontSize: 23,
     color: '#A3238F',
     fontWeight: 'bold',
     paddingBottom: 30,
   },
+
   inputContainer: {
     marginBottom: 15,
   },
+
   label: {
     fontSize: 17,
     marginBottom: 5,
     color: '#A3238F',
     fontWeight: 'bold',
   },
+
   input: {
     height: 40,
     paddingHorizontal: 15,
@@ -146,11 +146,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+
   buttonCon: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
+
   button: {
     backgroundColor: '#A3238F',
     paddingVertical: 12,
@@ -159,7 +161,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 10,
     width:120,
-
   },
 
   buttonText: {
@@ -167,6 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+
 });
 
 export default HeadAdminLocationCreate;

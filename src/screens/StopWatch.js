@@ -122,6 +122,8 @@ const StopWatch = ({ route, navigation }) => {
                     Stars: rating,
                     Profession: member.Profession,
                     RatingId: 2,
+                    LocationId: member.LocationId,
+                    SlotId:member.SlotId,
                    
                 })
             });

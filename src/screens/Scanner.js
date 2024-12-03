@@ -123,9 +123,9 @@ const Scanner = ({ navigation }) => {
       ) : (
         <View style={styles.scannedMessageContainer}>
           <Text style={styles.scannedMessageText}>Scan Complete!</Text>
-          {/* <TouchableOpacity style={styles.restartButton} onPress={() => setIsScanning(true)}>
+          <TouchableOpacity style={styles.restartButton} onPress={() => setIsScanning(true)}>
             <Text style={styles.restartButtonText}>Scan Again</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
       )}
     </View>
