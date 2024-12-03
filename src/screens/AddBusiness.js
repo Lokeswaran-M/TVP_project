@@ -9,6 +9,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import styles from '../components/layout/AddBusiness';
+import { Dropdown } from 'react-native-element-dropdown';
 const AddBusiness = () => {
   const [profileData, setProfileData] = useState({});
   console.log("Profile data in Add Business--------------",profileData);
@@ -259,22 +260,35 @@ const onChangeStartDate = (event, selectedDate) => {
   </View>
   {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
   {selectedProfessionError ? <Text style={styles.errorText}>{selectedProfessionError}</Text> : null}
- <View style={styles.selectList}>
-      <Picker
-        selectedValue={selectedProfession}
-        onValueChange={(itemValue) =>handleProfessionChange(itemValue)}
-        style={styles.picker}
-         >
-        <Picker.Item label="Select Profession" value="" />
-        {profession.map((item) => (
-          <Picker.Item key={item.Id} label={item.ProfessionName} value={item.ProfessionName} />
-        ))}
-      </Picker>
+ <View>
+ <Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Profession"
+  data={profession.map((item, index) => ({
+    label: item.ProfessionName,
+    value: item.ProfessionName,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={selectedProfession}
+  onChange={(item) => handleProfessionChange(item.value)}
+  search
+  searchPlaceholder="Search Profession"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
+    </View>
+  )}
+/>
       {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
     </View>
     {profileData.RollId === 2 && (
         <>
-    <View style={styles.selectList}>
+    <View>
   <TextInput
     style={styles.textInput}
     value={profileData.LocationName || 'None'}
@@ -284,7 +298,7 @@ const onChangeStartDate = (event, selectedDate) => {
   {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
 </View>
 {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-<View style={styles.selectList}>
+<View>
       <TextInput
         style={styles.textInput}
         value={profileData.ChapterType === '2' ? '1' : '2'}
@@ -295,30 +309,48 @@ const onChangeStartDate = (event, selectedDate) => {
       )}
       {profileData.RollId === 3 && (
         <>
-<View style={styles.selectList}>
-      <Picker borderBottomWidth='1'
-        selectedValue={selectedLocation}
-        onValueChange={(itemValue) => handlelocationChange(itemValue)}
-      >
-        <Picker.Item label="Select Location" value="" />
-        {LocationID.map((item,index) => (
-          <Picker.Item  key={index} label={item.location} value={item.value} />
-        ))}
-      </Picker>
+<View>
+<Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Location"
+  data={LocationID.map((item, index) => ({
+    label: item.location,
+    value: item.value,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={selectedLocation}
+  onChange={(item) => handlelocationChange(item.value)}
+  search
+  searchPlaceholder="Search Location"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
+    </View>
+  )}
+/>
       {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
     </View>
     {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-    <View style={styles.selectList}>
-  <Picker
-    selectedValue={selectedChapterType}
-    onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
-    style={styles.picker}
-  >
-    <Picker.Item label="Select Slot" value="" />
-    {chapterType.map((slot) => (
-      <Picker.Item key={slot.Id} label={`Slot ${slot.Id}`} value={slot.Id} />
-    ))}
-  </Picker>
+    <View>
+    <Dropdown
+        data={chapterType}
+        labelField="Slots"
+        valueField="Id"
+        placeholder="Select Slot"
+        value={selectedChapterType}
+        onChange={(item) => {
+          setSelectedChapterType(item.Id);
+        }}
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+      />
 </View>
 </>
       )}
@@ -355,66 +387,3 @@ const onChangeStartDate = (event, selectedDate) => {
   );
 };
 export default AddBusiness;
-
-
-// useFocusEffect(
-//   useCallback(() => {
-//     console.log('Fetching profile data for userId:', userId); 
-//     fetchProfileData();
-//   }, [userId])
-// );
-// useEffect(() => {
-//   if (profileData.RollId === 2) {
-//     const locationId = profileData.LocationID;
-//     const chapterType = profileData.ChapterType;
-//     if (locationId && chapterType) {
-//       console.log('Fetching exclude professions for RollId 2');
-//       console.log(`LocationID: ${locationId}, ChapterType: ${chapterType}`);
-//       fetch(`${API_BASE_URL}/api/professions/exclude-business-location/${locationId}/${chapterType}`)
-//         .then((response) => {
-//           if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//           }
-//           return response.json();
-//         })
-//         .then((data) => {
-//           console.log('Exclude professions data:', data); 
-//           setProfession(data);
-//         })
-//         .catch((error) => console.error('Error fetching exclude professions:', error));
-//     } else {
-//       console.error('LocationID or ChapterType is missing');
-//     }
-//   } else {
-//     console.log('Fetching execute professions for RollId 3');
-//     fetch(`${API_BASE_URL}/execute-profession`)
-//       .then((response) => {
-//         if (!response.ok) {
-//           throw new Error(`HTTP error! status: ${response.status}`);
-//         }
-//         return response.json();
-//       })
-//       .then((data) => {
-//         console.log('Execute professions data:', data.executeprofession); 
-//         setProfession(data.executeprofession);
-//       })
-//       .catch((error) => console.error('Error fetching execute profession:', error));
-//   }
-// }, [profileData.RollId, profileData.LocationID, profileData.ChapterType]);
-//   const fetchProfileData = async () => {
-//     try {
-//       const response = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch profile data');
-//       }
-//       const data = await response.json();
-//       console.log("Fetched profile data:", data);
-//       if (response.status === 404) {
-//         setProfileData({});
-//       } else {
-//         setProfileData(data);
-//       }
-//     } catch (error) {
-//       console.error('Error fetching profile data:', error);
-//     }
-//   };

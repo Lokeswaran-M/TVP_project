@@ -38,9 +38,6 @@ const HomeScreen = ({ route }) => {
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
   const [buttonClicked, setButtonClicked] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
@@ -126,7 +123,6 @@ const HomeScreen = ({ route }) => {
         const response = await fetch(`${API_BASE_URL}/TopFive?locationId=${locationId}&slot=${slots}`);
         const data = await response.json();
         console.log("Top Five Data--------------------------------------", data);
-    
         if (response.ok) {
           setTopFiveData(data);
         } else {

@@ -57,18 +57,27 @@ const CreatingMeeting = () => {
   const fetchMeetingData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}`);
+      const url = `${API_BASE_URL}/api/meetings/${userId}`;
+      console.log("Requesting URL:", url); // Log the URL to confirm it's correct
+      const response = await fetch(url);
       if (!response.ok) {
+        if (response.status === 404) {
+          // Handle the case when no events are found
+          setMeetingData([]); // Ensure that the meetingData is empty
+          return; // Exit early to avoid further processing
+        }
         throw new Error('Failed to fetch meeting data');
       }
       const data = await response.json();
+      console.log("Data in fetching the meeting data----------------------", data);
       setMeetingData(data);
     } catch (error) {
       console.error('Error fetching meeting data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  };  
+
   const handleDelete = async (eventId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
@@ -112,14 +121,14 @@ const CreatingMeeting = () => {
                   <Text style={styles.meetingTitle}>
                     <Icon name="calendar" size={18} /> 
                     <Text> </Text>
-{new Date(meeting.DateTime).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric'
-})} {'   '}
-<Icon name="clock-o" size={20} /> 
-<Text> </Text>
-{new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                    {new Date(meeting.DateTime).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric'
+                    })} {'   '}
+                    <Icon name="clock-o" size={20} /> 
+                    <Text> </Text>
+                    {new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                   </Text>
                   <Text style={styles.meetingInfo}>
                     <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}
@@ -145,29 +154,27 @@ const CreatingMeeting = () => {
                       <Text style={styles.optionText}>Edit</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-  style={styles.optionButton}
-  onPress={() => {
-    setShowDeleteModal(true);
-    setActiveIndex(index);
-    handleDelete(meeting.EventId);
-  }}
->
-  <Text style={styles.optionText}>Delete</Text>
-</TouchableOpacity>
+                      style={styles.optionButton}
+                      onPress={() => {
+                        setShowDeleteModal(true);
+                        setActiveIndex(index);
+                        handleDelete(meeting.EventId);
+                      }}
+                    >
+                      <Text style={styles.optionText}>Delete</Text>
+                    </TouchableOpacity>
                   </View>
                 )}
               </TouchableOpacity>
             ))
           ) : (
-            <Text>No meetings found</Text>
+            <Text style={styles.noDataText}>No meetings found</Text>
           )}
         </View>
       </TouchableWithoutFeedback>
     </ScrollView>
   );
 };
-
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

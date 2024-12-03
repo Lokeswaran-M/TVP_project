@@ -3,6 +3,7 @@ import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpaci
 import CustomInput from './Custom_input';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
+import { Dropdown } from 'react-native-element-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import AnimatedTextInput from './AnimatedTextInput';
@@ -83,22 +84,14 @@ const togglePasswordVisibility1 = () => {
         },
       });
       const responseText = await response.text();
+      console.log("Raw response text:", responseText);
       const data = JSON.parse(responseText);
+      console.log("Data for refer members--------------------", data);
       setreferMembers(data.members);
-  
-      // Set a default reference
-      if (data.members && data.members.length > 0) {
-        const defaultReference = data.members[0]; // Logic to choose the default
-        setReferredBy(defaultReference.UserId);
-        setReferChapterType(defaultReference.ChapterType);
-        setReferLocationId(defaultReference.LocationID);
-        setreferProfession(defaultReference.Profession);
-      }
     } catch (error) {
       console.error('Error fetching refer members:', error);
     }
   };
-  
   
   useEffect(() => {
     fetchReferMembers();
@@ -122,6 +115,8 @@ const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
 };
 const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
+
+  // Find the selected member's details
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
   if (selectedMember) {
     setReferChapterType(selectedMember.ChapterType);
@@ -188,10 +183,7 @@ const handlelocationChange = (selectedLocation) => {
         console.log("Count----------", data.count);
         if (data.count > 0) {
           setUsernameError('Username already taken');
-          Alert.alert(
-            "Error",
-            "Username already taken. If you need to use the same name, please login and activate your account. Otherwise, enter a different username."
-          );          
+          Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -224,11 +216,6 @@ const handlelocationChange = (selectedLocation) => {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError('Invalid email format');
       isValid = false;
-    } else if (email !== email.toLowerCase()) {
-      setEmailError('Email should be in lowercase');
-      isValid = false;
-    } else {
-      setEmailError(''); 
     }
     if (!address) {
       setAddressError('Address is required');
@@ -378,21 +365,54 @@ const handlelocationChange = (selectedLocation) => {
       />
       </View>
       {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
-     <View style={styles.selectList}>
-          <Picker
-            selectedValue={selectedProfession}
-            onValueChange={(itemValue) =>handleProfessionChange(itemValue)}
-            style={styles.picker}
-             >
-            <Picker.Item label="Select Profession" value="" />
-            {profession.map((item) => (
-              <Picker.Item key={item.Id} label={item.ProfessionName} value={item.ProfessionName} />
-            ))}
-          </Picker>
-        </View>
+     <Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Profession"
+  data={profession.map((item, index) => ({
+    label: item.ProfessionName,
+    value: item.ProfessionName,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={selectedProfession}
+  onChange={(item) => handleProfessionChange(item.value)}
+  search
+  searchPlaceholder="Search Profession"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
+    </View>
+  )}
+/>
         {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
-        <View style={styles.selectList}>
-          <Picker borderBottomWidth='1'
+        <Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Location"
+  data={LocationID.map((item, index) => ({
+    label: item.location,
+    value: item.value,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={selectedLocation}
+  onChange={(item) => handlelocationChange(item.value)}
+  search
+  searchPlaceholder="Search Location"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
+    </View>
+  )}
+/>
+          {/* <Picker borderBottomWidth='1'
             selectedValue={selectedLocation}
             onValueChange={(itemValue) => handlelocationChange(itemValue)}
             style={styles.picker}
@@ -401,10 +421,32 @@ const handlelocationChange = (selectedLocation) => {
             {LocationID.map((item,index) => (
               <Picker.Item  key={index} label={item.location} value={item.value} />
             ))}
-          </Picker>
-        </View>
+          </Picker> */}
         {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
         <View style={styles.selectList}>
+        {/* <Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Slot"
+  data={chapterType.map((item, index) => ({
+    label: item.Slots,
+    value: item.value,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={selectedChapterType}
+  onChange={(item) => setSelectedChapterType(item.value)}
+  search
+  searchPlaceholder="Select Slot"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
+    </View>
+  )}
+/> */}
         <Picker
           selectedValue={selectedChapterType}
           onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
@@ -417,21 +459,20 @@ const handlelocationChange = (selectedLocation) => {
           </Picker>
           </View>
           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
-          {referMembers && referMembers.length > 0 && (
-  <View style={styles.selectList}>
-    <Picker
-      selectedValue={referredBy}
-      onValueChange={handleReferredByChange}
-      style={styles.picker}
-    >
-      <Picker.Item label="Select Referred By" value="" />
-      {referMembers.map((member, index) => (
-        <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
-      ))}
-    </Picker>
-  </View>
-)}
-{referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+          <View style={styles.selectList}>
+          <Picker
+        selectedValue={referredBy}
+        onValueChange={handleReferredByChange}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select Referred By" value="" />
+        {referMembers.map((member, index) => (
+          <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
+        ))}
+      </Picker>
+    </View>
+      {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+      
       <Text style={styles.label}>Start Date</Text>
       <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
         <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
@@ -535,20 +576,54 @@ iconStyle: {
   top: 25,  
   zIndex: 1,
 },
+dropdown: {
+  height: 55,
+  borderWidth: 2,
+  borderColor: '#a3238f',
+  borderRadius: 10,
+  paddingHorizontal: 20,
+  overflow: 'hidden',
+  marginVertical: 10,
+},
+readOnlyText: {
+  height: 50,
+  lineHeight: 50,
+  borderColor: '#ccc',
+  borderWidth: 1,
+  borderRadius: 5,
+  paddingHorizontal: 10,
+  color: '#666',
+  backgroundColor: '#f5f5f5',
+},
+placeholderStyle: {
+  color: '#888',
+  fontSize: 18,
+  // paddingLeft: 10,
+},
+selectedTextStyle: {
+  color: '#000',
+  fontSize: 18,
+},
+inputSearchStyle: {
+  // borderWidth: 1,
+  borderColor: '#a3238f',
+  borderRadius: 8, 
+  // paddingHorizontal: -10,
+  height: 40, 
+  color: 'black',
+},
+item: {
+  height: 50,
+  justifyContent: 'center',
+  paddingLeft: 20,
+},
+itemText: {
+  fontSize: 15,
+  color: '#000',
+},          
 
 });
 export default RegisterScreen;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -637,14 +712,22 @@ export default RegisterScreen;
 //         },
 //       });
 //       const responseText = await response.text();
-//       console.log("Raw response text:", responseText);
 //       const data = JSON.parse(responseText);
-//       console.log("Data for refer members--------------------", data);
 //       setreferMembers(data.members);
+  
+//       // Set a default reference
+//       if (data.members && data.members.length > 0) {
+//         const defaultReference = data.members[0]; // Logic to choose the default
+//         setReferredBy(defaultReference.UserId);
+//         setReferChapterType(defaultReference.ChapterType);
+//         setReferLocationId(defaultReference.LocationID);
+//         setreferProfession(defaultReference.Profession);
+//       }
 //     } catch (error) {
 //       console.error('Error fetching refer members:', error);
 //     }
 //   };
+  
   
 //   useEffect(() => {
 //     fetchReferMembers();
@@ -668,8 +751,6 @@ export default RegisterScreen;
 // };
 // const handleReferredByChange = (itemValue) => {
 //   setReferredBy(itemValue);
-
-//   // Find the selected member's details
 //   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
 //   if (selectedMember) {
 //     setReferChapterType(selectedMember.ChapterType);
@@ -736,7 +817,10 @@ export default RegisterScreen;
 //         console.log("Count----------", data.count);
 //         if (data.count > 0) {
 //           setUsernameError('Username already taken');
-//           Alert.alert("Error", "Username already taken");
+//           Alert.alert(
+//             "Error",
+//             "Username already taken. If you need to use the same name, please login and activate your account. Otherwise, enter a different username."
+//           );          
 //           setIsUsernameValid(false);
 //           usernameInputRef.current?.focus();
 //           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -769,6 +853,11 @@ export default RegisterScreen;
 //     } else if (!/\S+@\S+\.\S+/.test(email)) {
 //       setEmailError('Invalid email format');
 //       isValid = false;
+//     } else if (email !== email.toLowerCase()) {
+//       setEmailError('Email should be in lowercase');
+//       isValid = false;
+//     } else {
+//       setEmailError(''); 
 //     }
 //     if (!address) {
 //       setAddressError('Address is required');
@@ -957,20 +1046,21 @@ export default RegisterScreen;
 //           </Picker>
 //           </View>
 //           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
-//           <View style={styles.selectList}>
-//           <Picker
-//         selectedValue={referredBy}
-//         onValueChange={handleReferredByChange}
-//         style={styles.picker}
-//       >
-//         <Picker.Item label="Select Referred By" value="" />
-//         {referMembers.map((member, index) => (
-//           <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
-//         ))}
-//       </Picker>
-//     </View>
-//       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
-      
+//           {referMembers && referMembers.length > 0 && (
+//   <View style={styles.selectList}>
+//     <Picker
+//       selectedValue={referredBy}
+//       onValueChange={handleReferredByChange}
+//       style={styles.picker}
+//     >
+//       <Picker.Item label="Select Referred By" value="" />
+//       {referMembers.map((member, index) => (
+//         <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
+//       ))}
+//     </Picker>
+//   </View>
+// )}
+// {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
 //       <Text style={styles.label}>Start Date</Text>
 //       <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
 //         <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
