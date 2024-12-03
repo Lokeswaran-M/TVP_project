@@ -288,7 +288,7 @@ const onChangeStartDate = (event, selectedDate) => {
     </View>
     {profileData.RollId === 2 && (
         <>
-    <View>
+    <View style={styles.selectList}>
   <TextInput
     style={styles.textInput}
     value={profileData.LocationName || 'None'}
@@ -298,7 +298,7 @@ const onChangeStartDate = (event, selectedDate) => {
   {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
 </View>
 {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-<View>
+<View style={styles.selectList}>
       <TextInput
         style={styles.textInput}
         value={profileData.ChapterType === '2' ? '1' : '2'}

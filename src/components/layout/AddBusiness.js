@@ -77,6 +77,13 @@ export default StyleSheet.create({
           color: 'red',
           marginBottom: 8,
         },
+        selectList: {
+          borderWidth: 1,
+          borderColor: '#a3238f',
+          borderRadius:10,
+          overflow: 'hidden',
+          marginVertical: 10,
+        },
         textInput: {
           height: 50,
           borderColor: '#888',

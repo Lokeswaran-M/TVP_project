@@ -62,7 +62,6 @@ const CreatingMeeting = () => {
       const response = await fetch(url);
       if (!response.ok) {
         if (response.status === 404) {
-          // Handle the case when no events are found
           setMeetingData([]); // Ensure that the meetingData is empty
           return; // Exit early to avoid further processing
         }

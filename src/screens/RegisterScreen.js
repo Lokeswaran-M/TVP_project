@@ -76,6 +76,7 @@ const togglePasswordVisibility1 = () => {
       }
   }; 
   const fetchReferMembers = async () => {
+    console.log('Selected ChapterType:', selectedChapterType);
     try {
       const response = await fetch(`${API_BASE_URL}/ReferMembers`, {
         method: 'GET',
@@ -115,8 +116,6 @@ const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
 };
 const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
-
-  // Find the selected member's details
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
   if (selectedMember) {
     setReferChapterType(selectedMember.ChapterType);
@@ -172,6 +171,7 @@ const handlelocationChange = (selectedLocation) => {
       isValid = false;
     }
     try {
+      console.log("selectedChapterType--------------------",selectedChapterType);
       const response = await fetch(`${API_BASE_URL}/api/user-count?username=${username}`);
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -412,32 +412,21 @@ const handlelocationChange = (selectedLocation) => {
     </View>
   )}
 />
-          {/* <Picker borderBottomWidth='1'
-            selectedValue={selectedLocation}
-            onValueChange={(itemValue) => handlelocationChange(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select Location" value="" />
-            {LocationID.map((item,index) => (
-              <Picker.Item  key={index} label={item.location} value={item.value} />
-            ))}
-          </Picker> */}
         {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
-        <View style={styles.selectList}>
-        {/* <Dropdown
+        <Dropdown
   style={styles.dropdown}
   placeholderStyle={styles.placeholderStyle}
   selectedTextStyle={styles.selectedTextStyle}
   placeholder="Select Slot"
   data={chapterType.map((item, index) => ({
     label: item.Slots,
-    value: item.value,
+    value: item.id,
     backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
   }))}
   value={selectedChapterType}
   onChange={(item) => setSelectedChapterType(item.value)}
   search
-  searchPlaceholder="Select Slot"
+  searchPlaceholder="Search Slot"
   labelField="label"
   valueField="value"
   inputSearchStyle={styles.inputSearchStyle}
@@ -446,7 +435,9 @@ const handlelocationChange = (selectedLocation) => {
       <Text style={styles.itemText}>{item.label}</Text>
     </View>
   )}
-/> */}
+/>
+{/* 
+       <View>
         <Picker
           selectedValue={selectedChapterType}
           onValueChange={(itemValue) => setSelectedChapterType(itemValue)}
@@ -457,20 +448,31 @@ const handlelocationChange = (selectedLocation) => {
             <Picker.Item key={slot.id} label={slot.Slots} value={slot.id} />
           ))}
           </Picker>
-          </View>
+          </View> */}
           {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
-          <View style={styles.selectList}>
-          <Picker
-        selectedValue={referredBy}
-        onValueChange={handleReferredByChange}
-        style={styles.picker}
-      >
-        <Picker.Item label="Select Referred By" value="" />
-        {referMembers.map((member, index) => (
-          <Picker.Item key={index} label={member.UserInfo} value={member.UserId} />
-        ))}
-      </Picker>
+          <Dropdown
+  style={styles.dropdown}
+  placeholderStyle={styles.placeholderStyle}
+  selectedTextStyle={styles.selectedTextStyle}
+  placeholder="Select Referred By"
+  data={referMembers.map((member, index) => ({
+    label: member.UserInfo,
+    value: member.UserId,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+  }))}
+  value={referredBy}
+  onChange={(item) => handleReferredByChange(item.value)}
+  search
+  searchPlaceholder="Search Referred By"
+  labelField="label"
+  valueField="value"
+  inputSearchStyle={styles.inputSearchStyle}
+  renderItem={(item) => (
+    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+      <Text style={styles.itemText}>{item.label}</Text>
     </View>
+  )}
+/>
       {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
       
       <Text style={styles.label}>Start Date</Text>
