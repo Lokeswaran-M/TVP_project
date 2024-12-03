@@ -37,7 +37,7 @@ export default StyleSheet.create({
         datePickerButton: {
           borderColor: '#a3238f',
           borderWidth: 1,
-          borderRadius: 5,
+          borderRadius: 10,
           padding: 15,
           width: '100%',
           alignItems: 'center',
