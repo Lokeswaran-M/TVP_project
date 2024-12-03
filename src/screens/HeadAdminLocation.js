@@ -5,13 +5,12 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   Dimensions,
   ActivityIndicator,
-  RefreshControl,
   Alert,
+  FlatList,
+  RefreshControl,
   TouchableWithoutFeedback,
-  Keyboard,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,18 +18,19 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import { API_BASE_URL } from '../constants/Config';
 
-const { width, height } = Dimensions.get('window'); // Get screen dimensions
+const { width } = Dimensions.get('window');
 
 const HeadAdminLocation = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [locations, setLocations] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
   // Fetch location data from the API
   const fetchLocations = async () => {
+    setRefreshing(true); // Start refreshing
     try {
       const response = await fetch(`${API_BASE_URL}/Locations`);
       if (!response.ok) {
@@ -38,10 +38,12 @@ const HeadAdminLocation = ({ navigation }) => {
       }
       const data = await response.json();
       setLocations(data); // Set the fetched data
-      setLoading(false);
+      setError(null);
     } catch (err) {
       setError(err.message);
-      setLoading(false);
+    } finally {
+      setRefreshing(false); // Stop refreshing
+      setLoading(false); // Stop loading indicator
     }
   };
 
@@ -58,10 +60,10 @@ const HeadAdminLocation = ({ navigation }) => {
   };
 
   const handleEditPress = (item) => {
-    navigation.navigate('HeadAdminLocationEdit', { 
-      LocationID: item.LocationID, 
-      Place: item.Place, 
-      LocationName: item.LocationName 
+    navigation.navigate('HeadAdminLocationEdit', {
+      LocationID: item.LocationID,
+      Place: item.Place,
+      LocationName: item.LocationName,
     });
   };
 
@@ -73,12 +75,6 @@ const HeadAdminLocation = ({ navigation }) => {
     setSelectedItem(selectedItem === item.LocationID ? null : item.LocationID);
   };
 
-  // Close the menu if clicking outside of it
-  const handleOutsidePress = () => {
-    setSelectedItem(null);
-  };
-
-  // Handle update by making API call to set IsActive = 0
   const handleUpdatePress = async (item) => {
     try {
       const response = await fetch(`${API_BASE_URL}/locations/${item.LocationID}`, {
@@ -89,13 +85,13 @@ const HeadAdminLocation = ({ navigation }) => {
         body: JSON.stringify({
           LocationName: item.LocationName,
           Place: item.Place,
-          IsActive: 0, // Update the IsActive field to 0
+          IsActive: 0,
         }),
       });
-     
+
       if (response.ok) {
         Alert.alert('Success', 'Location deleted successfully!');
-        fetchLocations(); // Refresh the locations list
+        fetchLocations(); // Refresh the list
       } else {
         Alert.alert('Error', 'Failed to update location.');
       }
@@ -104,11 +100,16 @@ const HeadAdminLocation = ({ navigation }) => {
     }
   };
 
-  const renderLocation = ({ item }) => (
+  const handleOutsidePress = () => {
+    setSelectedItem(null);
+  };
+
+  // Render function for FlatList
+  const renderLocationItem = ({ item }) => (
     <View style={styles.locationCon}>
       <View style={styles.locationDetails}>
         <View style={styles.locationIcon}>
-          <Ionicons name="location-outline" size={30} color="#A3238F"/>
+          <Ionicons name="location-outline" size={30} color="#A3238F" />
         </View>
         <View style={styles.memberText}>
           <Text style={styles.locationName}>{item.LocationName}</Text>
@@ -117,8 +118,9 @@ const HeadAdminLocation = ({ navigation }) => {
       <View style={styles.locationIconLeft}>
         <TouchableOpacity
           style={styles.locationIconLeftEye}
-          onPress={() => handleViewPress(item)}>
-          <Ionicons name="eye-outline" size={28} color="#A3238F"/>
+          onPress={() => handleViewPress(item)}
+        >
+          <Ionicons name="eye-outline" size={28} color="#A3238F" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleViewPress(item)}>
           <Text style={styles.locationIconLeftText}>View</Text>
@@ -127,7 +129,7 @@ const HeadAdminLocation = ({ navigation }) => {
 
       <View style={styles.locationIconLeft}>
         <TouchableOpacity onPress={() => handleMorePress(item)}>
-          <MaterialIcons name="more-vert" size={38} color="#A3238F"/>
+          <MaterialIcons name="more-vert" size={38} color="#A3238F" />
         </TouchableOpacity>
         {selectedItem === item.LocationID && (
           <View style={styles.moreOptions}>
@@ -143,65 +145,49 @@ const HeadAdminLocation = ({ navigation }) => {
     </View>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A3238F"/>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
-  }
-
   return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View style={styles.container}>
-        {/* Search Input */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search locations"
-            placeholderTextColor="black"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            color="#A3238F"
-          />
-          <View style={styles.searchIconContainer}>
-            <Icon name="search" size={23} color="#A3238F"/>
-          </View>
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search locations"
+          placeholderTextColor="black"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          color="#A3238F"
+        />
+        <View style={styles.searchIconContainer}>
+          <Icon name="search" size={23} color="#A3238F" />
         </View>
+      </View>
 
-        {/* Create New Location Button */}
-        <TouchableOpacity style={styles.locationCreateCon} onPress={handleNavPress2}>
-          <Octicons name="plus-circle" size={28} color="#FFFFFF"/>
-          <Text style={styles.locationCreateConName}>Create New Location</Text>
-        </TouchableOpacity>
+      <TouchableOpacity style={styles.locationCreateCon} onPress={handleNavPress2}>
+        <Octicons name="plus-circle" size={28} color="#FFFFFF" />
+        <Text style={styles.locationCreateConName}>Create New Location</Text>
+      </TouchableOpacity>
 
+      {filteredLocations.length === 0 && !loading && (
+        <View style={styles.noLocationContainer}>
+          <Text style={styles.noLocationText}>No locations found.</Text>
+        </View>
+      )}
+
+      <TouchableWithoutFeedback onPress={handleOutsidePress}>
         <FlatList
-          data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)} // Sort in descending order
-          renderItem={renderLocation}
-          keyExtractor={item => item.LocationID.toString()}
+          data={filteredLocations.sort((a, b) => b.LocationID - a.LocationID)}
+          renderItem={renderLocationItem}
+          keyExtractor={(item) => item.LocationID.toString()}
           contentContainerStyle={styles.LocationList}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={fetchLocations} // Call fetchLocations when refreshed
+              onRefresh={fetchLocations}
+              tintColor="#A3238F"
             />
           }
         />
-
-        {/* Location Count */}
-        <View style={styles.memberCountContainer}>
-          <Text style={styles.memberCountText}>Count: {filteredLocations.length}</Text>
-        </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </View>
   );
 };
 
@@ -224,6 +210,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     fontSize: 16,
     borderRadius: 25,
+
   },
   searchIconContainer: {
     position: 'absolute',
@@ -258,7 +245,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginHorizontal:10,
+    marginHorizontal:15,
   },
   locationDetails: {
     flexDirection: 'row',
@@ -301,6 +288,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: '#A3238F',
     borderWidth: 2,
+    zIndex: 1,
   },
   memberCountText: {
     fontSize: 14,
@@ -324,6 +312,30 @@ const styles = StyleSheet.create({
     borderColor: '#FFFFFF',
     borderRadius: 8,
   },
+  noLocationContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginTop: 20,
+},
+noLocationText: {
+  fontSize: 18,
+  fontWeight: 'bold',
+},
+retryButton: {
+  marginTop: 20,
+  padding: 10,
+  // backgroundColor: '#A3238F',
+  borderRadius: 5,
+  alignItems: 'center',
+},
+retryButtonText: {
+  color: '#FFFFFF',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+
+
 });
 
 export default HeadAdminLocation;
