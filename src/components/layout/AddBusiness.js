@@ -83,6 +83,7 @@ export default StyleSheet.create({
           borderRadius:10,
           overflow: 'hidden',
           marginVertical: 10,
+          // paddingLeft: 10,
         },
         textInput: {
           height: 50,
@@ -90,6 +91,8 @@ export default StyleSheet.create({
           borderWidth: 0.4,
           paddingHorizontal: 10,
           color: 'black',
+          fontSize: 18,
+          // paddingLeft: 10,
         },
         dropdown: {
           height: 55,
