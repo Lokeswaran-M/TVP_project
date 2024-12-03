@@ -34,13 +34,6 @@ export default StyleSheet.create({
         fontSize: 20,
         paddingHorizontal: 10,
       },
-        selectList: {
-          borderWidth: 1,
-          borderColor: '#a3238f',
-          borderRadius:10,
-          overflow: 'hidden',
-          marginVertical: 10,
-        },
         datePickerButton: {
           borderColor: '#a3238f',
           borderWidth: 1,
@@ -91,4 +84,49 @@ export default StyleSheet.create({
           paddingHorizontal: 10,
           color: 'black',
         },
+        dropdown: {
+          height: 55,
+          borderWidth: 2,
+          borderColor: '#a3238f',
+          borderRadius: 10,
+          paddingHorizontal: 20,
+          overflow: 'hidden',
+          marginVertical: 10,
+        },
+        readOnlyText: {
+          height: 50,
+          lineHeight: 50,
+          borderColor: '#ccc',
+          borderWidth: 1,
+          borderRadius: 5,
+          paddingHorizontal: 10,
+          color: '#666',
+          backgroundColor: '#f5f5f5',
+        },
+        placeholderStyle: {
+          color: '#888',
+          fontSize: 18,
+          // paddingLeft: 10,
+        },
+        selectedTextStyle: {
+          color: '#000',
+          fontSize: 18,
+        },
+        inputSearchStyle: {
+          // borderWidth: 1,
+          borderColor: '#a3238f',
+          borderRadius: 8, 
+          // paddingHorizontal: -10,
+          height: 40, 
+          color: 'black',
+        },
+        item: {
+          height: 50,
+          justifyContent: 'center',
+          paddingLeft: 20,
+        },
+        itemText: {
+          fontSize: 15,
+          color: '#000',
+        },          
 });
