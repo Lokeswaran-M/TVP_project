@@ -119,7 +119,7 @@ const CustomAdminProfession = () => {
     <View style={styles.topNav}>
       <View style={styles.buttonNavtop}>
         <View style={styles.topNavlogo}>
-        <MaterialIcons name="business-center" size={28} color="white" style={styles.icon} />
+        <MaterialIcons name="business-center" size={27} color="white" style={styles.icon} />
         </View>
         <Text style={styles.NavbuttonText}>profession</Text>
       </View>
