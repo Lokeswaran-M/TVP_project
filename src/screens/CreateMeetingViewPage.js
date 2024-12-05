@@ -113,7 +113,7 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',  // Make space between the sections
+    justifyContent:'space-around',  // Make space between the sections
     alignItems: 'center',
     backgroundColor: '#f2f2f2',
     padding: 20,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   content: {
     backgroundColor: '#fff',
-    padding: 40,
+    padding: 60,
     borderRadius: 10,
     elevation: 5,
     shadowColor: '#000',
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     width: '100%', // Ensure it fills the screen width
     alignItems: 'center',
     marginBottom: 20,
+    justifyContent:'center',
   },
   label: {
     fontWeight: 'bold',
@@ -153,15 +154,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   downloadContainer: {
-    alignItems: 'center',
-    marginBottom: 30, // Give some space before next section
+    alignItems: 'center', // Give some space before next section
   },
 
   oneminButton: {
     backgroundColor: '#a3238f',
     padding: 10,
     borderRadius: 5,
-    marginTop: 50,
+    marginTop: 20,
   },
   AttendanceButton: {
     marginRight:-160,
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 9,
     borderTopLeftRadius: 20,
+    marginTop:20,
   },
   navigationButtons: {
     flexDirection: 'row',

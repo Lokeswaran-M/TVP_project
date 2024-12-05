@@ -235,8 +235,10 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   alarmContainer: {
-    margin: 11,
     paddingLeft:60,
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
   },
   memberCountContainer: {
     position: 'absolute',
@@ -288,6 +290,14 @@ const styles = StyleSheet.create({
       color: '#A3238F',
       fontSize: 14,
       fontStyle: 'italic',
+    },
+    memberTime:{
+  fontSize:12,
+  color:"#A3238F",
+  paddingTop:2,
+  alignItems:"center",
+  justifyContent:"center",
+
     },
 });
 

@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { RNCamera as BarCodeScanner } from 'react-native-camera';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
 import { Dimensions } from 'react-native';
@@ -116,7 +116,7 @@ const Scanner = ({ navigation }) => {
             flashMode={isFlashOn ? 'torch' : 'off'}
           />
           <TouchableOpacity style={styles.flashButton} onPress={handleFlashToggle}>
-            <Icon name="lightbulb-o" size={40} color={isFlashOn ? 'yellow' : 'gray'} />
+            <Icon name="lightbulb-on" size={40} left={10} color={isFlashOn ? 'yellow' : 'gray'} />
             <Text style={styles.tourchtext}>{isFlashOn ? 'Torch On' : 'Torch Off'}</Text>
           </TouchableOpacity>
         </View>
@@ -160,12 +160,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
 
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: '#DDDDDD',
     padding: 10,
     borderRadius: 5,
   },
   tourchtext: {
     textAlign: 'center',
+    color:'black',
   },
 
   scene: {
