@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Alert,
+  Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { API_BASE_URL } from '../constants/Config'; 
+import { API_BASE_URL } from '../constants/Config';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,15 +18,17 @@ const HeadAdminLocationCreate = () => {
   const navigation = useNavigation();
   const [locationName, setLocationName] = useState('');
   const [placeName, setPlaceName] = useState('');
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleCancel = () => {
-    navigation.navigate('HeadAdminLocation'); 
+    navigation.navigate('HeadAdminLocation');
   };
 
   const handleSave = async () => {
     if (!locationName || !placeName) {
-      Alert.alert('Please fill out all fields');
+      setModalMessage('Please fill out all fields');
+      setModalVisible(true);
       return;
     }
 
@@ -45,20 +47,27 @@ const HeadAdminLocationCreate = () => {
       const result = await response.json();
 
       if (response.ok) {
-        Alert.alert('Success', 'Location created successfully!', [
-          { text: 'OK', onPress: () => navigation.navigate('HeadAdminLocation') },
-        ]);
+        setModalMessage('Location created successfully!');
+        setModalVisible(true);
       } else {
-        Alert.alert('Error', result.error || 'Location creation failed');
+        setModalMessage(result.error || 'Location creation failed');
+        setModalVisible(true);
       }
     } catch (error) {
-      Alert.alert('Error', 'An error occurred. Please try again.');
+      setModalMessage('An error occurred. Please try again.');
+      setModalVisible(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (modalMessage === 'Location created successfully!') {
+      navigation.navigate('HeadAdminLocation');
     }
   };
 
   return (
     <View style={styles.container}>
-
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.Blabel}>Create New Location</Text>
 
@@ -84,15 +93,31 @@ const HeadAdminLocationCreate = () => {
         </View>
 
         <View style={styles.buttonCon}>
-        <TouchableOpacity style={styles.button} onPress={handleCancel}>
+          <TouchableOpacity style={styles.button} onPress={handleCancel}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleSave}>
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
+
+      {/* Modal for alert messages */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleModalClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={handleModalClose}>
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -166,6 +191,36 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFFFFF',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: width * 0.8,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#A3238F',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
 

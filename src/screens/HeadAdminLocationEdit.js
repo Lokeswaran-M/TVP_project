@@ -6,57 +6,60 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
-  Alert,
+  Modal,
 } from 'react-native';
-import { API_BASE_URL } from '../constants/Config'; 
-// Get screen dimensions
+import { API_BASE_URL } from '../constants/Config';
+
 const { width, height } = Dimensions.get('window');
 
 const HeadAdminLocationEdit = ({ route, navigation }) => {
-  const { LocationID, Place, LocationName } = route.params; // Destructure parameters from route
-  console.log('---------------------------headadminedit page', LocationID, Place, LocationName);
-
-  // Initialize state for edited place name
+  const { LocationID, Place, LocationName } = route.params;
   const [editedPlace, setEditedPlace] = useState(Place);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
 
   const handleSave = async () => {
     try {
-      // Send PUT request to update the location
-      
-      const response = await fetch(`${API_BASE_URL}/Locations/${LocationID}`, { // Replace with your actual API URL
+      const response = await fetch(`${API_BASE_URL}/Locations/${LocationID}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          LocationName, // Include the existing LocationName from params
-          Place: editedPlace, // Send the updated place
-          IsActive: 1, 
+          LocationName,
+          Place: editedPlace,
+          IsActive: 1,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert('Success', data.message); // Show success message
-        navigation.navigate('HeadAdminLocation'); // Navigate back to the list
+        setModalMessage('Location updated successfully!');
+        setModalVisible(true);
       } else {
-        Alert.alert('Error', data.error || 'Failed to update location.'); // Show error message
+        setModalMessage(data.error || 'Failed to update location.');
+        setModalVisible(true);
       }
     } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred.'); // Handle network errors
-      console.error(error);
+      setModalMessage('An unexpected error occurred.');
+      setModalVisible(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (modalMessage === 'Location updated successfully!') {
+      navigation.navigate('HeadAdminLocation');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Location Name Display */}
       <View style={styles.locationDetailsContainer}>
         <Text style={styles.locationName}>{LocationName}</Text>
       </View>
 
-      {/* Edit Place Input */}
       <View style={styles.placeDetailsContainer}>
         <TextInput
           style={styles.input}
@@ -66,17 +69,35 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
           placeholderTextColor="gray"
         />
         <View style={styles.buttonCon}>
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Modal for alerts */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleModalClose}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={handleModalClose}>
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -141,6 +162,36 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     height: 40,
     marginTop: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: width * 0.8,
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 18,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#A3238F',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

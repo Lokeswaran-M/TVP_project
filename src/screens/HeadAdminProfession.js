@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Dimensions,
-  Alert,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -23,6 +23,9 @@ const HeadAdminProfession = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [professionIdToDeactivate, setProfessionIdToDeactivate] = useState(null);
 
   useEffect(() => {
     fetchProfessions();
@@ -42,7 +45,7 @@ const HeadAdminProfession = () => {
         throw new Error('Failed to fetch professions');
       }
       const data = await response.json();
-      const sortedData = data.sort((a, b) => b.ProfessionName.localeCompare(a.ProfessionName));
+      const sortedData = data.sort((a, b) => a.ProfessionName.localeCompare(b.ProfessionName));
       setProfessions(sortedData);
       setFilteredProfessions(sortedData);
     } catch (err) {
@@ -54,7 +57,8 @@ const HeadAdminProfession = () => {
 
   const handleAddProfession = async () => {
     if (!professionName.trim()) {
-      Alert.alert('Error', 'Profession name is required');
+      setModalMessage('Profession name is required');
+
       return;
     }
 
@@ -72,42 +76,39 @@ const HeadAdminProfession = () => {
       }
 
       const data = await response.json();
-      Alert.alert('Success', data.message || 'Profession added successfully');
+  
       setProfessionName('');
       fetchProfessions();
     } catch (err) {
-      Alert.alert('Error', err.message);
+      setModalMessage(err.message);
+      setModalVisible(true);
     }
   };
 
-  const handleDeactivateProfession = (id) => {
-    Alert.alert(
-      "Confirm Deactivation",
-      "Are you sure you want to deactivate this profession?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "OK",
-          onPress: async () => {
-            try {
-              const response = await fetch(`${API_BASE_URL}/ProfessionName/${id}`, {
-                method: 'PUT',
-              });
+  const handleUpdateProfession = async () => {
+    if (!professionIdToDeactivate) return;
 
-              if (!response.ok) {
-                throw new Error('Failed to deactivate profession');
-              }
+    try {
+      const response = await fetch(`${API_BASE_URL}/ProfessionName/${professionIdToDeactivate}`, {
+        method: 'PUT',
+      });
 
-              Alert.alert('Success', 'Profession deactivated successfully');
-              fetchProfessions();
-            } catch (err) {
-              Alert.alert('Error', err.message);
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+      if (!response.ok) {
+        throw new Error('Failed to deactivate profession');
+      }
+      setModalVisible(true);
+      fetchProfessions();
+      setModalVisible(false);
+    } catch (err) {
+      setModalMessage(err.message);
+      setModalVisible(true);
+    }
+  };
+
+  const confirmDeactivation = (id) => {
+    setModalMessage('Are you sure you want to deactivate this profession?');
+    setModalVisible(true);
+    setProfessionIdToDeactivate(id);
   };
 
   const renderItem = ({ item }) => (
@@ -116,7 +117,7 @@ const HeadAdminProfession = () => {
       <Text style={styles.listText}>{item.ProfessionName}</Text>
       <TouchableOpacity
         style={styles.deleteIcon}
-        onPress={() => handleDeactivateProfession(item.Id)}
+        onPress={() => confirmDeactivation(item.Id)}
       >
         <MaterialIcons name="delete-outline" size={25} color="#A3238F" />
       </TouchableOpacity>
@@ -144,7 +145,11 @@ const HeadAdminProfession = () => {
           value={professionName}
           onChangeText={setProfessionName}
         />
-        <TouchableOpacity style={styles.addButton} onPress={handleAddProfession}>
+        <TouchableOpacity
+          style={[styles.addButton, !professionName.trim() && styles.addButtonDisabled]}
+          onPress={handleAddProfession}
+          disabled={!professionName.trim()}
+        >
           <Icon name="plus-square" size={30} color="#A3238F" />
         </TouchableOpacity>
       </View>
@@ -168,10 +173,31 @@ const HeadAdminProfession = () => {
           </View>
         </>
       )}
+
+      {/* Modal for Alert */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalMessage}>{modalMessage}</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.closeButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={handleUpdateProfession}>
+                <Text style={styles.closeButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -215,6 +241,12 @@ const styles = StyleSheet.create({
   addButton: {
     marginLeft: 10,
     alignItems: 'center',
+    padding: 5,
+    borderRadius: 5,
+  },
+  addButtonDisabled: {
+    // backgroundColor: '#A3238F',
+
   },
   listContainer: {
     paddingBottom: 20,
@@ -227,19 +259,19 @@ const styles = StyleSheet.create({
     elevation: 2,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // This ensures the items are spaced out
+    justifyContent: 'space-between',
   },
   listText: {
     fontSize: 16,
     color: '#A3238F',
     fontWeight: 'bold',
-    flex: 1, // Ensures the text takes available space before the delete icon
+    flex: 1,
   },
   icon: {
-    paddingRight: 10, // Add space between the icon and text
+    paddingRight: 10,
   },
   deleteIcon: {
-    justifyContent: 'center', // Center the delete icon vertically
+    justifyContent: 'center',
     alignItems: 'center',
   },
   loader: {
@@ -266,8 +298,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#A3238F',
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    elevation: 5,
 
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    marginTop: 10,
+    justifyContent:'space-between',
+  },
+  closeButton: {
+    backgroundColor: '#A3238F',
+    padding: 10,
+    borderRadius: 5,
+    marginHorizontal: 10,
+    width:"22%",
+  
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign:'center',
+  },
 });
 
 export default HeadAdminProfession;
-

@@ -90,7 +90,7 @@ export default StyleSheet.create({
           borderColor: '#888',
           borderWidth: 0.4,
           paddingHorizontal: 10,
-          color: 'black',
+          color: '#888',
           fontSize: 18,
           // paddingLeft: 10,
         },
@@ -102,6 +102,7 @@ export default StyleSheet.create({
           paddingHorizontal: 20,
           overflow: 'hidden',
           marginVertical: 10,
+          
         },
         readOnlyText: {
           height: 50,
@@ -128,7 +129,7 @@ export default StyleSheet.create({
           borderRadius: 8, 
           // paddingHorizontal: -10,
           height: 40, 
-          color: 'black',
+          color: '#000',
         },
         item: {
           height: 50,

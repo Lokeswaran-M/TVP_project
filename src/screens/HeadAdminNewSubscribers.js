@@ -8,7 +8,8 @@ import {
   FlatList,
   Dimensions,
   BackHandler,
-  ActivityIndicator,Image,
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';

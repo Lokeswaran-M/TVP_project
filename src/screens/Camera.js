@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions,ScrollView } from 'react-native';
+import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions, ScrollView, Modal, StyleSheet } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
@@ -8,12 +8,38 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../components/layout/MembersStyle';
 import Subscription from './Subscription';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const CustomModal = ({ visible, onClose, message, title }) => {
+  return (
+    <Modal
+      transparent={true}
+      animationType="fade"
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{title}</Text>
+          <Text style={styles.modalMessage}>{message}</Text>
+          <TouchableOpacity style={styles.button} onPress={onClose}>
+            <Text style={styles.buttonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const TabContent = ({ chapterType, locationId, navigation }) => {
   const userId = useSelector((state) => state.user?.userId);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMeetId, setSelectedMeetId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [modalMessage, setModalMessage] = useState(''); // Modal message state
+  const [modalTitle, setModalTitle] = useState(''); // Modal title state
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -52,46 +78,22 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
     };
     fetchMembers();
   }, [chapterType, locationId, userId]);
+
   const filteredMembers = members.filter((member) =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
   const handleMemberClick = (member) => {
     const meetId = member.UserId;
-    console.log("Selected MeetId:", meetId);
     setSelectedMeetId(meetId);
-    openCamera(meetId); 
+    openCamera(meetId);
   };
-  const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', {
-        uri: photoUri,
-        type: 'image/jpeg',
-        name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
-      });
-      formData.append('MeetId', meetId); 
-      formData.append('SlotID', chapterType);  
-      formData.append('LocationID', locationId);
 
-      const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
-        method: 'POST',
-        body: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const result = await uploadResponse.json();
-      if (result.message === 'Member details and image uploaded successfully!') {
-        Alert.alert('Success', 'Photo and data uploaded successfully');
-      } else {
-        Alert.alert('Error', 'Photo and data upload failed');
-      }
-    } catch (error) {
-      console.error('Error during upload:', error);
-      Alert.alert('Error', 'Something went wrong while uploading data');
-    }
-  };
   const openCamera = (meetId) => {
     if (!meetId) {
-      Alert.alert('Error', 'Please select a member first.');
+      setModalTitle('Error');
+      setModalMessage('Please select a member first.');
+      setModalVisible(true);
       return;
     }
     const options = { mediaType: 'photo', cameraType: 'front' };
@@ -102,31 +104,62 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
       await insertMeetingData(userId, meetId, chapterType, locationId, photoUri);
     });
   };
+
+  const insertMeetingData = async (userId, meetId, chapterType, locationId, photoUri) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: photoUri,
+        type: 'image/jpeg',
+        name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
+      });
+      formData.append('MeetId', meetId);
+      formData.append('SlotID', chapterType);  
+      formData.append('LocationID', locationId);
+
+      const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const result = await uploadResponse.json();
+      if (result.message === 'Member details and image uploaded successfully!') {
+        setModalTitle('Success');
+        setModalMessage('Photo and data uploaded successfully!');
+        setModalVisible(true);
+      } else {
+        setModalTitle('Error');
+        setModalMessage('Photo and data upload failed');
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error('Error during upload:', error);
+      setModalTitle('Error');
+      setModalMessage('Something went wrong while uploading data');
+      setModalVisible(true);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
- <View style={styles.imageColumn}>
-
-<Image
- source={{ uri: item.profileImage }} // Use item.profileImage instead of image
-  style={[
-    styles.profileImage,
-
-  ]}
-/>
-</View>
-
-{/* Text Column */}
-<View style={styles.textColumn}>
-<Text style={styles.memberName}>{item.Username}</Text>
-<Text style={styles.memberRole} numberOfLines={1}>
-  {item.Profession} {/* Change item.Profession instead of member.Profession */}
-</Text>
-</View>
+      <View style={styles.imageColumn}>
+        <Image
+          source={{ uri: item.profileImage }}
+          style={styles.profileImage}
+        />
+      </View>
+      <View style={styles.textColumn}>
+        <Text style={styles.memberName}>{item.Username}</Text>
+        <Text style={styles.memberRole} numberOfLines={1}>
+          {item.Profession}
+        </Text>
+      </View>
       <View style={styles.alarmContainer}>
         <Icon name="camera" size={24} color="#A3238F" />
       </View>
     </TouchableOpacity>
   );
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.searchContainer}>
@@ -142,11 +175,20 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
           <Icon name="search" size={23} color="#A3238F" />
         </View>
       </View>
+
       <FlatList
         data={filteredMembers}
         keyExtractor={(item) => item.UserId.toString()}
         contentContainerStyle={styles.memberList}
         renderItem={renderItem}
+      />
+
+      {/* Custom Modal */}
+      <CustomModal 
+        visible={modalVisible} 
+        onClose={() => setModalVisible(false)} 
+        message={modalMessage} 
+        title={modalTitle} 
       />
     </View>
   );

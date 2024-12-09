@@ -164,9 +164,13 @@ const Requirements = ({ route }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalText}>{modalMessage}</Text>
             <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setIsModalVisible(false)}
-            >
+        style={styles.modalButton}
+        onPress={() => {
+          setIsModalVisible(false); // Close the modal
+          navigation.goBack(); // Navigate back to the previous screen
+        }}
+      >
+            
               <Text style={styles.modalButtonText}>OK</Text>
             </TouchableOpacity>
           </View>
@@ -344,6 +348,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     textAlign: 'center',
+        fontWeight:'700'
   },
   modalButton: {
     backgroundColor: '#a3238f',
@@ -353,6 +358,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: '#fff',
     fontSize: 16,
+        fontWeight:'700'
   },
 });
 

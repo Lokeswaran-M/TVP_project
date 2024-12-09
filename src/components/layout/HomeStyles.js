@@ -117,9 +117,10 @@ const styles = StyleSheet.create({
       color: '#a3238f',
       marginLeft: 5,
       fontSize: 14,
+      fontWeight:'600',
     },
     buttonText1: {
-      color: 'white',
+      color:'#FFF',
       marginLeft: 5,
       fontSize: 14,
       fontWeight: '600',
@@ -127,6 +128,9 @@ const styles = StyleSheet.create({
     disabledButton: {
       backgroundColor: 'white',
       // opacity: 0.6,
+    },    
+    disabledButton1: {
+      backgroundColor: 'rgba(163, 35, 143, 0.5)', 
     },    
     headerContainer: {
       flexDirection: 'row',
@@ -244,7 +248,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: -50,
         right: 0,
-        backgroundColor: '#a3238f',
+        backgroundColor:'#a3238f',
         paddingVertical: 5,
         paddingHorizontal: 15,
         borderRadius: 20,
@@ -316,7 +320,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 40,
     },
     buttonText1: {
-      color: '#fff',
+      color: '#FFF',
       fontWeight: 'bold',
       textAlign: 'center',
     },
@@ -395,5 +399,55 @@ const styles = StyleSheet.create({
       fontSize: 12,
       margin: 2,
     },
+  disabledText: {
+    color: '#F06183',
+  fontSize: 14, 
+  marginLeft:5,
+  fontWeight:'600',
+},
+modalOverlay: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+
+},
+// modalContent: {
+//   width: 300,
+//   padding: 20,
+//   backgroundColor: '#fff',
+//   borderRadius: 10,
+//   alignItems: 'center',
+// },
+modalContainer: {
+  width: 300,
+  padding: 20,
+  backgroundColor: '#fff',
+  borderRadius: 10,
+  justifyContent:"space-between",
+},
+modalText: {
+  fontSize: 16,
+  marginBottom: 20,
+  textAlign: 'center',
+      fontWeight:'700'
+},
+modalButton: {
+  backgroundColor: '#a3238f',
+  padding: 10,
+  borderRadius: 5,
+  width:'30%',
+  alignItems: 'center',
+},
+modalButtonText: {
+  color: '#fff',
+  fontSize: 16,
+      fontWeight:'700'
+},
+modalButtonContainer:{
+flexDirection:'row',
+marginTop:20,
+justifyContent:'space-between',
+
+},
   });
   export default styles;

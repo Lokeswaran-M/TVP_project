@@ -1,18 +1,18 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Modal, ScrollView } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const CreatingMeeting = () => {
   const navigation = useNavigation();
-  const [activeIndex, setActiveIndex] = useState(null); 
+  const [activeIndex, setActiveIndex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
   const [meetingData, setMeetingData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null); // For selected meeting ID to delete
   const userId = useSelector((state) => state.user?.userId);
 
   const handleCreateMeeting = () => {
@@ -20,18 +20,18 @@ const CreatingMeeting = () => {
   };
 
   const handleUpcomingMeet = (meeting) => {
-    navigation.navigate('CreateMeetingViewPage', { 
-      userId: meeting.userId, 
-      eventId: meeting.EventId, 
-      location: meeting.Location, 
-      slotId: meeting.SlotID, 
+    navigation.navigate('CreateMeetingViewPage', {
+      userId: meeting.userId,
+      eventId: meeting.EventId,
+      location: meeting.Location,
+      slotId: meeting.SlotID,
       locationId: meeting.LocationID,
-      dateTime: meeting.DateTime 
+      dateTime: meeting.DateTime,
     });
   };
 
   const toggleOptions = (index) => {
-    setActiveIndex(activeIndex === index ? null : index); 
+    setActiveIndex(activeIndex === index ? null : index);
   };
 
   const closeOptions = () => {
@@ -48,7 +48,7 @@ const CreatingMeeting = () => {
       const data = await response.json();
       setProfileData(data);
     } catch (error) {
-      console.error('Error fetching profile data in Create Meeting:', error);
+      console.error('Error fetching profile data:', error);
     } finally {
       setLoading(false);
     }
@@ -58,36 +58,36 @@ const CreatingMeeting = () => {
     setLoading(true);
     try {
       const url = `${API_BASE_URL}/api/meetings/${userId}`;
-      console.log("Requesting URL:", url); // Log the URL to confirm it's correct
       const response = await fetch(url);
       if (!response.ok) {
         if (response.status === 404) {
-          setMeetingData([]); // Ensure that the meetingData is empty
-          return; // Exit early to avoid further processing
+          setMeetingData([]);
+          return;
         }
         throw new Error('Failed to fetch meeting data');
       }
       const data = await response.json();
-      console.log("Data in fetching the meeting data----------------------", data);
       setMeetingData(data);
     } catch (error) {
       console.error('Error fetching meeting data:', error);
     } finally {
       setLoading(false);
     }
-  };  
+  };
 
-  const handleDelete = async (eventId) => {
+  const handleDelete = async () => {
+    if (!selectedEventId) return;
     try {
-      const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${eventId}`, { 
+      const response = await fetch(`${API_BASE_URL}/api/meetings/${userId}/${selectedEventId}`, {
         method: 'PUT',
+        
       });
       if (!response.ok) {
         throw new Error('Failed to delete the meeting');
       }
-      const data = await response.json();
       setShowDeleteModal(false);
       fetchMeetingData();
+      closeOptions();
     } catch (error) {
       console.error('Error deleting meeting:', error);
     }
@@ -99,7 +99,14 @@ const CreatingMeeting = () => {
       fetchProfileData();
       fetchMeetingData();
     }, [userId])
+    
   );
+
+  
+  const handleNo = () => {
+    setShowDeleteModal(false);
+    closeOptions();
+  };
 
   return (
     <ScrollView>
@@ -111,23 +118,25 @@ const CreatingMeeting = () => {
           <Text style={styles.title}>Upcoming Business Meetup</Text>
           {meetingData.length > 0 ? (
             meetingData.map((meeting, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={styles.meetingCard} 
+              <TouchableOpacity
+                key={index}
+                style={styles.meetingCard}
                 onPress={() => handleUpcomingMeet(meeting)}
               >
                 <View style={styles.meetingDetails}>
                   <Text style={styles.meetingTitle}>
-                    <Icon name="calendar" size={18} /> 
-                    <Text> </Text>
+                    <Icon name="calendar" size={18} />{' '}
                     {new Date(meeting.DateTime).toLocaleDateString('en-GB', {
                       day: '2-digit',
                       month: 'short',
-                      year: 'numeric'
-                    })} {'   '}
-                    <Icon name="clock-o" size={20} /> 
-                    <Text> </Text>
-                    {new Date(meeting.DateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                      year: 'numeric',
+                    })}{' '}
+                    <Icon name="clock-o" size={20} />{' '}
+                    {new Date(meeting.DateTime).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                    })}
                   </Text>
                   <Text style={styles.meetingInfo}>
                     <Icon name="map-marker" size={14} /> {meeting.Location} Slot ID - {meeting.SlotID}
@@ -156,8 +165,7 @@ const CreatingMeeting = () => {
                       style={styles.optionButton}
                       onPress={() => {
                         setShowDeleteModal(true);
-                        setActiveIndex(index);
-                        handleDelete(meeting.EventId);
+                        setSelectedEventId(meeting.EventId);
                       }}
                     >
                       <Text style={styles.optionText}>Delete</Text>
@@ -171,9 +179,30 @@ const CreatingMeeting = () => {
           )}
         </View>
       </TouchableWithoutFeedback>
+
+      {/* Modal for confirmation */}
+      {showDeleteModal && (
+        <Modal transparent={true} animationType="fade" visible={showDeleteModal}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Are you sure you want to delete this meeting?</Text>
+              <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleNo}  >
+                  <Text style={styles.modalButtonText}>No</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
+                  <Text style={styles.modalButtonText}>Yes</Text>
+                </TouchableOpacity>
+            
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -208,7 +237,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    position: 'relative',
   },
   meetingDetails: {
     flex: 1,
@@ -226,8 +254,6 @@ const styles = StyleSheet.create({
   },
   optionsButton: {
     padding: 10,
-    bottom: 15,
-    right: 10,
   },
   optionsMenu: {
     position: 'absolute',
@@ -250,18 +276,24 @@ const styles = StyleSheet.create({
   optionText: {
     color: 'white',
     fontWeight: 'bold',
-  },modalOverlay: {
+  },
+  noDataText: {
+    textAlign: 'center',
+    color: '#a3238f',
+    marginTop: 20,
+  },
+  modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 250,
+    width: 300,
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
@@ -271,22 +303,22 @@ const styles = StyleSheet.create({
   },
   modalButtonContainer: {
     flexDirection: 'row',
+    justifyContent:'space-between',
   },
-  modalButtonYes: {
+  modalButton: {
     backgroundColor: '#a3238f',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,
+    width:50,
+    alignItems:'center',
   },
-  modalButtonNo: {
-    backgroundColor: '#f3c4e4',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-  },
+
   modalButtonText: {
     color: 'white',
     fontWeight: '600',
+
   },
 });
+
 export default CreatingMeeting;

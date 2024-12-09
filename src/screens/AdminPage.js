@@ -44,10 +44,10 @@ const AdminPage = () => {
       setSlots(locationsData.slots || []);
 
       if (locationsData.locations?.length > 0) {
-        setSelectedLocation(locationsData.locations[0].LocationID);
+        setSelectedLocation(locationsData);
       }
       if (locationsData.slots?.length > 0) {
-        setSelectedSlot(locationsData.slots[0].Id);
+        setSelectedSlot(locationsData);
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -545,6 +545,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 20,
     paddingLeft: 10, 
+    color: '#A3238F',
     
   },
   containermain: {
