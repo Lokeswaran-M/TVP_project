@@ -682,6 +682,50 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
+     <Stack.Screen
+  name="AddBusiness"
+  component={AddBusiness}
+  options={({ navigation }) => ({
+    header: () => (
+      <View style={styles.topNav}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="arrow-left" size={20} color="black" />
+        </TouchableOpacity>
+        <View style={styles.buttonNavtop}>
+          <View style={styles.topNavlogo}>
+            <Icon name="plus" size={28} color="#FFFFFF" />
+          </View>
+          <Text style={styles.NavbuttonText}>ADD BUSINESS</Text>
+        </View>
+      </View>
+    ),
+  })}
+/>
+{/* <Drawer.Screen
+        name="AddBusiness"
+        component={AddBusiness}
+        options={({ navigation }) => ({
+          drawerLabel: 'Add Business',
+          drawerIcon: ({ color, size }) => (
+            <Icon name="plus" color={color} size={size} />
+          ),
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                <Icon name="navicon" size={20} color="black" />
+              </TouchableOpacity>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="plus" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>ADD BUSINESS</Text>
+              </View>
+            </View>
+          ),
+        })}
+      /> */}
+
+
     </Stack.Navigator>
   );
 }

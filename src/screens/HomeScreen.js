@@ -743,7 +743,16 @@ export default function TabViewExample({ navigation }) {
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
     if (business?.IsPaid === 0) {
-      return <Subscription navigation={navigation} />;
+      return <Subscription 
+      navigation={navigation}
+      route={{ 
+        ...route, 
+        params: { 
+          locationId: business?.L, 
+          chapterType: business?.CT,
+          Profession: business?.BD 
+        } 
+      }} />;
     }
     return (
       <HomeScreen
@@ -756,7 +765,7 @@ export default function TabViewExample({ navigation }) {
           ...route, 
           params: { 
             locationId: business?.L, 
-            chapterType: business?.CT 
+            chapterType: business?.CT
           } 
         }}
       />

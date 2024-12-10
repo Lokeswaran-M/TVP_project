@@ -1,15 +1,91 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-// import AuthContext from './Authcontext'; // Ensure your AuthContext is imported
-import { WebView } from 'react-native-webview'; // Import WebView to handle payments
+import { WebView } from 'react-native-webview';
 import { useSelector } from 'react-redux';
+import { API_BASE_URL } from '../constants/Config';
 
-const Subscription = () => {
+const Subscription = ({ route }) => {
+  const { chapterType, locationId, Profession } = route.params;
+  const [businessCount, setBusinessCount] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isOffMonth, setIsOffMonth] = useState(false);
   const navigation = useNavigation();
-  // const { userID } = useContext(AuthContext); // Assume you're using user context
   const userId = useSelector((state) => state.user?.userId);
+
+  useEffect(() => {
+    const fetchBusinessCount = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          Profession,
+          LocationID: locationId,
+          ChapterType: chapterType,
+        }).toString();
+        const response = await fetch(`${API_BASE_URL}/businessCount?${queryParams}`);
+        const data = await response.json();
+        console.log("Values for count------------------------",data);
+        setBusinessCount(data.count);
+      } catch (error) {
+        console.error('Error fetching business count:', error);
+        setErrorMessage('An error occurred while fetching business count.');
+      }
+    };
+    fetchBusinessCount();
+  }, [chapterType, locationId, Profession]);
+
+  const handleDeleteBusiness = () => {
+    Alert.alert(
+      "Confirm Delete",
+      "Do you want to delete this business and add another?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              const response = await fetch(`${API_BASE_URL}/updateBusinessStatus`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  Profession,
+                  LocationID: locationId,
+                  ChapterType: chapterType,
+                  UserId: userId,
+                }),
+              });
+              const data = await response.json();
+              console.log("Data in insert the business status------------------------",data);
+              if (response.ok) {
+                Alert.alert("Success", "Business status updated successfully.");
+                // navigation.navigate("AddBusiness");
+                navigation.goBack();
+              } else {
+                Alert.alert("Error", data.error || "Failed to update business status.");
+              }
+            } catch (error) {
+              console.error("Error updating business status:", error);
+              Alert.alert("Error", "An unexpected error occurred.");
+            }
+          },
+        },
+      ]
+    );
+  };  
+
+  if (businessCount > 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.alertText}>
+          Another user has activated the business. 
+        </Text>
+        <TouchableOpacity style={styles.button1} onPress={handleDeleteBusiness}>
+          <Text style={styles.buttonText}>Delete Business and Add Another</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  } 
   const handlePayment = () => {
     try {
       const paymentAmount = isOffMonth ? 1500 : 3000;
@@ -178,6 +254,19 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     paddingLeft: 10,
     transform: [{ translateY: 0 }],
+  },
+  alertText: {
+    fontSize: 16,
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  button1: {
+    backgroundColor: '#A3238F',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    margin: 20,
   },
   button: {
     position: 'absolute',
