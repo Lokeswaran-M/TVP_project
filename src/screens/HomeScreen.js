@@ -40,7 +40,8 @@ const HomeScreen = ({ route }) => {
   const [notificationPermission, setNotificationPermission] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null); // For selected event in modal
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedRequirement, setSelectedRequirement] = useState(null);
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
@@ -288,6 +289,7 @@ console.log("Chapter Type (Slots) value:", slots);
       };  
       const hideModal = () => setModalVisible(false);
       const handleAcknowledgeClick = async (requirement) => {
+        setShowModal(false); // Close the modal
         try {
           const profession = route.title;
           console.log("Profession for pre attendence-----------------------",profession);
@@ -374,6 +376,7 @@ console.log("Chapter Type (Slots) value:", slots);
       </View>
     );
   }
+  
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -551,86 +554,106 @@ console.log("Chapter Type (Slots) value:", slots);
     </View>
         {/* ===============================Requirements=============================== */}
         <View style={styles.cards}>
-        <View style={styles.header}>
+      <View style={styles.header}>
         <View style={styles.headerRow}>
-  <Text style={styles.headerText}>Requirements</Text>
-  <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-    <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
-  </TouchableOpacity>
-</View>
-  <TouchableOpacity
-    style={styles.addButton}
-    onPress={() => navigation.navigate('Requirements', {
-      Profession: route.title,
-      locationId: route.params.locationId,
-      chapterType: route.params.chapterType,
-    })}
-  >
-    <View style={styles.buttonContent}>
-      <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
-      <Text style={styles.addButtonText}>Add Requirement</Text>
-    </View>
-  </TouchableOpacity>
-</View>
-          <View>
-            <Text style={styles.line}>
-              ____________________________
-            </Text>
+          <Text style={styles.headerText}>Requirements</Text>
+          <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
+            <Icon
+              name={showAllRequirements ? "angle-up" : "angle-down"}
+              size={24}
+              color="#a3238f"
+              style={styles.arrowIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() =>
+            navigation.navigate("Requirements", {
+              Profession: route.title,
+              locationId: route.params.locationId,
+              chapterType: route.params.chapterType,
+            })
+          }
+        >
+          <View style={styles.buttonContent}>
+            <Icon name="plus-square-o" size={20} color="#fff" style={styles.iconStyle} />
+            <Text style={styles.addButtonText}>Add Requirement</Text>
           </View>
-          {requirementsData.length > 0 ? (
-  <>
-    {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
-      <View key={index} style={styles.card}>
-        <View style={styles.profileSection}>
-<Image
-  source={profileImages[requirement.UserId] ? { uri: profileImages[requirement.UserId] } : profileImage}
-  style={styles.profileImage}
-/>
-          <Text style={styles.profileName}>{requirement.Username}</Text>
-        </View>
-        <View style={styles.requirementSection}>
-          <Text style={styles.requirementText}>{requirement.Description}</Text>
-          <TouchableOpacity
-  style={[
-    styles.acknowledgeButton,
-    requirement.IsAcknowledged === 1 ? styles.disabledButton1 : null
-  ]}
-  onPress={() => {
-    Alert.alert(
-      "Confirmation",
-      "Are you sure you want to acknowledge this requirement?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel", // Optional: Makes the button text appear bold
-          onPress: () => console.log("Acknowledgement canceled"), // Log or perform no action
-        },
-        {
-          text: "OK",
-          onPress: () => handleAcknowledgeClick(requirement), // Execute the function
-        },
-      ]
-    );
-  }}
-  disabled={requirement.IsAcknowledged === 1}
->
-
-   <Text style={styles.buttonText1}>
-    {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
-  </Text>
-
-
-
-</TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
-    ))}
-  </>
-) : (
-  <View style={styles.noMeetupCard}>
-    <Text style={styles.noMeetupText}>No Requirements Available</Text>
-  </View>
-)}
+      <View>
+        <Text style={styles.line}>____________________________</Text>
+      </View>
+      {requirementsData.length > 0 ? (
+        <>
+          {requirementsData.slice(0, showAllRequirements ? requirementsData.length : 1).map((requirement, index) => (
+            <View key={index} style={styles.card}>
+              <View style={styles.profileSection}>
+                <Image
+                  source={profileImages[requirement.UserId] ? { uri: profileImages[requirement.UserId] } : profileImage}
+                  style={styles.profileImage}
+                />
+                <Text style={styles.profileName}>{requirement.Username}</Text>
+              </View>
+              <View style={styles.requirementSection}>
+                <Text style={styles.requirementText}>{requirement.Description}</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.acknowledgeButton,
+                    requirement.IsAcknowledged === 1 ? styles.disabledButton1 : null,
+                  ]}
+                  onPress={() => {
+                    setSelectedRequirement(requirement);
+                    setShowModal(true); // Open the modal
+                  }}
+                  disabled={requirement.IsAcknowledged === 1}
+                >
+                  <Text style={styles.buttonText1}>
+                    {requirement.IsAcknowledged === 1 ? "Acknowledged" : "Acknowledge"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </>
+      ) : (
+        <View style={styles.noMeetupCard}>
+          <Text style={styles.noMeetupText}>No Requirements Available</Text>
+        </View>
+      )}
+
+      {/* Modal for Acknowledgment */}
+      <Modal
+        visible={showModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalContainer1}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Are you sure you want to acknowledge this requirement?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonOK}
+                onPress={() => handleAcknowledgeClick(selectedRequirement)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    
+  
         </View>
         {/* ===================================Reviews================================== */}
         <View style={styles.cards}>

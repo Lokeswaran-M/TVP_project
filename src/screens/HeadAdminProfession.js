@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState,useRef,useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +9,12 @@ import {
   ActivityIndicator,
   StyleSheet,
   Dimensions,
-  Modal,
+  Modal,Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { API_BASE_URL } from '../constants/Config';
+import { green } from 'react-native-reanimated/lib/typescript/Colors';
 
 const { width } = Dimensions.get('window');
 
@@ -26,6 +28,7 @@ const HeadAdminProfession = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [professionIdToDeactivate, setProfessionIdToDeactivate] = useState(null);
+  const animatedOpacity = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     fetchProfessions();
@@ -123,7 +126,13 @@ const HeadAdminProfession = () => {
       </TouchableOpacity>
     </View>
   );
-
+  useEffect(() => {
+    Animated.timing(animatedOpacity, {
+      toValue: professionName.trim() ? 1 : 0.5, 
+      duration: 400, 
+      useNativeDriver: true, 
+    }).start();
+  }, [professionName]);
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
@@ -145,13 +154,19 @@ const HeadAdminProfession = () => {
           value={professionName}
           onChangeText={setProfessionName}
         />
+            <Animated.View style={{ opacity: animatedOpacity }}>
         <TouchableOpacity
-          style={[styles.addButton, !professionName.trim() && styles.addButtonDisabled]}
+          style={{
+            padding: 5,
+            backgroundColor: professionName.trim() ? '#A3238F' : '#CCCCCC',
+            borderRadius: 5,
+          }}
           onPress={handleAddProfession}
           disabled={!professionName.trim()}
         >
-          <Icon name="plus-square" size={30} color="#A3238F" />
+          <Icon name="plus-square" size={24} color="#FFFFFF" />
         </TouchableOpacity>
+      </Animated.View>
       </View>
 
       {loading ? (
@@ -244,10 +259,11 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
   },
-  addButtonDisabled: {
-    // backgroundColor: '#A3238F',
+addButtonDisabled: {
+  
+   borderRadius:20,
+},
 
-  },
   listContainer: {
     paddingBottom: 20,
   },
