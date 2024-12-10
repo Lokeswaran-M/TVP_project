@@ -449,5 +449,35 @@ marginTop:20,
 justifyContent:'space-between',
 
 },
+modalContainer1: {
+  flex: 1,
+  justifyContent: "center",
+  alignItems: "center",
+  backgroundColor: "rgba(0,0,0,0.5)",
+},
+modalContent: {
+  width: "80%",
+  backgroundColor: "#fff",
+  borderRadius: 8,
+  padding: 20,
+  alignItems: "center",
+},
+
+modalButtons: { flexDirection: "row", justifyContent: "space-around", width: "100%" },
+modalButtonCancel: {
+  backgroundColor: "#a3238f",
+  padding: 10,
+  borderRadius: 5,
+  width: "40%",
+  alignItems: "center",
+},
+modalButtonOK: {
+  backgroundColor: "#a3238f",
+  padding: 10,
+  borderRadius: 5,
+  width: "40%",
+  alignItems: "center",
+},
+
   });
   export default styles;
