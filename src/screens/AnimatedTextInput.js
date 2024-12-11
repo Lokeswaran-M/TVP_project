@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, TextInput, Animated, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const AnimatedTextInput = ({ placeholder, value, onChangeText, secureTextEntry,keyboardType }) => {
+const AnimatedTextInput = ({ placeholder, value, onChangeText, secureTextEntry,keyboardType, editable = true, }) => {
   const [isFocused, setIsFocused] = useState(false);
   const animatedIsFocused = useRef(new Animated.Value(value ? 1 : 0)).current;
 
@@ -53,6 +53,7 @@ const AnimatedTextInput = ({ placeholder, value, onChangeText, secureTextEntry,k
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType} 
           placeholderTextColor="transparent"
+          editable={editable}
         />
         {/* <Icon name="account" size={24} color="gray" style={styles.iconStyle} /> */}
       </TouchableOpacity>

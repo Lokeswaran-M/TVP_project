@@ -33,6 +33,27 @@ const Subscription = ({ route }) => {
     fetchBusinessCount();
   }, [chapterType, locationId, Profession]);
 
+  // const handleDeleteBusiness = () => {
+  //   Alert.alert(
+  //     "Confirm Update",
+  //     "Do you want to Update this business and add another?",
+  //     [
+  //       { text: "Cancel", style: "cancel" },
+  //       {
+  //         text: "Update",
+  //         onPress: () => {
+  //           // Navigate to the UpdateBusiness screen with the necessary params
+  //           navigation.navigate('UpdateBusiness', {
+  //             chapterType: chapterType,
+  //             locationId: locationId,
+  //             Profession: Profession,
+  //           });
+  //         },
+  //       },
+  //     ]
+  //   );
+  // };    
+
   const handleDeleteBusiness = () => {
     Alert.alert(
       "Confirm Delete",
@@ -59,8 +80,11 @@ const Subscription = ({ route }) => {
               console.log("Data in insert the business status------------------------",data);
               if (response.ok) {
                 Alert.alert("Success", "Business status updated successfully.");
-                // navigation.navigate("AddBusiness");
-                navigation.goBack();
+                navigation.navigate('UpdateBusiness', {
+                              chapterType: chapterType,
+                              locationId: locationId,
+                              Profession: Profession,
+                            });
               } else {
                 Alert.alert("Error", data.error || "Failed to update business status.");
               }
