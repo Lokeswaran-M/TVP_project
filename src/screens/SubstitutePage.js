@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Modal,
   Pressable,
   Alert,
-  Image,
+  Image,  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { logoutUser } from '../Redux/action';  
 
-const LoginScreen = () => {
+const LoginScreen = ({ onPress }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();  // To navigate after logout
 
@@ -79,7 +79,24 @@ const LoginScreen = () => {
   const handleScannerPress = () => {
     navigation.navigate("Scanner");
   };
+  const pulseAnimation = useRef(new Animated.Value(1)).current;
 
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnimation, {
+          toValue: 1.2, // Increase size
+          duration: 2800, // Animation duration
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnimation, {
+          toValue: 1, // Reset size
+          duration: 2800, // Animation duration
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
   return (
     <View style={styles.container}>
       {/* Sidebar Component */}
@@ -106,12 +123,17 @@ const LoginScreen = () => {
       </View>
 
       {/* Scanner Section */}
-      <View style={styles.scannerContainer}>
-        <TouchableOpacity style={styles.scanButton} onPress={handleScannerPress}>
-          <Icon name="qrcode" size={30} color="#FFF" />
-          <Text style={styles.scanButtonText}>Start Scanning</Text>
-        </TouchableOpacity>
-      </View>
+      <Animated.View
+      style={[
+        styles.animatedButtonContainer,
+        { transform: [{ scale: pulseAnimation }] },
+      ]}
+    >
+      <TouchableOpacity style={styles.scanButton} onPress={onPress||handleScannerPress}>
+        <Icon name="qrcode" size={100} color="#FFF" />
+        <Text style={styles.scanButtonText}>Start Scanning</Text>
+      </TouchableOpacity>
+    </Animated.View>
 
       {/* Logout Modal */}
       <Modal
@@ -237,20 +259,6 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 30,
   },
-  scanButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#A3238F',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-  },
-  scanButtonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
   sidebarOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -265,12 +273,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sidebarItemstyle: {
-    backgroundColor: '#A3238F',
+    borderWidth:3,
     alignItems: 'center',
     borderRadius: 50,
-    padding:2,
+
     marginBottom: 4,
     marginTop: 50,
+    borderColor:'#A3238F',
   },
   sidebarItemText1: {
     fontSize: 20,
@@ -336,6 +345,33 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  animatedButtonContainer: {
+    flex:1,
+    shadowColor: '#A3238F', // Purple glow effect
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 10,
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  scanButton: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#A3238F',
+    padding: 20,
+    borderRadius: 50, // Circular button
+    borderWidth: 5,
+    borderColor: '#FFF',
+    alignItems:"center",
+  },
+  scanButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
   },
 });
 
