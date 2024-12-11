@@ -292,7 +292,6 @@ const onChangeStartDate = (event, selectedDate) => {
   <TextInput
     style={styles.textInput}
     value={profileData.LocationName || 'None'}
-    // onValueChange={(profileData.LocationID) => handlelocationChange(profileData.LocationID)}
     editable={false}
   />
   {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}

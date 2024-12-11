@@ -18,6 +18,7 @@ import Subscription from '../screens/Subscription';
 import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
+import UpdateBusiness from '../screens/UpdateBusiness';
 // import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import OneMinPresentation from '../screens/OneMinPresentation';
 import PreAttendanceViewPage from '../screens/PreAttendanceViewPage';
@@ -701,6 +702,25 @@ function AppNavigator() {
     ),
   })}
 />
+<Stack.Screen
+        name="UpdateBusiness"
+        component={UpdateBusiness}
+        options={({ navigation }) => ({
+          header: () => (
+            <View style={styles.topNav}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Icon name="arrow-left" size={20} color="black" />
+              </TouchableOpacity>
+              <View style={styles.buttonNavtop}>
+                <View style={styles.topNavlogo}>
+                  <Icon name="plus" size={28} color="#FFFFFF" />
+                </View>
+                <Text style={styles.NavbuttonText}>UPDATE BUSINESS</Text>
+              </View>
+            </View>
+          ),
+        })}
+      />
 {/* <Drawer.Screen
         name="AddBusiness"
         component={AddBusiness}
