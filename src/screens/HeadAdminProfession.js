@@ -116,13 +116,13 @@ const HeadAdminProfession = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.listItem}>
-      <MaterialIcons name="business-center" size={25} color="#A3238F" style={styles.icon} />
+      <MaterialIcons name="business-center" size={25} color="#2e3192" style={styles.icon} />
       <Text style={styles.listText}>{item.ProfessionName}</Text>
       <TouchableOpacity
         style={styles.deleteIcon}
         onPress={() => confirmDeactivation(item.Id)}
       >
-        <MaterialIcons name="delete-outline" size={25} color="#A3238F" />
+        <MaterialIcons name="delete-outline" size={25} color="#2e3192" />
       </TouchableOpacity>
     </View>
   );
@@ -136,7 +136,7 @@ const HeadAdminProfession = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Icon name="search" size={20} color="#A3238F" style={styles.searchIcon} />
+        <Icon name="search" size={20} color="#2e3192" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search professions"
@@ -158,7 +158,7 @@ const HeadAdminProfession = () => {
         <TouchableOpacity
           style={{
             padding: 5,
-            backgroundColor: professionName.trim() ? '#A3238F' : '#CCCCCC',
+            backgroundColor: professionName.trim() ? '#2e3192' : '#CCCCCC',
             borderRadius: 5,
           }}
           onPress={handleAddProfession}
@@ -170,7 +170,7 @@ const HeadAdminProfession = () => {
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#A3238F" style={styles.loader} />
+        <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : (
@@ -281,7 +281,7 @@ addButtonDisabled: {
   },
   listText: {
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
     flex: 1,
   },
@@ -308,13 +308,13 @@ addButtonDisabled: {
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
     borderRadius: 19,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
   },
   countText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   modalContainer: {
     flex: 1,
@@ -341,7 +341,7 @@ addButtonDisabled: {
     justifyContent:'space-between',
   },
   closeButton: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,

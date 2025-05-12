@@ -24,7 +24,7 @@ import HeadAdminLocationView from '../screens/HeadAdminLocationView';
 import { View, Text, StyleSheet, Dimensions,Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BMW from '../../assets/images/BMW.png';
+import BMW from '../../assets/images/TPV.png';
 import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
 const CustomHeaderBMWpng = () => {
@@ -41,7 +41,7 @@ const CustomHeaderBMWpng = () => {
           style={styles.iconImage}
         />
         {/* <TouchableOpacity onPress={posticon}>
-        <Ionicons name="chatbubble-ellipses" size={29} color="#A3238F" />
+        <Ionicons name="chatbubble-ellipses" size={29} color="#2e3192" />
         </TouchableOpacity> */}
             
       </View>
@@ -128,7 +128,7 @@ const CustomAdminProfession = () => {
 };
 const Stack = createStackNavigator();
 const headerOptions = {
-  headerStyle: { backgroundColor: '#a3238f' },
+  headerStyle: { backgroundColor: '#2e3192' },
   headerTintColor: '#fff',
 };
 const AuthNavigator = () => {
@@ -144,9 +144,9 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Scanner"  component={Scanner}/>
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
-      {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#a3238f' } ,headerTintColor: '#fff'}} /> */}
+      {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />
+      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} /> */}
 
 {/* Lokesh screens  */}
         <Stack.Screen name="AdminMemberstack" component={AdminMemberstack} options={{ headerShown: false, headerLeft: () => null, }}/>
@@ -205,18 +205,18 @@ const styles = StyleSheet.create({
   buttonNavtop: {
     borderRadius: 25,
     alignItems: 'center',
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
     flexDirection: 'row',
   },
   topNavlogo: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 4,
     borderRadius: 50,
     justifyContent: 'center',
   },
   NavbuttonText: {
-    color: '#A3238F',
+    color: '#2e3192',
     fontSize: width * 0.04, // Responsive font size
     fontWeight: 'bold',
     marginHorizontal: 10,

@@ -8,17 +8,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#F5F5F5',
       margin: 8,
     },
-    card: {
-      backgroundColor: '#fff',
-      borderRadius: 10,
-      padding: 10,
-      marginBottom: 20,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 8,
-      elevation: 5,
-    },
+
     starIcon: {
       marginLeft: 5,
     },    
@@ -47,7 +37,7 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 5,
-      color: '#a3238f',
+      color: '#2e3192',
     },
     arrowIcon: {
       marginLeft: 10,
@@ -114,7 +104,7 @@ const styles = StyleSheet.create({
       opacity: 0.6,
     },
     buttonText: {
-      color: '#a3238f',
+      color: '#2e3192',
       marginLeft: 5,
       fontSize: 14,
       fontWeight:'600',
@@ -130,7 +120,7 @@ const styles = StyleSheet.create({
       // opacity: 0.6,
     },    
     disabledButton1: {
-      backgroundColor: 'rgba(163, 35, 143, 0.5)', 
+      backgroundColor:'rgba(46, 49, 146, 0.53)', 
     },    
     headerContainer: {
       flexDirection: 'row',
@@ -197,10 +187,10 @@ const styles = StyleSheet.create({
       headerText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#a3238f',
+        color: '#2e3192',
       },
       addButton: {
-        backgroundColor: '#a3238f',
+        backgroundColor: '#2e3192',
         paddingVertical: 8,
         paddingHorizontal: 15,
         borderRadius: 20,
@@ -210,7 +200,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
       },
       card: {
-        backgroundColor: '#F6EDF7',
+        backgroundColor: '#rgba(240, 244, 255, 0.93)',
         borderRadius: 10,
         padding: 20,
         shadowColor: '#000',
@@ -227,7 +217,7 @@ const styles = StyleSheet.create({
       profileName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#a3238f',
+        color: '#2e3192',
       },
       requirementSection: {
         backgroundColor: '#fff',
@@ -241,14 +231,14 @@ const styles = StyleSheet.create({
       },
       requirementText: {
         fontSize: 14,
-        color: '#a3238f',
+        color: '#2e3192',
         lineHeight: 22,
       },
       acknowledgeButton: {
         position: 'absolute',
         top: -50,
         right: 0,
-        backgroundColor:'#a3238f',
+        backgroundColor:'#2e3192',
         paddingVertical: 5,
         paddingHorizontal: 15,
         borderRadius: 20,
@@ -294,7 +284,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       marginBottom: 10,
       alignContent: 'center',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     buttonContainer: {
       flexDirection: 'row',  
@@ -306,14 +296,14 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
     },
     addButton1: {
-      backgroundColor: '#a3238f',
+      backgroundColor: '#2e3192',
       padding: 10,
       paddingHorizontal: 40,
       borderRadius: 5,
       marginBottom: 20,
     },
     addButton2: {
-      backgroundColor: '#a3238f',
+      backgroundColor: '#2e3192',
       padding: 10,
       borderRadius: 5,
       marginBottom: 20,
@@ -340,7 +330,7 @@ const styles = StyleSheet.create({
     },
     tableHeaderText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     tableRow: {
       flexDirection: 'row',
@@ -355,7 +345,7 @@ const styles = StyleSheet.create({
     container1: {
       flex: 1,
       padding: 10,
-      backgroundColor: '#F3ECF3',
+      backgroundColor: '#rgba(240, 244, 255, 0.93)',
       margin: 8,
       borderRadius: 10,
     },
@@ -376,15 +366,15 @@ const styles = StyleSheet.create({
     rankText: {
       marginRight: 10,
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     nameText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     amountText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
       textAlign: 'right', 
       width: 100,
     },
@@ -432,7 +422,7 @@ modalText: {
       fontWeight:'700'
 },
 modalButton: {
-  backgroundColor: '#a3238f',
+  backgroundColor: '#2e3192',
   padding: 10,
   borderRadius: 5,
   width:'30%',
@@ -465,14 +455,14 @@ modalContent: {
 
 modalButtons: { flexDirection: "row", justifyContent: "space-around", width: "100%" },
 modalButtonCancel: {
-  backgroundColor: "#a3238f",
+  backgroundColor: "#2e3192",
   padding: 10,
   borderRadius: 5,
   width: "40%",
   alignItems: "center",
 },
 modalButtonOK: {
-  backgroundColor: "#a3238f",
+  backgroundColor: "#2e3192",
   padding: 10,
   borderRadius: 5,
   width: "40%",

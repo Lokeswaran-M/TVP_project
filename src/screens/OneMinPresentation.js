@@ -91,7 +91,7 @@ const OneMinPresentation = ({ route, navigation }) => {
 
       <View style={styles.alarmContainer}>
         <TouchableOpacity onPress={() => handleAlarmPress(item)}>
-          <MaterialIcons name="alarm" size={28} right={-10} color="#A3238F" />
+          <MaterialIcons name="alarm" size={28} right={-10} color="#2e3192" />
           <Text style={styles.memberTime}  >{item.formattedInTime}</Text> 
         </TouchableOpacity>
       </View>
@@ -105,7 +105,7 @@ const OneMinPresentation = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#A3238F" />
+        <ActivityIndicator size="large" color="#2e3192" />
       ) : (
         <>
           <View style={styles.searchContainer}>
@@ -115,10 +115,10 @@ const OneMinPresentation = ({ route, navigation }) => {
               placeholderTextColor="black"
               value={searchQuery}
               onChangeText={setSearchQuery}
-              color="#A3238F"
+              color="#2e3192"
             />
             <View style={styles.searchIconContainer}>
-              <Icon name="search" size={23} color="#A3238F" />
+              <Icon name="search" size={23} color="#2e3192" />
             </View>
           </View>
 
@@ -247,7 +247,7 @@ export default OneMinPresentation;
   
 //       <View style={styles.alarmContainer}>
 //         <TouchableOpacity onPress={() => handleAlarmPress(item)}>
-//           <MaterialIcons name="alarm" size={28} color="#A3238F" />
+//           <MaterialIcons name="alarm" size={28} color="#2e3192" />
 //           <Text>Time</Text>
 //         </TouchableOpacity>
 //       </View>
@@ -261,7 +261,7 @@ export default OneMinPresentation;
 //   return (
 //     <View style={styles.container}>
 //       {loading ? (
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       ) : (
 //         <>
 //           <View style={styles.searchContainer}>
@@ -271,10 +271,10 @@ export default OneMinPresentation;
 //               placeholderTextColor="black"
 //               value={searchQuery}
 //               onChangeText={setSearchQuery}
-//               color="#A3238F"
+//               color="#2e3192"
 //             />
 //             <View style={styles.searchIconContainer}>
-//               <Icon name="search" size={23} color="#A3238F" />
+//               <Icon name="search" size={23} color="#2e3192" />
 //             </View>
 //           </View>
 
@@ -403,7 +403,7 @@ export default OneMinPresentation;
 //       </View>
 //       <View style={styles.alarmContainer}>
 //         <TouchableOpacity onPress={() => handleAlarmPress(item)}>
-//           <MaterialIcons name="alarm" size={28} color="#A3238F" />
+//           <MaterialIcons name="alarm" size={28} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 //     </TouchableOpacity>
@@ -416,7 +416,7 @@ export default OneMinPresentation;
 //   return (
 //     <View style={styles.container}>
 //       {loading ? (
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       ) : (
 //         <>
 //           <View style={styles.searchContainer}>
@@ -426,10 +426,10 @@ export default OneMinPresentation;
 //               placeholderTextColor="black"
 //               value={searchQuery}
 //               onChangeText={setSearchQuery}
-//               color="#A3238F"
+//               color="#2e3192"
 //             />
 //             <View style={styles.searchIconContainer}>
-//               <Icon name="search" size={23} color="#A3238F" />
+//               <Icon name="search" size={23} color="#2e3192" />
 //             </View>
 //           </View>
 

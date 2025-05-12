@@ -35,7 +35,7 @@ export default StyleSheet.create({
         paddingHorizontal: 10,
       },
         datePickerButton: {
-          borderColor: '#a3238f',
+          borderColor: '#2e3192',
           borderWidth: 1,
           borderRadius: 10,
           padding: 15,
@@ -51,7 +51,7 @@ export default StyleSheet.create({
           marginBottom: 10,
         },
         registerButton: {
-          backgroundColor: '#a3238f', 
+          backgroundColor: '#2e3192', 
           padding: 15,
           borderRadius: 5,
           alignItems: 'center',
@@ -79,7 +79,7 @@ export default StyleSheet.create({
         },
         selectList: {
           borderWidth: 1,
-          borderColor: '#a3238f',
+          borderColor: '#2e3192',
           borderRadius:10,
           overflow: 'hidden',
           marginVertical: 10,
@@ -97,7 +97,7 @@ export default StyleSheet.create({
         dropdown: {
           height: 55,
           borderWidth: 2,
-          borderColor: '#a3238f',
+          borderColor: '#2e3192',
           borderRadius: 10,
           paddingHorizontal: 20,
           overflow: 'hidden',
@@ -125,7 +125,7 @@ export default StyleSheet.create({
         },
         inputSearchStyle: {
           // borderWidth: 1,
-          borderColor: '#a3238f',
+          borderColor: '#2e3192',
           borderRadius: 8, 
           // paddingHorizontal: -10,
           height: 40, 

@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     overflow: 'hidden',
     borderWidth: 2,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
   },
 
   flashButton: {
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
 
     alignItems: 'center',
-    backgroundColor:'#A3238F',
+    backgroundColor:'#2e3192',
   },
   scannedDataText: {
     fontSize: 16,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 70,
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     borderRadius: 10,
   },
   scannedMessageText: {
@@ -387,7 +387,7 @@ export default Scanner;
 //     borderRadius: 15,
 //     overflow: 'hidden',
 //     borderWidth: 2,
-//     borderColor: '#A3238F',
+//     borderColor: '#2e3192',
 //   },
 
 //   flashButton: {
@@ -413,7 +413,7 @@ export default Scanner;
 //     borderRadius: 5,
 
 //     alignItems: 'center',
-//     backgroundColor:'#A3238F',
+//     backgroundColor:'#2e3192',
 //   },
 //   scannedDataText: {
 //     fontSize: 16,
@@ -429,7 +429,7 @@ export default Scanner;
 //     justifyContent: 'center',
 //     alignItems: 'center',
 //     padding: 70,
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     borderRadius: 10,
 //   },
 //   scannedMessageText: {

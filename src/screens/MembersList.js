@@ -94,10 +94,10 @@ const TabContent = ({ chapterType, locationId, userId }) => {
           placeholderTextColor="black"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
       <FlatList
@@ -218,9 +218,9 @@ export default function TabViewExample({ navigation }) {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
-      style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
+      indicatorStyle={{ backgroundColor: '#2e3192' }}
+      style={{ backgroundColor: '#rgb(220, 228, 250)' }}
+      activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}
     />

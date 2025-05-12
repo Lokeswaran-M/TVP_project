@@ -271,14 +271,14 @@ const HeaderImage = () => {
   return (
     <View style={styles.topNavlogohome}>
       <Image
-        source={require('../../assets/images/BMW.png')}
+        source={require('../../assets/images/TPV.png')}
         style={styles.iconImage}
       />
       <TouchableOpacity
         onPress={() => navigation.navigate('Notification')}
         disabled={loading}
       >
-        <Ionicons name="notifications-sharp" size={26} color="#A3238F" left = {0} />
+        <Ionicons name="notifications-sharp" size={26} color="#2e3192" left = {0} />
         {notificationCount > 0 && (
           <Text style={styles.notificationCount}>{notificationCount}</Text>
         )}
@@ -391,7 +391,7 @@ function DrawerNavigator() {
     )}
       // drawerContent={(props) => <DrawerContent {...props} />} 
       screenOptions={{
-        drawerActiveTintColor: '#a3238f', 
+        drawerActiveTintColor: '#2e3192', 
         drawerInactiveTintColor: 'black', 
         drawerStyle: {
           backgroundColor: 'white', 
@@ -793,19 +793,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // marginLeft:80,
     margin: 'auto',
-    borderColor:'#A3238F',
+    borderColor:'#2e3192',
     borderWidth:2,
     flexDirection:'row',
   },
   topNavlogo:{
-   backgroundColor:'#A3238F',
+   backgroundColor:'#2e3192',
    padding:5,
    paddingLeft:7.5,
    paddingRight:9,
    borderRadius:50,
   },
   NavbuttonText:{
-    color:'#A3238F',
+    color:'#2e3192',
     fontSize:15,  
     fontWeight:'bold',
     marginLeft:10,

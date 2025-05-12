@@ -127,13 +127,13 @@ const NewMeeting = () => {
       <Text style={styles.title}>Create Meeting</Text>
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotIDs.includes(1) && { backgroundColor: '#C23A8A' }]}
+          style={[styles.iconContainer, SlotIDs.includes(1) && { backgroundColor: '#2e3192' }]}
           onPress={() => handleSlotClick(1)}
         >
           <Image source={sun} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotIDs.includes(2) && { backgroundColor: '#C23A8A' }]}
+          style={[styles.iconContainer, SlotIDs.includes(2) && { backgroundColor: '#2e3192' }]}
           onPress={() => handleSlotClick(2)}
         >
           <Image source={moon} style={{ width: 50, height: 50 }} />
@@ -142,14 +142,14 @@ const NewMeeting = () => {
       <TouchableOpacity onPress={toggleCalendar}>
         <View style={styles.section}>
           <Text style={styles.label}>{selectedDate ? selectedDate : 'Date'}</Text>
-          <Icon name="calendar" size={30} color="#C23A8A" />
+          <Icon name="calendar" size={30} color="#2e3192" />
         </View>
       </TouchableOpacity>
       {showCalendar && (
         <Calendar
           onDayPress={onDaySelect}
           markedDates={{
-            [selectedDate]: { selected: true, marked: true, selectedColor: '#C23A8A' },
+            [selectedDate]: { selected: true, marked: true, selectedColor: '#2e3192' },
           }}
         />
       )}
@@ -158,7 +158,7 @@ const NewMeeting = () => {
           <Text style={styles.label}>
             {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Time'}
           </Text>
-          <Icon name="clock-o" size={30} color="#C23A8A" />
+          <Icon name="clock-o" size={30} color="#2e3192" />
         </View>
       </TouchableOpacity>
       <DateTimePickerModal
@@ -169,7 +169,7 @@ const NewMeeting = () => {
       />
       <View style={styles.section}>
         <Text style={styles.label}>{profileData?.Location ? `${profileData.Location}` : 'Location'}</Text>
-        <Icon name="map-marker" size={30} color="#C23A8A" />
+        <Icon name="map-marker" size={30} color="#2e3192" />
       </View>
       <TouchableOpacity
         style={styles.button}
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: '#C23A8A',
+    color: '#2e3192',
     fontWeight: 'bold',
     marginBottom: 20,
   },
@@ -256,10 +256,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#C23A8A',
+    color: '#2e3192',
   },
   button: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 20,
     borderRadius: 10,
     alignItems: 'center',
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 10,
-    color: '#C23A8A',
+    color: '#2e3192',
     textAlign: 'center',
   },
   modalMessage: {
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
   },
   modalButtonYes: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,
@@ -314,14 +314,14 @@ const styles = StyleSheet.create({
     
   },
   modalButtonNo:{
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,
     width:50,
   },
   modalButtonNo: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,

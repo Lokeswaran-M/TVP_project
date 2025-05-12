@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 5,
   },
   value: {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   downloadButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
 
   oneminButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     marginRight:-160,
     bottom: 30,
     left: 20,
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 9,
     borderTopLeftRadius: 20,
@@ -349,7 +349,7 @@ export default CreateMeetingViewPage;
 //   label: {
 //     fontWeight: 'bold',
 //     fontSize: 16,
-//     color: '#a3238f',
+//     color: '#2e3192',
 //     marginBottom: 5,
 //   },
 //   value: {
@@ -361,14 +361,14 @@ export default CreateMeetingViewPage;
 //     marginVertical: 20,
 //   },
 //   downloadButton: {
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 10,
 //     borderRadius: 5,
 //     marginTop: 10,
 //   },
 
 //   oneminButton:{
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 10,
 //     borderRadius: 5,
 //     marginTop: 50,
@@ -377,7 +377,7 @@ export default CreateMeetingViewPage;
 //     position: 'absolute',
 //     bottom: 30, 
 //     left: 20, 
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 10,
 //     borderRadius: 9,
 //     borderTopLeftRadius:20,

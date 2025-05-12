@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: 5,
-        color: '#A3238F',
+        color: '#2e3192',
       },
       ratingRow: {
         flexDirection: 'row',
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
       width: 90,
       height: 90,
       borderRadius: 50,
-      backgroundColor: '#A3238F',
+      backgroundColor: '#2e3192',
       justifyContent: 'center',
       alignItems: 'center',
       marginRight: 20,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   fontSize: 20,
   marginBottom: 10,
       fontWeight: 'bold',
-      color: '#A3238F',
+      color: '#2e3192',
     },
     valuetop: {
       bottom: 6,
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     button: {
       flexDirection: 'row',
       alignItems: 'center',
-      borderColor: '#A3238F',
+      borderColor: '#2e3192',
       borderWidth: 1.5,
       borderRadius: 50,
       width: '45%',
@@ -113,13 +113,13 @@ const styles = StyleSheet.create({
       shadowRadius: 2,
     },
     buttonIcon: {
-      backgroundColor: '#A3238F',
+      backgroundColor: '#2e3192',
       borderRadius: 70,
       padding: 6,
       marginRight: 10,
     },
     buttonText: {
-      color: '#A3238F',
+      color: '#2e3192',
       fontWeight: 'bold',
     },
     performanceRow: {

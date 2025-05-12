@@ -245,11 +245,11 @@ const LoginScreen = ({ navigation }) => {
             >
          <View style={{ flexDirection: 'row'}}>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value='1' color='#a3238f' />
+                  <RadioButton value='1' color='#2e3192' />
                   <Text style={styles.radioButtonLabel}>Member Login</Text>
                 </View>
                 <View style={styles.radioButtonItem}>
-                  <RadioButton value='2' color='#a3238f' />
+                  <RadioButton value='2' color='#2e3192' />
                   <Text style={styles.radioButtonLabel}>Substitute Login</Text>
               </View>
               </View>
@@ -590,11 +590,11 @@ export default LoginScreen;
 //             >
 //          <View style={{ flexDirection: 'row'}}>
 //                 <View style={styles.radioButtonItem}>
-//                   <RadioButton value='1' color='#a3238f' />
+//                   <RadioButton value='1' color='#2e3192' />
 //                   <Text style={styles.radioButtonLabel}>Member Login</Text>
 //                 </View>
 //                 <View style={styles.radioButtonItem}>
-//                   <RadioButton value='2' color='#a3238f' />
+//                   <RadioButton value='2' color='#2e3192' />
 //                   <Text style={styles.radioButtonLabel}>Substitute Login</Text>
 //               </View>
 //               </View>

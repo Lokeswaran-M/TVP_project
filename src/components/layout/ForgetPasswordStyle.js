@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     color: '#25D366',
   },
   button: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: height * 0.02, 
     paddingHorizontal: width * 0.05, 
     borderRadius: 10,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   resendButtonText: {
-    color: '#a3238f',
+    color: '#2e3192',
     textAlign: 'center',
   },
 });

@@ -77,11 +77,11 @@ const PreAttendanceViewPage = ({ route, navigation }) => {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <Icon name="search" size={20} color="#A3238F" style={styles.searchIcon} />
+        <Icon name="search" size={20} color="#2e3192" style={styles.searchIcon} />
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#A3238F" style={styles.loader} />
+        <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
       ) : error ? (
         <Text style={styles.errorText}>{error}</Text>
       ) : filteredMembers.length === 0 ? (
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: '#FFFFFF',
     position: 'relative',
-    color: '#A3238F',
+    color: '#2e3192',
     borderRadius: 10,
     margin: 20,
     marginHorizontal: width * 0.1,
@@ -195,13 +195,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
     borderRadius: 20,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
   },
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   loader: {
     marginTop: 20,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     marginTop: 20,
   },
 });

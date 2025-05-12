@@ -155,7 +155,7 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
         </Text>
       </View>
       <View style={styles.alarmContainer}>
-        <Icon name="camera" size={24} color="#A3238F" />
+        <Icon name="camera" size={24} color="#2e3192" />
       </View>
     </TouchableOpacity>
   );
@@ -169,10 +169,10 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholderTextColor="black"
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
 
@@ -252,9 +252,9 @@ export default function TabViewExample({ navigation }) {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
-      style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
+      indicatorStyle={{ backgroundColor: '#2e3192' }}
+      style={{ backgroundColor: '#rgb(220, 228, 250)' }}
+      activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}
     />
@@ -442,7 +442,7 @@ export default function TabViewExample({ navigation }) {
 //       </View>
 //       <View style={styles.alarmContainer}>
 //         <TouchableOpacity onPress={openCamera}>
-//           <Icon name="camera" size={24} color="#A3238F" />
+//           <Icon name="camera" size={24} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 //     </TouchableOpacity>
@@ -462,10 +462,10 @@ export default function TabViewExample({ navigation }) {
 //           value={searchQuery}
 //           onChangeText={setSearchQuery}
 //           placeholderTextColor="black"
-//           color="#A3238F"
+//           color="#2e3192"
 //         />
 //         <View style={styles.searchIconContainer}>
-//           <Icon name="search" size={23} color="#A3238F" />
+//           <Icon name="search" size={23} color="#2e3192" />
 //         </View>
 //       </View>
   
@@ -534,9 +534,9 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />
@@ -963,10 +963,10 @@ export default function TabViewExample({ navigation }) {
 //           value={searchQuery}
 //           onChangeText={setSearchQuery}
 //           placeholderTextColor="black"
-//           color="#A3238F"
+//           color="#2e3192"
 //         />
 //         <View style={styles.searchIconContainer}>
-//           <Icon name="search" size={23} color="#A3238F" />
+//           <Icon name="search" size={23} color="#2e3192" />
 //         </View>
 //       </View>
 
@@ -992,7 +992,7 @@ export default function TabViewExample({ navigation }) {
 //             </View>
 //             <View style={styles.alarmContainer}>
 //               <TouchableOpacity onPress={openCamera}>
-//                 <Icon name="camera" size={24} color="#A3238F" />
+//                 <Icon name="camera" size={24} color="#2e3192" />
 //               </TouchableOpacity>
 //             </View>
 //           </TouchableOpacity>
@@ -1053,9 +1053,9 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />

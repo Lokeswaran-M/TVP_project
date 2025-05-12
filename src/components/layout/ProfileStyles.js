@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F3ECF3',
+        backgroundColor: '#rgb(220, 228, 250)',
         paddingTop: 18,
       },
       topSection: {
@@ -12,7 +12,7 @@ export default StyleSheet.create({
       imageWrapper: {
         position: 'relative',
         marginBottom: 10,
-        borderColor: '#e4dfe4',
+        borderColor: '#2e3192',
         borderWidth: 10,
         borderRadius: 90,
       },
@@ -21,7 +21,7 @@ export default StyleSheet.create({
         height: 140,
         borderRadius: 100,
         borderWidth: 3,
-        borderColor: '#fff',
+        borderColor: '#rgb(220, 228, 250)',
       },
       editIconWrapper: {
         position: 'absolute',
@@ -32,12 +32,12 @@ export default StyleSheet.create({
       },
       userId: {
         fontSize: 14,
-        color: '#C23A8A',
+        color: '#2e3192',
         marginVertical: 5,
       },
       RatingValue: {
         fontSize: 14,
-        color: '#C23A8A',
+        color: '#2e3192',
         marginVertical: 5,
       },
       starsWrapper: {
@@ -64,7 +64,7 @@ export default StyleSheet.create({
       editText: {
         marginLeft: 5,
         fontSize: 12,
-        color: '#C23A8A',
+        color: '#2e3192',
       },
       detailsSection: {
         backgroundColor: 'white',
@@ -75,7 +75,7 @@ export default StyleSheet.create({
       label: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#C23A8A',
+        color: '#2e3192',
         marginVertical: 5,
       },
       info: {
@@ -94,7 +94,7 @@ export default StyleSheet.create({
       performanceTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#C23A8A',
+        color: '#2e3192',
         marginBottom: 10,
       },
       performanceRow: {

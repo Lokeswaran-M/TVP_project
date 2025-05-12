@@ -5,7 +5,7 @@ import { LinearGradient } from 'react-native-linear-gradient';
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   return (
     <LinearGradient
-      colors={['#a3238f', '#ffbe4e']} 
+      colors={['#2e3192', '#ffbe4e']} 
       style={styles.gradientBackground}
     >
       <View style={styles.tabContainer}>

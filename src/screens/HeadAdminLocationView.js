@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   locationName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     textAlign: 'center',
   },
 
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   PlaceName: {
     fontSize: 25,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
     textAlign: 'center',
   },

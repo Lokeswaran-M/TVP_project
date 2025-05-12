@@ -42,7 +42,7 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Auth'); // Navigate to Auth stack
-    }, 5000); // 5000 milliseconds = 5 seconds
+    }, 3000); // 5000 milliseconds = 5 seconds
 
     return () => clearTimeout(timer); // Clear the timer on component unmount
   }, [navigation]);
@@ -51,7 +51,7 @@ const SplashScreen = ({ navigation }) => {
     <View style={styles.container}>
       <FastImage
         style={styles.image}
-        source={require('../../../assets/images/Bmw_ss.gif')} 
+        source={require('../../../assets/images/tha-pa-va_gif.gif')} // Replace with your image path
         resizeMode={FastImage.resizeMode.contain}
       />
     </View>

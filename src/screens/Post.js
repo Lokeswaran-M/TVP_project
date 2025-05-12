@@ -136,7 +136,7 @@ const Post = ({ chapterType, locationId, navigation }) => {
   if (loading && !refreshing) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#A3238F" />
+        <ActivityIndicator size="large" color="#2e3192" />
       </View>
     );
   }
@@ -313,9 +313,9 @@ export default function TabViewExample({ navigation }) {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
-      style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
+      indicatorStyle={{ backgroundColor: '#2e3192' }}
+      style={{ backgroundColor: '#rgb(220, 228, 250)' }}
+      activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}
     />
@@ -384,16 +384,16 @@ export default function TabViewExample({ navigation }) {
   // const renderTabBar = (props) => (
   //   <TabBar
   //     {...props}
-  //     indicatorStyle={{ backgroundColor: '#A3238F' }}
+  //     indicatorStyle={{ backgroundColor: '#2e3192' }}
   //     style={{ backgroundColor: '#F3ECF3' }}
-  //     activeColor="#A3238F"
+  //     activeColor="#2e3192"
   //     inactiveColor="gray"
   //     labelStyle={{ fontSize: 14 }}
   //   />
   // );
 
 //   if (loading) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   return (
@@ -520,7 +520,7 @@ export default function TabViewExample({ navigation }) {
 //   };
 
 //   if (loading && !refreshing) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   if (error) {
@@ -599,7 +599,7 @@ export default function TabViewExample({ navigation }) {
 //       <View>
 //         <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.filterButton}>
 //           <Text style={styles.filterButtonText}>Filter by Date</Text>
-//           <MaterialIcons name="filter-list" size={26} color="#A3238F" />
+//           <MaterialIcons name="filter-list" size={26} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 
@@ -680,16 +680,16 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />
 //   );
 
 //   if (loading) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   return (
@@ -805,7 +805,7 @@ export default function TabViewExample({ navigation }) {
 //   };
 
 //   if (loading && !refreshing) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   if (error) {
@@ -884,7 +884,7 @@ export default function TabViewExample({ navigation }) {
 //       <View>
 //         <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.filterButton}>
 //           <Text style={styles.filterButtonText}>Filter by Date</Text>
-//           <MaterialIcons name="filter-list" size={26} color="#A3238F" />
+//           <MaterialIcons name="filter-list" size={26} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 
@@ -965,16 +965,16 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />
 //   );
 
 //   if (loading) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   return (
@@ -1099,7 +1099,7 @@ export default function TabViewExample({ navigation }) {
 //   };
 
 //   if (loading && !refreshing) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   if (error) {
@@ -1184,7 +1184,7 @@ export default function TabViewExample({ navigation }) {
 //       <View style={styles.filterContainer}>
 //         <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.filterButton}>
 //         <Text style={styles.filterButtonText}>Filter by Date</Text>
-//         <MaterialIcons name="filter-list" size={26} top={3} color="#A3238F" />
+//         <MaterialIcons name="filter-list" size={26} top={3} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 
@@ -1265,16 +1265,16 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />
 //   );
 
 //   if (loading) {
-//     return <ActivityIndicator size="large" color="#A3238F" />;
+//     return <ActivityIndicator size="large" color="#2e3192" />;
 //   }
 
 //   return (

@@ -157,13 +157,13 @@ const HeadAdminMembersPage = ({ navigation }) => {
           placeholderTextColor="black"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
           <Icon name="search" size={23} color="#100E09" />
         </View>
         <TouchableOpacity
-          style={[styles.filterButton, { backgroundColor: isFilterPressed ? '#c452b3' : '#A3238F' }]}
+          style={[styles.filterButton, { backgroundColor: isFilterPressed ? '#e4e5fd' : '#2e3192' }]}
           onPress={() => setIsFilterPressed((prev) => !prev)}
         >
           <Ionicons name="filter" size={23} color="#FFFFFF" />
@@ -174,33 +174,33 @@ const HeadAdminMembersPage = ({ navigation }) => {
       {isFilterPressed && (
         <View style={styles.filterContainer}>
           <View style={styles.filterSearchInputContainer}>
-            <View style={styles.filterIconContainer}>
-              {/* Sun icon */}
+            {/* <View style={styles.filterIconContainer}>
+             
               <TouchableOpacity
-                style={[styles.iconWrapper, { backgroundColor: selectedIcons.sunActive ? '#A3238F' : 'transparent' }]}
+                style={[styles.iconWrapper, { backgroundColor: selectedIcons.sunActive ? '#2e3192' : 'transparent' }]}
                 onPress={handleSunClick}
               >
                 <Icon
                   name="sun-o"
                   size={25}
-                  color={selectedIcons.sunActive ? '#FFFFFF' : '#A3238F'}
+                  color={selectedIcons.sunActive ? '#FFFFFF' : '#2e3192'}
                   style={styles.sunIcon}
                 />
               </TouchableOpacity>
 
-              {/* Moon icon */}
+             
               <TouchableOpacity
-                style={[styles.iconWrapper, { backgroundColor: selectedIcons.moonActive ? '#A3238F' : 'transparent' }]}
+                style={[styles.iconWrapper, { backgroundColor: selectedIcons.moonActive ? '#2e3192' : 'transparent' }]}
                 onPress={handleMoonClick}
               >
                 <Icon
                   name="moon-o"
                   size={25}
-                  color={selectedIcons.moonActive ? '#FFFFFF' : '#A3238F'}
+                  color={selectedIcons.moonActive ? '#FFFFFF' : '#2e3192'}
                   style={styles.moonIcon}
                 />
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             <View style={styles.filterSearchInput}>
               <Picker

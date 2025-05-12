@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
 
   Blabel: {
     fontSize: 23,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
     paddingBottom: 30,
   },
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 17,
     marginBottom: 5,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
   },
 
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 1.5,
     fontSize: 18,
     fontWeight: 'bold',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalButton: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

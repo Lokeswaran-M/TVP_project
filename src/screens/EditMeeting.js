@@ -86,13 +86,13 @@ const EditMeeting = ({ route }) => {
       <Text style={styles.title}>Create</Text>
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotID === 1 && { backgroundColor: '#C23A8A' }]}
+          style={[styles.iconContainer, SlotID === 1 && { backgroundColor: '#2e3192' }]}
           onPress={() => setSlotID(1)}
         >
           <Image source={sun} style={{ width: 50, height: 50 }} />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.iconContainer, SlotID === 2 && { backgroundColor: '#C23A8A' }]}
+          style={[styles.iconContainer, SlotID === 2 && { backgroundColor: '#2e3192' }]}
           onPress={() => setSlotID(2)}
         >
           <Image source={moon} style={{ width: 50, height: 50 }} />
@@ -101,14 +101,14 @@ const EditMeeting = ({ route }) => {
       <TouchableOpacity onPress={toggleCalendar}>
         <View style={styles.section}>
           <Text style={styles.label}>{selectedDate ? selectedDate : date}</Text>
-          <Icon name="calendar" size={30} color="#C23A8A" />
+          <Icon name="calendar" size={30} color="#2e3192" />
         </View>
       </TouchableOpacity>
       {showCalendar && (
         <Calendar
           onDayPress={onDaySelect}
           markedDates={{
-            [selectedDate]: { selected: true, marked: true, selectedColor: '#C23A8A' },
+            [selectedDate]: { selected: true, marked: true, selectedColor: '#2e3192' },
           }}
         />
       )}
@@ -119,7 +119,7 @@ const EditMeeting = ({ route }) => {
               ? dates.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               : time}
           </Text>
-          <Icon name="clock-o" size={30} color="#C23A8A" />
+          <Icon name="clock-o" size={30} color="#2e3192" />
         </View>
       </TouchableOpacity>
       <DatePicker
@@ -135,7 +135,7 @@ const EditMeeting = ({ route }) => {
       />
       <View style={styles.section}>
         <Text style={styles.label}>{location}</Text>
-        <Icon name="map-marker" size={30} color="#C23A8A" />
+        <Icon name="map-marker" size={30} color="#2e3192" />
       </View>
       <TouchableOpacity style={styles.button} onPress={updateMeeting}>
         <Text style={styles.buttonText}>Update Meeting</Text>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    color: '#C23A8A',
+    color: '#2e3192',
     fontWeight: 'bold',
     marginBottom: 20,
   },
@@ -196,10 +196,10 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    color: '#C23A8A',
+    color: '#2e3192',
   },
   button: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 20,
     borderRadius: 10,
     alignItems: 'center',
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: '#C23A8A',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

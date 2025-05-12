@@ -140,16 +140,16 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
           onChangeText={setSearchQuery}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
 
       {/* Loading or Members List */}
       {loading ? (
-        <ActivityIndicator size="large" color="#A3238F" style={styles.loader} />
+        <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
       ) : (
         <>
           {/* Error Handling */}
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: '#FFFFFF',
     position: 'relative',
-    color: '#A3238F',
+    color: '#2e3192',
     borderRadius: 10,
     margin: 10,
     marginHorizontal: width * 0.1, // Use width as percentage
@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
     borderRadius: 19,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
   },
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   errorContainer: {
     alignItems: 'center',
@@ -312,7 +312,7 @@ export default HeadAdminNewSubscribers;
 //     padding: 0,
 //     backgroundColor: '#FFFFFF',
 //     position: 'relative',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     borderRadius: 10,
 //     margin: 10,
 //     marginHorizontal: width * 0.1, // Use width as percentage
@@ -357,7 +357,7 @@ export default HeadAdminNewSubscribers;
 //     width: width * 0.12, // Relative width
 //     height: width * 0.12, // Same height for circular shape
 //     borderRadius: width * 0.06, // Half of the width
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     justifyContent: 'center',
 //     alignItems: 'center',
 //     marginRight: 10,
@@ -373,7 +373,7 @@ export default HeadAdminNewSubscribers;
 //   memberName: {
 //     fontSize: width * 0.045, // Scalable font size
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 
 //    // Member Count
@@ -384,14 +384,14 @@ export default HeadAdminNewSubscribers;
 //     alignItems: 'center',
 //     borderRadius: 20,
 //     borderWidth: 2,
-//     borderColor: '#A3238F',
+//     borderColor: '#2e3192',
 //     left: width * 0.6, // Relative positioning
 //     top: height * 0.8, // Relative positioning
 //   },
 //   memberCountText: {
 //     fontSize: width * 0.04, // Scalable font size
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   loader: {
 //     flex: 1,

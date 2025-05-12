@@ -19,7 +19,7 @@
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
-        <Icon name="ellipsis-h" size={20} color="#a3238f" />
+        <Icon name="ellipsis-h" size={20} color="#2e3192" />
       </TouchableOpacity>
     </View>
 

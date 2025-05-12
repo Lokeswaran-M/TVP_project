@@ -53,7 +53,7 @@
 //     marginBottom: 20,
 //   },
 //   downloadButton: {
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 10,
 //     borderRadius: 5,
 //   },

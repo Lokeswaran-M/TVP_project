@@ -180,8 +180,8 @@ const EditProfile = () => {
             style={styles.exitButton}
             onPress={() => navigation.goBack()}
           >
-            <FontAwesome name="times" size={20} color="#C23A8A" />
-            <Text style={[styles.buttonText, { color: '#C23A8A' }]}> Exit</Text>
+            <FontAwesome name="times" size={20} color="#2e3192" />
+            <Text style={[styles.buttonText, { color: '#2e3192' }]}> Exit</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#C23A8A',
+    color: '#2e3192',
     fontWeight: 'bold',
   },
   input: {
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     flexDirection: 'row',
-    backgroundColor: '#C23A8A',
+    backgroundColor: '#2e3192',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 30,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   },
   exitButton: {
     flexDirection: 'row',
-    borderColor: '#C23A8A',
+    borderColor: '#2e3192',
     borderWidth: 1,
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalButton: {
-    backgroundColor: '#C23A8A',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -500,8 +500,8 @@ export default EditProfile;
 //           style={styles.exitButton} 
 //           onPress={() => navigation.goBack()}
 //         >
-//           <FontAwesome name="times" size={20} color="#C23A8A" />
-//           <Text style={[styles.buttonText, { color: '#C23A8A' }]}> Exit</Text>
+//           <FontAwesome name="times" size={20} color="#2e3192" />
+//           <Text style={[styles.buttonText, { color: '#2e3192' }]}> Exit</Text>
 //         </TouchableOpacity>
 //       </View>
 //     </ScrollView>
@@ -521,7 +521,7 @@ export default EditProfile;
 //   },
 //   label: {
 //     fontSize: 14,
-//     color: '#C23A8A',
+//     color: '#2e3192',
 //     fontWeight: 'bold',
 //   },
 //   input: {
@@ -548,7 +548,7 @@ export default EditProfile;
 //   },
 //   saveButton: {
 //     flexDirection: 'row',
-//     backgroundColor: '#C23A8A',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 12,
 //     paddingHorizontal: 20,
 //     borderRadius: 30,
@@ -556,7 +556,7 @@ export default EditProfile;
 //   },
 //   exitButton: {
 //     flexDirection: 'row',
-//     borderColor: '#C23A8A',
+//     borderColor: '#2e3192',
 //     borderWidth: 1,
 //     paddingVertical: 12,
 //     paddingHorizontal: 20,

@@ -170,7 +170,7 @@ const StopWatch = ({ route, navigation }) => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <MaterialIcons name='alarm' size={88} color='#A3238F' />
+                        <MaterialIcons name='alarm' size={88} color='#2e3192' />
                         <Text style={styles.modalText}>Time's up!!!</Text>
                         <TouchableOpacity
                             style={styles.modalButton}
@@ -200,7 +200,7 @@ const StopWatch = ({ route, navigation }) => {
                                     <MaterialIcons
                                         name={index < rating ? 'star' : 'star-border'}
                                         size={40}
-                                        color={index < rating ? '#FFD700' : '#A3238F'}
+                                        color={index < rating ? '#FFD700' : '#2e3192'}
                                     />
                                 </TouchableOpacity>
                             ))}
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     button: {
-        backgroundColor: '#A3238F',
+        backgroundColor: '#2e3192',
         paddingVertical: 10,
         paddingHorizontal: 25,
         borderRadius: 25,
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
         marginBottom:20,
     },
     modalButton: {
-        backgroundColor: '#A3238F',
+        backgroundColor: '#2e3192',
         paddingVertical: 10,
         paddingHorizontal: 25,
         borderRadius: 25,
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     memberName: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#A3238F',
+        color: '#2e3192',
     },
     memberRole: {
         fontSize: 18,

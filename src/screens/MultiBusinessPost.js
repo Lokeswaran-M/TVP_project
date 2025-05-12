@@ -69,9 +69,9 @@ export default function TabViewExample({ navigation }) {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
+      indicatorStyle={{ backgroundColor: '#2e3192' }}
       style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
+      activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}
     />

@@ -76,7 +76,7 @@ const TabNavigator = () => {
             </Animated.View>
           );
         },
-        tabBarActiveTintColor: '#a3238f',
+        tabBarActiveTintColor: '#2e3192',
         tabBarInactiveTintColor: 'black',
         tabBarStyle: { backgroundColor: '#fff' },
       })}

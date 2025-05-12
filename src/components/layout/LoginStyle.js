@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.05, 
     fontWeight: 'bold',
     marginBottom: height * 0.035,
-    color: '#a3238f',
+    color: '#2e3192',
     textAlign:'center',
   },
   inputContainer: {
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: height * 0.07, 
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   forgotPassword: {
-    color: '#a3238f',
+    color: '#2e3192',
     marginTop: height * 0.02, 
     fontSize: width * 0.035, 
     paddingBottom:20,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   signUpText: {
  
-    color: '#a3238f',
+    color: '#2e3192',
     fontWeight: 'bold',
   },
   appVersion:{

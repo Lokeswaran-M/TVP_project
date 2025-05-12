@@ -215,47 +215,17 @@ const AdminPage = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.containermain}>
-        <View style={styles.cardimg}>
+        {/* <View style={styles.cardimg}>
           <Image source={require('../../assets/images/Homepage_BMW.jpg')} style={styles.image} />
-        </View>
+        </View> */}
 
-        <View style={styles.buttonContainer}>
-          <View style={styles.leftButtons}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
-              <Icon name="users" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Members</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLocationstack')}>
-              <Feather name="map-pin" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Locations</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminProfessionstack')}>
-              <MaterialIcons name="business-center" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Profession</Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.rightButtons}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminNewSubscribers')}>
-              <Feather name="users" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>New Sub</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
-              <Icon name="money" size={20} color="white" style={styles.icon} />
-              <Text style={styles.buttonText}>Payments</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPostPage')}>
-            <Ionicons name="chatbubble-ellipses" size={20} color="white" />
-              <Text style={styles.buttonText}>Post</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
         {/* Requirements Section */}
         <View style={styles.cards}>
           <View style={styles.header}>
             <Text style={styles.headerText}>Requirements</Text>
             <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-              <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+              <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#fff" style={styles.arrowIcon} />
             </TouchableOpacity>
           </View>
           <View><Text style={styles.line}></Text></View>
@@ -272,7 +242,9 @@ const AdminPage = () => {
                   <Text style={styles.profileName}>{requirement.Username}</Text>
                   <Text style={styles.requirementText}>{requirement.Description}</Text>
                 </View>
+              
               </View>
+              
             ))
           ) : (
             <View style={styles.noMeetupCard}>
@@ -286,7 +258,7 @@ const AdminPage = () => {
           <View style={styles.header}>
             <Text style={styles.headerText}>Reviews</Text>
             <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-              <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+              <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#fff" style={styles.arrowIcon} />
             </TouchableOpacity>
           </View>
           <View><Text style={styles.line}></Text></View>
@@ -345,7 +317,37 @@ const AdminPage = () => {
     ))}
   </Picker>
 </View> */}
+<View style={styles.buttonContainer}>
+          <View style={styles.leftButtons}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
+              <Icon name="users" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Members</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLocationstack')}>
+              <Feather name="map-pin" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Locations</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminProfessionstack')}>
+              <MaterialIcons name="business-center" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Profession</Text>
+            </TouchableOpacity>
+          </View>
 
+          <View style={styles.rightButtons}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminNewSubscribers')}>
+              <Feather name="users" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>New Sub</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
+              <Icon name="money" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Payments</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPostPage')}>
+            <Ionicons name="chatbubble-ellipses" size={20} color="#2e3192" />
+              <Text style={styles.buttonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.topcards}>
 
           <View style={styles.dropdownContainer}>
@@ -365,7 +367,7 @@ const AdminPage = () => {
             </Picker>
 
 
-            <Picker
+            {/* <Picker
               selectedValue={selectedSlot}
               onValueChange={(itemValue) => {
                 setSelectedSlot(itemValue); // Update slot
@@ -377,7 +379,7 @@ const AdminPage = () => {
               {slots.map((slot) => (
                 <Picker.Item key={slot.Id} label={slot.Slots} value={slot.Id} />
               ))}
-            </Picker>
+            </Picker> */}
           </View>
 
           <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
@@ -432,21 +434,23 @@ const styles = StyleSheet.create({
   },
 
   topcards: {
-    backgroundColor: '#fff',
+    // backgroundColor: 'rgba(216, 217, 248, 0.2)',
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 5,
+    // elevation: 3,
     width: '90%',
+    borderWidth:2,
+    borderColor:'#2e3192',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -455,23 +459,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   addButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     paddingHorizontal: 40,
     borderRadius: 15,
     marginBottom: 20,
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+  // buttonText: {
+  //   color: '#fff',
+  //   fontWeight: 'bold',
+  //   textAlign: 'center',
+  // },
   disabledButton: {
-    backgroundColor: '#B0B0B0',
-    opacity: 0.6,
+    backgroundColor:'rgb(116, 134, 190)',
   },
   disabledButtonText: {
-    color: '#666',
+    color: '#fff',
   },
   usernameText: {
 
@@ -492,12 +495,12 @@ const styles = StyleSheet.create({
   },
   tableHeaderText: {
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   container1: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#F3ECF3',
+    backgroundColor: '#e4e5fd',
     margin: 8,
     borderRadius: 10,
   },
@@ -513,15 +516,15 @@ const styles = StyleSheet.create({
   rankText: {
     marginRight: 10,
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   nameText: {
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   amountText: {
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
     textAlign: 'right',
     width: 100,
   },
@@ -540,18 +543,18 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: '48%',
+    width: '100%',
     backgroundColor: '#fff',
     borderRadius: 15,
     marginBottom: 20,
     paddingLeft: 10, 
-    color: '#A3238F',
+    color: '#2e3192',
     
   },
   containermain: {
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#ccc',
+    backgroundColor:'#FFF',
   },
   cards: {
     width: '90%',
@@ -561,7 +564,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor:'#2e3192',
     padding: 10,
     borderRadius: 10,
   },
@@ -574,14 +577,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#FFF',
   },
   arrowIcon: {
     marginLeft: 10,
   },
   addButton: {
     flexDirection: 'row',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
@@ -604,12 +607,12 @@ const styles = StyleSheet.create({
   line: {
     marginVertical: 15,
     width: '100%',
-    height: 2,
-    backgroundColor: '#A3238F',
+    height: 1,
+    backgroundColor: '#2e3192',
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor:'rgba(240, 244, 255, 0.93)',
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -631,7 +634,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#a3238f',
+    color: '#2e3192',
     fontWeight: 'bold',
   },
   requirementSection: {
@@ -644,18 +647,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   acknowledgeButton: {
-    backgroundColor: '#A3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  disabledButton: {
-    backgroundColor: '#bbb',
-  },
   buttonText1: {
     color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   noMeetupCard: {
     padding: 20,
@@ -681,7 +683,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     borderRadius: 8,
     width: '90%',
-    backgroundColor: '#fff',
+    backgroundColor: '#rgb(220, 228, 250)',
     padding: 10,
     marginTop: 15,
     marginBottom: 10,
@@ -695,7 +697,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#FFFFFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -708,7 +710,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   buttonText: {
-    color: 'white',
+    color: '#2e3192',
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
@@ -724,7 +726,7 @@ const styles = StyleSheet.create({
   },
 
   cardimg: {
-    backgroundColor: '#F6EDF7',
+    backgroundColor: '#rgba(240, 244, 255, 0.93)',
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000',

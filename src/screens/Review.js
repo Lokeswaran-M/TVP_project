@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pickerContainer: {
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderWidth: 1,
     borderRadius: 10,
     marginBottom: 15,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 10,
   },
   buttonContainer: {
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 14,
     paddingHorizontal: 12,
     borderRadius: 25,
@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 10,
   },
   textInput1: {
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 100,
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 12,
     borderRadius: 30,
     shadowColor: '#000',
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   backButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 25,
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 18,
-    color: '#a3238f',
+    color: '#2e3192',
  marginVertical:20,
     fontWeight:'700'
   },
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
 
   },
   modalButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
   },
@@ -678,7 +678,7 @@ export default Review;
 //     elevation: 3,
 //   },
 //   pickerContainer: {
-//     borderColor: '#a3238f',
+//     borderColor: '#2e3192',
 //     borderWidth: 1,
 //     borderRadius: 10,
 //     marginBottom: 15,
@@ -690,7 +690,7 @@ export default Review;
 //   },
 //   title: {
 //     fontSize: 20,
-//     color: '#a3238f',
+//     color: '#2e3192',
 //     marginBottom: 10,
 //   },
 //   buttonContainer: {
@@ -699,7 +699,7 @@ export default Review;
 //     marginBottom: 20,
 //   },
 //   button: {
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 14,
 //     paddingHorizontal: 12,
 //     borderRadius: 25,
@@ -715,11 +715,11 @@ export default Review;
 //   },
 //   label: {
 //     fontSize: 20,
-//     color: '#a3238f',
+//     color: '#2e3192',
 //     marginBottom: 10,
 //   },
 //   textInput1: {
-//     borderColor: '#a3238f',
+//     borderColor: '#2e3192',
 //     borderWidth: 1,
 //     borderRadius: 8,
 //     padding: 10,
@@ -727,7 +727,7 @@ export default Review;
 //   },
 //   textInput: {
 //     height: 100,
-//     borderColor: '#a3238f',
+//     borderColor: '#2e3192',
 //     borderWidth: 1,
 //     borderRadius: 8,
 //     padding: 10,
@@ -745,7 +745,7 @@ export default Review;
 //   submitButton: {
 //     flexDirection: 'row',
 //     alignItems: 'center',
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 12,
 //     borderRadius: 30,
 //     shadowColor: '#000',
@@ -755,7 +755,7 @@ export default Review;
 //     elevation: 3,
 //   },
 //   backButton: {
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 15,
 //     paddingHorizontal: 20,
 //     borderRadius: 25,

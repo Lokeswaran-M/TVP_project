@@ -139,16 +139,16 @@ const HeadAdminPaymentsPage = ({ navigation }) => {
           onChangeText={setSearchQuery}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
 
       {/* Loading or Members List */}
       {loading ? (
-        <ActivityIndicator size="large" color="#A3238F" style={styles.loader} />
+        <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
       ) : (
         <>
           {/* Error Handling */}
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 0,
     backgroundColor: '#FFFFFF',
     position: 'relative',
-    color: '#A3238F',
+    color: '#2e3192',
     borderRadius: 10,
     margin: 10,
     marginHorizontal: width * 0.1, // Use width as percentage
@@ -260,13 +260,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
     borderRadius: 19,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
   },
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   errorContainer: {
     alignItems: 'center',

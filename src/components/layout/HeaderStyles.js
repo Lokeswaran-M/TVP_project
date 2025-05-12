@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
   buttonNavtop: {
     borderRadius: 25,
     alignItems: 'center',
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
     flexDirection: 'row',
   },
   topNavlogo: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 4,
     borderRadius: 50,
     justifyContent: 'center',

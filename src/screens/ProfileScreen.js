@@ -89,7 +89,7 @@ const Profile = () => {
       <View style={styles.container}>
         <View style={styles.topSection}>
           {loading ? (
-            <ActivityIndicator size="large" color="#C23A8A" />
+            <ActivityIndicator size="large" color="#2e3192" />
           ) : (
             <View style={styles.imageWrapper}>
               <Image
@@ -113,7 +113,7 @@ const Profile = () => {
       </Text>
         </View>
         {loading ? (
-          <ActivityIndicator size="large" color="#C23A8A" />
+          <ActivityIndicator size="large" color="#2e3192" />
         ) : (
           <View style={styles.detailsSection}>
             {categoryID === 2 ? (
@@ -125,7 +125,7 @@ const Profile = () => {
     style={styles.editButton} 
     onPress={() => navigation.navigate('EditProfile', { profession: multiProfile?.businessInfo?.Profession })}
   >
-    <FontAwesome name="edit" size={15} color="#C23A8A" />
+    <FontAwesome name="edit" size={15} color="#2e3192" />
     <Text style={styles.editText}>Edit Profile</Text>
   </TouchableOpacity>
 </View>
@@ -153,7 +153,7 @@ const Profile = () => {
                 style={styles.editButton} 
                 onPress={() => navigation.navigate('EditProfile', { profession: profileData?.businessInfo?.Profession })}
               >
-                <FontAwesome name="edit" size={15} color="#C23A8A" />
+                <FontAwesome name="edit" size={15} color="#2e3192" />
                 <Text style={styles.editText}>Edit Profile</Text>
               </TouchableOpacity>
             </View>

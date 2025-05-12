@@ -192,11 +192,11 @@ const Sidebar = ({ visible, onClose, onLogout, profileData, username }) => (
       </View>
       <View style={styles.sidebarContainer}>
         <TouchableOpacity style={styles.sidebarItem} onPress={onLogout}>
-          <MaterialIcons name="logout" size={20} color="#A3238F" />
+          <MaterialIcons name="logout" size={20} color="#2e3192" />
           <Text style={styles.sidebarItemText}>LOGOUT</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.sidebarItem} onPress={onClose}>
-          <MaterialIcons name="arrow-back" size={20} color="#A3238F" />
+          <MaterialIcons name="arrow-back" size={20} color="#2e3192" />
           <Text style={styles.sidebarItemText}>BACK</Text>
         </TouchableOpacity>
       </View>
@@ -233,17 +233,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent:"center",
     marginLeft: 60,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
     borderRadius: 25,
   },
   topNavlogo: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 5,
     borderRadius: 50,
   },
   NavbuttonText: {
-    color: '#A3238F',
+    color: '#2e3192',
     fontSize: 15,
     fontWeight: 'bold',
     margin: 7,
@@ -279,11 +279,11 @@ const styles = StyleSheet.create({
 
     marginBottom: 4,
     marginTop: 50,
-    borderColor:'#A3238F',
+    borderColor:'#2e3192',
   },
   sidebarItemText1: {
     fontSize: 20,
-    color: '#A3238F',
+    color: '#2e3192',
     textAlign: 'center',
     paddingTop: 10,
     fontWeight: 'bold',
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   sidebarItemText: {
     fontSize: 14,
     paddingLeft: 10,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
   },
   modalOverlay: {
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   modalButton: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 25,
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
   },
   animatedButtonContainer: {
     flex:1,
-    shadowColor: '#A3238F', // Purple glow effect
+    shadowColor: '#2e3192', // Purple glow effect
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 20,
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 20,
     borderRadius: 50, // Circular button
     borderWidth: 5,

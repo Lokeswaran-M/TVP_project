@@ -140,7 +140,7 @@ const SubstituteLogin = () => {
             <Text style={styles.label}>Substitute Username: </Text>
             <View style={styles.inputContainer}>
               <TextInput style={styles.value} value={userDetails.S_User} editable={false} />
-              <Icon name="user" size={20} color="#A3238F" style={styles.iconInside} />
+              <Icon name="user" size={20} color="#2e3192" style={styles.iconInside} />
             </View>
             <Text style={styles.label}>Substitute Password: </Text>
             <View style={styles.inputContainer}>
@@ -150,7 +150,7 @@ const SubstituteLogin = () => {
                 editable={false}
                 secureTextEntry={true}
               />
-              <Icon name="lock" size={20} color="#A3238F" style={styles.iconInside} />
+              <Icon name="lock" size={20} color="#2e3192" style={styles.iconInside} />
             </View>
             <TouchableOpacity onPress={handleChangePassword}>
               <Text style={styles.forgotPassword}>Change Password?</Text>
@@ -166,7 +166,7 @@ const SubstituteLogin = () => {
                 onChangeText={setUsername}
                 keyboardType="default"
               />
-              <Icon name="user" size={20} color="#A3238F" style={styles.icon} />
+              <Icon name="user" size={20} color="#2e3192" style={styles.icon} />
             </View>
             {usernameError ? <Text style={styles.errorMessage}>{usernameError}</Text> : null}
             <View style={styles.inputContainer}>
@@ -178,7 +178,7 @@ const SubstituteLogin = () => {
                 keyboardType="default"
               />
               <TouchableOpacity onPress={togglePasswordVisibility} style={styles.icon}>
-                <Icon name={passwordVisible ? 'eye' : 'eye-slash'} size={20} color="#A3238F" />
+                <Icon name={passwordVisible ? 'eye' : 'eye-slash'} size={20} color="#2e3192" />
               </TouchableOpacity>
             </View>
 
@@ -191,7 +191,7 @@ const SubstituteLogin = () => {
                 keyboardType="default"
               />
               <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.icon}>
-                <Icon name={passwordVisible1 ? 'eye' : 'eye-slash'} size={20} color="#A3238F" />
+                <Icon name={passwordVisible1 ? 'eye' : 'eye-slash'} size={20} color="#2e3192" />
               </TouchableOpacity>
             </View>
 
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     label: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: '#A3238F',
+      color: '#2e3192',
       marginBottom: 5,
     },
     value: {
@@ -240,11 +240,11 @@ const styles = StyleSheet.create({
       color: '#555',
       marginBottom: 10,
       borderBottomWidth: 1,
-      borderBottomColor: '#A3238F',
+      borderBottomColor: '#2e3192',
     },    
   Blabel: {
     fontSize: 28, 
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: 'bold',
     paddingBottom: 40,
     textAlign: 'center',
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: 30,
-    color: '#A3238F',
+    color: '#2e3192',
   },
   iconInside: {
     position: 'absolute',
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -10 }],
   },
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   forgotPassword: {
-    color: '#a3238f',
+    color: '#2e3192',
     marginTop: height * 0.02, 
     fontSize: width * 0.035, 
     paddingBottom:20,

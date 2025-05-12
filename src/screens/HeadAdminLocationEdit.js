@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   locationName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   placeDetailsContainer: {
     paddingHorizontal: 20,
@@ -135,17 +135,17 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
     width: '100%',
-    color: '#A3238F',
+    color: '#2e3192',
     fontSize: 17,
     fontWeight: 'bold',
   },
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   modalButton: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

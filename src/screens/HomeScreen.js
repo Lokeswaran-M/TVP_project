@@ -380,12 +380,12 @@ console.log("Chapter Type (Slots) value:", slots);
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View style={styles.card}>
+        {/* <View style={styles.card}>
           <Image
             source={require('../../assets/images/Homepage_BMW.jpg')}
             style={styles.image}
           />
-        </View>
+        </View> */}
         <View style={styles.cards}>
       <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
       <View style={styles.home}>
@@ -443,7 +443,7 @@ console.log("Chapter Type (Slots) value:", slots);
       <View style={styles.dashboardContainer}>
         <Text style={styles.dashboardTitle}>Dashboard</Text>
         <TouchableOpacity onPress={() => setShowAllEvents(!showAllEvents)}>
-          <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+          <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
         </TouchableOpacity>
       </View>
 
@@ -561,7 +561,7 @@ console.log("Chapter Type (Slots) value:", slots);
             <Icon
               name={showAllRequirements ? "angle-up" : "angle-down"}
               size={24}
-              color="#a3238f"
+              color="#2e3192"
               style={styles.arrowIcon}
             />
           </TouchableOpacity>
@@ -661,7 +661,7 @@ console.log("Chapter Type (Slots) value:", slots);
         <View style={styles.headerRow}>
           <Text style={styles.headerText}>Reviews</Text>
           <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-            <Icon name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+            <Icon name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
           </TouchableOpacity>
         </View>
         <TouchableOpacity
@@ -797,9 +797,9 @@ export default function TabViewExample({ navigation }) {
   const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: '#A3238F' }}
-      style={{ backgroundColor: '#F3ECF3' }}
-      activeColor="#A3238F"
+      indicatorStyle={{ backgroundColor: '#2e3192' }}
+      style={{ backgroundColor: '#rgb(220, 228, 250)' }}
+      activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}
     />
@@ -1289,7 +1289,7 @@ export default function TabViewExample({ navigation }) {
 //         <View style={styles.dashboardContainer}>
 //   <Text style={styles.dashboardTitle}>Dashboard</Text>
 //   <TouchableOpacity onPress={() => setShowAllEvents(!showAllEvents)}>
-//     <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+//     <Icon name={showAllEvents ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
 //   </TouchableOpacity>
 // </View>
 // {eventData.length > 0 ? (
@@ -1371,7 +1371,7 @@ export default function TabViewExample({ navigation }) {
 //         <View style={styles.headerRow}>
 //   <Text style={styles.headerText}>Requirements</Text>
 //   <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-//     <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+//     <Icon name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
 //   </TouchableOpacity>
 // </View>
 //   <TouchableOpacity
@@ -1451,7 +1451,7 @@ export default function TabViewExample({ navigation }) {
 //         <View style={styles.headerRow}>
 //           <Text style={styles.headerText}>Reviews</Text>
 //           <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-//             <Icon name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+//             <Icon name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
 //           </TouchableOpacity>
 //         </View>
 //         <TouchableOpacity
@@ -1578,9 +1578,9 @@ export default function TabViewExample({ navigation }) {
 //   const renderTabBar = (props) => (
 //     <TabBar
 //       {...props}
-//       indicatorStyle={{ backgroundColor: '#A3238F' }}
+//       indicatorStyle={{ backgroundColor: '#2e3192' }}
 //       style={{ backgroundColor: '#F3ECF3' }}
-//       activeColor="#A3238F"
+//       activeColor="#2e3192"
 //       inactiveColor="gray"
 //       labelStyle={{ fontSize: 14 }}
 //     />

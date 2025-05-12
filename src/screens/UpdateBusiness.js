@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
   },
   selectList: {
     borderWidth: 2,
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderRadius: 10,
     overflow: 'hidden',
     marginVertical: 10,
@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   registerButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 55,
     borderWidth: 2,
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderRadius: 10,
     paddingHorizontal: 20,
     overflow: 'hidden',
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   inputSearchStyle: {
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderRadius: 8,
     height: 40,
     color: 'black',
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   updateButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',

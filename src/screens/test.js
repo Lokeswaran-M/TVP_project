@@ -301,14 +301,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   arrowIcon: {
     marginLeft: 10,
   },
   addButton: {
     flexDirection: 'row',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     width: '100%', 
     height: 2, 
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
   },
   card: {
     flexDirection: 'row',
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#a3238f',
+    color: '#2e3192',
     fontWeight:'bold',
   },
   requirementSection: {
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   acknowledgeButton: {
-    backgroundColor: '#A3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 10,
   },
   home: {
@@ -492,13 +492,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   addButton1: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
   },
   addButton2: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   },
   tableHeaderText: {
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   container1: {
     marginTop: 10,
@@ -768,7 +768,7 @@ const AdminPage = () => {
             <View style={styles.headerRow}>
               <Text style={styles.headerText}>Requirements</Text>
               <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+                <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
               </TouchableOpacity>
             </View>
           </View>
@@ -863,14 +863,14 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   arrowIcon: {
     marginLeft: 10,
   },
   addButton: {
     flexDirection: 'row',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
@@ -894,7 +894,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     width: '100%', 
     height: 2, 
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
   },
   card: {
     flexDirection: 'row',
@@ -920,7 +920,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#a3238f',
+    color: '#2e3192',
     fontWeight:'bold',
   },
   requirementSection: {
@@ -933,7 +933,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   acknowledgeButton: {
-    backgroundColor: '#A3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
@@ -984,7 +984,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   button: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -1176,7 +1176,7 @@ export default AdminPage;
 //     <View style={styles.headerRow}>
 //       <Text style={styles.headerText}>Requirements</Text>
 //       <TouchableOpacity onPress={() => setShowAllRequirements(!showAllRequirements)}>
-//         <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+//         <Icons name={showAllRequirements ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
 //       </TouchableOpacity>
 //     </View>
 //   </View>
@@ -1213,7 +1213,7 @@ export default AdminPage;
 //     <View style={styles.headerRow}>
 //       <Text style={styles.headerText}>Reviews</Text>
 //       <TouchableOpacity onPress={() => setShowAllReviews(!showAllReviews)}>
-//         <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#a3238f" style={styles.arrowIcon} />
+//         <Icons name={showAllReviews ? "angle-up" : "angle-down"} size={24} color="#2e3192" style={styles.arrowIcon} />
 //       </TouchableOpacity>
 //     </View>
 //   </View>
@@ -1283,14 +1283,14 @@ export default AdminPage;
 //   headerText: {
 //     fontSize: 18,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   arrowIcon: {
 //     marginLeft: 10,
 //   },
 //   addButton: {
 //     flexDirection: 'row',
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 10,
 //     paddingHorizontal: 15,
 //     borderRadius: 30,
@@ -1314,7 +1314,7 @@ export default AdminPage;
 //     marginVertical: 15,
 //     width: '100%', 
 //     height: 2, 
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //   },
 //   card: {
 //     flexDirection: 'row',
@@ -1340,7 +1340,7 @@ export default AdminPage;
 //   profileName: {
 //     fontSize: 16,
 //     marginLeft: 10,
-//     color: '#a3238f',
+//     color: '#2e3192',
 //     fontWeight:'bold',
 //   },
 //   requirementSection: {
@@ -1353,7 +1353,7 @@ export default AdminPage;
 //     marginBottom: 5,
 //   },
 //   acknowledgeButton: {
-//     backgroundColor: '#A3238f',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 5,
 //     paddingHorizontal: 10,
 //     borderRadius: 5,
@@ -1404,7 +1404,7 @@ export default AdminPage;
 //     justifyContent: 'space-around',
 //   },
 //   button: {
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     paddingVertical: 15,
 //     paddingHorizontal: 20,
 //     borderRadius: 8,
@@ -1599,7 +1599,7 @@ const styles = StyleSheet.create({
       fontSize: 18,
       fontWeight: 'bold',
       marginBottom: 5,
-      color: '#a3238f',
+      color: '#2e3192',
     },
     arrowIcon: {
       marginLeft: 10,
@@ -1666,7 +1666,7 @@ const styles = StyleSheet.create({
       opacity: 0.6,
     },
     buttonText: {
-      color: '#a3238f',
+      color: '#2e3192',
       marginLeft: 5,
       fontSize: 14,
     },
@@ -1745,10 +1745,10 @@ const styles = StyleSheet.create({
       headerText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#a3238f',
+        color: '#2e3192',
       },
       addButton: {
-        backgroundColor: '#a3238f',
+        backgroundColor: '#2e3192',
         paddingVertical: 8,
         paddingHorizontal: 15,
         borderRadius: 20,
@@ -1775,7 +1775,7 @@ const styles = StyleSheet.create({
       profileName: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#a3238f',
+        color: '#2e3192',
       },
       requirementSection: {
         backgroundColor: '#fff',
@@ -1789,14 +1789,14 @@ const styles = StyleSheet.create({
       },
       requirementText: {
         fontSize: 14,
-        color: '#a3238f',
+        color: '#2e3192',
         lineHeight: 22,
       },
       acknowledgeButton: {
         position: 'absolute',
         top: -50,
         right: 0,
-        backgroundColor: '#a3238f',
+        backgroundColor: '#2e3192',
         paddingVertical: 5,
         paddingHorizontal: 15,
         borderRadius: 20,
@@ -1842,7 +1842,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       marginBottom: 10,
       alignContent: 'center',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     buttonContainer: {
       flexDirection: 'row',  
@@ -1854,14 +1854,14 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
     },
     addButton1: {
-      backgroundColor: '#a3238f',
+      backgroundColor: '#2e3192',
       padding: 10,
       paddingHorizontal: 40,
       borderRadius: 5,
       marginBottom: 20,
     },
     addButton2: {
-      backgroundColor: '#a3238f',
+      backgroundColor: '#2e3192',
       padding: 10,
       borderRadius: 5,
       marginBottom: 20,
@@ -1888,7 +1888,7 @@ const styles = StyleSheet.create({
     },
     tableHeaderText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     tableRow: {
       flexDirection: 'row',
@@ -1924,15 +1924,15 @@ const styles = StyleSheet.create({
     rankText: {
       marginRight: 10,
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     nameText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
     },
     amountText: {
       fontWeight: 'bold',
-      color: '#a3238f',
+      color: '#2e3192',
       textAlign: 'right', 
       width: 100,
     },
@@ -2030,7 +2030,7 @@ const styles = StyleSheet.create({
 //   padding: 8,
 // },
 // topText: {
-//   color: '#A3238F',
+//   color: '#2e3192',
 //   fontSize: 15,
 //   fontWeight: 'bold',
 // },
@@ -2058,7 +2058,7 @@ const styles = StyleSheet.create({
 //   paddingLeft: 10,
 // },
 // innerTextcon1: {
-//   color: '#A3238F',
+//   color: '#2e3192',
 //   fontSize: 15,
 //   height: 85,
 //   width: '93.5%',
@@ -2102,13 +2102,13 @@ const styles = StyleSheet.create({
 //   marginTop: 15,
 // },
 // profileName1: {
-//   color: '#A3238F',
+//   color: '#2e3192',
 //   fontSize: 15,
 //   fontWeight: 'bold',
 // },
 // profileName2: {
 //   position: 'absolute',
-//   color: '#A3238F',
+//   color: '#2e3192',
 //   fontSize: 15,
 //   marginLeft: 10,
 //   paddingTop: 2,
@@ -2132,7 +2132,7 @@ const styles = StyleSheet.create({
 //   justifyContent: 'space-around',
 // },
 // button: {
-//   backgroundColor: '#A3238F',
+//   backgroundColor: '#2e3192',
 //   paddingVertical: 15,
 //   paddingHorizontal: 20,
 //   borderRadius: 8,
@@ -2174,7 +2174,7 @@ const styles = StyleSheet.create({
 //   marginLeft: 10,
 // },    
 // addButton: {
-//   backgroundColor: '#a3238f',
+//   backgroundColor: '#2e3192',
 //   paddingVertical: 8,
 //   paddingHorizontal: 15,
 //   borderRadius: 20,
@@ -2434,7 +2434,7 @@ const styles = StyleSheet.create({
 //       </View>
 //       <View style={styles.alarmContainer}>
 //         <TouchableOpacity onPress={openCamera}>
-//           <Icon name="camera" size={24} color="#A3238F" />
+//           <Icon name="camera" size={24} color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 //     </TouchableOpacity>
@@ -2454,10 +2454,10 @@ const styles = StyleSheet.create({
 //           value={searchQuery}
 //           onChangeText={setSearchQuery}
 //           placeholderTextColor="black"
-//           color="#A3238F"
+//           color="#2e3192"
 //         />
 //         <View style={styles.searchIconContainer}>
-//           <Icon name="search" size={23} color="#A3238F" />
+//           <Icon name="search" size={23} color="#2e3192" />
 //         </View>
 //       </View>
   

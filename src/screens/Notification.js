@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   body: {
     fontSize: 14,

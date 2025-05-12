@@ -72,21 +72,21 @@ export default StyleSheet.create({
     fontSize: 15,
     paddingRight: 8,
     fontWeight: '500',
-    color: '#A3238F',
+    color: '#2e3192',
 
   },
   profileNameUser: {
     marginLeft: 12,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   profileNameMeet: {
     marginLeft: 12,
     marginRight: 0,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   postImage: {
     width: '100%',
@@ -135,7 +135,7 @@ padding:10,
 margin:5,
   },
   filterButtonText:{
-color:"#A3238F",
+color:"#2e3192",
 fontWeight: '800',
 justifyContent:'center',
 alignItems:'center',

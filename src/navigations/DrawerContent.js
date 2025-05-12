@@ -187,19 +187,19 @@ const CustomDrawerContent = (props) => {
       >
         <View style={styles.modalContent}>
           <TouchableOpacity style={styles.modalButton} onPress={() => handleImagePicker('camera')}>
-            <Icon name="camera" size={20} color="#a3238f" />
+            <Icon name="camera" size={20} color="#2e3192" />
             <Text style={styles.modalButtonText}>Camera</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.modalButton} onPress={() => handleImagePicker('gallery')}>
-            <Icon name="image" size={20} color="#a3238f" />
+            <Icon name="image" size={20} color="#2e3192" />
             <Text style={styles.modalButtonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.modalButton} onPress={handleRemoveProfilePicture}>
-            <Icon name="trash" size={20} color="#a3238f" />
+            <Icon name="trash" size={20} color="#2e3192" />
             <Text style={styles.modalButtonText}>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-            <Icon name="times" size={20} color="#a3238f" />
+            <Icon name="times" size={20} color="#2e3192" />
             <Text style={styles.modalButtonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   profileContainer: {
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     marginTop: -10,
   },
   imageContainer: {
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: -3,
     bottom: 0,
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     borderRadius: 100,
     padding: 15,
   },
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   editText: {
     marginLeft: 5,
     fontSize: 12,
-    color: '#C23A8A',
+    color: '#2e3192',
   },
   professionText: {
     fontSize: 14,
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   modalButtonText: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#a3238f',
+    color: '#2e3192',
   },
   iconContainer: {
     flexDirection: 'row',

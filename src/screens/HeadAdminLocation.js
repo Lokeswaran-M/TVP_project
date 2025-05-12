@@ -111,7 +111,7 @@ const HeadAdminLocation = ({ navigation }) => {
     <View style={styles.locationCon}>
       <View style={styles.locationDetails}>
         <View style={styles.locationIcon}>
-          <Ionicons name="location-outline" size={30} color="#A3238F" />
+          <Ionicons name="location-outline" size={30} color="#2e3192" />
         </View>
         <View style={styles.memberText}>
           <Text style={styles.locationName}>{item.LocationName}</Text>
@@ -122,7 +122,7 @@ const HeadAdminLocation = ({ navigation }) => {
           style={styles.locationIconLeftEye}
           onPress={() => handleViewPress(item)}
         >
-          <Ionicons name="eye-outline" size={28} color="#A3238F" />
+          <Ionicons name="eye-outline" size={28} color="#2e3192" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleViewPress(item)}>
           <Text style={styles.locationIconLeftText}>View</Text>
@@ -131,7 +131,7 @@ const HeadAdminLocation = ({ navigation }) => {
 
       <View style={styles.locationIconLeft}>
         <TouchableOpacity onPress={() => handleMorePress(item)}>
-          <MaterialIcons name="more-vert" size={38} color="#A3238F" />
+          <MaterialIcons name="more-vert" size={38} color="#2e3192" />
         </TouchableOpacity>
         {selectedItem === item.LocationID && (
           <View style={styles.moreOptions}>
@@ -158,10 +158,10 @@ const HeadAdminLocation = ({ navigation }) => {
           placeholderTextColor="black"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          color="#A3238F"
+          color="#2e3192"
         />
         <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#A3238F" />
+          <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
 
@@ -186,7 +186,7 @@ const HeadAdminLocation = ({ navigation }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={fetchLocations}
-              tintColor="#A3238F"
+              tintColor="#2e3192"
             />
           }
         />
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -12 }],
   },
   locationCreateCon: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     height: 65,
     padding: 18,
     borderRadius: 10,
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   locationName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   locationIconLeft: {
     margin: 6,
@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
   },
   locationIconLeftText: {
     fontSize: 13,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: '600',
   },
   LocationList: {
@@ -291,14 +291,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(250, 250, 250, 0.8)',
     padding: 10,
     borderRadius: 20,
-    borderColor: '#A3238F',
+    borderColor: '#2e3192',
     borderWidth: 2,
     zIndex: 1,
   },
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   moreOptions: {
     position: 'absolute',
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     fontSize: 15,
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     width: 70,
     borderWidth: 1,
     borderColor: '#FFFFFF',
@@ -330,7 +330,7 @@ noLocationText: {
 retryButton: {
   marginTop: 20,
   padding: 10,
-  // backgroundColor: '#A3238F',
+  // backgroundColor: '#2e3192',
   borderRadius: 5,
   alignItems: 'center',
 },
@@ -488,7 +488,7 @@ export default HeadAdminLocation;
 //     <View style={styles.locationCon}>
 //       <View style={styles.locationDetails}>
 //         <View style={styles.locationIcon}>
-//           <Ionicons name="location-outline" size={30} color="#A3238F" />
+//           <Ionicons name="location-outline" size={30} color="#2e3192" />
 //         </View>
 //         <View style={styles.memberText}>
 //           <Text style={styles.locationName}>{item.LocationName}</Text>
@@ -499,7 +499,7 @@ export default HeadAdminLocation;
 //           style={styles.locationIconLeftEye}
 //           onPress={() => handleViewPress(item)}
 //         >
-//           <Ionicons name="eye-outline" size={28} color="#A3238F" />
+//           <Ionicons name="eye-outline" size={28} color="#2e3192" />
 //         </TouchableOpacity>
 //         <TouchableOpacity onPress={() => handleViewPress(item)}>
 //           <Text style={styles.locationIconLeftText}>View</Text>
@@ -508,7 +508,7 @@ export default HeadAdminLocation;
 
 //       <View style={styles.locationIconLeft}>
 //         <TouchableOpacity onPress={() => handleMorePress(item)}>
-//           <MaterialIcons name="more-vert" size={38} color="#A3238F" />
+//           <MaterialIcons name="more-vert" size={38} color="#2e3192" />
 //         </TouchableOpacity>
 //         {selectedItem === item.LocationID && (
 //           <View style={styles.moreOptions}>
@@ -533,10 +533,10 @@ export default HeadAdminLocation;
 //           placeholderTextColor="black"
 //           value={searchQuery}
 //           onChangeText={setSearchQuery}
-//           color="#A3238F"
+//           color="#2e3192"
 //         />
 //         <View style={styles.searchIconContainer}>
-//           <Icon name="search" size={23} color="#A3238F" />
+//           <Icon name="search" size={23} color="#2e3192" />
 //         </View>
 //       </View>
 
@@ -561,7 +561,7 @@ export default HeadAdminLocation;
 //             <RefreshControl
 //               refreshing={refreshing}
 //               onRefresh={fetchLocations}
-//               tintColor="#A3238F"
+//               tintColor="#2e3192"
 //             />
 //           }
 //         />
@@ -598,7 +598,7 @@ export default HeadAdminLocation;
 //     transform: [{ translateY: -12 }],
 //   },
 //   locationCreateCon: {
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     height: 65,
 //     padding: 18,
 //     borderRadius: 10,
@@ -640,7 +640,7 @@ export default HeadAdminLocation;
 //   locationName: {
 //     fontSize: 18,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   locationIconLeft: {
 //     margin: 6,
@@ -650,7 +650,7 @@ export default HeadAdminLocation;
 //   },
 //   locationIconLeftText: {
 //     fontSize: 13,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     fontWeight: '600',
 //   },
 //   LocationList: {
@@ -665,14 +665,14 @@ export default HeadAdminLocation;
 //     backgroundColor: 'rgba(250, 250, 250, 0.8)',
 //     padding: 10,
 //     borderRadius: 20,
-//     borderColor: '#A3238F',
+//     borderColor: '#2e3192',
 //     borderWidth: 2,
 //     zIndex: 1,
 //   },
 //   memberCountText: {
 //     fontSize: 14,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   moreOptions: {
 //     position: 'absolute',
@@ -685,7 +685,7 @@ export default HeadAdminLocation;
 //     color: '#FFFFFF',
 //     textAlign: 'center',
 //     fontSize: 15,
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     width: 70,
 //     borderWidth: 1,
 //     borderColor: '#FFFFFF',
@@ -704,7 +704,7 @@ export default HeadAdminLocation;
 // retryButton: {
 //   marginTop: 20,
 //   padding: 10,
-//   // backgroundColor: '#A3238F',
+//   // backgroundColor: '#2e3192',
 //   borderRadius: 5,
 //   alignItems: 'center',
 // },

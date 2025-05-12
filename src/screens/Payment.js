@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
     textAlign: 'center',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   topcon: {
     backgroundColor: '#ffffff',
@@ -87,18 +87,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   toppaymentText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     textAlign: 'center',
     paddingBottom: 0,
   },
   MonthText: {
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     marginBottom: 30,
     textDecorationLine: 'line-through',
     marginTop: 0,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   upeventtext: {
     fontSize: 12,
     marginBottom: -8,
-    color: '#A3238F',
+    color: '#2e3192',
     backgroundColor: '#ffffff',
     textAlign: 'center',
     fontWeight: '400',
@@ -130,27 +130,27 @@ const styles = StyleSheet.create({
   botpaymentText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     paddingLeft: 10,
   },
   offbotpaymentText: {
     position: 'absolute',
     fontSize: 15,
-    color: '#A3238F',
+    color: '#2e3192',
     transform: [{ translateX: 83 }],
     marginTop: 23,
     textDecorationLine: 'line-through',
   },
   toggleLabel: {
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: '500',
     paddingLeft: 10,
     transform: [{ translateY: 0 }],
   },
   button: {
     position: 'absolute',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 8,
     borderRadius: 15,
     alignItems: 'flex-end',
@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
   termsHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     textDecorationLine: 'underline',
   },
   termsText: {
     marginTop: 10,
     fontSize: 14,
-    color: '#A3238F',
+    color: '#2e3192',
   },
 });
 
@@ -242,7 +242,7 @@ export default Payment;
 //     marginTop: 20,
 //     marginBottom: 40,
 //     textAlign: 'center',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 
 //   topcon: {
@@ -257,12 +257,12 @@ export default Payment;
 //     fontWeight: 'bold',
 //     marginBottom: 40,
 //     textAlign: 'center',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   toppaymentText: {
 //     fontSize: 40,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
    
 //     textAlign:'center',
 //     paddingBottom:0,
@@ -271,7 +271,7 @@ export default Payment;
 //   },
 //   MonthText: {
 //     fontSize: 16,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     marginBottom: 30,
 //     textDecorationLine:'line-through',
 //     marginTop:0,
@@ -283,7 +283,7 @@ export default Payment;
 //   upeventtext:{
 //     fontSize: 12,
 //     marginBottom: -8,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     backgroundColor: '#ffffff',
 //     textAlign:'center',
 //     fontWeight:'400',
@@ -304,14 +304,14 @@ export default Payment;
 //   botpaymentText:{
 //     fontSize: 20,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     paddingLeft:10,
 //   },
   
 //   offbotpaymentText:{
 //     position:'absolute',
 //     fontSize: 15,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     transform: [{ translateX: 83 }],
 //     marginTop:23,
 //     textDecorationLine:'line-through',
@@ -320,14 +320,14 @@ export default Payment;
 
 //   toggleLabel: {
 //     fontSize: 16,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     fontWeight:'500',
 //     paddingLeft:10,
 //     transform: [{ translateY: 0 }],
 //   },
 //   button: {
 //     position:'absolute',
-//     backgroundColor: '#A3238F',
+//     backgroundColor: '#2e3192',
 //     padding: 8,
 //     borderRadius: 15,
 //     alignItems:'flex-end',
@@ -353,13 +353,13 @@ export default Payment;
 //   termsHeader: {
 //     fontSize: 20,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //     textDecorationLine:'underline',
 //       },
 //   termsText: {
 //     marginTop: 10,
 //     fontSize: 14,
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 // });
 

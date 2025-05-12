@@ -146,7 +146,7 @@ const Requirements = ({ route }) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#a3238f" />
+        <ActivityIndicator size="large" color="#2e3192" />
       </View>
     );
   }
@@ -261,11 +261,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#a3238f',
+    color: '#2e3192',
   },
   pickerContainer: {
     flex: 1,
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderWidth: 1,
     borderRadius: 10,
     marginLeft: 10,
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     borderWidth: 1,
-    borderColor: '#a3238f',
+    borderColor: '#2e3192',
     borderRadius: 10,
     padding: 10,
     marginBottom: 5,
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 14,
     borderRadius: 30,
     shadowColor: '#000',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   submitButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 12,
     borderRadius: 30,
     shadowColor: '#000',
@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
         fontWeight:'700'
   },
   modalButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
   },
@@ -528,7 +528,7 @@ export default Requirements;
 //   if (loading) {
 //     return (
 //       <View style={styles.container}>
-//         <ActivityIndicator size="large" color="#a3238f" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       </View>
 //     );
 //   }
@@ -617,11 +617,11 @@ export default Requirements;
 //   title: {
 //     fontSize: 24,
 //     fontWeight: 'bold',
-//     color: '#a3238f',
+//     color: '#2e3192',
 //   },
 //   pickerContainer: {
 //     flex: 1,
-//     borderColor: '#a3238f',
+//     borderColor: '#2e3192',
 //     borderWidth: 1,
 //     borderRadius: 10,
 //     marginLeft: 10,
@@ -633,7 +633,7 @@ export default Requirements;
 //   },
 //   inputContainer: {
 //     borderWidth: 1,
-//     borderColor: '#a3238f',
+//     borderColor: '#2e3192',
 //     borderRadius: 10,
 //     padding: 10,
 //     marginBottom: 5,
@@ -657,7 +657,7 @@ export default Requirements;
 //   backButton: {
 //     flexDirection: 'row',
 //     alignItems: 'center',
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 14,
 //     borderRadius: 30,
 //     shadowColor: '#000',
@@ -669,7 +669,7 @@ export default Requirements;
 //   submitButton: {
 //     flexDirection: 'row',
 //     alignItems: 'center',
-//     backgroundColor: '#a3238f',
+//     backgroundColor: '#2e3192',
 //     padding: 12,
 //     borderRadius: 30,
 //     shadowColor: '#000',

@@ -143,7 +143,7 @@ const CreatingMeeting = () => {
                   </Text>
                 </View>
                 <TouchableOpacity style={styles.optionsButton} onPress={() => toggleOptions(index)}>
-                  <Icon name="ellipsis-h" size={20} color="#a3238f" />
+                  <Icon name="ellipsis-h" size={20} color="#2e3192" />
                 </TouchableOpacity>
                 {activeIndex === index && (
                   <View style={styles.optionsMenu}>
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -245,11 +245,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#a3238f',
+    color: '#2e3192',
   },
   meetingInfo: {
     fontSize: 14,
-    color: '#a3238f',
+    color: '#2e3192',
     marginBottom: 4,
   },
   optionsButton: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 35,
     right: 11,
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   noDataText: {
     textAlign: 'center',
-    color: '#a3238f',
+    color: '#2e3192',
     marginTop: 20,
   },
   modalOverlay: {
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 20,
-    color: '#a3238f',
+    color: '#2e3192',
   },
   modalButtonContainer: {
     flexDirection: 'row',
     justifyContent:'space-between',
   },
   modalButton: {
-    backgroundColor: '#a3238f',
+    backgroundColor: '#2e3192',
     padding: 10,
     borderRadius: 5,
     marginHorizontal: 10,

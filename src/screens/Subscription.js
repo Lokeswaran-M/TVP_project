@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40,
     textAlign: 'center',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   topcon: {
     backgroundColor: '#ffffff',
@@ -218,18 +218,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 40,
     textAlign: 'center',
-    color: '#A3238F',
+    color: '#2e3192',
   },
   toppaymentText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     textAlign: 'center',
     paddingBottom: 0,
   },
   MonthText: {
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     marginBottom: 30,
     textDecorationLine: 'line-through',
     marginTop: 0,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   upeventtext: {
     fontSize: 12,
     marginBottom: 10,
-    color: '#A3238F',
+    color: '#2e3192',
     backgroundColor: '#ffffff',
     textAlign: 'center',
     fontWeight: '400',
@@ -261,20 +261,20 @@ const styles = StyleSheet.create({
   botpaymentText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     paddingLeft: 10,
   },
   offbotpaymentText: {
     position: 'absolute',
     fontSize: 15,
-    color: '#A3238F',
+    color: '#2e3192',
     transform: [{ translateX: 83 }],
     marginTop: 23,
     textDecorationLine: 'line-through',
   },
   toggleLabel: {
     fontSize: 16,
-    color: '#A3238F',
+    color: '#2e3192',
     fontWeight: '500',
     paddingLeft: 10,
     transform: [{ translateY: 0 }],
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button1: {
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    backgroundColor: '#A3238F',
+    backgroundColor: '#2e3192',
     padding: 8,
     borderRadius: 15,
     alignItems: 'flex-end',
@@ -316,13 +316,13 @@ const styles = StyleSheet.create({
   termsHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#A3238F',
+    color: '#2e3192',
     textDecorationLine: 'underline',
   },
   termsText: {
     marginTop: 10,
     fontSize: 14,
-    color: '#A3238F',
+    color: '#2e3192',
   },
   termsText1: {
     marginTop: 10,

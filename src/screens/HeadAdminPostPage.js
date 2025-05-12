@@ -130,7 +130,7 @@ const HeadAdminPostPage = ({ navigation }) => {
   if (loading && !refreshing) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#A3238F" />
+        <ActivityIndicator size="large" color="#2e3192" />
       </View>
     );
   }
@@ -336,7 +336,7 @@ export default HeadAdminPostPage;
 //   if (loading && !refreshing) {
 //     return (
 //       <View style={styles.loaderContainer}>
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       </View>
 //     );
 //   }
@@ -403,7 +403,7 @@ export default HeadAdminPostPage;
 //       <View>
 //         <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.filterButton}>
 //         <Text style={styles.filterButtonText}>Filter by Date</Text>
-//         <MaterialIcons name="filter-list" size={26} top={3}  color="#A3238F" />
+//         <MaterialIcons name="filter-list" size={26} top={3}  color="#2e3192" />
 //         </TouchableOpacity>
 //       </View>
 
@@ -526,7 +526,7 @@ export default HeadAdminPostPage;
 //   if (loading && !refreshing) {
 //     return (
 //       <View style={styles.loaderContainer}>
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       </View>
 //     );
 //   }
@@ -717,7 +717,7 @@ export default HeadAdminPostPage;
 //   if (loading && !refreshing) {
 //     return (
 //       <View style={styles.loaderContainer}>
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       </View>
 //     );
 //   }
@@ -884,21 +884,21 @@ export default HeadAdminPostPage;
 //   fontSize:15,
 //   paddingRight:8,
 //   fontWeight:'500',
-//   color:'#A3238F',
+//   color:'#2e3192',
   
 //   },
 //   profileNameUser: {
 //     marginLeft: 12,
 //     fontSize: 16,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   profileNameMeet: {
 //     marginLeft: 12,
 //     marginRight:0,
 //     fontSize: 16,
 //     fontWeight: 'bold',
-//     color: '#A3238F',
+//     color: '#2e3192',
 //   },
 //   postImage: {
 //     width: '100%',
@@ -1022,7 +1022,7 @@ export default HeadAdminPostPage;
 //   if (loading && !refreshing) {
 //     return (
 //       <View style={styles.loaderContainer}>
-//         <ActivityIndicator size="large" color="#A3238F" />
+//         <ActivityIndicator size="large" color="#2e3192" />
 //       </View>
 //     );
 //   }
