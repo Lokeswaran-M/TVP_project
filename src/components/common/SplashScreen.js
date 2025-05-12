@@ -13,7 +13,7 @@
 //     <View style={styles.container}>
 //       <FastImage
 //         style={styles.image}
-//         source={require('../../../assets/images/Bmw_ss.gif')} 
+//         source={require('../../../assets/images/TPV_ss.gif')} 
 //         resizeMode={FastImage.resizeMode.contain}
 //       />
 //     </View>

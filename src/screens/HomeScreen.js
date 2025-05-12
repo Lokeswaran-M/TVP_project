@@ -382,7 +382,7 @@ console.log("Chapter Type (Slots) value:", slots);
       <View style={styles.container}>
         {/* <View style={styles.card}>
           <Image
-            source={require('../../assets/images/Homepage_BMW.jpg')}
+            source={require('../../assets/images/Homepage_TPV.jpg')}
             style={styles.image}
           />
         </View> */}
@@ -1228,7 +1228,7 @@ export default function TabViewExample({ navigation }) {
 //       <View style={styles.container}>
 //         <View style={styles.card}>
 //           <Image
-//             source={require('../../assets/images/Homepage_BMW.jpg')}
+//             source={require('../../assets/images/Homepage_TPV.jpg')}
 //             style={styles.image}
 //           />
 //         </View>

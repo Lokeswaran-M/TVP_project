@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "BMW_App.app"
-               BlueprintName = "BMW_App"
-               ReferencedContainer = "container:BMW_App.xcodeproj">
+               BuildableName = "TPV_App.app"
+               BlueprintName = "TPV_App"
+               ReferencedContainer = "container:TPV_App.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "BMW_AppTests.xctest"
-               BlueprintName = "BMW_AppTests"
-               ReferencedContainer = "container:BMW_App.xcodeproj">
+               BuildableName = "TPV_AppTests.xctest"
+               BlueprintName = "TPV_AppTests"
+               ReferencedContainer = "container:TPV_App.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "BMW_App.app"
-            BlueprintName = "BMW_App"
-            ReferencedContainer = "container:BMW_App.xcodeproj">
+            BuildableName = "TPV_App.app"
+            BlueprintName = "TPV_App"
+            ReferencedContainer = "container:TPV_App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "BMW_App.app"
-            BlueprintName = "BMW_App"
-            ReferencedContainer = "container:BMW_App.xcodeproj">
+            BuildableName = "TPV_App.app"
+            BlueprintName = "TPV_App"
+            ReferencedContainer = "container:TPV_App.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

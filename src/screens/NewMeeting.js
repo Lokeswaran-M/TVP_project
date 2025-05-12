@@ -6,8 +6,8 @@ import { useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { API_BASE_URL } from '../constants/Config';
-import sun from '../../assets/images/sun.png';
-import moon from '../../assets/images/moon.png';
+// import sun from '../../assets/images/sun.png';
+// import moon from '../../assets/images/moon.png';
 
 const NewMeeting = () => {
   const navigation = useNavigation(); 
@@ -130,13 +130,13 @@ const NewMeeting = () => {
           style={[styles.iconContainer, SlotIDs.includes(1) && { backgroundColor: '#2e3192' }]}
           onPress={() => handleSlotClick(1)}
         >
-          <Image source={sun} style={{ width: 50, height: 50 }} />
+          {/* <Image source={sun} style={{ width: 50, height: 50 }} /> */}
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.iconContainer, SlotIDs.includes(2) && { backgroundColor: '#2e3192' }]}
           onPress={() => handleSlotClick(2)}
         >
-          <Image source={moon} style={{ width: 50, height: 50 }} />
+          {/* <Image source={moon} style={{ width: 50, height: 50 }} /> */}
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={toggleCalendar}>

@@ -216,7 +216,7 @@ const AdminPage = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.containermain}>
         {/* <View style={styles.cardimg}>
-          <Image source={require('../../assets/images/Homepage_BMW.jpg')} style={styles.image} />
+          <Image source={require('../../assets/images/Homepage_TPV.jpg')} style={styles.image} />
         </View> */}
 
 

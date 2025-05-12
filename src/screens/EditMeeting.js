@@ -6,8 +6,8 @@ import { useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
 import DatePicker from 'react-native-date-picker';
 import { API_BASE_URL } from '../constants/Config';
-import sun from '../../assets/images/sun.png';
-import moon from '../../assets/images/moon.png';
+// import sun from '../../assets/images/sun.png';
+// import moon from '../../assets/images/moon.png';
 
 const EditMeeting = ({ route }) => {
   const { eventId, date, time, location, locationId } = route.params;
@@ -89,13 +89,13 @@ const EditMeeting = ({ route }) => {
           style={[styles.iconContainer, SlotID === 1 && { backgroundColor: '#2e3192' }]}
           onPress={() => setSlotID(1)}
         >
-          <Image source={sun} style={{ width: 50, height: 50 }} />
+          {/* <Image source={sun} style={{ width: 50, height: 50 }} /> */}
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.iconContainer, SlotID === 2 && { backgroundColor: '#2e3192' }]}
           onPress={() => setSlotID(2)}
         >
-          <Image source={moon} style={{ width: 50, height: 50 }} />
+          {/* <Image source={moon} style={{ width: 50, height: 50 }} /> */}
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={toggleCalendar}>

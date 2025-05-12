@@ -179,7 +179,7 @@ const Subscription = ({ route }) => {
           </Text>
           <Text style={styles.termsText1}>
           1. Member’s name is removed from the chapter member list.
-      2.Access to the bMW portal login is revoked.
+      2.Access to the TPV portal login is revoked.
           </Text>
           <Text style={styles.termsText}>
           After the grace period (if the category/slot is filled) :

@@ -4,7 +4,7 @@ import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/nativ
 import { useSelector } from 'react-redux';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
-import sunmoon from '../../assets/images/sunandmoon-icon.png';
+// import sunmoon from '../../assets/images/sunandmoon-icon.png';
 import styles from '../components/layout/ProfileStyles';
 import Stars from '../screens/Stars';
 const Profile = () => {
@@ -98,10 +98,10 @@ const Profile = () => {
               />
               {categoryID === 2 && (
        <View style={styles.editIconWrapper}>
-        <Image 
+        {/* <Image 
           source={sunmoon} 
           style={{ width: 25, height: 25 }} 
-        />
+        /> */}
        </View>
     )}
             </View>

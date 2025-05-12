@@ -24,10 +24,10 @@ import HeadAdminLocationView from '../screens/HeadAdminLocationView';
 import { View, Text, StyleSheet, Dimensions,Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BMW from '../../assets/images/TPV.png';
+import TPV from '../../assets/images/TPV.png';
 import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get('window');
-const CustomHeaderBMWpng = () => {
+const CustomHeaderTPVpng = () => {
   const navigation = useNavigation();
   // const posticon = () => {
   //   navigation.navigate('HeadAdminPostPage');
@@ -37,7 +37,7 @@ const CustomHeaderBMWpng = () => {
     <View >
       <View style={styles.topNavlogohome}>
         <Image 
-          source={BMW} 
+          source={TPV} 
           style={styles.iconImage}
         />
         {/* <TouchableOpacity onPress={posticon}>
@@ -142,7 +142,7 @@ const AuthNavigator = () => {
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown:false,  ...headerOptions}} />
       <Stack.Screen  name="Scanner"  component={Scanner}/>
-      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderBMWpng/>, headerLeft: () => null, }}/>
+      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderTPVpng/>, headerLeft: () => null, }}/>
       {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
       {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />
       <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />

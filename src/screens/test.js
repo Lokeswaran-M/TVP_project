@@ -110,7 +110,7 @@ const AdminPage = () => {
       <View style={styles.containermain}>
         {/* Header Image */}
         <View style={styles.cardimg}>
-          <Image source={require('../../assets/images/Homepage_BMW.jpg')} style={styles.image} />
+          <Image source={require('../../assets/images/Homepage_TPV.jpg')} style={styles.image} />
         </View>
 
         {/* Dropdown for Locations and Slots */}
@@ -735,7 +735,7 @@ const AdminPage = () => {
       <View style={styles.containermain}>
         <View style={styles.cardimg}>
           <Image
-            source={require('../../assets/images/Homepage_BMW.jpg')}
+            source={require('../../assets/images/Homepage_TPV.jpg')}
             style={styles.image}
           />
         </View>
@@ -1143,7 +1143,7 @@ export default AdminPage;
 //       <View style={styles.containermain}>
 //        <View style={styles.cardimg}>
 //           <Image
-//             source={require('../../assets/images/Homepage_BMW.jpg')}
+//             source={require('../../assets/images/Homepage_TPV.jpg')}
 //             style={styles.image}
 //           />
 //         </View>
