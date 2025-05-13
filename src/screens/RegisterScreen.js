@@ -20,9 +20,12 @@ import {API_BASE_URL} from '../constants/Config'
   const [businessName, setBusinessName] = useState('');
   const [profession, setProfession] = useState([]); 
   const [selectedProfession, setSelectedProfession] = useState('');
+  // const [chapterType, setChapterType] = useState([]); 
+  // const [selectedChapterType, setSelectedChapterType] = useState('');
   const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
   const [referredBy, setReferredBy] = useState('');
+  // const [referChapterType, setReferChapterType] = useState('');
   const [referLocationId, setReferLocationId] = useState('');
   const [referProfession, setreferProfession] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -130,6 +133,7 @@ const fetchLocationsByProfession = async (selectedProfession) => {
   const handleProfessionChange = (profession) => {
     setSelectedProfession(profession); 
     setSelectedLocation(null);
+    // setSelectedChapterType(null);
     fetchLocationsByProfession(profession);
   };
 
@@ -137,6 +141,7 @@ const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
   if (selectedMember) {
+    // setReferChapterType(selectedMember.ChapterType);
     setReferLocationId(selectedMember.LocationID);
     setreferProfession(selectedMember.Profession);
   }
@@ -185,7 +190,7 @@ const handlelocationChange = (selectedLocation) => {
       isValid = false;
     }
     try {
-
+      // console.log("selectedChapterType--------------------",selectedChapterType);
       const response = await fetch(`${API_BASE_URL}/api/user-count?username=${username}`);
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -252,43 +257,54 @@ const handlelocationChange = (selectedLocation) => {
       setSelecteddateError('Date is required');
       isValid = false;
     }
-if (isValid) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user: {
-          username,
-          Password: password,
-          Mobileno,
-        },
-        business: {
-          email,
-          address,
-          businessName,
-          profession: selectedProfession,
-          LocationID: selectedLocation,
-          referredBy,
-          referLocationId,
-          referProfession,
-          startDate,
-          endDate,
+    if (isValid) {
+      try {
+        const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
+        const userIdData = await userIdResponse.json();
+        
+      if (userIdData.NextuserId) {
+  const generatedUserId = userIdData.NextuserId;
+  console.log('Extracted UserId:', generatedUserId);
+  setUserId(generatedUserId);
+
+          const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user: {
+                userId: generatedUserId,
+                username,
+                Password: password,
+                Mobileno,
+              },
+              business: {
+                email,
+                address,
+                businessName,
+                profession: selectedProfession,
+                // chapterType: selectedChapterType,
+                LocationID: selectedLocation,
+                referredBy,
+                referChapterType, 
+        referLocationId,
+        referProfession,
+                startDate,
+                endDate
+              }
+            }),
+          });
+          const data = await response.json();
+          console.log('Registration successful:', data);
+          navigation.navigate('Otpscreen', { Mobileno });
+        } else {
+          console.error('No UserId found in the response!');
         }
-      }),
-    });
-
-    const data = await response.json();
-    console.log('Registration successful:', data);
-    navigation.navigate('Otpscreen', { Mobileno });
-
-  } catch (error) {
-    console.error('Error registering user:', error);
-  }
-}
-
+      } catch (error) {
+        console.error('Error registering user:', error);
+      }
+    }
 };
   return (
     <ScrollView>
