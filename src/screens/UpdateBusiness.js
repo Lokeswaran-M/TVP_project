@@ -383,7 +383,7 @@ const handlelocationChange = (selectedLocation) => {
   data={profession.map((item, index) => ({
     label: item.ProfessionName,
     value: item.ProfessionName,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedProfession}
   onChange={(item) => handleProfessionChange(item.value)}
@@ -415,7 +415,7 @@ const handlelocationChange = (selectedLocation) => {
             data={LocationID.map((item, index) => ({
               label: item.location,
               value: item.value,
-              backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+              backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
             }))}
             value={selectedLocation}
             onChange={(item) => handlelocationChange(item.value)}
@@ -448,7 +448,7 @@ const handlelocationChange = (selectedLocation) => {
   data={slotType.map((item, index) => ({
     label: item.Slots,
     value: item.id,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedChapterType}
   onChange={(item) => setSelectedChapterType(item.value)}

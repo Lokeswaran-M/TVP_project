@@ -269,7 +269,7 @@ const onChangeStartDate = (event, selectedDate) => {
   data={profession.map((item, index) => ({
     label: item.ProfessionName,
     value: item.ProfessionName,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedProfession}
   onChange={(item) => handleProfessionChange(item.value)}
@@ -317,7 +317,7 @@ const onChangeStartDate = (event, selectedDate) => {
   data={LocationID.map((item, index) => ({
     label: item.location,
     value: item.value,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedLocation}
   onChange={(item) => handlelocationChange(item.value)}

@@ -1605,7 +1605,7 @@ const styles = StyleSheet.create({
       marginLeft: 10,
     },    
     meetupCard: {
-      backgroundColor: '#F3ECF3',
+      backgroundColor: '#f5f7ff',
       borderRadius: 10,
       padding: 15,
       marginBottom: 10,
@@ -1903,7 +1903,7 @@ const styles = StyleSheet.create({
     container1: {
       flex: 1,
       padding: 10,
-      backgroundColor: '#F3ECF3',
+      backgroundColor: '#f5f7ff',
       margin: 8,
       borderRadius: 10,
     },

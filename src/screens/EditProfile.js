@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    backgroundColor: '#F3ECF3',
+    backgroundColor: '#f5f7ff',
     borderColor: '#888',
     fontSize: 16,
     paddingVertical: 8,
@@ -526,7 +526,7 @@ export default EditProfile;
 //   },
 //   input: {
 //     borderBottomWidth: 1,
-//     backgroundColor: '#F3ECF3',
+//     backgroundColor: '#f5f7ff',
 //     borderColor: '#888',
 //     fontSize: 16,
 //     paddingVertical: 8,

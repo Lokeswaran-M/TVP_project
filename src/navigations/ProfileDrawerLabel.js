@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
     padding: 10,
-    backgroundColor: '#F3ECF3',
+    backgroundColor: '#f5f7ff',
     borderRadius: 5,
     borderColor: 'black',
     borderWidth: 0.8,
