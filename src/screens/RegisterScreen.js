@@ -46,7 +46,7 @@ import {API_BASE_URL} from '../constants/Config'
  const [businessNameError, setBusinessNameError] = useState('');
  const [selectedProfessionError, setSelectedProfessionError] = useState('');
  const [selectedLocationError, setSelectedLocationError] = useState('');
- const [selectedSlotError,setSelectedslotError] =useState('');
+//  const [selectedSlotError,setSelectedslotError] =useState('');
  const [dateError,setSelecteddateError]= useState('');
  const [referredByError, setReferredByError] = useState('');
  const [isUsernameValid, setIsUsernameValid] = useState(false);
@@ -63,20 +63,55 @@ const togglePasswordVisibility1 = () => {
       .then((data) => setProfession(data.executeprofession))
       .catch((error) => console.error(error));
   }, []);
-     const fetchLocationsByProfession = async (selectedProfession) => {
-      console.log('Selected Profession:', selectedProfession);
-  
-      try {
-        const response = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
-        const data = await response.json();
-      
-        setLocationID(data.availableLocations); 
-      } catch (error) {
-        console.error('Error fetching locations:', error);
+
+const fetchLocationsByProfession = async (selectedProfession) => {
+  console.log('🔍 Step 1: Selected profession received from component:', selectedProfession);
+
+  try {
+    const encodedProfession = encodeURIComponent(selectedProfession);
+    console.log('🔍 Step 2: Encoded profession for URL:', encodedProfession);
+
+    const url = `${API_BASE_URL}/available-location?profession=${encodedProfession}`;
+    console.log('🔍 Step 3: Full API URL to be called:', url);
+
+    const response = await fetch(url);
+    console.log('🔍 Step 4: Raw fetch response:', response);
+
+    const data = await response.json();
+    console.log('🔍 Step 5: JSON-parsed API response:', data);
+
+    if (response.ok) {
+      console.log('✅ Step 6: Response status is OK (200)');
+
+      if (data.availableLocations && Array.isArray(data.availableLocations) && data.availableLocations.length > 0) {
+        console.log('✅ Step 7: Locations found:', data.availableLocations);
+        
+        // Map the locations to the required format for the Dropdown
+        const formattedLocations = data.availableLocations.map((item, index) => ({
+          label: item.LocationName,  // Correct field for the label
+          value: item.LocationID,    // Correct field for the value
+          backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3', // Alternating background color
+        }));
+        
+        setLocationID(formattedLocations);  // Update the state with formatted data
+        console.log('✅ Step 8: Locations state updated');
+      } else {
+        console.warn('⚠️ Step 7: No locations found for this profession');
+        setLocationID([]);  // Clear locations if none are found
+        console.log('⚠️ Step 8: Locations state cleared');
       }
-  }; 
+    } else {
+      console.error('❌ Step 6: API responded with an error:', data.ErrorMessage);
+    }
+  } catch (error) {
+    console.error('❌ Step 9: Network or fetch error occurred:', error);
+  }
+};
+
+
+
   const fetchReferMembers = async () => {
-    console.log('Selected ChapterType:', selectedChapterType);
+    // console.log('Selected ChapterType:', selectedChapterType);
     try {
       const response = await fetch(`${API_BASE_URL}/ReferMembers`, {
         method: 'GET',
@@ -103,17 +138,17 @@ const togglePasswordVisibility1 = () => {
     setSelectedChapterType(null);
     fetchLocationsByProfession(profession);
   };
-const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
-    });
-    const data = await response.json();
-    setChapterType(data.getslot); 
-    console.log('Fetched slot details:=========', data);
-  } catch (error) {
-    console.error('Error fetching slots:', error);
-  }
-};
+// const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/execute-getslot?Location=${selectedLocation}&Profession=${selectedProfession}`, {
+//     });
+//     const data = await response.json();
+//     setChapterType(data.getslot); 
+//     console.log('Fetched slot details:=========', data);
+//   } catch (error) {
+//     console.error('Error fetching slots:', error);
+//   }
+// };
 const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
@@ -125,9 +160,9 @@ const handleReferredByChange = (itemValue) => {
 };
 const handlelocationChange = (selectedLocation) => {
   setSelectedLocation(selectedLocation);
-  if(selectedProfession && selectedLocation){
-    fetchChapterTypes(selectedLocation, selectedProfession);
-  }
+  // if(selectedProfession && selectedLocation){
+  //   fetchChapterTypes(selectedLocation, selectedProfession);
+  // }
 };
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
@@ -158,7 +193,7 @@ const handlelocationChange = (selectedLocation) => {
     setBusinessNameError('');
     setSelectedProfessionError('');
     setSelectedLocationError('');
-    setSelectedslotError('');
+    // setSelectedslotError('');
     setReferredByError('');
     setSelecteddateError('');
     let isValid = true;
@@ -233,10 +268,10 @@ const handlelocationChange = (selectedLocation) => {
       setSelectedLocationError('Location is required');
       isValid = false;
     }
-    if (!selectedChapterType) {
-      setSelectedslotError('Slot is required');
-      isValid = false;
-    }
+    // if (!selectedChapterType) {
+    //   setSelectedslotError('Slot is required');
+    //   isValid = false;
+    // }
     if (!startDate) {
       setSelecteddateError('Date is required');
       isValid = false;
@@ -246,10 +281,11 @@ const handlelocationChange = (selectedLocation) => {
         const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
         const userIdData = await userIdResponse.json();
         
-        if (userIdData.NextuserId && userIdData.NextuserId.length > 0) {
-          const generatedUserId = userIdData.NextuserId[0].UserId;
-          console.log('Extracted UserId:', generatedUserId);
-          setUserId(generatedUserId);
+      if (userIdData.NextuserId) {
+  const generatedUserId = userIdData.NextuserId;
+  console.log('Extracted UserId:', generatedUserId);
+  setUserId(generatedUserId);
+
           const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
             method: 'POST',
             headers: {
@@ -267,7 +303,7 @@ const handlelocationChange = (selectedLocation) => {
                 address,
                 businessName,
                 profession: selectedProfession,
-                chapterType: selectedChapterType,
+                // chapterType: selectedChapterType,
                 LocationID: selectedLocation,
                 referredBy,
                 referChapterType, 
@@ -389,16 +425,16 @@ const handlelocationChange = (selectedLocation) => {
   )}
 />
         {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
-        <Dropdown
+<Dropdown
   style={styles.dropdown}
   placeholderStyle={styles.placeholderStyle}
   selectedTextStyle={styles.selectedTextStyle}
   placeholder="Select Location"
-  data={LocationID.map((item, index) => ({
-    label: item.location,
-    value: item.value,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
-  }))}
+  data={Array.isArray(LocationID) && LocationID.length > 0 ? LocationID.map((item, index) => ({
+    label: item.label,  
+    value: item.value,  
+    backgroundColor: item.backgroundColor,  
+  })) : []} 
   value={selectedLocation}
   onChange={(item) => handlelocationChange(item.value)}
   search
@@ -412,8 +448,10 @@ const handlelocationChange = (selectedLocation) => {
     </View>
   )}
 />
+
+
         {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
-        <Dropdown
+        {/* <Dropdown
   style={styles.dropdown}
   placeholderStyle={styles.placeholderStyle}
   selectedTextStyle={styles.selectedTextStyle}
@@ -435,7 +473,7 @@ const handlelocationChange = (selectedLocation) => {
       <Text style={styles.itemText}>{item.label}</Text>
     </View>
   )}
-/>
+/> */}
 {/* 
        <View>
         <Picker
@@ -449,7 +487,7 @@ const handlelocationChange = (selectedLocation) => {
           ))}
           </Picker>
           </View> */}
-          {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>}
+          {/* {selectedSlotError && <Text style={styles.errorText}>{selectedSlotError}</Text>} */}
           <Dropdown
   style={styles.dropdown}
   placeholderStyle={styles.placeholderStyle}
@@ -586,6 +624,7 @@ dropdown: {
   paddingHorizontal: 20,
   overflow: 'hidden',
   marginVertical: 10,
+
 },
 readOnlyText: {
   height: 50,
