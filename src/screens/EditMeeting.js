@@ -140,8 +140,6 @@ const EditMeeting = ({ route }) => {
       <TouchableOpacity style={styles.button} onPress={updateMeeting}>
         <Text style={styles.buttonText}>Update Meeting</Text>
       </TouchableOpacity>
-
-      {/* Custom Modal for Alerts */}
       <Modal
         transparent={true}
         visible={modalVisible}

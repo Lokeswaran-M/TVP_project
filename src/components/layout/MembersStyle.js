@@ -3,7 +3,7 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
 
   container: {
-    backgroundColor: '#DDDDDD',
+    backgroundColor: '#f5f7ff',
     flex: 1,
   },
   emptyListText: {
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 30,
     alignItems: 'center',
-   
+    elevation: 5,
   },
   searchInput: {
     flex: 1,

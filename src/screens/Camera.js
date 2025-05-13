@@ -161,7 +161,7 @@ const TabContent = ({ chapterType, locationId, navigation }) => {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#f5f7ff' }}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -253,7 +253,7 @@ export default function TabViewExample({ navigation }) {
     <TabBar
       {...props}
       indicatorStyle={{ backgroundColor: '#2e3192' }}
-      style={{ backgroundColor: '#rgb(220, 228, 250)' }}
+      style={{ backgroundColor: '#f5f7ff' }}
       activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}

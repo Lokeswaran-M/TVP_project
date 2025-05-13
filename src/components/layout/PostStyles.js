@@ -22,7 +22,7 @@ export default StyleSheet.create({
   },
   gridContainer: {
     padding:0,
-    backgroundColor:'#e7e7e7',
+    backgroundColor:'#f5f7ff',
    
   },
   postContainer: {
@@ -121,9 +121,9 @@ export default StyleSheet.create({
     fontSize: 12,
     color: '#b50098',
   },
-  filterContainer:{
-justifyContent:'center',
-backgroundColor:'#e7e7e7',
+    filterContainer:{
+    justifyContent:'center',
+    backgroundColor:'#f5f7ff',
   },
 filterButton:{
 backgroundColor:'#FFFFFF',
