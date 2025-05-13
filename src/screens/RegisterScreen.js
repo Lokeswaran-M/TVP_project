@@ -20,12 +20,9 @@ import {API_BASE_URL} from '../constants/Config'
   const [businessName, setBusinessName] = useState('');
   const [profession, setProfession] = useState([]); 
   const [selectedProfession, setSelectedProfession] = useState('');
-  // const [chapterType, setChapterType] = useState([]); 
-  // const [selectedChapterType, setSelectedChapterType] = useState('');
   const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState('');
   const [referredBy, setReferredBy] = useState('');
-  // const [referChapterType, setReferChapterType] = useState('');
   const [referLocationId, setReferLocationId] = useState('');
   const [referProfession, setreferProfession] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -133,7 +130,6 @@ const fetchLocationsByProfession = async (selectedProfession) => {
   const handleProfessionChange = (profession) => {
     setSelectedProfession(profession); 
     setSelectedLocation(null);
-    // setSelectedChapterType(null);
     fetchLocationsByProfession(profession);
   };
 
@@ -141,7 +137,6 @@ const handleReferredByChange = (itemValue) => {
   setReferredBy(itemValue);
   const selectedMember = referMembers.find((member) => member.UserId === itemValue);
   if (selectedMember) {
-    // setReferChapterType(selectedMember.ChapterType);
     setReferLocationId(selectedMember.LocationID);
     setreferProfession(selectedMember.Profession);
   }
@@ -190,7 +185,6 @@ const handlelocationChange = (selectedLocation) => {
       isValid = false;
     }
     try {
-      // console.log("selectedChapterType--------------------",selectedChapterType);
       const response = await fetch(`${API_BASE_URL}/api/user-count?username=${username}`);
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
@@ -284,7 +278,6 @@ const handlelocationChange = (selectedLocation) => {
                 address,
                 businessName,
                 profession: selectedProfession,
-                // chapterType: selectedChapterType,
                 LocationID: selectedLocation,
                 referredBy,
                 referChapterType, 
