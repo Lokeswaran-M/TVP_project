@@ -428,11 +428,16 @@ const handlelocationChange = (selectedLocation) => {
   placeholderStyle={styles.placeholderStyle}
   selectedTextStyle={styles.selectedTextStyle}
   placeholder="Select Referred By"
-  data={referMembers.map((member, index) => ({
-    label: member.UserInfo,
-    value: member.UserId,
-    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
-  }))}
+data={
+  Array.isArray(referMembers)
+    ? referMembers.map((member, index) => ({
+        label: member.UserInfo,
+        value: member.UserId,
+        backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
+      }))
+    : []
+}
+
   value={referredBy}
   onChange={(item) => handleReferredByChange(item.value)}
   search
