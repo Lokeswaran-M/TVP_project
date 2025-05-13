@@ -150,7 +150,7 @@ const CustomDrawerContent = (props) => {
   return (
     <DrawerContentScrollView {...props}>
       <LinearGradient
-        colors={['#fff', '#F3ECF3']}
+        colors={['#fff', '#f5f7ff']}
         style={styles.profileContainer}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}

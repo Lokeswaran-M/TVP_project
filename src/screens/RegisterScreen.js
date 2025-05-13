@@ -409,7 +409,7 @@ const handlelocationChange = (selectedLocation) => {
   data={profession.map((item, index) => ({
     label: item.ProfessionName,
     value: item.ProfessionName,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedProfession}
   onChange={(item) => handleProfessionChange(item.value)}
@@ -459,7 +459,7 @@ const handlelocationChange = (selectedLocation) => {
   data={chapterType.map((item, index) => ({
     label: item.Slots,
     value: item.id,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={selectedChapterType}
   onChange={(item) => setSelectedChapterType(item.value)}
@@ -496,7 +496,7 @@ const handlelocationChange = (selectedLocation) => {
   data={referMembers.map((member, index) => ({
     label: member.UserInfo,
     value: member.UserId,
-    backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
   }))}
   value={referredBy}
   onChange={(item) => handleReferredByChange(item.value)}

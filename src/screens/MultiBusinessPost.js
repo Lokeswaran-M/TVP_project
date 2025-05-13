@@ -70,7 +70,7 @@ export default function TabViewExample({ navigation }) {
     <TabBar
       {...props}
       indicatorStyle={{ backgroundColor: '#2e3192' }}
-      style={{ backgroundColor: '#F3ECF3' }}
+      style={{ backgroundColor: '#f5f7ff' }}
       activeColor="#2e3192"
       inactiveColor="gray"
       labelStyle={{ fontSize: 14 }}

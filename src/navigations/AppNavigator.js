@@ -394,7 +394,7 @@ function DrawerNavigator() {
         drawerActiveTintColor: '#2e3192', 
         drawerInactiveTintColor: 'black', 
         drawerStyle: {
-          backgroundColor: 'white', 
+          backgroundColor: '#f5f7ff', 
         },
       }}
     >
