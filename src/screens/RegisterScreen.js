@@ -43,7 +43,6 @@ import {API_BASE_URL} from '../constants/Config'
  const [businessNameError, setBusinessNameError] = useState('');
  const [selectedProfessionError, setSelectedProfessionError] = useState('');
  const [selectedLocationError, setSelectedLocationError] = useState('');
-//  const [selectedSlotError,setSelectedslotError] =useState('');
  const [dateError,setSelecteddateError]= useState('');
  const [referredByError, setReferredByError] = useState('');
  const [isUsernameValid, setIsUsernameValid] = useState(false);
