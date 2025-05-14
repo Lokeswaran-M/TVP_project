@@ -25,7 +25,7 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
   const [multiProfile, setMultiProfile] = useState({});
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [username, setName] = useState('');
   const [professionForm, setProfession] = useState('');
   const [businessName, setBusinessName] = useState('');

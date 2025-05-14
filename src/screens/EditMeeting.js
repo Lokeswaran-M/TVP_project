@@ -20,7 +20,7 @@ const EditMeeting = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);

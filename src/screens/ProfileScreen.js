@@ -95,7 +95,7 @@ const Profile = () => {
   const [overallAverage, setOverallAverage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState();
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
 
   const fetchProfileImage = async () => {

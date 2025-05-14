@@ -15,7 +15,7 @@ const AddBusiness = () => {
   console.log("Profile data in Add Business--------------",profileData);
   const user = useSelector((state) => state.user?.Id);
   console.log("User in Add Business-----------",user);
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   console.log("UserID in ADD BUSINESS------------",userId);
   console.log("User Roll in ADD BUSINESS------------",profileData);
   console.log("User location in Add Business------------",profileData.LocationID);

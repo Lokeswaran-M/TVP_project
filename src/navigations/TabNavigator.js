@@ -21,7 +21,7 @@ const MultiMemberstack = () => (
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
   const [profileData, setProfileData] = useState({});
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const fetchData = async () => {
     try {
       const profileResponse = await fetch(`${API_BASE_URL}/api/user/business-info/${userId}`);

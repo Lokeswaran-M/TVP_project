@@ -9,7 +9,7 @@ const Payment = () => {
   const [isOffMonth, setIsOffMonth] = useState(false);
   const navigation = useNavigation();
   // const { userID } = useContext(AuthContext); // Assume you're using user context
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   console.log("User ID for home subscription------------------------------",userId);
   const handlePayment = () => {
     try {

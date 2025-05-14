@@ -8,7 +8,7 @@ import { Picker } from '@react-native-picker/picker';
 import { MaskedTextInput } from 'react-native-mask-text';
 
 const Review = ({ route }) => {
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const { businessName, locationId, chapterType } = route.params;
   const [rating, setRating] = useState(0);
   const [selectedMember, setSelectedMember] = useState('');
@@ -439,7 +439,7 @@ export default Review;
 // import { Picker } from '@react-native-picker/picker';
 // import { MaskedTextInput } from 'react-native-mask-text';
 // const Review = ({ route }) => {
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   const { businessName, locationId, chapterType } = route.params;
 //   const [rating, setRating] = useState(0);
 //   const [selectedMember, setSelectedMember] = useState('');

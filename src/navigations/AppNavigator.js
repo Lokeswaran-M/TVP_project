@@ -40,8 +40,10 @@ import { setUser, logoutUser } from '../Redux/action';
 const ProfileStack = createStackNavigator();
 
 function ProfileStackNavigator() {
-  const user = useSelector((state) => state.user);
-  const userId = useSelector((state) => state.user?.userId);
+const user = useSelector((state) => state);
+console.log("User in APP Navigator ------------------", user);
+const userId = useSelector((state) => state.UserId);
+console.log("UserID----------", userId);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [profileData, setProfileData] = useState({});
@@ -244,7 +246,7 @@ const HeaderImage = () => {
   const [loading, setLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0); 
   const navigation = useNavigation();
-  const userID = useSelector((state) => state.user?.userId); 
+const userID = useSelector((state) => state.UserId);
   console.log("UserId for notification count-----------------------",userID);
   useEffect(() => {
     if (userID) {
@@ -313,8 +315,10 @@ const HeaderWithoutImage = ({ navigation }) => ({
 
 function DrawerNavigator() {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
-  const userId = useSelector((state) => state.user?.userId);
+const user = useSelector((state) => state);
+// console.log("User in Drawer------------------", user);
+const userId = useSelector((state) => state.UserId);
+// console.log("UserID----------", userId);
   const navigation = useNavigation();
   // useEffect(() => {
   //   if (user === null) { 
@@ -345,7 +349,8 @@ function DrawerNavigator() {
       })
     );
   };
-  console.log('rollId====================',user?.rollId)
+  // console.log('rollId====================',user?.RollId)
+  
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
   console.log('CATEGORY ID INSIDE THE DRAWER NAVIGATION----------',profileData?.CategoryId);
@@ -600,7 +605,7 @@ function DrawerNavigator() {
   );
 }
 function AppNavigator() {
-  const user = useSelector((state) => state.user);
+const user = useSelector((state) => state);
   return (
     <Stack.Navigator initialRouteName="Splash">
       <Stack.Screen

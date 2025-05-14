@@ -27,7 +27,7 @@ import Stars from '../screens/Stars';
 import profileImage from '../../assets/images/DefaultProfile.jpg';
 const PRIMARY_COLOR = '#2e3091';
 const HomeScreen = ({ route }) => {
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
   const { chapterType } = route.params;
   const [isConfirmed, setIsConfirmed] = useState({});
@@ -715,7 +715,7 @@ export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([]);
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {

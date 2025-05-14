@@ -13,9 +13,10 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { compressImage } from 'react-native-compressor'; 
 
 const CustomDrawerContent = (props) => {
-  const user = useSelector((state) => state.user);
-  const userId = useSelector((state) => state.user?.userId);
-  console.log("UserID----------",userId);
+const user = useSelector((state) => state);
+console.log("User in Drawer------------------", user);
+const userId = useSelector((state) => state.UserId);
+console.log("UserID----------", userId);
   const [isModalVisible, setModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
@@ -173,7 +174,7 @@ const CustomDrawerContent = (props) => {
           </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.profileName}>{user?.username || 'Guest'}</Text>
+        <Text style={styles.profileName}>{user?.Username || 'Guest'}</Text>
       </LinearGradient>
       <View style={styles.container}>
         <DrawerItemList {...props} />

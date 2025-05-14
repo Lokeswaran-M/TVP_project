@@ -23,7 +23,7 @@ const Scanner = ({ navigation }) => {
   const [isScanning, setIsScanning] = useState(true);
   const scanningRef = useRef(true);
 
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
 
   const handleFlashToggle = () => {
     setIsFlashOn((prev) => !prev);
@@ -264,7 +264,7 @@ export default Scanner;
 //   const [isScanning, setIsScanning] = useState(true);
 //   const scanningRef = useRef(true);
 
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 
 //   const handleFlashToggle = () => {
 //     setIsFlashOn((prev) => !prev);

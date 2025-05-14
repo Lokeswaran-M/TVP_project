@@ -22,7 +22,7 @@ const NewMeeting = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [showMessageModal, setShowMessageModal] = useState(false); // Modal for error/success messages
 
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);

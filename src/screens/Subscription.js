@@ -11,7 +11,7 @@ const Subscription = ({ route }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isOffMonth, setIsOffMonth] = useState(false);
   const navigation = useNavigation();
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
 
   useEffect(() => {
     const fetchBusinessCount = async () => {

@@ -20,10 +20,10 @@ const LoginScreen = ({ onPress }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();  // To navigate after logout
 
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   console.log("UserID in substitute:", userId);
 
-  const username = useSelector((state) => state.user?.username);
+  const username = useSelector((state) => state.user?.Username);
   console.log("username in substitute:", username);
 
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -399,7 +399,7 @@ export default LoginScreen;
 // import { API_BASE_URL } from '../constants/Config';
 
 // const LoginScreen = ({ navigation }) => {
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   console.log("UserID in substitute:", userId);
 
 //   const [sidebarVisible, setSidebarVisible] = useState(false);

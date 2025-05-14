@@ -19,7 +19,7 @@ import messaging from '@react-native-firebase/messaging';
 
 const Requirements = ({ route }) => {
   const { locationId, Profession, chapterType } = route.params;
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
 
   const [businessInfo, setBusinessInfo] = useState(null);
@@ -407,7 +407,7 @@ export default Requirements;
 //   const { locationId, Profession, chapterType } = route.params;
 //   console.log("Profession in the Requirements----------------------------",Profession);
 //   console.log("Chapter type in Requirements--------------------",chapterType);
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   const navigation = useNavigation();
 //   const [businessInfo, setBusinessInfo] = useState(null);
 //   const [loading, setLoading] = useState(true);

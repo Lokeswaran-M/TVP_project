@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 const ProfileDrawerLabel = () => {
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [isExpanded, setIsExpanded] = useState(false);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);

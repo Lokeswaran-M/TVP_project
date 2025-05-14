@@ -13,7 +13,7 @@ const CreatingMeeting = () => {
   const [meetingData, setMeetingData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null); // For selected meeting ID to delete
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
 
   const handleCreateMeeting = () => {
     navigation.navigate('NewMeeting');

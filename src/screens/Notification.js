@@ -23,7 +23,7 @@ const DARK_TEXT = '#333333';
 const LIGHT_TEXT = '#6c7293';
 
 const Notification = () => {
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

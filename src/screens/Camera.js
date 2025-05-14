@@ -31,7 +31,7 @@ const CustomModal = ({ visible, onClose, message, title }) => {
 };
 
 const TabContent = ({ chapterType, locationId, navigation }) => {
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -197,7 +197,7 @@ export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([]);
-  const userId = useSelector((state) => state.user?.userId);
+  const userId = useSelector((state) => state.UserId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -309,7 +309,7 @@ export default function TabViewExample({ navigation }) {
 
 // // TabContent Component - Displays list of members, photo upload functionality
 // const TabContent = ({ chapterType, locationId, navigation }) => {
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   console.log('---------------data userid--------------', userId);
 
 //   const [members, setMembers] = useState([]);
@@ -487,7 +487,7 @@ export default function TabViewExample({ navigation }) {
 //   const layout = useWindowDimensions();
 //   const [index, setIndex] = useState(0);
 //   const [routes, setRoutes] = useState([]);
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   const [businessInfo, setBusinessInfo] = useState([]);
 //   const [loading, setLoading] = useState(true);
 
@@ -825,7 +825,7 @@ export default function TabViewExample({ navigation }) {
 
 // // TabContent Component - Displays list of members, photo upload functionality
 // const TabContent = ({ chapterType, locationId, navigation }) => {
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   console.log('---------------data userid', userId);
 
 //   const [members, setMembers] = useState([]);
@@ -1006,7 +1006,7 @@ export default function TabViewExample({ navigation }) {
 //   const layout = useWindowDimensions();
 //   const [index, setIndex] = useState(0);
 //   const [routes, setRoutes] = useState([]);
-//   const userId = useSelector((state) => state.user?.userId);
+//   const userId = useSelector((state) => state.UserId);
 //   const [businessInfo, setBusinessInfo] = useState([]);
 //   const [loading, setLoading] = useState(true);
 

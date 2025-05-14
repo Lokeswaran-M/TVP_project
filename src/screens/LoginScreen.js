@@ -148,7 +148,9 @@ const LoginScreen = ({ navigation }) => {
         body: JSON.stringify({ username, password, logintype }),
       });
       const result = await response.json();
-      console.log('Data from login response:', result);
+        console.log('Dispatching user data:----------', result);
+        dispatch(setUser(result.user));
+     
       if (!response.ok) {
         if (result.activateOption) {
           setLoginError(result.error);
@@ -161,8 +163,10 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
       // setMobileNo(result.mobileNo);
-      dispatch(setUser(result));
-      const { rollId } = result.user;
+   
+
+      const rollId = result.user.RollId;
+      console.log('Roll ID:', rollId);
       if (logintype === '2') {
         navigation.navigate('SubstitutePage');
         return;
@@ -204,7 +208,8 @@ const LoginScreen = ({ navigation }) => {
           console.error('Error saving device info:', deviceError);
         }
       }
-  
+      console.log('Logintype:==================', logintype);
+      console.log('Roll ID:=============', rollId);
       // Navigate based on role and logintype
       if (logintype === '1') {
         if (rollId === 1) {

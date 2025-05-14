@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const UpdateBusiness = ({ route }) => {
-    const userId = useSelector((state) => state.user?.userId);
+    const userId = useSelector((state) => state.UserId);
   const { chapterType, locationId, Profession } = route.params;
   console.log('Chapter Type:', chapterType);
   console.log('Location ID:', locationId);

@@ -1,8 +1,8 @@
 import { SET_USER, LOGOUT_USER } from './action';
 
 const initialState = {
-  userId: null,
-  rollId: null,
+  UserId: null,
+  RollId: null,
   Address: null,
   BusinessName: null,
   CategoryId: null,
@@ -10,9 +10,8 @@ const initialState = {
   Id: null,
   LocationID: null,
   Mobileno: null,
-  chapterType: null,
-  profession: null,
-  username: null,
+  Profession: null,
+  Username: null,
 };
 
 const userReducer = (state = initialState, action) => {
