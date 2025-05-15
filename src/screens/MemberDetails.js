@@ -230,7 +230,7 @@ const MemberDetails = () => {
           )}
         </View>
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Performance Ratings</Text>
+          <Text style={styles.sectionTitle}>Star Score</Text>
           
           {ratings && ratings.length > 0 ? (
             ratings.map((rating) => (

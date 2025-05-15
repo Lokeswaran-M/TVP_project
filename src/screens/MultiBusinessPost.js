@@ -36,7 +36,6 @@ export default function TabViewExample({ navigation }) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
             title: business.BD,
-            chapterType: business.CT,
             locationId: business.L,
           }));
           setRoutes(updatedRoutes);
@@ -59,7 +58,6 @@ export default function TabViewExample({ navigation }) {
     return (
       <MultiBusinessPost
         title={route.title}
-        chapterType={business?.CT}
         locationId={business?.L}
         userId={userId}
         navigation={navigation}

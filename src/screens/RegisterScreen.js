@@ -1,26 +1,47 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View,Image, TextInput,Button, ActivityIndicator,Animated,TouchableOpacity,TouchableWithoutFeedback,StyleSheet,Keyboard,Text, Alert } from 'react-native';
-import CustomInput from './Custom_input';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Picker } from '@react-native-picker/picker';
+import { 
+  View, 
+  Text, 
+  TextInput,
+  TouchableOpacity, 
+  StyleSheet, 
+  ScrollView, 
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import AnimatedTextInput from './AnimatedTextInput';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {API_BASE_URL} from '../constants/Config'
-  const RegisterScreen = () => {
+import LinearGradient from 'react-native-linear-gradient';
+import { API_BASE_URL } from '../constants/Config';
+
+const AnimatedTextInput = React.forwardRef((props, ref) => {
+  return (
+    <TextInput
+      {...props}
+      ref={ref}
+      style={styles.input}
+      placeholderTextColor="#888"
+    />
+  );
+});
+
+const RegisterScreen = () => {
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); 
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [Mobileno, setMobileno] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [profession, setProfession] = useState([]); 
+  const [profession, setProfession] = useState([]);
   const [selectedProfession, setSelectedProfession] = useState('');
-  const [LocationID, setLocationID] = useState([]); 
+  const [LocationID, setLocationID] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [referredBy, setReferredBy] = useState('');
   const [referLocationId, setReferLocationId] = useState('');
@@ -29,95 +50,70 @@ import {API_BASE_URL} from '../constants/Config'
   const [endDate, setEndDate] = useState('');
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
-  const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [referMembers, setreferMembers] = useState([]);
+
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [MobilenoError, setMobilenoError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [addressError, setAddressError] = useState('');
+  const [businessNameError, setBusinessNameError] = useState('');
+  const [selectedProfessionError, setSelectedProfessionError] = useState('');
+  const [selectedLocationError, setSelectedLocationError] = useState('');
+  const [dateError, setSelecteddateError] = useState('');
+  const [referredByError, setReferredByError] = useState('');
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
+
+  const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const usernameInputRef = useRef(null);
- const [usernameError, setUsernameError] = useState('');
- const [passwordError, setPasswordError] = useState('');
- const [confirmPasswordError, setConfirmPasswordError] = useState('');
- const [MobilenoError, setMobilenoError] = useState('');
- const [emailError, setEmailError] = useState('');
- const [addressError, setAddressError] = useState('');
- const [businessNameError, setBusinessNameError] = useState('');
- const [selectedProfessionError, setSelectedProfessionError] = useState('');
- const [selectedLocationError, setSelectedLocationError] = useState('');
- const [dateError,setSelecteddateError]= useState('');
- const [referredByError, setReferredByError] = useState('');
- const [isUsernameValid, setIsUsernameValid] = useState(false);
- const [referMembers, setreferMembers] = useState([]);
- const togglePasswordVisibility = () => {
-  setPasswordVisible(!passwordVisible);
-};
-const togglePasswordVisibility1 = () => {
-  setPasswordVisible1(!passwordVisible1);
-};
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+  
+  const togglePasswordVisibility1 = () => {
+    setPasswordVisible1(!passwordVisible1);
+  };
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`)
       .then((response) => response.json())
       .then((data) => setProfession(data.executeprofession))
       .catch((error) => console.error(error));
   }, []);
+  const fetchLocationsByProfession = async (selectedProfession) => {
+    try {
+      const encodedProfession = encodeURIComponent(selectedProfession);
+      const url = `${API_BASE_URL}/available-location?profession=${encodedProfession}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
 
-const fetchLocationsByProfession = async (selectedProfession) => {
-  console.log('🔍 Step 1: Selected profession received from component:', selectedProfession);
-
-  try {
-    const encodedProfession = encodeURIComponent(selectedProfession);
-    console.log('🔍 Step 2: Encoded profession for URL:', encodedProfession);
-
-    const url = `${API_BASE_URL}/available-location?profession=${encodedProfession}`;
-    console.log('🔍 Step 3: Full API URL to be called:', url);
-
-    const response = await fetch(url);
-    console.log('🔍 Step 4: Raw fetch response:', response);
-
-    const data = await response.json();
-    console.log('🔍 Step 5: JSON-parsed API response:', data);
-
-    if (response.ok) {
-      console.log('✅ Step 6: Response status is OK (200)');
-
-      if (data.availableLocations && Array.isArray(data.availableLocations) && data.availableLocations.length > 0) {
-        console.log('✅ Step 7: Locations found:', data.availableLocations);
-        
-        // Map the locations to the required format for the Dropdown
-        const formattedLocations = data.availableLocations.map((item, index) => ({
-          label: item.LocationName,  // Correct field for the label
-          value: item.LocationID,    // Correct field for the value
-          backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3', // Alternating background color
-        }));
-        
-        setLocationID(formattedLocations);  // Update the state with formatted data
-        console.log('✅ Step 8: Locations state updated');
-      } else {
-        console.warn('⚠️ Step 7: No locations found for this profession');
-        setLocationID([]);  // Clear locations if none are found
-        console.log('⚠️ Step 8: Locations state cleared');
+      if (response.ok) {
+        if (data.availableLocations && Array.isArray(data.availableLocations) && data.availableLocations.length > 0) {
+          const formattedLocations = data.availableLocations.map((item, index) => ({
+            label: item.LocationName,
+            value: item.LocationID,
+            backgroundColor: index % 2 === 0 ? 'white' : '#F3ECF3',
+          }));
+          
+          setLocationID(formattedLocations);
+        } else {
+          setLocationID([]);
+        }
       }
-    } else {
-      console.error('❌ Step 6: API responded with an error:', data.ErrorMessage);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
     }
-  } catch (error) {
-    console.error('❌ Step 9: Network or fetch error occurred:', error);
-  }
-};
-
-
-
+  };
   const fetchReferMembers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/ReferMembers`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(`${API_BASE_URL}/ReferMembers`);
       const responseText = await response.text();
-      console.log("Raw response text:", responseText);
       const data = JSON.parse(responseText);
-      console.log("Data for refer members--------------------", data);
       setreferMembers(data.members);
     } catch (error) {
       console.error('Error fetching refer members:', error);
@@ -128,22 +124,23 @@ const fetchLocationsByProfession = async (selectedProfession) => {
     fetchReferMembers();
   }, []);
   const handleProfessionChange = (profession) => {
-    setSelectedProfession(profession); 
+    setSelectedProfession(profession);
     setSelectedLocation(null);
     fetchLocationsByProfession(profession);
   };
+  const handleReferredByChange = (itemValue) => {
+    setReferredBy(itemValue);
+    const selectedMember = referMembers.find((member) => member.UserId === itemValue);
+    if (selectedMember) {
+      setReferLocationId(selectedMember.LocationID);
+      setreferProfession(selectedMember.Profession);
+    }
+  };
 
-const handleReferredByChange = (itemValue) => {
-  setReferredBy(itemValue);
-  const selectedMember = referMembers.find((member) => member.UserId === itemValue);
-  if (selectedMember) {
-    setReferLocationId(selectedMember.LocationID);
-    setreferProfession(selectedMember.Profession);
-  }
-};
-const handlelocationChange = (selectedLocation) => {
-  setSelectedLocation(selectedLocation);
-};
+  const handlelocationChange = (selectedLocation) => {
+    setSelectedLocation(selectedLocation);
+  };
+
   const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
     if (selectedDate) {
@@ -156,6 +153,7 @@ const handlelocationChange = (selectedLocation) => {
       setEndDate(formattedEndDate);
     }
   };
+
   const onChangeEndDate = (event, selectedDate) => {
     setShowEndPicker(false);
     if (selectedDate) {
@@ -163,7 +161,7 @@ const handlelocationChange = (selectedLocation) => {
       setEndDate(formattedEndDate);
     }
   };
-  const handleRegister = async () => { 
+  const handleRegister = async () => {
     setUsernameError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -175,25 +173,26 @@ const handlelocationChange = (selectedLocation) => {
     setSelectedLocationError('');
     setReferredByError('');
     setSelecteddateError('');
+    
     let isValid = true;
     if (!username) {
       setUsernameError('Username is required');
       isValid = false;
     }
+    
     if (!password) {
       setPasswordError('Password is required');
       isValid = false;
     }
+    
     try {
       const response = await fetch(`${API_BASE_URL}/api/user-count?username=${username}`);
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
       const data = await response.json();
-      console.log("Full Response:", data);
     
       if (data.count !== undefined) {
-        console.log("Count----------", data.count);
         if (data.count > 0) {
           setUsernameError('Username already taken');
           Alert.alert("Error", "Username already taken");
@@ -211,11 +210,13 @@ const handlelocationChange = (selectedLocation) => {
     } catch (err) {
       setUsernameError('Username is required');
       isValid = false;
-    }          
+    }
+    
     if (password !== confirmPassword) {
       setConfirmPasswordError('Passwords do not match');
       isValid = false;
     }
+    
     if (!Mobileno) {
       setMobilenoError('Mobile number is required');
       isValid = false;
@@ -223,6 +224,7 @@ const handlelocationChange = (selectedLocation) => {
       setMobilenoError('Mobile number must be 10 digits');
       isValid = false;
     }
+    
     if (!email) {
       setEmailError('Email is required');
       isValid = false;
@@ -230,36 +232,41 @@ const handlelocationChange = (selectedLocation) => {
       setEmailError('Invalid email format');
       isValid = false;
     }
+    
     if (!address) {
       setAddressError('Address is required');
       isValid = false;
     }
+    
     if (!businessName) {
       setBusinessNameError('Business Name is required');
       isValid = false;
     }
+    
     if (!selectedProfession) {
       setSelectedProfessionError('Profession is required');
       isValid = false;
     }
+    
     if (!selectedLocation) {
       setSelectedLocationError('Location is required');
       isValid = false;
     }
-
+    
     if (!startDate) {
       setSelecteddateError('Date is required');
       isValid = false;
     }
+    
     if (isValid) {
+      setIsLoading(true);
       try {
         const userIdResponse = await fetch(`${API_BASE_URL}/execute-getuserid`);
         const userIdData = await userIdResponse.json();
         
-      if (userIdData.NextuserId) {
-  const generatedUserId = userIdData.NextuserId;
-  console.log('Extracted UserId:', generatedUserId);
-  setUserId(generatedUserId);
+        if (userIdData.NextuserId) {
+          const generatedUserId = userIdData.NextuserId;
+          setUserId(generatedUserId);
 
           const response = await fetch(`${API_BASE_URL}/RegisterAlldata`, {
             method: 'POST',
@@ -280,8 +287,8 @@ const handlelocationChange = (selectedLocation) => {
                 profession: selectedProfession,
                 LocationID: selectedLocation,
                 referredBy, 
-        referLocationId,
-        referProfession,
+                referLocationId,
+                referProfession,
                 startDate,
                 endDate
               }
@@ -289,320 +296,476 @@ const handlelocationChange = (selectedLocation) => {
           });
           const data = await response.json();
           console.log('Registration successful:', data);
+          setIsLoading(false);
           navigation.navigate('Otpscreen', { Mobileno });
         } else {
+          setIsLoading(false);
           console.error('No UserId found in the response!');
         }
       } catch (error) {
+        setIsLoading(false);
         console.error('Error registering user:', error);
+        Alert.alert("Error", "Registration failed. Please try again.");
       }
     }
-};
+  };
+
   return (
-    <ScrollView>
-    <View style={styles.container}>
-      <View>
-        <Icon name="user" size={24} color="gray" style={styles.iconStyle} />
-        <AnimatedTextInput
-        ref={usernameInputRef}
-          placeholder="Username"
-          value={username}
-          onChangeText={setUsername}
-        />
-      </View>
-      {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
-      <View>
-    </View>
-      <View>
-      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconStyle}>
-              <Icon name={passwordVisible ? "eye" : "eye-slash"} size={24} color="black" />
-            </TouchableOpacity>
-        <AnimatedTextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!passwordVisible}
-        />
-      </View>
-      {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-      <View>
-      <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.iconStyle}>
-              <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={24} color="black" />
-            </TouchableOpacity>
-        <AnimatedTextInput
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={!passwordVisible1}
-        />
-      </View>
-      {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
-      <View>
-        <Icon name="phone" size={24} color="gray" style={styles.iconStyle} />
-        <AnimatedTextInput
-          placeholder="Mobile Number"
-          value={Mobileno}
-          keyboardType="phone-pad"
-          onChangeText={setMobileno}
-        />
-      </View>
-      {MobilenoError ? <Text style={styles.errorText}>{MobilenoError}</Text> : null}
-      <View>
-        <Icon name="envelope" size={24} color="gray" style={styles.iconStyle} />
-        <AnimatedTextInput
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-        />
-      </View>
-      {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-      <View style={styles.inputContainer}>
-        <Icon name="home" size={24} color="gray" style={styles.iconStyle} />
-        <AnimatedTextInput
-          placeholder="Address"
-          value={address}
-          onChangeText={setAddress}
-        />
-      </View>
-      {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
-      <View style={styles.inputContainer}>
-      <Icon name="briefcase" size={24} color="gray" style={styles.iconStyle} />
-     <AnimatedTextInput
-        placeholder="Business Name"
-        value={businessName}
-        onChangeText={setBusinessName}
-      />
-      </View>
-      {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
-     <Dropdown
-  style={styles.dropdown}
-  placeholderStyle={styles.placeholderStyle}
-  selectedTextStyle={styles.selectedTextStyle}
-  placeholder="Select Profession"
-  data={profession.map((item, index) => ({
-    label: item.ProfessionName,
-    value: item.ProfessionName,
-    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
-  }))}
-  value={selectedProfession}
-  onChange={(item) => handleProfessionChange(item.value)}
-  search
-  searchPlaceholder="Search Profession"
-  labelField="label"
-  valueField="value"
-  inputSearchStyle={styles.inputSearchStyle}
-  renderItem={(item) => (
-    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
-      <Text style={styles.itemText}>{item.label}</Text>
-    </View>
-  )}
-/>
-        {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
-<Dropdown
-  style={styles.dropdown}
-  placeholderStyle={styles.placeholderStyle}
-  selectedTextStyle={styles.selectedTextStyle}
-  placeholder="Select Location"
-  data={Array.isArray(LocationID) && LocationID.length > 0 ? LocationID.map((item, index) => ({
-    label: item.label,  
-    value: item.value,  
-    backgroundColor: item.backgroundColor,  
-  })) : []} 
-  value={selectedLocation}
-  onChange={(item) => handlelocationChange(item.value)}
-  search
-  searchPlaceholder="Search Location"
-  labelField="label"
-  valueField="value"
-  inputSearchStyle={styles.inputSearchStyle}
-  renderItem={(item) => (
-    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
-      <Text style={styles.itemText}>{item.label}</Text>
-    </View>
-  )}
-/>
-        {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <LinearGradient
+        colors={['#2e3192', '#3957E8']}
+        style={styles.gradientContainer}
+      >
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.formContainer}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerTitle}>Create Account</Text>
+              <Text style={styles.headerSubtitle}>Fill in your details to get started</Text>
+            </View>
+            
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="user" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  ref={usernameInputRef}
+                  placeholder="Username"
+                  value={username}
+                  onChangeText={setUsername}
+                />
+              </View>
+              {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+            </View>
 
-          <Dropdown
-  style={styles.dropdown}
-  placeholderStyle={styles.placeholderStyle}
-  selectedTextStyle={styles.selectedTextStyle}
-  placeholder="Select Referred By"
-data={
-  Array.isArray(referMembers)
-    ? referMembers.map((member, index) => ({
-        label: member.UserInfo,
-        value: member.UserId,
-        backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
-      }))
-    : []
-}
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="lock" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!passwordVisible}
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+                  <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#2e3192" />
+                </TouchableOpacity>
+              </View>
+              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+            </View>
 
-  value={referredBy}
-  onChange={(item) => handleReferredByChange(item.value)}
-  search
-  searchPlaceholder="Search Referred By"
-  labelField="label"
-  valueField="value"
-  inputSearchStyle={styles.inputSearchStyle}
-  renderItem={(item) => (
-    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
-      <Text style={styles.itemText}>{item.label}</Text>
-    </View>
-  )}
-/>
-      {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
-      
-      <Text style={styles.label}>Start Date</Text>
-      <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.datePickerButton}>
-        <Text style={styles.datePickerText}>{startDate ? startDate : 'Select Start Date'}</Text>
-      </TouchableOpacity>
-      {showStartPicker && (
-        <DateTimePicker
-          value={startDate ? new Date(startDate) : new Date()}
-          mode="date"
-          display="default"
-          onChange={onChangeStartDate}
-        />
-      )}
-      <Text style={styles.label}>End Date</Text>
-      <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.datePickerButton} disabled={true} >
-        <Text style={styles.datePickerText}>{endDate ? endDate : 'Select End Date'}</Text>
-      </TouchableOpacity>
-      {showEndPicker && (
-        <DateTimePicker
-          value={endDate ? new Date(endDate) : new Date()}
-          mode="date"
-          display="default"
-          onChange={onChangeEndDate}
-        />
-      )}
-      {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-        <Text style={styles.registerButtonText}>Register</Text>
-      </TouchableOpacity>
-      </View>
-    </ScrollView>
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="lock" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!passwordVisible1}
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility1} style={styles.eyeIcon}>
+                  <Icon name={passwordVisible1 ? "eye" : "eye-slash"} size={20} color="#2e3192" />
+                </TouchableOpacity>
+              </View>
+              {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="phone" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Mobile Number"
+                  value={Mobileno}
+                  keyboardType="phone-pad"
+                  onChangeText={setMobileno}
+                  maxLength={10}
+                />
+              </View>
+              {MobilenoError ? <Text style={styles.errorText}>{MobilenoError}</Text> : null}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="envelope" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+              {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="home" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Address"
+                  value={address}
+                  onChangeText={setAddress}
+                />
+              </View>
+              {addressError ? <Text style={styles.errorText}>{addressError}</Text> : null}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.inputContainer}>
+                <Icon name="briefcase" size={20} color="#2e3192" style={styles.inputIcon} />
+                <AnimatedTextInput
+                  placeholder="Business Name"
+                  value={businessName}
+                  onChangeText={setBusinessName}
+                />
+              </View>
+              {businessNameError ? <Text style={styles.errorText}>{businessNameError}</Text> : null}
+            </View>
+            
+            <View style={styles.formGroup}>
+              <View style={styles.dropdownWrapper}>
+                <Icon name="list" size={20} color="#2e3192" style={styles.dropdownIcon} />
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  placeholder="Select Profession"
+                  data={profession.map((item, index) => ({
+                    label: item.ProfessionName,
+                    value: item.ProfessionName,
+                    backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
+                  }))}
+                  value={selectedProfession}
+                  onChange={(item) => handleProfessionChange(item.value)}
+                  search
+                  searchPlaceholder="Search Profession"
+                  labelField="label"
+                  valueField="value"
+                  inputSearchStyle={styles.inputSearchStyle}
+                  renderItem={(item) => (
+                    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+                      <Text style={styles.itemText}>{item.label}</Text>
+                    </View>
+                  )}
+                />
+              </View>
+              {selectedProfessionError && <Text style={styles.errorText}>{selectedProfessionError}</Text>}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.dropdownWrapper}>
+                <Icon name="map-marker" size={20} color="#2e3192" style={styles.dropdownIcon} />
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  placeholder="Select Location"
+                  data={Array.isArray(LocationID) && LocationID.length > 0 ? LocationID.map((item, index) => ({
+                    label: item.label,
+                    value: item.value,
+                    backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
+                  })) : []}
+                  value={selectedLocation}
+                  onChange={(item) => handlelocationChange(item.value)}
+                  search
+                  searchPlaceholder="Search Location"
+                  labelField="label"
+                  valueField="value"
+                  inputSearchStyle={styles.inputSearchStyle}
+                  renderItem={(item) => (
+                    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+                      <Text style={styles.itemText}>{item.label}</Text>
+                    </View>
+                  )}
+                />
+              </View>
+              {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
+            </View>
+
+            <View style={styles.formGroup}>
+              <View style={styles.dropdownWrapper}>
+                <Icon name="user-plus" size={20} color="#2e3192" style={styles.dropdownIcon} />
+                <Dropdown
+                  style={styles.dropdown}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  placeholder="Referred By (Optional)"
+                  data={
+                    Array.isArray(referMembers)
+                      ? referMembers.map((member, index) => ({
+                          label: member.UserInfo,
+                          value: member.UserId,
+                          backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
+                        }))
+                      : []
+                  }
+                  value={referredBy}
+                  onChange={(item) => handleReferredByChange(item.value)}
+                  search
+                  searchPlaceholder="Search Referrer"
+                  labelField="label"
+                  valueField="value"
+                  inputSearchStyle={styles.inputSearchStyle}
+                  renderItem={(item) => (
+                    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+                      <Text style={styles.itemText}>{item.label}</Text>
+                    </View>
+                  )}
+                />
+              </View>
+              {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
+            </View>
+
+            <View style={styles.dateContainer}>
+              <Text style={styles.dateLabel}>Membership Period</Text>
+              
+              <View style={styles.dateRow}>
+                <View style={styles.dateInputContainer}>
+                  <Text style={styles.dateSubLabel}>Start Date</Text>
+                  <TouchableOpacity 
+                    onPress={() => setShowStartPicker(true)} 
+                    style={styles.datePickerButton}
+                  >
+                    <Icon name="calendar" size={16} color="#2e3192" style={styles.calendarIcon} />
+                    <Text style={styles.datePickerText}>
+                      {startDate ? startDate : 'Select Date'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                
+                <View style={styles.dateInputContainer}>
+                  <Text style={styles.dateSubLabel}>End Date (1 Year)</Text>
+                  <View style={[styles.datePickerButton, styles.disabledDateButton]}>
+                    <Icon name="calendar" size={16} color="#888" style={styles.calendarIcon} />
+                    <Text style={[styles.datePickerText, styles.disabledDateText]}>
+                      {endDate ? endDate : 'Auto-calculated'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              
+              {showStartPicker && (
+                <DateTimePicker
+                  value={startDate ? new Date(startDate) : new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeStartDate}
+                />
+              )}
+              {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
+            </View>
+
+            <TouchableOpacity 
+              style={styles.registerButton} 
+              onPress={handleRegister}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Text style={styles.registerButtonText}>Processing...</Text>
+              ) : (
+                <Text style={styles.registerButtonText}>Register</Text>
+              )}
+            </TouchableOpacity>
+            
+            <View style={styles.loginPrompt}>
+              <Text style={styles.loginText}>Already have an account? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.loginLink}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </LinearGradient>
+    </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
+  gradientContainer: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingTop: 40,
+    paddingBottom: 30,
+  },
+  formContainer: {
+    backgroundColor: 'white',
+    margin: 10,
+    borderRadius: 15,
     padding: 20,
-    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
-  container1: {
-    justifyContent: 'center',
+  headerContainer: {
     alignItems: 'center',
+    marginBottom: 25,
   },
-  loadingContainer: {
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2e3192',
+    marginBottom: 8,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  formGroup: {
+    marginBottom: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 0.5,
+    // borderColor: '#2e3192',
+    borderRadius: 10,
+    backgroundColor: '#F5F7FE',
+    paddingHorizontal: 12,
+    height: 55,
+  },
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
     flex: 1,
+    fontSize: 16,
+    color: '#333',
+    paddingVertical: 12,
+  },
+  eyeIcon: {
+    padding: 8,
+  },
+  dropdownWrapper: {
+    position: 'relative',
+  },
+  dropdownIcon: {
+    position: 'absolute',
+    left: 12,
+    top: 18,
+    zIndex: 1,
+  },
+  dropdown: {
+    height: 55,
+    // borderWidth: 1.5,
+    // borderColor: '#e0e0e0',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingLeft: 40,
+    backgroundColor: '#F5F7FE',
+  },
+  placeholderStyle: {
+    color: '#888',
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    color: '#333',
+    fontSize: 16,
+  },
+  inputSearchStyle: {
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    height: 40,
+    color: '#333',
+  },
+  item: {
+    height: 50,
     justifyContent: 'center',
-    alignItems: 'center',
+    paddingLeft: 20,
   },
-  pickerContainer: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+  itemText: {
+    fontSize: 15,
+    color: '#333',
   },
-  label: {
-    marginVertical: 10,
+  dateContainer: {
+    marginBottom: 20,
+  },
+  dateLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4b5059',
+    color: '#2e3192',
+    marginBottom: 12,
   },
-    selectList: {
-      borderWidth: 2,
-      borderColor: '#2e3192',
-      borderRadius:10,
-      overflow: 'hidden',
-      marginVertical: 10,
-    },
-    datePickerButton: {
-      borderColor: '#ccc',
-      borderWidth: 1,
-      borderRadius: 5,
-      padding: 15,
-      width: '100%',
-      alignItems: 'center',
-    },
-    datePickerText: {
-      fontSize: 16,
-      color: '#333',
-    },
-    
-    errorText: {
-      color: 'red',
-      marginBottom: 10,
-    },
-    registerButton: {
-      backgroundColor: '#2e3192', 
-      padding: 15,
-      borderRadius: 5,
-      alignItems: 'center',
-      marginTop:10,
-      marginBottom: 10,
-    },
-    registerButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-iconStyle: {
-  color: 'black',
-  position: 'absolute',
-  right: 10, 
-  top: 25,  
-  zIndex: 1,
-},
-dropdown: {
-  height: 55,
-  borderWidth: 2,
-  borderColor: '#2e3192',
-  borderRadius: 10,
-  paddingHorizontal: 20,
-  overflow: 'hidden',
-  marginVertical: 10,
-
-},
-readOnlyText: {
-  height: 50,
-  lineHeight: 50,
-  borderColor: '#ccc',
-  borderWidth: 1,
-  borderRadius: 5,
-  paddingHorizontal: 10,
-  color: '#666',
-  backgroundColor: '#f5f5f5',
-},
-placeholderStyle: {
-  color: '#888',
-  fontSize: 18,
-  // paddingLeft: 10,
-},
-selectedTextStyle: {
-  color: '#000',
-  fontSize: 18,
-},
-inputSearchStyle: {
-  // borderWidth: 1,
-  borderColor: '#2e3192',
-  borderRadius: 8, 
-  // paddingHorizontal: -10,
-  height: 40, 
-  color: 'black',
-},
-item: {
-  height: 50,
-  justifyContent: 'center',
-  paddingLeft: 20,
-},
-itemText: {
-  fontSize: 15,
-  color: '#000',
-},          
-
+  dateSubLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 6,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dateInputContainer: {
+    width: '48%',
+  },
+  datePickerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#e0e0e0',
+    borderRadius: 10,
+    padding: 15,
+    backgroundColor: '#F5F7FE',
+  },
+  disabledDateButton: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#e0e0e0',
+  },
+  calendarIcon: {
+    marginRight: 8,
+  },
+  datePickerText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  disabledDateText: {
+    color: '#888',
+  },
+  errorText: {
+    color: '#FF3B30',
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+  registerButton: {
+    backgroundColor: '#2e3192',
+    paddingVertical: 16,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+    shadowColor: '#2e3192',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  registerButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  loginPrompt: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  loginText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  loginLink: {
+    color: '#2e3192',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
 });
 export default RegisterScreen;
-

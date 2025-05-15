@@ -26,8 +26,6 @@ const AddBusiness = () => {
   const [businessName, setBusinessName] = useState('');
   const [profession, setProfession] = useState([]);
   const [selectedProfession, setSelectedProfession] = useState('');
-  const [chapterType, setChapterType] = useState([]); 
-  const [selectedChapterType, setSelectedChapterType] = useState('');
   const [LocationID, setLocationID] = useState([]); 
   const [selectedLocation, setSelectedLocation] = useState(profileData.LocationID);
   const [startDate, setStartDate] = useState('');
@@ -39,7 +37,7 @@ const AddBusiness = () => {
  const [businessNameError, setBusinessNameError] = useState('');
  const [selectedProfessionError, setSelectedProfessionError] = useState('');
  const [selectedLocationError, setSelectedLocationError] = useState('');
- const [selectedSlotError,setSelectedslotError] =useState('');
+
  const [dateError,setSelecteddateError]= useState('');
  const fetchData = async () => {
   try {
@@ -55,11 +53,10 @@ const AddBusiness = () => {
       setProfileData(profileData);
     }
     if (profileData.RollId === 2) {
-      const { LocationID: locationId, ChapterType: chapterType } = profileData;
-      // chapterType = chapterType === '1' ? '2' : '1';
-      if (locationId && chapterType) {
-        console.log(`LocationID: ${locationId}, ChapterType: ${chapterType}`);
-        const excludeResponse = await fetch(`${API_BASE_URL}/api/professions/exclude-business-location/${locationId}/${chapterType}`);
+      const { LocationID: locationId} = profileData;
+      if (locationId) {
+        console.log(`LocationID: ${locationId}`);
+        const excludeResponse = await fetch(`${API_BASE_URL}/api/professions/exclude-business-location/${locationId}`);
         if (!excludeResponse.ok) {
           throw new Error(`HTTP error! status: ${excludeResponse.status}`);
         }
@@ -67,7 +64,7 @@ const AddBusiness = () => {
         console.log('Exclude professions data:', excludeData);
         setProfession(excludeData);
       } else {
-        console.error('LocationID or ChapterType is missing');
+        console.error('LocationID is missing');
       }
     } else {
       console.log('Fetching execute professions for RollId 3');
@@ -94,6 +91,7 @@ useFocusEffect(
     try {
       const response = await fetch(`${API_BASE_URL}/available-location?profession=${selectedProfession}`);
       const data = await response.json();
+      console.log('Available Locations:==================', data);
       setLocationID(data.availableLocations); 
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -102,7 +100,6 @@ useFocusEffect(
  const handleProfessionChange = (profession) => {
     setSelectedProfession(profession); 
     setSelectedLocation(null);
-    setSelectedChapterType(null);
     fetchLocationsByProfession(profession);
   };
   const handleRegister = async () => {
@@ -146,12 +143,6 @@ useFocusEffect(
             isValid = false;
         }
     }
-    if (profileData.RollId === 2) {
-        if (selectedChapterType === '') {
-            setSelectedslotError('Slot is required');
-            isValid = false;
-        }
-    }
     if (!startDate) {
         setSelecteddateError('Date is required');
         isValid = false;
@@ -160,7 +151,6 @@ useFocusEffect(
     if (isValid) {
         try {
             const LocationID = profileData.RollId === 2 ? profileData.LocationID : selectedLocation;
-            const adjustedChapterType = profileData.ChapterType === 1 ? 2 : 1;
             const response = await fetch(`${API_BASE_URL}/AddBusiness/${userId}`, {
                 method: 'POST',
                 headers: {
@@ -171,7 +161,6 @@ useFocusEffect(
                     address,
                     businessName,
                     profession: selectedProfession,
-                    chapterType: adjustedChapterType,
                     LocationID,
                     startDate,
                     endDate
@@ -188,27 +177,8 @@ useFocusEffect(
         }
     }
 };
-const fetchChapterTypes = async (selectedLocation, selectedProfession) => {
-  console.log("Location and Profession---------------",selectedLocation,selectedProfession);
-    try {
-        const response = await fetch(`${API_BASE_URL}/getSlotByBusiness?userId=${userId}&locationId=${selectedLocation}&profession=${selectedProfession}`);
-        const data = await response.json();
-        console.log("Data of Chapter types----------------",data);
-        setChapterType(data.getslot);
-        if (response.ok) {
-          console.log('Available Slots:', data);
-        } else {
-          console.error('Error:', data.message);
-        }
-      } catch (error) {
-        console.error('Error fetching available slots:', error);
-      }
-  };
 const handlelocationChange = (selectedLocation) => {
     setSelectedLocation(selectedLocation);
-    if(selectedProfession && selectedLocation){
-      fetchChapterTypes(selectedLocation, selectedProfession);
-    }
   };
 const onChangeStartDate = (event, selectedDate) => {
     setShowStartPicker(false);
@@ -296,61 +266,36 @@ const onChangeStartDate = (event, selectedDate) => {
   />
   {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
 </View>
-{selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-<View style={styles.selectList}>
-      <TextInput
-        style={styles.textInput}
-        value={profileData.ChapterType === '2' ? '1' : '2'}
-        editable={false}
-      />
-    </View>
 </>
       )}
       {profileData.RollId === 3 && (
         <>
 <View>
-<Dropdown
-  style={styles.dropdown}
-  placeholderStyle={styles.placeholderStyle}
-  selectedTextStyle={styles.selectedTextStyle}
-  placeholder="Select Location"
-  data={LocationID.map((item, index) => ({
-    label: item.location,
-    value: item.value,
-    backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
-  }))}
-  value={selectedLocation}
-  onChange={(item) => handlelocationChange(item.value)}
-  search
-  searchPlaceholder="Search Location"
-  labelField="label"
-  valueField="value"
-  inputSearchStyle={styles.inputSearchStyle}
-  renderItem={(item) => (
-    <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
-      <Text style={styles.itemText}>{item.label}</Text>
-    </View>
-  )}
-/>
-      {selectedLocationError && <Text style={styles.errorText}>{selectedLocationError}</Text>}
-    </View>
-    {selectedSlotError ? <Text style={styles.errorText}>{selectedSlotError}</Text> : null}
-    <View>
-    <Dropdown
-        data={chapterType}
-        labelField="Slots"
-        valueField="Id"
-        placeholder="Select Slot"
-        value={selectedChapterType}
-        onChange={(item) => {
-          setSelectedChapterType(item.Id);
-        }}
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-      />
+  <Dropdown
+    style={styles.dropdown}
+    placeholderStyle={styles.placeholderStyle}
+    selectedTextStyle={styles.selectedTextStyle}
+    placeholder="Select Location"
+    data={LocationID.map((item, index) => ({
+      label: item.LocationName,
+      value: item.LocationID,
+      backgroundColor: index % 2 === 0 ? 'white' : '#f5f7ff',
+    }))}
+    value={selectedLocation}
+    onChange={(item) => handlelocationChange(item.value)} // Handle location change
+    search
+    searchPlaceholder="Search Location"
+    labelField="label"
+    valueField="value"
+    inputSearchStyle={styles.inputSearchStyle}
+    renderItem={(item) => (
+      <View style={[styles.item, { backgroundColor: item.backgroundColor }]}>
+        <Text style={styles.itemText}>{item.label}</Text>
+      </View>
+    )}
+  />
 </View>
+{selectedLocationError ? <Text style={styles.errorText}>{selectedLocationError}</Text> : null}
 </>
       )}
     {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}

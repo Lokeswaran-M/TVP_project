@@ -6,7 +6,6 @@ import ForgetPassword from '../screens/ForgetPassword';
 import ResetPassword from '../screens/ResetPassword';
 import Custom_input from '../screens/Custom_input';
 import Otpscreen from '../screens/Otpscreen';
-import SubstitutePage from '../screens/SubstitutePage';
 import AdminPage from '../screens/AdminPage';
 import Scanner from '../screens/Scanner';
 // import PaymentWebView from '../screens/PaymentWebview';
@@ -135,20 +134,13 @@ const AuthNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen  name="Login"   component={LoginScreen} options={{ headerShown: false }} />
-      <Stack.Screen  name="Register"  component={RegisterScreen}   options={{ title: 'Register ',  ...headerOptions}}   />
-      <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password', ...headerOptions }} />
-      <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password',  ...headerOptions}} />
+      <Stack.Screen  name="Register"  component={RegisterScreen}   options={{ title: 'Register ', headerShown: false,  ...headerOptions}}   />
+      <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password',headerShown: false, ...headerOptions }} />
+      <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password', headerShown: false, ...headerOptions}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
       <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'SubstitutePage', headerShown:false,  ...headerOptions}} />
       <Stack.Screen  name="Scanner"  component={Scanner}/>
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderTPVpng/>, headerLeft: () => null, }}/>
-      {/* <Stack.Screen  name="PaymentWebView"  component={PaymentWebView}   options={{ headerShown: false }}/> */}
-      {/* <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otp Screen ',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="SubstitutePage"  component={SubstitutePage}   options={{ title: 'Substitute Page',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} />
-      <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ title: 'Admin Page',   headerStyle: { backgroundColor: '#2e3192' } ,headerTintColor: '#fff'}} /> */}
-
-{/* Lokesh screens  */}
         <Stack.Screen name="AdminMemberstack" component={AdminMemberstack} options={{ headerShown: false, headerLeft: () => null, }}/>
         <Stack.Screen name="HeadAdminNewSubscribers" component={HeadAdminNewSubscribers} options={{ headerShown:true , header: () => <CustomHeaderSubscribers/>, headerLeft: () => null,  }} />
         <Stack.Screen name="HeadAdminPaymentsPage" component={HeadAdminPaymentsPage} options={{headerShown:true , header: () => <CustomHeaderPayments/>, headerLeft: () => null, }} />
@@ -217,7 +209,7 @@ const styles = StyleSheet.create({
   },
   NavbuttonText: {
     color: '#2e3192',
-    fontSize: width * 0.04, // Responsive font size
+    fontSize: width * 0.04,
     fontWeight: 'bold',
     marginHorizontal: 10,
   },

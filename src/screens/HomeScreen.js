@@ -29,7 +29,6 @@ const PRIMARY_COLOR = '#2e3091';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
-  const { chapterType } = route.params;
   const [isConfirmed, setIsConfirmed] = useState({});
   const [topFiveData, setTopFiveData] = useState([]);
   const [topFiveerror, settopFiveError] = useState(null);
@@ -65,15 +64,14 @@ const HomeScreen = ({ route }) => {
     ]).finally(() => {
       setRefreshing(false);
     });
-  }, [route.params.locationId, chapterType, userId]);
+  }, [route.params.locationId, userId]);
 
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
     try {
       const locationId = route.params.locationId;
-      const slots = chapterType;
-      console.log("Requesting Requirements with params:", { locationId, slots, userId });
-      const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
+      console.log("Requesting Requirements with params:", { locationId, userId });
+      const response = await fetch(`${API_BASE_URL}/requirements?LocationID=${locationId}&UserId=${userId}`);
       const data = await response.json();
       if (response.ok) {
         console.log("Requirements Data received:", data);
@@ -160,8 +158,7 @@ const HomeScreen = ({ route }) => {
   const fetchTopFiveData = async () => {
     try {
       const locationId = route.params.locationId;
-      const slots = chapterType;
-      const response = await fetch(`${API_BASE_URL}/TopFive?locationId=${locationId}&slot=${slots}`);
+      const response = await fetch(`${API_BASE_URL}/TopFive?locationId=${locationId}`);
       const data = await response.json();
       if (response.ok) {
         setTopFiveData(data);
@@ -179,8 +176,7 @@ const HomeScreen = ({ route }) => {
   const fetchEventData = async () => {
     try {
       const locationId = route.params.locationId;
-      const slots = chapterType;
-      const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&Slots=${slots}&UserId=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&UserId=${userId}`);
       const data = await response.json();
       if (response.ok) {
         setEventData(data.events || []);
@@ -198,8 +194,7 @@ const HomeScreen = ({ route }) => {
   const fetchReviewsData = async () => {
     try {
       const locationId = route.params.locationId;
-      const slots = chapterType;
-      const response = await fetch(`${API_BASE_URL}/reviewView?locationId=${locationId}&slot=${slots}&UserId=${userId}`);
+      const response = await fetch(`${API_BASE_URL}/reviewView?locationId=${locationId}&UserId=${userId}`);
       const data = await response.json();
       if (response.ok) {
         setReviewsData(data);
@@ -268,7 +263,7 @@ const HomeScreen = ({ route }) => {
   const handleButtonClick = (buttonType) => {
     setButtonClicked(buttonType);
   };
-  const handleConfirmClick = async (eventId, locationId, slotId) => {
+  const handleConfirmClick = async (eventId, locationId) => {
         setIsConfirmed((prevState) => ({ ...prevState, [eventId]: true }));
         setModalVisible(false);
         try {
@@ -280,7 +275,6 @@ const HomeScreen = ({ route }) => {
             body: JSON.stringify({
               UserId: userId,
               LocationID: locationId,
-              SlotID: slotId,
               EventId: eventId,
               Profession: profession,
             }),
@@ -310,7 +304,6 @@ const HomeScreen = ({ route }) => {
               userId: userId,
               acknowledgedUserId: requirement.UserId,
               LocationID: route.params.locationId,
-              Slots: chapterType,
               Id: requirement.Id,
               Profession: profession,
             }),
@@ -519,7 +512,7 @@ const HomeScreen = ({ route }) => {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.modalButton}
-                        onPress={() => handleConfirmClick(selectedEvent.EventId, selectedEvent.LocationID, selectedEvent.SlotID)}
+                        onPress={() => handleConfirmClick(selectedEvent.EventId, selectedEvent.LocationID)}
                       >
                         <Text style={styles.modalButtonText}>OK</Text>
                       </TouchableOpacity>
@@ -556,7 +549,6 @@ const HomeScreen = ({ route }) => {
             navigation.navigate("Requirements", {
               Profession: route.title,
               locationId: route.params.locationId,
-              chapterType: route.params.chapterType,
             })
           }
         >
@@ -651,7 +643,6 @@ const HomeScreen = ({ route }) => {
           onPress={() => navigation.navigate('Review', {
             businessName: route.title,
             locationId: route.params.locationId,
-            chapterType: route.params.chapterType,
           })}
         >
           <View style={styles.buttonContent}>
@@ -728,7 +719,6 @@ export default function TabViewExample({ navigation }) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
             title: business.BD,
-            chapterType: business.CT,
             locationId: business.L,
             isPaid: business.IsPaid,
           }));
@@ -754,7 +744,6 @@ export default function TabViewExample({ navigation }) {
         ...route, 
         params: { 
           locationId: business?.L, 
-          chapterType: business?.CT,
           Profession: business?.BD 
         } 
       }} />;
@@ -762,7 +751,6 @@ export default function TabViewExample({ navigation }) {
     return (
       <HomeScreen
         title={route.title}
-        chapterType={business?.CT}
         locationId={business?.L}
         userId={userId}
         navigation={navigation}
@@ -770,7 +758,6 @@ export default function TabViewExample({ navigation }) {
           ...route, 
           params: { 
             locationId: business?.L, 
-            chapterType: business?.CT
           } 
         }}
       />

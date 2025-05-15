@@ -80,7 +80,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
     fetchMembersData();
   }, []);
 
-  // Filter members based on search query, location, and ChapterTypes (1 and/or 2)
   const applyFilters = () => {
     let filtered = members;
 
@@ -95,17 +94,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
     if (selectedLocation) {
       filtered = filtered.filter((member) => member.LocationName === selectedLocation);
     }
-
-    // Filter based on ChapterType (sun/moon active)
-    if (selectedIcons.sunActive && selectedIcons.moonActive) {
-      filtered = filtered.filter((member) => member.ChapterType === 1 || member.ChapterType === 2);
-    } else if (selectedIcons.sunActive) {
-      filtered = filtered.filter((member) => member.ChapterType === 1);
-    } else if (selectedIcons.moonActive) {
-      filtered = filtered.filter((member) => member.ChapterType === 2);
-    }
-
-    // Filter based on search query
     if (searchQuery) {
       filtered = filtered.filter((member) =>
         member.Username && member.Username.toLowerCase().includes(searchQuery.toLowerCase())

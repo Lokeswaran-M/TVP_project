@@ -1,26 +1,34 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal } from 'react-native';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ScrollView, 
+  Modal,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { API_BASE_URL } from '../constants/Config';
-// import sun from '../../assets/images/sun.png';
-// import moon from '../../assets/images/moon.png';
 
 const NewMeeting = () => {
   const navigation = useNavigation(); 
   const [showCalendar, setShowCalendar] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
-  const [SlotIDs, setSlotIDs] = useState([]);
   const [date, setDate] = useState(null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // Modal for confirmation
+  const [submitting, setSubmitting] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
-  const [showMessageModal, setShowMessageModal] = useState(false); // Modal for error/success messages
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   const userId = useSelector((state) => state.UserId);
 
@@ -44,60 +52,49 @@ const NewMeeting = () => {
       setProfileData(data);
     } catch (error) {
       console.error('Error fetching profile data in New Meeting:', error);
+      setModalMessage('Unable to load location data. Please try again later.');
+      setShowMessageModal(true);
     } finally {
       setLoading(false);
     }
   };
 
   const createMeeting = async () => {
-    if (!selectedDate || !date || !profileData.LocationID || SlotIDs.length === 0) {
-      setModalMessage('Please select a date, time, location, and at least one slot.');
+    if (!selectedDate || !date || !profileData.LocationID) {
+      setModalMessage('Please select a date, time and location.');
       setShowMessageModal(true);
       return;
     }
 
-    const promises = SlotIDs.map(async (SlotID) => {
-      const meetingData = {
-        CreatedBy: userId,
-        LocationID: profileData.LocationID,
-        DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`,
-        SlotID,
-      };
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/meetings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(meetingData),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to create meeting');
-        }
-      } catch (error) {
-        console.error(`Error creating meeting for SlotID ${SlotID}:`, error);
-        throw error;
-      }
-    });
+    setSubmitting(true);
+    
+    const meetingData = {
+      CreatedBy: userId,
+      LocationID: profileData.LocationID,
+      DateTime: `${selectedDate} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`,
+    };
 
     try {
-      await Promise.all(promises);
-      setModalMessage('Meetings created successfully!');
-    } catch (error) {
-      setModalMessage('Failed to create one or more meetings. Please try again.');
-    } finally {
-      setShowMessageModal(true);
-      setShowConfirmationModal(false); // Close confirmation modal
-    }
-  };
+      const response = await fetch(`${API_BASE_URL}/api/meetings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(meetingData),
+      });
 
-  const handleSlotClick = (id) => {
-    if (SlotIDs.includes(id)) {
-      setSlotIDs((prev) => prev.filter((slotID) => slotID !== id));
-    } else {
-      setSlotIDs((prev) => [...prev, id]);
+      if (!response.ok) {
+        throw new Error('Failed to create meeting');
+      }
+
+      setModalMessage('Meeting created successfully!');
+    } catch (error) {
+      console.error('Error creating meeting:', error);
+      setModalMessage('Failed to create meeting. Please try again.');
+    } finally {
+      setSubmitting(false);
+      setShowMessageModal(true);
+      setShowConfirmationModal(false);
     }
   };
 
@@ -117,152 +114,267 @@ const NewMeeting = () => {
 
   const hideAlert = () => {
     setShowMessageModal(false);
-    if (modalMessage === 'Meetings created successfully!') {
+    if (modalMessage === 'Meeting created successfully!') {
       navigation.goBack();
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Create Meeting</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={[styles.iconContainer, SlotIDs.includes(1) && { backgroundColor: '#2e3192' }]}
-          onPress={() => handleSlotClick(1)}
-        >
-          {/* <Image source={sun} style={{ width: 50, height: 50 }} /> */}
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#f8f9fa" barStyle="dark-content" />
+      
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Icon name="arrow-left" size={20} color="#2e3192" />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.iconContainer, SlotIDs.includes(2) && { backgroundColor: '#2e3192' }]}
-          onPress={() => handleSlotClick(2)}
-        >
-          {/* <Image source={moon} style={{ width: 50, height: 50 }} /> */}
-        </TouchableOpacity>
+        <Text style={styles.title}>Create Meeting</Text>
+        <View style={styles.spacer} />
       </View>
-      <TouchableOpacity onPress={toggleCalendar}>
-        <View style={styles.section}>
-          <Text style={styles.label}>{selectedDate ? selectedDate : 'Date'}</Text>
-          <Icon name="calendar" size={30} color="#2e3192" />
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#2e3192" />
+          <Text style={styles.loadingText}>Loading your details...</Text>
         </View>
-      </TouchableOpacity>
-      {showCalendar && (
-        <Calendar
-          onDayPress={onDaySelect}
-          markedDates={{
-            [selectedDate]: { selected: true, marked: true, selectedColor: '#2e3192' },
-          }}
-        />
+      ) : (
+        <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Meeting Details</Text>
+            
+            <TouchableOpacity 
+              onPress={toggleCalendar} 
+              style={[styles.inputField, selectedDate ? styles.filledField : null]}
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="calendar" size={20} color="#2e3192" />
+              </View>
+              <Text style={[styles.inputText, selectedDate ? styles.filledText : styles.placeholderText]}>
+                {selectedDate ? formatDate(selectedDate) : 'Select date'}
+              </Text>
+            </TouchableOpacity>
+
+            {showCalendar && (
+              <View style={styles.calendarContainer}>
+                <Calendar
+                  onDayPress={onDaySelect}
+                  markedDates={{
+                    [selectedDate]: { selected: true, marked: true, selectedColor: '#2e3192' },
+                  }}
+                  theme={{
+                    todayTextColor: '#2e3192',
+                    arrowColor: '#2e3192',
+                    dotColor: '#2e3192',
+                    selectedDayBackgroundColor: '#2e3192',
+                  }}
+                  minDate={new Date().toISOString().split('T')[0]}
+                />
+              </View>
+            )}
+            
+            <TouchableOpacity 
+              onPress={showTimePicker} 
+              style={[styles.inputField, date ? styles.filledField : null]}
+            >
+              <View style={styles.iconContainer}>
+                <Icon name="clock-o" size={20} color="#2e3192" />
+              </View>
+              <Text style={[styles.inputText, date ? styles.filledText : styles.placeholderText]}>
+                {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Select time'}
+              </Text>
+            </TouchableOpacity>
+            
+            <View style={[styles.inputField, profileData?.Location ? styles.filledField : null]}>
+              <View style={styles.iconContainer}>
+                <Icon name="map-marker" size={20} color="#2e3192" />
+              </View>
+              <Text style={[styles.inputText, profileData?.Location ? styles.filledText : styles.placeholderText]}>
+                {profileData?.Location || 'No location available'}
+              </Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            disabled={submitting}
+            onPress={() => {
+              if (!selectedDate || !date || !profileData.LocationID) {
+                setModalMessage('Please select a date, time, and location to continue.');
+                setShowMessageModal(true);
+              } else {
+                setShowConfirmationModal(true);
+              }
+            }}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>Create Meeting</Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
       )}
-      <TouchableOpacity onPress={showTimePicker}>
-        <View style={styles.section}>
-          <Text style={styles.label}>
-            {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Time'}
-          </Text>
-          <Icon name="clock-o" size={30} color="#2e3192" />
+
+      {/* Message Modal */}
+      <Modal transparent={true} visible={showMessageModal} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                {modalMessage.includes('success') ? 'Success' : 'Message'}
+              </Text>
+            </View>
+            <View style={styles.modalBody}>
+              <Text style={styles.modalMessage}>{modalMessage}</Text>
+            </View>
+            <TouchableOpacity style={styles.modalButton} onPress={hideAlert}>
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </TouchableOpacity>
+      </Modal>
+
+      {/* Confirmation Modal */}
+      <Modal transparent={true} visible={showConfirmationModal} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Confirm Meeting</Text>
+            </View>
+            <View style={styles.modalBody}>
+              <Text style={styles.modalMessage}>
+                Are you sure you want to create a meeting on {formatDate(selectedDate)} at{' '}
+                {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : ''}?
+              </Text>
+              {profileData?.Location && (
+                <Text style={styles.modalLocation}>
+                  Location: {profileData.Location}
+                </Text>
+              )}
+            </View>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setShowConfirmationModal(false)}>
+                <Text style={styles.modalButtonTextSecondary}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButtonPrimary} onPress={createMeeting}>
+                <Text style={styles.modalButtonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <DateTimePickerModal
         isVisible={isTimePickerVisible}
         mode="time"
         onConfirm={handleTimeConfirm}
         onCancel={hideTimePicker}
       />
-      <View style={styles.section}>
-        <Text style={styles.label}>{profileData?.Location ? `${profileData.Location}` : 'Location'}</Text>
-        <Icon name="map-marker" size={30} color="#2e3192" />
-      </View>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          if (!selectedDate || !date || !profileData.LocationID || SlotIDs.length === 0) {
-            setModalMessage('Please select a date, time, location, and at least one slot.');
-            setShowMessageModal(true); // Show message modal for missing inputs
-          } else {
-            setShowConfirmationModal(true); // Show confirmation modal if all inputs are valid
-          }
-        }}
-      >
-        <Text style={styles.buttonText}>Create Meeting</Text>
-      </TouchableOpacity>
-
-      {/* Message Modal */}
-      <Modal transparent={true} visible={showMessageModal} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainerok}>
-            <Text style={styles.modalTitle}>Message</Text>
-            <Text style={styles.modalMessage}>{modalMessage}</Text>
-            <TouchableOpacity style={styles.modalButtonNo} onPress={hideAlert}>
-              <Text style={styles.modalButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      {/* Confirmation Modal */}
-      <Modal transparent={true} visible={showConfirmationModal} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Confirm Meeting</Text>
-            <Text style={styles.modalMessage}>
-              Are you sure you want to create a meeting on {selectedDate} at{' '}
-              {date ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'time not set'}?
-            </Text>
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity style={styles.modalButtonNo} onPress={() => setShowConfirmationModal(false)}>
-                <Text style={styles.modalButtonText}>No</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButtonYes} onPress={createMeeting}>
-                <Text style={styles.modalButtonText}>Yes</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-    paddingTop: 80,
+    backgroundColor: '#f8f9fa',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e1e4e8',
+  },
+  backButton: {
+    padding: 8,
   },
   title: {
-    fontSize: 28,
+    fontSize: 20,
+    fontWeight: '600',
     color: '#2e3192',
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
-  row: {
+  spacer: {
+    width: 36,
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#666',
+    fontSize: 16,
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+  },
+  inputField: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
+    alignItems: 'center',
+    backgroundColor: '#f5f7fa',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e1e4e8',
+  },
+  filledField: {
+    backgroundColor: '#f0f4ff',
+    borderColor: '#c5d1f8',
   },
   iconContainer: {
-    backgroundColor: '#fff',
-    padding: 5,
-    borderRadius: 100,
-    elevation: 10,
+    marginRight: 12,
   },
-  section: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
-    marginBottom: 20,
+  inputText: {
+    fontSize: 16,
+    flex: 1,
   },
-  label: {
-    fontSize: 18,
-    color: '#2e3192',
+  placeholderText: {
+    color: '#888',
+  },
+  filledText: {
+    color: '#333',
+  },
+  calendarContainer: {
+    marginBottom: 12,
+    borderRadius: 8,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#e1e4e8',
   },
   button: {
     backgroundColor: '#2e3192',
-    paddingVertical: 20,
-    borderRadius: 10,
+    borderRadius: 8,
+    padding: 16,
     alignItems: 'center',
+    marginVertical: 8,
   },
   buttonText: {
     color: 'white',
@@ -276,63 +388,73 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: 300,
-    padding: 20,
+    width: '85%',
     backgroundColor: 'white',
-    borderRadius: 10,
-  
+    borderRadius: 12,
+    overflow: 'hidden',
   },
-  modalContainerok: {
-    width: 300,
-    padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  alignItems:"center",
+  modalHeader: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e1e4e8',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 10,
     color: '#2e3192',
     textAlign: 'center',
   },
+  modalBody: {
+    padding: 16,
+  },
   modalMessage: {
     fontSize: 16,
-    marginBottom: 20,
+    color: '#333',
     textAlign: 'center',
+    lineHeight: 22,
+  },
+  modalLocation: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  modalButton: {
+    backgroundColor: '#2e3192',
+    padding: 16,
+    alignItems: 'center',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
   modalButtonContainer: {
     flexDirection: 'row',
-    justifyContent:'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#e1e4e8',
   },
-  modalButtonYes: {
+  modalButtonPrimary: {
+    flex: 1,
     backgroundColor: '#2e3192',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-    width:50,
-    
+    padding: 16,
+    alignItems: 'center',
   },
-  modalButtonNo:{
-    backgroundColor: '#2e3192',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-    width:50,
-  },
-  modalButtonNo: {
-    backgroundColor: '#2e3192',
-    padding: 10,
-    borderRadius: 5,
-    marginHorizontal: 10,
-    width:50,
+  modalButtonSecondary: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 16,
+    alignItems: 'center',
+    borderRightWidth: 1,
+    borderRightColor: '#e1e4e8',
   },
   modalButtonText: {
     color: 'white',
     fontWeight: '600',
-    textAlign: 'center',
+    fontSize: 16,
   },
-
+  modalButtonTextSecondary: {
+    color: '#666',
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });
 
 export default NewMeeting;

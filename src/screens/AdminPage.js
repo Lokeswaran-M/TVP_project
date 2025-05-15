@@ -19,8 +19,6 @@ const AdminPage = () => {
   const [showAllReviews, setShowAllReviews] = useState(false);
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [slots, setSlots] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState('');
   const [loadingTopFive, setLoadingTopFive] = useState(false);
   const [topFiveData, setTopFiveData] = useState([]);
   const [buttonClicked, setButtonClicked] = useState(null);
@@ -31,23 +29,19 @@ const AdminPage = () => {
   const fetchLocationData = async () => {
     try {
       console.log("Fetching location data...");
-      const locationsResponse = await fetch(`${API_BASE_URL}/api/locations-and-slots`);
+      const locationsResponse = await fetch(`${API_BASE_URL}/api/locations`);
 
       if (!locationsResponse.ok) {
         throw new Error('Network response was not ok');
       }
 
       const locationsData = await locationsResponse.json();
-      console.log("Fetched locations and slots:", locationsData);
+      console.log("Fetched locations ", locationsData);
 
       setLocations(locationsData.locations || []);
-      setSlots(locationsData.slots || []);
 
       if (locationsData.locations?.length > 0) {
         setSelectedLocation(locationsData);
-      }
-      if (locationsData.slots?.length > 0) {
-        setSelectedSlot(locationsData);
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -55,8 +49,8 @@ const AdminPage = () => {
   };
 
   const fetchTopFiveData = async () => {
-    if (!selectedLocation || !selectedSlot) {
-      console.log('Location or Slot not selected yet.');
+    if (!selectedLocation) {
+      console.log('Location not selected yet.');
       return;
     }
 
@@ -64,21 +58,21 @@ const AdminPage = () => {
       setLoadingTopFive(true);
 
       const response = await fetch(
-        `${API_BASE_URL}/TopFive?locationId=${selectedLocation}&slot=${selectedSlot}`
+        `${API_BASE_URL}/TopFive?locationId=${selectedLocation}`
       );
       const data = await response.json();
-      console.log("----------------------------response data-----------------", selectedLocation, selectedSlot)
+      console.log("----------------------------response data-----------------", selectedLocation)
       console.log("----------------------------top 5 data-----------------", data)
 
       if (Array.isArray(data)) {
-        setTopFiveData(data); // Only set the data if it's an array
+        setTopFiveData(data); 
       } else {
         console.error('API returned non-array data:', data);
-        setTopFiveData([]); // Fallback to empty array to prevent errors
+        setTopFiveData([]); 
       }
     } catch (error) {
       console.error('Error fetching Top Five data:', error);
-      setTopFiveData([]); // Fallback to empty array to prevent errors
+      setTopFiveData([]); 
     } finally {
       setLoadingTopFive(false);
     }
@@ -152,7 +146,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     fetchTopFiveData();
-  }, [selectedLocation, selectedSlot]);
+  }, [selectedLocation]);
 
   const handleButtonClick = (buttonType) => {
     const groupAndSumAmounts = (data) => {
@@ -283,40 +277,6 @@ const AdminPage = () => {
             </View>
           )}
         </View>
-
-
-        {/*    
-<View style={styles.dropdownContainer}>
-
-  <Picker
-    selectedValue={selectedLocation}
-    onValueChange={(itemValue) => {
-      setSelectedLocation(itemValue); // Update location
-      fetchTopFiveData(); // Fetch top 5 data after selecting location
-    }}
-    style={styles.picker}
-  >
-    <Picker.Item label="Select Location" value="" />
-    {locations.map((location) => (
-      <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
-    ))}
-  </Picker>
-
-
-  <Picker
-    selectedValue={selectedSlot}
-    onValueChange={(itemValue) => {
-      setSelectedSlot(itemValue); // Update slot
-      fetchTopFiveData(); // Fetch top 5 data after selecting slot
-    }}
-    style={styles.picker}
-  >
-    <Picker.Item label="Select Slot" value="" />
-    {slots.map((slot) => (
-      <Picker.Item key={slot.Id} label={slot.Slots} value={slot.Id} />
-    ))}
-  </Picker>
-</View> */}
 <View style={styles.buttonContainer}>
           <View style={styles.leftButtons}>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
@@ -365,21 +325,6 @@ const AdminPage = () => {
                 <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
               ))}
             </Picker>
-
-
-            {/* <Picker
-              selectedValue={selectedSlot}
-              onValueChange={(itemValue) => {
-                setSelectedSlot(itemValue); // Update slot
-                fetchTopFiveData(); // Fetch top 5 data after selecting slot
-              }}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select Slot" value="" />
-              {slots.map((slot) => (
-                <Picker.Item key={slot.Id} label={slot.Slots} value={slot.Id} />
-              ))}
-            </Picker> */}
           </View>
 
           <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>

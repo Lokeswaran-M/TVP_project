@@ -10,7 +10,7 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
 import Subscription from './Subscription';
 
-const TabContent = ({ chapterType, locationId, userId }) => {
+const TabContent = ({ locationId, userId }) => {
   const navigation = useNavigation();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,15 +26,12 @@ const TabContent = ({ chapterType, locationId, userId }) => {
           },
           body: JSON.stringify({
             LocationID: locationId,
-            chapterType: chapterType,
             userId: userId,
           }),
         });
-
         if (!membersResponse.ok) {
           throw new Error('Failed to fetch members');
         }
-
         const data = await membersResponse.json();
         console.log("MEMBERS DATA IN MEMBERS LIST SCREEN---------------------------------",data, data.RollId);
         data.members.forEach(member => {
@@ -77,7 +74,7 @@ const TabContent = ({ chapterType, locationId, userId }) => {
     };
 
     fetchMembers();
-  }, [chapterType, locationId, userId]);
+  }, [locationId, userId]);
 
   const filteredMembers = members.filter(member =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -173,7 +170,6 @@ export default function TabViewExample({ navigation }) {
           const updatedRoutes = data.map((business, index) => ({
             key: `business${index + 1}`,
             title: business.BD,
-            chapterType: business.CT,
             locationId: business.L,
           }));
           setRoutes(updatedRoutes);
@@ -200,7 +196,6 @@ export default function TabViewExample({ navigation }) {
         ...route, 
         params: { 
           locationId: business?.L, 
-          chapterType: business?.CT,
           Profession: business?.BD 
         } 
       }} />;
@@ -208,7 +203,6 @@ export default function TabViewExample({ navigation }) {
     return (
       <TabContent
         title={route.title}
-        chapterType={business?.CT}
         locationId={business?.L}
         userId={userId}
         navigation={navigation}

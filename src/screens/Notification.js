@@ -134,11 +134,11 @@ const Notification = () => {
 
   const EmptyNotifications = () => (
     <View style={styles.emptyContainer}>
-      <Image 
+      {/* <Image 
         source={require('../../assets/images/DefaultProfile.jpg')} 
         style={styles.emptyImage} 
         resizeMode="contain"
-      />
+      /> */}
       <Text style={styles.emptyTitle}>No Notifications Yet</Text>
       <Text style={styles.emptyText}>When you receive notifications, they will appear here</Text>
     </View>

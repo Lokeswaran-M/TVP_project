@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 
 const Subscription = ({ route }) => {
-  const { chapterType, locationId, Profession } = route.params;
+  const { locationId, Profession } = route.params;
   const [businessCount, setBusinessCount] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isOffMonth, setIsOffMonth] = useState(false);
@@ -19,7 +19,6 @@ const Subscription = ({ route }) => {
         const queryParams = new URLSearchParams({
           Profession,
           LocationID: locationId,
-          ChapterType: chapterType,
         }).toString();
         const response = await fetch(`${API_BASE_URL}/businessCount?${queryParams}`);
         const data = await response.json();
@@ -31,28 +30,7 @@ const Subscription = ({ route }) => {
       }
     };
     fetchBusinessCount();
-  }, [chapterType, locationId, Profession]);
-
-  // const handleDeleteBusiness = () => {
-  //   Alert.alert(
-  //     "Confirm Update",
-  //     "Do you want to Update this business and add another?",
-  //     [
-  //       { text: "Cancel", style: "cancel" },
-  //       {
-  //         text: "Update",
-  //         onPress: () => {
-  //           // Navigate to the UpdateBusiness screen with the necessary params
-  //           navigation.navigate('UpdateBusiness', {
-  //             chapterType: chapterType,
-  //             locationId: locationId,
-  //             Profession: Profession,
-  //           });
-  //         },
-  //       },
-  //     ]
-  //   );
-  // };    
+  }, [ locationId, Profession]);  
 
   const handleDeleteBusiness = () => {
     Alert.alert(
@@ -72,7 +50,6 @@ const Subscription = ({ route }) => {
                 body: JSON.stringify({
                   Profession,
                   LocationID: locationId,
-                  ChapterType: chapterType,
                   UserId: userId,
                 }),
               });
@@ -81,7 +58,6 @@ const Subscription = ({ route }) => {
               if (response.ok) {
                 Alert.alert("Success", "Business status updated successfully.");
                 navigation.navigate('UpdateBusiness', {
-                              chapterType: chapterType,
                               locationId: locationId,
                               Profession: Profession,
                             });
@@ -114,8 +90,7 @@ const Subscription = ({ route }) => {
     try {
       const paymentAmount = isOffMonth ? 1500 : 3000;
       const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}`;
-      
-      // Log the URL for debugging purposes
+
       console.log('Payment URL:', paymentUrl);
 
       // Navigate to a WebView for payment processing
@@ -157,7 +132,7 @@ const Subscription = ({ route }) => {
         Fees and Duration :
         </Text>
         <Text style={styles.termsText1}>
-        Members are required to pay an annual subscription/registration/entry fee to be listed as chapter members for one year.
+        Members are required to pay an annual subscription/registration/entry fee to be listed as location members for one year.
           </Text>
           <Text style={styles.termsText}>
           Renewal Process :
@@ -178,15 +153,15 @@ const Subscription = ({ route }) => {
           After one year without renewal :
           </Text>
           <Text style={styles.termsText1}>
-          1. Member’s name is removed from the chapter member list.
+          1. Member’s name is removed from the location member list.
       2.Access to the TPV portal login is revoked.
           </Text>
           <Text style={styles.termsText}>
-          After the grace period (if the category/slot is filled) :
+          After the grace period (if the category is filled) :
           </Text>
           <Text style={styles.termsText1}>
-          1. Former member cannot rejoin the same chapter.
-      2.They can join another chapter if a category/slot is available.
+          1. Former member cannot rejoin the same location.
+      2.They can join another location if a category is available.
           </Text>
       </View>
     </ScrollView>

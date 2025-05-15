@@ -11,14 +11,13 @@ import AuthNavigator from '../navigations/AuthNavigator';
 import DrawerContent from './DrawerContent';
 import TabNavigator from './TabNavigator';
 import ProfileDrawerLabel  from './ProfileDrawerLabel';
-import SubstituteLogin from '../screens/SubstituteLogin';
 import Payment from '../screens/Payment';
 import PaymentWebview from '../screens/PaymentWebview';
 import Subscription from '../screens/Subscription';
 import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
-import UpdateBusiness from '../screens/UpdateBusiness';
+// import UpdateBusiness from '../screens/UpdateBusiness';
 // import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import OneMinPresentation from '../screens/OneMinPresentation';
 import PreAttendanceViewPage from '../screens/PreAttendanceViewPage';
@@ -132,12 +131,12 @@ function StackMeetingNavigator() {
       <StackMeeting.Screen
         name="NewMeeting"
         component={NewMeeting}
-        options={{ headerShown: true, title: 'New Meeting'}}
+        options={{ headerShown: false, title: 'New Meeting'}}
       />
       <StackMeeting.Screen
         name="EditMeeting"
         component={EditMeeting}
-        options={{ headerShown: true, title: 'Edit Meeting'}}
+        options={{ headerShown: false, title: 'Edit Meeting'}}
       />
       {/* <Stack.Screen 
       name="GeneratedQRScreen" 
@@ -147,7 +146,7 @@ function StackMeetingNavigator() {
       <Stack.Screen 
       name="CreateMeetingViewPage" 
       component={CreateMeetingViewPage} 
-      options={{ headerShown: true, title: 'Create meeting'}}
+      options={{ headerShown: false, title: 'Create meeting'}}
       />
       <Stack.Screen
         name="OneMinPresentation"
@@ -164,7 +163,7 @@ function StackMeetingNavigator() {
                     <View style={styles.topNavlogo}>
                       <Icon name="microphone" size={28} color="#FFFFFF" />
                     </View>
-                    <Text style={styles.NavbuttonText}>ONE MIN PRESENTATION</Text>
+                    <Text style={styles.NavbuttonText}>POST ATTENDANCE PRESENTATION</Text>
                   </TouchableOpacity>
                 </View>
               ),
@@ -472,33 +471,6 @@ const userId = useSelector((state) => state.UserId);
 />
 </>
       )}
-      {profileData?.RollId === 3 && (
-        <>
-      <Drawer.Screen
-        name="Substitute Login"
-        component={SubstituteLogin}
-        options={({ navigation }) => ({
-          drawerLabel: 'Substitute Login',
-          drawerIcon: ({ color, size }) => (
-            <Icon name="user-plus" color={color} size={size} />
-          ),
-          header: () => (
-            <View style={styles.topNav}>
-              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Icon name="navicon" size={20} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.buttonNavtop}>
-                <View style={styles.topNavlogo}>
-                  <Icon name="user-plus" size={28} color="#FFFFFF" />
-                </View>
-                <Text style={styles.NavbuttonText}>SUBSTITUTE LOGIN</Text>
-              </TouchableOpacity>
-            </View>
-          ),
-        })}
-      />
-      </>
-      )}
       <Drawer.Screen
         name="Payment"
         component={StackPaymentNavigator}
@@ -707,7 +679,7 @@ const user = useSelector((state) => state);
     ),
   })}
 />
-<Stack.Screen
+{/* <Stack.Screen
         name="UpdateBusiness"
         component={UpdateBusiness}
         options={({ navigation }) => ({
@@ -725,7 +697,7 @@ const user = useSelector((state) => state);
             </View>
           ),
         })}
-      />
+      /> */}
 {/* <Drawer.Screen
         name="AddBusiness"
         component={AddBusiness}

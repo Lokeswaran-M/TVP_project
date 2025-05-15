@@ -127,6 +127,7 @@ const Profile = () => {
       const data = await response.json();
       if (categoryID === 2) {
         setMultiProfile(data || {});
+        console.log('MultiProfile:----------------------------', data);
         if (data.ratings && Array.isArray(data.ratings) && data.ratings.length > 0) {
           const totalAverage = data.ratings.reduce((sum, rating) => sum + parseFloat(rating.average || 0), 0);
           const overallAvg = totalAverage / data.ratings.length;
@@ -258,7 +259,7 @@ const Profile = () => {
 
               {ratings && ratings.length > 0 && (
                 <View style={styles.performanceSection}>
-                  <Text style={styles.sectionTitle}>Performance Ratings</Text>
+                  <Text style={styles.sectionTitle}>Star Score</Text>
                   
                   {ratings.map((rating, index) => (
                     <View key={index} style={styles.ratingRow}>
