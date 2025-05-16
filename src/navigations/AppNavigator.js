@@ -528,19 +528,20 @@ const userId = useSelector((state) => state.UserId);
           drawerIcon: ({ color, size }) => (
             <Icon name="plus" color={color} size={size} />
           ),
-          header: () => (
-            <View style={styles.topNav}>
-              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Icon name="navicon" size={20} color="black" />
-              </TouchableOpacity>
-              <View style={styles.buttonNavtop}>
-                <View style={styles.topNavlogo}>
-                  <Icon name="plus" size={28} color="#FFFFFF" />
-                </View>
-                <Text style={styles.NavbuttonText}>ADD BUSINESS</Text>
-              </View>
-            </View>
-          ),
+          headerShown: false,
+          // header: () => (
+          //   <View style={styles.topNav}>
+          //     <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+          //       <Icon name="navicon" size={20} color="black" />
+          //     </TouchableOpacity>
+          //     <View style={styles.buttonNavtop}>
+          //       <View style={styles.topNavlogo}>
+          //         <Icon name="plus" size={28} color="#FFFFFF" />
+          //       </View>
+          //       <Text style={styles.NavbuttonText}>ADD BUSINESS</Text>
+          //     </View>
+          //   </View>
+          // ),
         })}
       />
       </>

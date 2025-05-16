@@ -8,7 +8,9 @@ import {
   Modal,
   StatusBar,
   ActivityIndicator,
-  SafeAreaView
+  SafeAreaView,
+  Dimensions,
+  Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -17,6 +19,9 @@ import { useSelector } from 'react-redux';
 import { Calendar } from 'react-native-calendars';
 import DatePicker from 'react-native-date-picker';
 import { API_BASE_URL } from '../constants/Config';
+
+const { width, height } = Dimensions.get('window');
+const isLargeScreen = width > 600;
 
 const COLORS = {
   primary: '#2e3192',
@@ -29,9 +34,9 @@ const COLORS = {
   error: '#F44336',
   border: '#e0e0e0'
 };
-
 const EditMeeting = ({ route }) => {
-  const { eventId, date, time, location, locationId } = route.params;
+  const { eventId, date, time, location, locationId , dateTime} = route.params;
+  console.log('EditMeeting route params:', route.params, dateTime);
   const navigation = useNavigation();
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
@@ -43,18 +48,41 @@ const EditMeeting = ({ route }) => {
   const [modalType, setModalType] = useState('success');
   const userId = useSelector((state) => state.UserId);
   useEffect(() => {
+    if (date) {
+      setSelectedDate(date);
+    }
     if (time) {
       try {
-        const [hours, minutes] = time.split(':');
+        const timeStr = time.trim();
+        let hours, minutes, isAM;
+        if (timeStr.includes('AM') || timeStr.includes('PM')) {
+          const timeParts = timeStr.replace(/ /g, '').match(/(\d+):(\d+):?(\d+)?(?:\s*)([APap][Mm])?/);
+          if (timeParts && timeParts.length >= 3) {
+            hours = parseInt(timeParts[1], 10);
+            minutes = parseInt(timeParts[2], 10);
+            isAM = (timeParts[4] || '').toLowerCase() === 'am';
+            if (!isAM && hours < 12) {
+              hours += 12;
+            }
+            if (isAM && hours === 12) {
+              hours = 0;
+            }
+          }
+        } else {
+          const timeParts = timeStr.split(':');
+          hours = parseInt(timeParts[0], 10);
+          minutes = parseInt(timeParts[1], 10);
+        }
         const timeDate = new Date();
-        timeDate.setHours(parseInt(hours, 10));
-        timeDate.setMinutes(parseInt(minutes, 10));
+        timeDate.setHours(hours);
+        timeDate.setMinutes(minutes);
+        timeDate.setSeconds(0);
         setSelectedTime(timeDate);
       } catch (error) {
-        console.error('Error parsing time:', error);
+        console.error('Error parsing time:', error, time);
       }
     }
-  }, []);
+  }, [date, time]);
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
@@ -64,20 +92,36 @@ const EditMeeting = ({ route }) => {
     setSelectedDate(day.dateString);
     setShowCalendar(false);
   };
+  
   const showAlert = (message, type = 'success') => {
     setModalMessage(message);
     setModalType(type);
     setModalVisible(true);
   };
+  
   const hideAlert = () => {
     setModalVisible(false);
     if (modalType === 'success') {
       navigation.goBack();
     }
   };
+  
   const formatTime = (date) => {
     if (!date) return '';
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+  const formatDateTimeForMySQL = (date, time) => {
+    if (!date || !time) return null;
+    const dateStr = date;
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const seconds = time.getSeconds().toString().padStart(2, '0');
+    const timeStr = `${hours}:${minutes}:${seconds}`;
+    return `${dateStr} ${timeStr}`;
   };
 
   const updateMeeting = async () => {
@@ -87,15 +131,10 @@ const EditMeeting = ({ route }) => {
     }
 
     setLoading(true);
-
-    const formattedTime = selectedTime.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit', 
-      hour12: false 
-    });
     
-    const formattedDateTime = `${selectedDate} ${formattedTime}`;
-
+    const formattedDateTime = formatDateTimeForMySQL(selectedDate, selectedTime);
+    console.log('Formatted DateTime for MySQL:', formattedDateTime);
+    
     const meetingData = {
       EventId: eventId,
       LocationID: locationId,
@@ -141,13 +180,13 @@ const EditMeeting = ({ route }) => {
       </View>
       
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.content}>
+        <View style={[styles.content, isLargeScreen && styles.contentLarge]}>
           <Text style={styles.sectionTitle}>Meeting Details</Text>
           
           <View style={styles.card}>
             <TouchableOpacity onPress={toggleCalendar} style={styles.section}>
               <View style={styles.sectionIconContainer}>
-                <Icon name="calendar" size={20} color={COLORS.white} />
+                <Icon name="calendar" size={isLargeScreen ? 24 : 20} color={COLORS.white} />
               </View>
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionLabel}>Date</Text>
@@ -160,7 +199,7 @@ const EditMeeting = ({ route }) => {
             
             <TouchableOpacity onPress={() => setOpen(true)} style={styles.section}>
               <View style={[styles.sectionIconContainer, {backgroundColor: COLORS.secondary}]}>
-                <Icon name="clock-o" size={20} color={COLORS.white} />
+                <Icon name="clock-o" size={isLargeScreen ? 24 : 20} color={COLORS.white} />
               </View>
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionLabel}>Time</Text>
@@ -175,7 +214,7 @@ const EditMeeting = ({ route }) => {
             
             <View style={styles.section}>
               <View style={[styles.sectionIconContainer, {backgroundColor: '#4a6fe7'}]}>
-                <Icon name="map-marker" size={20} color={COLORS.white} />
+                <Icon name="map-marker" size={isLargeScreen ? 24 : 20} color={COLORS.white} />
               </View>
               <View style={styles.sectionContent}>
                 <Text style={styles.sectionLabel}>Location</Text>
@@ -185,7 +224,7 @@ const EditMeeting = ({ route }) => {
           </View>
           
           {showCalendar && (
-            <View style={styles.calendarCard}>
+            <View style={[styles.calendarCard, isLargeScreen && styles.calendarCardLarge]}>
               <Calendar
                 onDayPress={onDaySelect}
                 markedDates={{
@@ -200,6 +239,9 @@ const EditMeeting = ({ route }) => {
                   dayTextColor: COLORS.text,
                   textDisabledColor: COLORS.border,
                   arrowColor: COLORS.primary,
+                  textDayFontSize: isLargeScreen ? 16 : 14,
+                  textMonthFontSize: isLargeScreen ? 18 : 16,
+                  textDayHeaderFontSize: isLargeScreen ? 16 : 14,
                 }}
                 minDate={new Date().toISOString().split('T')[0]}
               />
@@ -209,15 +251,16 @@ const EditMeeting = ({ route }) => {
           <TouchableOpacity 
             style={[
               styles.button, 
-              !selectedDate || !selectedTime ? styles.buttonDisabled : {}
+              !selectedDate || !selectedTime ? styles.buttonDisabled : {},
+              isLargeScreen && styles.buttonLarge
             ]}
             onPress={updateMeeting}
             disabled={!selectedDate || !selectedTime || loading}
           >
             {loading ? (
-              <ActivityIndicator color={COLORS.white} size="small" />
+              <ActivityIndicator color={COLORS.white} size={isLargeScreen ? "large" : "small"} />
             ) : (
-              <Text style={styles.buttonText}>Update Meeting</Text>
+              <Text style={[styles.buttonText, isLargeScreen && styles.buttonTextLarge]}>Update Meeting</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -243,29 +286,31 @@ const EditMeeting = ({ route }) => {
         onRequestClose={hideAlert}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <View style={[styles.modalContainer, isLargeScreen && styles.modalContainerLarge]}>
             <View style={[
               styles.modalIconContainer, 
-              { backgroundColor: modalType === 'success' ? COLORS.success : COLORS.error }
+              { backgroundColor: modalType === 'success' ? COLORS.success : COLORS.error },
+              isLargeScreen && styles.modalIconContainerLarge
             ]}>
               <MaterialIcons 
                 name={modalType === 'success' ? 'check-circle' : 'error'} 
-                size={30} 
+                size={isLargeScreen ? 40 : 30} 
                 color={COLORS.white} 
               />
             </View>
-            <Text style={styles.modalTitle}>
+            <Text style={[styles.modalTitle, isLargeScreen && styles.modalTitleLarge]}>
               {modalType === 'success' ? 'Success' : 'Error'}
             </Text>
-            <Text style={styles.modalMessage}>{modalMessage}</Text>
+            <Text style={[styles.modalMessage, isLargeScreen && styles.modalMessageLarge]}>{modalMessage}</Text>
             <TouchableOpacity 
               style={[
                 styles.modalButton,
-                { backgroundColor: modalType === 'success' ? COLORS.success : COLORS.error }
+                { backgroundColor: modalType === 'success' ? COLORS.success : COLORS.error },
+                isLargeScreen && styles.modalButtonLarge
               ]} 
               onPress={hideAlert}
             >
-              <Text style={styles.modalButtonText}>OK</Text>
+              <Text style={[styles.modalButtonText, isLargeScreen && styles.modalButtonTextLarge]}>OK</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -305,6 +350,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+  },
+  contentLarge: {
+    padding: 24,
+    maxWidth: 800,
+    alignSelf: 'center',
+    width: '100%'
   },
   sectionTitle: {
     fontSize: 18,
@@ -366,6 +417,9 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
   },
+  calendarCardLarge: {
+    padding: 8,
+  },
   button: {
     backgroundColor: COLORS.primary,
     paddingVertical: 16,
@@ -378,6 +432,13 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  buttonLarge: {
+    paddingVertical: 20,
+    borderRadius: 16,
+    maxWidth: 500,
+    alignSelf: 'center',
+    width: '100%'
+  },
   buttonDisabled: {
     backgroundColor: '#9e9eb5',
     shadowOpacity: 0,
@@ -387,6 +448,9 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  buttonTextLarge: {
+    fontSize: 18,
   },
   modalOverlay: {
     flex: 1,
@@ -401,6 +465,11 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: 'center',
   },
+  modalContainerLarge: {
+    width: '60%',
+    maxWidth: 500,
+    padding: 32,
+  },
   modalIconContainer: {
     width: 60,
     height: 60,
@@ -409,17 +478,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  modalIconContainerLarge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 24,
+  },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.text,
     marginBottom: 8,
   },
+  modalTitleLarge: {
+    fontSize: 24,
+    marginBottom: 12,
+  },
   modalMessage: {
     fontSize: 16,
     color: COLORS.lightText,
     marginBottom: 24,
     textAlign: 'center',
+  },
+  modalMessageLarge: {
+    fontSize: 18,
+    marginBottom: 32,
   },
   modalButton: {
     paddingVertical: 12,
@@ -428,10 +511,17 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  modalButtonLarge: {
+    paddingVertical: 16,
+    borderRadius: 12,
+  },
   modalButtonText: {
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  modalButtonTextLarge: {
+    fontSize: 18,
   },
 });
 

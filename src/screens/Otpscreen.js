@@ -352,7 +352,7 @@ const OtpScreen = ({ navigation }) => {
                   <Icon name="lock" size={40} color="#2e3192" style={styles.headerIcon} />
                   <Text style={styles.title}>Enter Verification Code</Text>
                   <Text style={styles.subtitle}>
-                    We've sent the code to {formatMobile(Mobileno)}
+                    We've sent the code to {(Mobileno)}
                   </Text>
                 </View>
                 

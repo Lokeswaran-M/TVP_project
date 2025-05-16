@@ -259,7 +259,7 @@ const Profile = () => {
 
               {ratings && ratings.length > 0 && (
                 <View style={styles.performanceSection}>
-                  <Text style={styles.sectionTitle}>Star Score</Text>
+                  <Text style={styles.sectionTitle}>Score</Text>
                   
                   {ratings.map((rating, index) => (
                     <View key={index} style={styles.ratingRow}>

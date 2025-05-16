@@ -250,6 +250,7 @@ activeOpacity={0.7}
                     time: new Date(meeting.DateTime).toLocaleTimeString(),
                     location: meeting.Location,
                     locationId: meeting.LocationID,
+                     dateTime: meeting.DateTime,
                   })
                 }
               >
@@ -305,7 +306,6 @@ activeOpacity={0.7}
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
             >
-              {/* Upcoming Meetings Section */}
               <View style={styles.sectionContainer}>
                 <Text style={styles.sectionTitle}>Upcoming Meetings</Text>
                 
@@ -317,8 +317,6 @@ activeOpacity={0.7}
                   renderEmptyState("No upcoming meetings")
                 )}
               </View>
-              
-              {/* Completed Meetings Section */}
               {completedMeetings.length > 0 && (
                 <View style={[styles.sectionContainer, styles.completedSection]}>
                   <Text style={[styles.sectionTitle, styles.completedSectionTitle]}>

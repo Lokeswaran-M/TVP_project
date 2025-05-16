@@ -13,7 +13,6 @@ import {
   Platform
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
@@ -46,10 +45,6 @@ const RegisterScreen = () => {
   const [referredBy, setReferredBy] = useState('');
   const [referLocationId, setReferLocationId] = useState('');
   const [referProfession, setreferProfession] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
-  const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible1, setPasswordVisible1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +59,6 @@ const RegisterScreen = () => {
   const [businessNameError, setBusinessNameError] = useState('');
   const [selectedProfessionError, setSelectedProfessionError] = useState('');
   const [selectedLocationError, setSelectedLocationError] = useState('');
-  const [dateError, setSelecteddateError] = useState('');
   const [referredByError, setReferredByError] = useState('');
   const [isUsernameValid, setIsUsernameValid] = useState(false);
 
@@ -140,27 +134,6 @@ const RegisterScreen = () => {
   const handlelocationChange = (selectedLocation) => {
     setSelectedLocation(selectedLocation);
   };
-
-  const onChangeStartDate = (event, selectedDate) => {
-    setShowStartPicker(false);
-    if (selectedDate) {
-      const formattedStartDate = selectedDate.toISOString().split('T')[0];
-      setStartDate(formattedStartDate);
-
-      const oneYearLater = new Date(selectedDate);
-      oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
-      const formattedEndDate = oneYearLater.toISOString().split('T')[0];
-      setEndDate(formattedEndDate);
-    }
-  };
-
-  const onChangeEndDate = (event, selectedDate) => {
-    setShowEndPicker(false);
-    if (selectedDate) {
-      const formattedEndDate = selectedDate.toISOString().split('T')[0];
-      setEndDate(formattedEndDate);
-    }
-  };
   const handleRegister = async () => {
     setUsernameError('');
     setPasswordError('');
@@ -172,7 +145,6 @@ const RegisterScreen = () => {
     setSelectedProfessionError('');
     setSelectedLocationError('');
     setReferredByError('');
-    setSelecteddateError('');
     
     let isValid = true;
     if (!username) {
@@ -252,12 +224,6 @@ const RegisterScreen = () => {
       setSelectedLocationError('Location is required');
       isValid = false;
     }
-    
-    if (!startDate) {
-      setSelecteddateError('Date is required');
-      isValid = false;
-    }
-    
     if (isValid) {
       setIsLoading(true);
       try {
@@ -288,9 +254,7 @@ const RegisterScreen = () => {
                 LocationID: selectedLocation,
                 referredBy, 
                 referLocationId,
-                referProfession,
-                startDate,
-                endDate
+                referProfession
               }
             }),
           });
@@ -521,45 +485,6 @@ const RegisterScreen = () => {
               {referredByError ? <Text style={styles.errorText}>{referredByError}</Text> : null}
             </View>
 
-            <View style={styles.dateContainer}>
-              <Text style={styles.dateLabel}>Membership Period</Text>
-              
-              <View style={styles.dateRow}>
-                <View style={styles.dateInputContainer}>
-                  <Text style={styles.dateSubLabel}>Start Date</Text>
-                  <TouchableOpacity 
-                    onPress={() => setShowStartPicker(true)} 
-                    style={styles.datePickerButton}
-                  >
-                    <Icon name="calendar" size={16} color="#2e3192" style={styles.calendarIcon} />
-                    <Text style={styles.datePickerText}>
-                      {startDate ? startDate : 'Select Date'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                
-                <View style={styles.dateInputContainer}>
-                  <Text style={styles.dateSubLabel}>End Date (1 Year)</Text>
-                  <View style={[styles.datePickerButton, styles.disabledDateButton]}>
-                    <Icon name="calendar" size={16} color="#888" style={styles.calendarIcon} />
-                    <Text style={[styles.datePickerText, styles.disabledDateText]}>
-                      {endDate ? endDate : 'Auto-calculated'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              
-              {showStartPicker && (
-                <DateTimePicker
-                  value={startDate ? new Date(startDate) : new Date()}
-                  mode="date"
-                  display="default"
-                  onChange={onChangeStartDate}
-                />
-              )}
-              {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
-            </View>
-
             <TouchableOpacity 
               style={styles.registerButton} 
               onPress={handleRegister}
@@ -685,50 +610,6 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 15,
     color: '#333',
-  },
-  dateContainer: {
-    marginBottom: 20,
-  },
-  dateLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2e3192',
-    marginBottom: 12,
-  },
-  dateSubLabel: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 6,
-  },
-  dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dateInputContainer: {
-    width: '48%',
-  },
-  datePickerButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#e0e0e0',
-    borderRadius: 10,
-    padding: 15,
-    backgroundColor: '#F5F7FE',
-  },
-  disabledDateButton: {
-    backgroundColor: '#f5f5f5',
-    borderColor: '#e0e0e0',
-  },
-  calendarIcon: {
-    marginRight: 8,
-  },
-  datePickerText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  disabledDateText: {
-    color: '#888',
   },
   errorText: {
     color: '#FF3B30',
