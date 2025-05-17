@@ -76,13 +76,11 @@ const AddBusiness = () => {
   const [selectedProfession, setSelectedProfession] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locations, setLocations] = useState([]);
-  
   const [emailError, setEmailError] = useState('');
   const [addressError, setAddressError] = useState('');
   const [businessNameError, setBusinessNameError] = useState('');
   const [selectedProfessionError, setSelectedProfessionError] = useState('');
   const [selectedLocationError, setSelectedLocationError] = useState('');
-  
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -109,7 +107,7 @@ const AddBusiness = () => {
         const { LocationID: locationId } = profileData;
         if (locationId) {
           const excludeResponse = await fetch(
-            `${API_BASE_URL}/api/professions/exclude-business-location/${locationId}`
+            `${API_BASE_URL}/api/professions/exclude-business-location/${locationId}/${userId}`
           );
           if (!excludeResponse.ok) {
             throw new Error(`HTTP error! status: ${excludeResponse.status}`);
