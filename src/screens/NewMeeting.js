@@ -261,9 +261,19 @@ const NewMeeting = () => {
               <TouchableOpacity style={styles.modalButtonSecondary} onPress={() => setShowConfirmationModal(false)}>
                 <Text style={styles.modalButtonTextSecondary}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modalButtonPrimary} onPress={createMeeting}>
-                <Text style={styles.modalButtonText}>Confirm</Text>
-              </TouchableOpacity>
+      <TouchableOpacity
+  style={[
+    styles.modalButtonPrimary,
+    submitting && { opacity: 0.6 }  // Optional visual feedback
+  ]}
+  onPress={!submitting ? createMeeting : null}
+  disabled={submitting}
+>
+  <Text style={styles.modalButtonText}>
+    {submitting ? 'Please wait...' : 'Confirm'}
+  </Text>
+</TouchableOpacity>
+
             </View>
           </View>
         </View>
