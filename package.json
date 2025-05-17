@@ -12,6 +12,7 @@
   "dependencies": {
     "@fortawesome/react-native-fontawesome": "^0.3.2",
     "@lowkey/react-native-gif": "^3.1.0",
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-camera-roll/camera-roll": "^5.6.0",
     "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/masked-view": "^0.1.11",

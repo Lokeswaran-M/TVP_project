@@ -61,6 +61,7 @@ const Review = ({ route }) => {
           throw new Error('Failed to fetch members');
         }
         const data = await response.json();
+        console.log("Member List for the Reviews--------------------------",data);
         setMembers(data.members);
       } catch (error) {
         console.error('Failed to fetch members:', error);
@@ -200,7 +201,7 @@ const Review = ({ route }) => {
           >
             <Picker.Item label="Choose Member" value="" />
             {members.map((member) => (
-              <Picker.Item key={member.UserId} label={member.Username} value={member.UserId} />
+              <Picker.Item key={member.UserId} label={member.UserProfession} value={member.UserId} />
             ))}
           </Picker>
         </View>

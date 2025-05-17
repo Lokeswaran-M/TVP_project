@@ -20,6 +20,7 @@ import { API_BASE_URL } from '../constants/Config';
 import DeviceInfo from 'react-native-device-info';
 import messaging from '@react-native-firebase/messaging';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -135,7 +136,15 @@ const LoginScreen = ({ navigation }) => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-
+const storeUserId = async (userId, rollId) => {
+  try {
+    await AsyncStorage.setItem('userId', String(userId));
+    await AsyncStorage.setItem('rollId', String(rollId));
+    console.log('**************User ID and Roll ID stored successfully:', userId, rollId);
+  } catch (error) {
+    console.error('Error storing user ID and Roll ID in AsyncStorage:', error);
+  }
+};
   const handleLogin = async () => {
     setUsernameError('');
     setPasswordError('');
@@ -175,6 +184,8 @@ const LoginScreen = ({ navigation }) => {
       }
       console.log('Dispatching user data:', result);
       dispatch(setUser(result.user));
+        await storeUserId(result.user.UserId, result.user.RollId);
+      
       const rollId = result.user.RollId;
       if (rollId === 2 || rollId === 3) {
         try {

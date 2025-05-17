@@ -331,6 +331,21 @@ const styles = StyleSheet.create({
       color: 'white',
       fontSize: 16,
     },
+    paidButton: {
+  marginTop: 8,
+  backgroundColor: '#2e3192',
+  paddingVertical: 6,
+  paddingHorizontal: 14,
+  borderRadius: 6,
+  alignSelf: 'flex-start',
+},
+
+paidButtonText: {
+  color: 'white',
+  fontSize: 14,
+  fontWeight: 'bold',
+},
+
 });
 
 export default styles;

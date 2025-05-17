@@ -25,6 +25,7 @@ import Subscription from './Subscription';
 import { showMessage } from 'react-native-flash-message'; 
 import Stars from '../screens/Stars';
 import profileImage from '../../assets/images/DefaultProfile.jpg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const PRIMARY_COLOR = '#2e3091';
 const HomeScreen = ({ route }) => {
   const userId = useSelector((state) => state.UserId);
@@ -87,7 +88,26 @@ const HomeScreen = ({ route }) => {
       setRequirementsLoading(false);
     }
   };
+const getUserInfo = async () => {
+  try {
+    const userId = await AsyncStorage.getItem('userId');
+    const rollId = await AsyncStorage.getItem('rollId');
+    console.log('Retrieved User ID:', userId);
+    console.log('Retrieved Roll ID:', rollId);
+    return { userId, rollId };
+  } catch (error) {
+    console.error('Error retrieving user info from AsyncStorage:', error);
+  }
+};
+useEffect(() => {
+  const fetchUserInfo = async () => {
+    const { userId, rollId } = await getUserInfo();
+    console.log('User ID:', userId);
+    console.log('Roll ID:', rollId);
+  };
 
+  fetchUserInfo();
+}, []);
   const fetchProfileImage = async (userId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
@@ -160,6 +180,7 @@ const HomeScreen = ({ route }) => {
       const locationId = route.params.locationId;
       const response = await fetch(`${API_BASE_URL}/TopFive?locationId=${locationId}`);
       const data = await response.json();
+      console.log("Top Five Data received:=====================", data);
       if (response.ok) {
         setTopFiveData(data);
       } else {

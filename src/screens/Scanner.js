@@ -24,6 +24,9 @@ const Scanner = ({ navigation }) => {
   const scanningRef = useRef(true);
 
   const userId = useSelector((state) => state.UserId);
+   const Profession = useSelector((state) => state.Profession);
+  //  console.log('User ID in scanner screen-----------', userId);
+   console.log('Profession in scanner screen-----------', Profession);
 
   const handleFlashToggle = () => {
     setIsFlashOn((prev) => !prev);
@@ -52,6 +55,7 @@ const Scanner = ({ navigation }) => {
           userId,
           eventId,
           locationId,
+          Profession
         }),
       });
 
