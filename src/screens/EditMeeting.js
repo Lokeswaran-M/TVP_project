@@ -40,7 +40,7 @@ const EditMeeting = ({ route }) => {
   const navigation = useNavigation();
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(date || '');
+  const [selectedDate, setSelectedDate] = useState('');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
