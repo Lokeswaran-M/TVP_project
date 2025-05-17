@@ -113,13 +113,13 @@ export default StyleSheet.create({
     marginLeft: 2,
     fontWeight: '400',
     fontSize: 12,
-    color: '#b50098',
+    color: 'rgb(21, 24, 206)',
   },
   meetProfession: {
     marginLeft: 2,
     fontWeight: '400',
     fontSize: 12,
-    color: '#b50098',
+    color:'rgb(21, 24, 206)',
   },
     filterContainer:{
     justifyContent:'center',

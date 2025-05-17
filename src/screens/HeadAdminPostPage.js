@@ -26,37 +26,43 @@ const HeadAdminPostPage = ({ navigation }) => {
 
       if (data.success) {
         const sortedPhotos = data.files.sort((a, b) => new Date(b.timeStamp) - new Date(a.timeStamp));
-        const photosWithProfileData = await Promise.all(
-          sortedPhotos.map(async (item) => {
-            const filename = item.imageUrl.split('/').pop();
-            const userId = filename.split('_')[0];
+const photosWithProfileData = await Promise.all(
+  sortedPhotos.map(async (item) => {
+    const filename = item.imageUrl.split('/').pop();
+    const userId = filename.split('_')[0];
 
-            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
-            const profileData = await profileResponse.json();
+    const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
+    const profileData = await profileResponse.json();
 
-            const usernameResponse = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-admin?userId=${userId}`);
-            const usernameData = await usernameResponse.json();
+    const usernameResponse = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-admin?userId=${userId}`);
+    const usernameData = await usernameResponse.json();
 
-            const meetId = usernameData.oneononeData[0]?.MeetId;
-            const meetProfileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${meetId}`);
-            const meetProfileData = await meetProfileResponse.json();
+    const oneonone = usernameData?.oneononeData?.[0];
+    const meetId = oneonone?.MeetId;
 
-            return {
-              ...item,
-              userId,
-              meetId,
-              profileImage: profileData.imageUrl,
-              username: usernameData.username || userId,
-              meetusername: usernameData.oneononeData[0]?.MeetUsername,
-              meetProfileImage: meetProfileData.imageUrl,
-              userProfession: usernameData.oneononeData[0]?.UserProfession,
-              meetProfession: usernameData.oneononeData[0]?.MeetProfession,
-              userbuisnessname: usernameData.oneononeData[0]?.userbuisnessname,
-              meetbuisnessname: usernameData.oneononeData[0]?.meetbuisnessname,
-              dateTime: usernameData.oneononeData[0]?.DateTime
-            };
-          })
-        );
+    let meetProfileData = {};
+    if (meetId) {
+      const meetProfileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${meetId}`);
+      meetProfileData = await meetProfileResponse.json();
+    }
+
+    return {
+      ...item,
+      userId,
+      meetId,
+      profileImage: profileData.imageUrl,
+      username: usernameData?.username || userId,
+      meetusername: oneonone?.MeetUsername || '',
+      meetProfileImage: meetProfileData?.imageUrl || null,
+      userProfession: oneonone?.UserProfession || '',
+      meetProfession: oneonone?.MeetProfession || '',
+      userbuisnessname: oneonone?.userbuisnessname || '',
+      meetbuisnessname: oneonone?.meetbuisnessname || '',
+      dateTime: oneonone?.DateTime || ''
+    };
+  })
+);
+
 
         photosWithProfileData.sort((a, b) => {
           const dateA = new Date(a.dateTime);
