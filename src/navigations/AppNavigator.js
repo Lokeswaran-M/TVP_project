@@ -12,13 +12,8 @@ import DrawerContent from './DrawerContent';
 import TabNavigator from './TabNavigator';
 import ProfileDrawerLabel  from './ProfileDrawerLabel';
 import Payment from '../screens/Payment';
-import PaymentWebview from '../screens/PaymentWebview';
-import Subscription from '../screens/Subscription';
-import Login from '../screens/LoginScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import EditProfile from '../screens/EditProfile';
-// import UpdateBusiness from '../screens/UpdateBusiness';
-// import GeneratedQRScreen from '../screens/GeneratedQRScreen';
 import OneMinPresentation from '../screens/OneMinPresentation';
 import PreAttendanceViewPage from '../screens/PreAttendanceViewPage';
 import StopWatch from '../screens/StopWatch';
@@ -213,30 +208,6 @@ function StackMeetingNavigator() {
       />
 
     </StackMeeting.Navigator>
-  );
-}
-const StackPayment = createStackNavigator();
-function StackPaymentNavigator() {
-  return (
-    <StackPayment.Navigator
-      screenOptions={{
-        headerTintColor: '#000',
-        headerStyle: {
-          backgroundColor: '#fff',
-        },
-      }}
-    >
-      <StackPayment.Screen
-        name="Payment"
-        component={Payment}
-        options={{ headerShown: false, title: 'Payment'}}
-      />
-      <StackPayment.Screen
-        name="PaymentWebview"
-        component={PaymentWebview}
-        options={{ headerShown: false, title: 'PaymentWebview'}}
-      />
-    </StackPayment.Navigator>
   );
 }
 const Stack = createStackNavigator();
@@ -473,13 +444,13 @@ const userId = useSelector((state) => state.UserId);
       )}
       <Drawer.Screen
         name="Payment"
-        component={StackPaymentNavigator}
+        component={Payment}
         options={({ navigation }) => ({
           drawerLabel: 'Payment',
           drawerIcon: ({ color, size }) => (
             <Icon name="money" color={color} size={size} />
           ),
-          headerShown: true,
+          headerShown: false,
           header: () => (
             <View style={styles.topNav}>
               <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
@@ -597,11 +568,6 @@ const user = useSelector((state) => state);
         options={{
           headerShown: false,
         }}
-      />
-      <StackPayment.Screen
-        name="PaymentWebview"
-        component={PaymentWebview}
-        options={{ headerShown: false, title: 'PaymentWebview'}}
       />
       <Stack.Screen
         name="Requirements"

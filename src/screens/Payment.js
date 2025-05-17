@@ -1,366 +1,293 @@
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-// import AuthContext from './Authcontext'; // Ensure your AuthContext is imported
-import { WebView } from 'react-native-webview'; // Import WebView to handle payments
+import React, { useEffect, useState } from 'react';
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  ActivityIndicator, 
+  StyleSheet, 
+  TouchableOpacity, 
+  RefreshControl,
+  StatusBar
+} from 'react-native';
+import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const Payment = () => {
-  const [isOffMonth, setIsOffMonth] = useState(false);
-  const navigation = useNavigation();
-  // const { userID } = useContext(AuthContext); // Assume you're using user context
+const PaymentHistory = () => {
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
   const userId = useSelector((state) => state.UserId);
-  console.log("User ID for home subscription------------------------------",userId);
-  const handlePayment = () => {
-    try {
-      const paymentAmount = isOffMonth ? 1500 : 3000;
-      const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}`;
-      
-      // Log the URL for debugging purposes
-      console.log('Payment URL:', paymentUrl);
 
-      // Navigate to a WebView for payment processing
-      navigation.navigate('PaymentWebview', { paymentUrl });
-    } catch (error) {
-      console.error('Error during payment initiation:', error);
-      Alert.alert('Payment Error', 'An error occurred during the payment initiation. Please try again.');
+  const fetchPaymentHistory = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/EventPaymentViewMember?UserId=${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log('Payment History:==================', data);
+      setPaymentHistory(data);
+      setError('');
+    } catch (err) {
+      console.error(err);
+      setError('Something went wrong while fetching payment history.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
-  const handleContinue = () => {
-    // Navigate to the Pay component
-    navigation.navigate('Pay');
-  };  
 
-  return ( 
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Business Meeting Entry Payment</Text>
-      <View style={styles.topcon}>
-        <Text style={styles.headertocon}>Business Meeting Entry Fees</Text>
-        <Text style={styles.toppaymentText}>₹3000</Text>
-        <Text style={styles.MonthText}>₹4500</Text>
-        <Text style={styles.upeventtext}>MAKE A PAYMENT FOR UPCOMING EVENTS</Text>
+  useEffect(() => {
+    fetchPaymentHistory();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchPaymentHistory();
+  };
+
+  const formatDate = (dateString) => {
+    const options = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const renderItem = ({ item, index }) => (
+    <LinearGradient
+      colors={['#2e3192', '#3957E8']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={[styles.card, { marginTop: index === 0 ? 5 : 15 }]}
+    >
+      <View style={styles.iconContainer}>
+        <MaterialIcon name="credit-card-check-outline" size={24} color="#fff" />
       </View>
+      
+      <View style={styles.cardContent}>
+        <View style={styles.topRow}>
+          <Text style={styles.eventIdLabel}>
+            <Icon name="calendar" size={14} color="#fff" /> Event #{item.EventId}
+          </Text>
+          <Text style={styles.date}>
+            <Icon name="time-outline" size={14} color="#fff" /> {formatDate(item.CreatedAt)}
+          </Text>
+        </View>
+        
+        <View style={styles.userInfo}>
+          <Text style={styles.username}>
+            <Icon name="person" size={14} color="#fff" /> {item.Username}
+          </Text>
+          <Text style={styles.userId}>ID: {item.UserId}</Text>
+        </View>
+        
+        <View style={styles.paymentStatus}>
+          <Text style={styles.statusText}>
+            <Icon name="checkmark-circle" size={14} color="#fff" /> Payment Successful
+          </Text>
+        </View>
+      </View>
+    </LinearGradient>
+  );
 
-      <View style={styles.toggleContainer}>
-        <Text style={styles.botpaymentText}>₹1500</Text>
-        <Text style={styles.offbotpaymentText}>₹2000</Text>
-        <Text style={styles.toggleLabel}>Amount To Pay</Text>
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Icon name="receipt-outline" size={60} color="#3957E8" />
+      <Text style={styles.emptyText}>No payment records found</Text>
+    </View>
+  );
 
-        <TouchableOpacity style={styles.button} onPress={handlePayment}>
-          <Text style={styles.buttonText}>Continue</Text>
+  return (
+    <View style={styles.container}>
+      <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
+      
+      <LinearGradient
+        colors={['#2e3192', '#3957E8']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <Text style={styles.headerTitle}>Payment History</Text>
+        <TouchableOpacity onPress={fetchPaymentHistory} style={styles.refreshButton}>
+          <Icon name="refresh" size={22} color="#fff" />
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.bottumcon}>
-        <Text style={styles.termsHeader}>Terms and Conditions</Text>
-        <Text style={styles.termsText}>
-          By proceeding, you agree to our terms and conditions...
-        </Text>
-      </View>
-    </ScrollView>
+      </LinearGradient>
+      
+      {loading && !refreshing ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#3957E8" />
+          <Text style={styles.loadingText}>Loading payment history...</Text>
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Icon name="alert-circle" size={50} color="#ff6b6b" />
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={fetchPaymentHistory}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={paymentHistory}
+          keyExtractor={(item, index) => `payment-${index}`}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={renderEmptyComponent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#3957E8']}
+              tintColor="#3957E8"
+            />
+          }
+        />
+      )}
+    </View>
   );
 };
 
+export default PaymentHistory;
+
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    flexGrow: 1,
-    backgroundColor: '#ccc',
+    flex: 1,
+    backgroundColor: '#f8f9fa',
   },
   header: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  headerTitle: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 40,
-    textAlign: 'center',
-    color: '#2e3192',
+    color: 'white',
   },
-  topcon: {
-    backgroundColor: '#ffffff',
-    padding: 40,
-    marginBottom: 0,
-    borderTopStartRadius: 15,
-    borderTopEndRadius: 15,
+  refreshButton: {
+    padding: 5,
   },
-  headertocon: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 40,
-    textAlign: 'center',
-    color: '#2e3192',
+  listContent: {
+    padding: 16,
+    paddingTop: 10,
+    flexGrow: 1,
   },
-  toppaymentText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: '#2e3192',
-    textAlign: 'center',
-    paddingBottom: 0,
+  card: {
+    borderRadius: 12,
+    elevation: 3,
+    overflow: 'hidden',
+    flexDirection: 'row',
   },
-  MonthText: {
-    fontSize: 16,
-    color: '#2e3192',
-    marginBottom: 30,
-    textDecorationLine: 'line-through',
-    marginTop: 0,
-    paddingTop: 0,
-    paddingLeft: 125,
-    transform: [{ translateY: -5 }],
+  iconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  upeventtext: {
-    fontSize: 12,
-    marginBottom: -8,
-    color: '#2e3192',
-    backgroundColor: '#ffffff',
-    textAlign: 'center',
-    fontWeight: '400',
+  cardContent: {
+    flex: 1,
+    padding: 16,
   },
-  toggleContainer: {
-    flexDirection: 'column',
+  topRow: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    backgroundColor: '#f9f3fb',
-    padding: 20,
-    paddingLeft: 10,
-    paddingBottom: 20,
-    paddingRight: 15,
-    paddingTop: 20,
-    borderRadius: 15,
-    transform: [{ translateY: -13 }],
+    marginBottom: 8,
   },
-  botpaymentText: {
-    fontSize: 20,
+  eventIdLabel: {
+    color: '#fff',
     fontWeight: 'bold',
-    color: '#2e3192',
-    paddingLeft: 10,
-  },
-  offbotpaymentText: {
-    position: 'absolute',
     fontSize: 15,
-    color: '#2e3192',
-    transform: [{ translateX: 83 }],
-    marginTop: 23,
-    textDecorationLine: 'line-through',
   },
-  toggleLabel: {
+  date: {
+    color: '#fff',
+    fontSize: 13,
+  },
+  userInfo: {
+    marginBottom: 8,
+  },
+  username: {
+    color: '#fff',
     fontSize: 16,
-    color: '#2e3192',
     fontWeight: '500',
-    paddingLeft: 10,
-    transform: [{ translateY: 0 }],
+    marginBottom: 4,
   },
-  button: {
-    position: 'absolute',
-    backgroundColor: '#2e3192',
-    padding: 8,
-    borderRadius: 15,
-    alignItems: 'flex-end',
-    paddingHorizontal: 20,
-    marginLeft: 195,
-    transform: [{ translateY: 25 }],
+  userId: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    marginLeft: 18,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: 'bold',
+  paymentStatus: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    marginTop: 4,
   },
-  bottumcon: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    borderRadius: 15,
-    paddingLeft: 20,
+  statusText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '500',
   },
-  termsHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2e3192',
-    textDecorationLine: 'underline',
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  termsText: {
+  loadingText: {
     marginTop: 10,
-    fontSize: 14,
-    color: '#2e3192',
+    color: '#3957E8',
+    fontSize: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: '#555',
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 10,
+  },
+  retryButton: {
+    backgroundColor: '#3957E8',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  retryText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyText: {
+    marginTop: 10,
+    color: '#555',
+    fontSize: 16,
   },
 });
-
-export default Payment;
-
-
-
-
-
-
-
-
-// import React, { useState } from 'react';
-// import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-
-// const Payment = () => {
-//   const [isOffMonth, setIsOffMonth] = useState(false);
-
-//   const handleContinue = () => {
-//     alert(`Proceeding with payment of ₹${isOffMonth ? 1500 : 3000}`);
-//   };  
-
-//   return (
-//     <ScrollView contentContainerStyle={styles.container}>
-//       <Text style={styles.header}>Business Meeting Entry Payment</Text>
-//       <View style={styles.topcon}>
-//       <Text style={styles.headertocon}>Business Meeting Entry Fees</Text>
-//         <Text style={styles.toppaymentText}>₹3000</Text>
-//         <Text style={styles.MonthText}>₹4500</Text>
-//         <Text style={styles.upeventtext}>MAKE A PAYMENT FOR UPCOMING EVENTS</Text>
-//       </View>
-      
-//       <View style={styles.toggleContainer}>
-//       <Text style={styles.botpaymentText}>₹1500</Text>
-//       <Text style={styles.offbotpaymentText}>₹2000</Text>
-//         <Text style={styles.toggleLabel}>Amount To Pay</Text>
-//         <TouchableOpacity style={styles.button} onPress={handleContinue}>
-//         <Text style={styles.buttonText}>Continue</Text>
-//       </TouchableOpacity>
-//       </View>
-     
-//       <View style={styles.bottumcon}>
-//         <Text style={styles.termsHeader}>Terms and Conditions</Text>
-//         <Text style={styles.termsText}>
-//           By proceeding, you agree to our terms and conditions...
-//         </Text>
-//       </View>
-//     </ScrollView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     padding: 20,
-//     flexGrow: 1,
-//     backgroundColor: '#ccc',
-//   },
-//   header: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//     marginTop: 20,
-//     marginBottom: 40,
-//     textAlign: 'center',
-//     color: '#2e3192',
-//   },
-
-//   topcon: {
-//     backgroundColor: '#ffffff',
-//     padding: 40,
-//     marginBottom: 0,
-//     borderTopStartRadius: 15,
-//     borderTopEndRadius: 15,
-//   },
-//   headertocon:{
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginBottom: 40,
-//     textAlign: 'center',
-//     color: '#2e3192',
-//   },
-//   toppaymentText: {
-//     fontSize: 40,
-//     fontWeight: 'bold',
-//     color: '#2e3192',
-   
-//     textAlign:'center',
-//     paddingBottom:0,
-    
-    
-//   },
-//   MonthText: {
-//     fontSize: 16,
-//     color: '#2e3192',
-//     marginBottom: 30,
-//     textDecorationLine:'line-through',
-//     marginTop:0,
-//     paddingTop:0,
-//     paddingLeft:125,
-//     transform: [{ translateY: -5 }],
-    
-//   },
-//   upeventtext:{
-//     fontSize: 12,
-//     marginBottom: -8,
-//     color: '#2e3192',
-//     backgroundColor: '#ffffff',
-//     textAlign:'center',
-//     fontWeight:'400',
-//   },
-//   toggleContainer: {
-//     flexDirection: 'column',
-//     justifyContent: 'space-between',
-//     marginBottom: 20,
-//     backgroundColor: '#f9f3fb',
-//     padding: 20,
-//     paddingLeft:10,
-//     paddingBottom:20,
-//     paddingRight:15,
-//     paddingTop: 20,
-//     borderRadius: 15,
-//     transform: [{ translateY: -13 }],
-//   },
-//   botpaymentText:{
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     color: '#2e3192',
-//     paddingLeft:10,
-//   },
-  
-//   offbotpaymentText:{
-//     position:'absolute',
-//     fontSize: 15,
-//     color: '#2e3192',
-//     transform: [{ translateX: 83 }],
-//     marginTop:23,
-//     textDecorationLine:'line-through',
-//   },
-
-
-//   toggleLabel: {
-//     fontSize: 16,
-//     color: '#2e3192',
-//     fontWeight:'500',
-//     paddingLeft:10,
-//     transform: [{ translateY: 0 }],
-//   },
-//   button: {
-//     position:'absolute',
-//     backgroundColor: '#2e3192',
-//     padding: 8,
-//     borderRadius: 15,
-//     alignItems:'flex-end',
-//     paddingHorizontal:20,
-//     marginLeft:195,
-//     transform: [{ translateY: 25}],
-   
-//   },
-//   buttonText: {
-//     color: '#FFFFFF',
-//     fontSize: 15,
-//     fontWeight: 'bold',
-
-
-//   },
-//   bottumcon: {
-//     backgroundColor: '#ffffff',
-//     padding: 15,
-//     borderRadius: 15,
-//     paddingLeft:20,
-//   },
-
-//   termsHeader: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     color: '#2e3192',
-//     textDecorationLine:'underline',
-//       },
-//   termsText: {
-//     marginTop: 10,
-//     fontSize: 14,
-//     color: '#2e3192',
-//   },
-// });
-
-// export default Payment;
