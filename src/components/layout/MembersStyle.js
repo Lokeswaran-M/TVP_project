@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#2e3192',
+    color: '#fff',
   },
     noResultsTextcon:{
       justifyContent:'center',

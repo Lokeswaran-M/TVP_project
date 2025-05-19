@@ -620,6 +620,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 4,
   },
+  
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 10,
+  },
+  refreshButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: LIGHT_PRIMARY,
+  },
+  refreshIcon: {
+    marginRight: 5,
+  },
+  headerLeft: {
+    flex: 1,
+  },
 });
 
 export default styles;

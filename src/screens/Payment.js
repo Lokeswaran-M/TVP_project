@@ -65,35 +65,35 @@ const PaymentHistory = () => {
 
   const renderItem = ({ item, index }) => (
     <LinearGradient
-      colors={['#2e3192', '#3957E8']}
+      colors={['#F5F7FE', '#F5F7FE']}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={[styles.card, { marginTop: index === 0 ? 5 : 15 }]}
     >
       <View style={styles.iconContainer}>
-        <MaterialIcon name="credit-card-check-outline" size={24} color="#fff" />
+        <MaterialIcon name="credit-card-check-outline" size={24} color="#2e3192" />
       </View>
       
       <View style={styles.cardContent}>
         <View style={styles.topRow}>
           <Text style={styles.eventIdLabel}>
-            <Icon name="calendar" size={14} color="#fff" /> Event #{item.EventId}
+            <Icon name="calendar" size={14} color="#2e3192" /> Event #{item.EventId}
           </Text>
           <Text style={styles.date}>
-            <Icon name="time-outline" size={14} color="#fff" /> {formatDate(item.CreatedAt)}
+            <Icon name="time-outline" size={14} color="#2e3192" /> {formatDate(item.CreatedAt)}
           </Text>
         </View>
         
         <View style={styles.userInfo}>
           <Text style={styles.username}>
-            <Icon name="person" size={14} color="#fff" /> {item.Username}
+            <Icon name="person" size={14} color="#2e3192" /> {item.Username}
           </Text>
           <Text style={styles.userId}>ID: {item.UserId}</Text>
         </View>
         
         <View style={styles.paymentStatus}>
           <Text style={styles.statusText}>
-            <Icon name="checkmark-circle" size={14} color="#fff" /> Payment Successful
+            <Icon name="checkmark-circle" size={14} color="green" /> Payment Successful
           </Text>
         </View>
       </View>
@@ -102,7 +102,7 @@ const PaymentHistory = () => {
 
   const renderEmptyComponent = () => (
     <View style={styles.emptyContainer}>
-      <Icon name="receipt-outline" size={60} color="#3957E8" />
+      <Icon name="receipt-outline" size={60} color="#2e3192" />
       <Text style={styles.emptyText}>No payment records found</Text>
     </View>
   );
@@ -112,7 +112,7 @@ const PaymentHistory = () => {
       <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
       
       <LinearGradient
-        colors={['#2e3192', '#3957E8']}
+        colors={['#2e3192', '#2e3192']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.header}
@@ -166,7 +166,7 @@ export default PaymentHistory;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#fff',
   },
   header: {
     paddingVertical: 20,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(22, 143, 87, 0.1)',
     padding: 16,
     justifyContent: 'center',
     alignItems: 'center',
@@ -211,30 +211,30 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   eventIdLabel: {
-    color: '#fff',
+    color: '#2e3192',
     fontWeight: 'bold',
     fontSize: 15,
   },
   date: {
-    color: '#fff',
+    color: '#2e3192',
     fontSize: 13,
   },
   userInfo: {
     marginBottom: 8,
   },
   username: {
-    color: '#fff',
+    color: '#2e3192',
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 4,
   },
   userId: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#2e3192',
     fontSize: 12,
     marginLeft: 18,
   },
   paymentStatus: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(125, 196, 125, 0.1)',
     borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statusText: {
-    color: '#fff',
+    color: 'green',
     fontSize: 13,
     fontWeight: '500',
   },
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: '#3957E8',
+    color: '#2e3192',
     fontSize: 16,
   },
   errorContainer: {
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   retryButton: {
-    backgroundColor: '#3957E8',
+    backgroundColor: '#2e3192',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
