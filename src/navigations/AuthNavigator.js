@@ -138,7 +138,7 @@ const AuthNavigator = () => {
       <Stack.Screen  name="ForgetPassword"  component={ForgetPassword}  options={{ title: 'Forget Password',headerShown: false, ...headerOptions }} />
       <Stack.Screen  name="ResetPassword"  component={ResetPassword}    options={{ title: 'Reset Password', headerShown: false, ...headerOptions}} />
       <Stack.Screen  name="Custom_input"  component={Custom_input}   options={{ headerShown: false }} />
-      <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ',   ...headerOptions}} />
+      <Stack.Screen  name="Otpscreen"  component={Otpscreen}   options={{ title: 'Otpscreen ', headerShown: false,   ...headerOptions}} />
       <Stack.Screen  name="Scanner"  component={Scanner}/>
       <Stack.Screen  name="AdminPage"  component={AdminPage}   options={{ headerShown:true , header: () => <CustomHeaderTPVpng/>, headerLeft: () => null, }}/>
         <Stack.Screen name="AdminMemberstack" component={AdminMemberstack} options={{ headerShown: false, headerLeft: () => null, }}/>
