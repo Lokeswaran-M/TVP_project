@@ -149,7 +149,6 @@ const HeadAdminLocation = ({ navigation }) => {
   );
 
   return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
@@ -192,7 +191,6 @@ const HeadAdminLocation = ({ navigation }) => {
         />
     
     </View>
-    </TouchableWithoutFeedback>
   );
 };
 
