@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Dimensions, ScrollView, StyleSheet,RefreshControl, } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import { Picker } from '@react-native-picker/picker'; // Import Picker
@@ -8,6 +8,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+
+
 const { width, height } = Dimensions.get('window');
 const AdminPage = () => {
   const navigation = useNavigation();
@@ -24,9 +27,34 @@ const AdminPage = () => {
   const [buttonClicked, setButtonClicked] = useState(null);
   const [processedData, setProcessedData] = useState([]);
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
+
+
+
+
+
+
+
+
+
+
+const fetchAllData = async () => {
+  setRefreshing(true);
+  try {
+    await Promise.all([
+      fetchLocationData(),
+      fetchRequirementsData(),
+    ]);
+  } catch (error) {
+    console.error("Error refreshing data", error);
+  } finally {
+    setRefreshing(false);
+  }
+};
 
   const fetchLocationData = async () => {
+    setRefreshing(true);
     try {
       console.log("Fetching location data...");
       const locationsResponse = await fetch(`${API_BASE_URL}/api/locations`);
@@ -43,6 +71,7 @@ const AdminPage = () => {
       if (locationsData.locations?.length > 0) {
         setSelectedLocation(locationsData);
       }
+      setRefreshing(false);
     } catch (error) {
       console.error('Error fetching locations:', error);
     }
@@ -202,12 +231,19 @@ const AdminPage = () => {
     });
     const sortedReviewerData = totalReviewerAmounts.sort((a, b) => b.Amount - a.Amount);
     setProcessedReviewerData(sortedReviewerData);
-
     setButtonClicked(buttonType);
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}
+     refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={fetchAllData}
+      tintColor="#2e3192"
+    />
+  }>
+    
       <View style={styles.containermain}>
         {/* <View style={styles.cardimg}>
           <Image source={require('../../assets/images/Homepage_TPV.jpg')} style={styles.image} />

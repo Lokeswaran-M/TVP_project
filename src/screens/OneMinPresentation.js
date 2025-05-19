@@ -8,7 +8,7 @@ import {
   ActivityIndicator, 
   Image,
   Modal,
-  StyleSheet
+  StyleSheet,RefreshControl
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -28,12 +28,15 @@ const OneMinPresentation = ({ route, navigation }) => {
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
   const [paidModalVisible, setPaidModalVisible] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     fetchAttendanceData();
   }, [eventId, locationId]);
 
   const fetchAttendanceData = async () => {
+    setRefreshing(true);
+    setLoading(true);
+
     try {
       const response = await fetch(`${API_BASE_URL}/attendance/${eventId}/${locationId}`);
       const data = await response.json();
@@ -70,7 +73,9 @@ const OneMinPresentation = ({ route, navigation }) => {
     } catch (error) {
       console.error('Error fetching attendance data:', error);
     } finally {
+      setRefreshing(false);
       setLoading(false);
+    
     }
   };
 
@@ -212,6 +217,13 @@ const OneMinPresentation = ({ route, navigation }) => {
                 renderItem={renderMember}
                 keyExtractor={(item) => item.UserId.toString()}
                 contentContainerStyle={styles.memberList}
+                   refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={fetchAttendanceData}
+                      tintColor="#2e3192"
+                    />
+                  }
               />
             )}
             <View style={styles.memberCountContainer}>
