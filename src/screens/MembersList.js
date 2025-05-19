@@ -54,8 +54,8 @@ const TabContent = ({ locationId, userId }) => {
         }
         throw new Error(`Server responded with status: ${membersResponse.status}`);
       }
-      
       const data = await membersResponse.json();
+      console.log('Members data:---------------', data);
       if (!data.members || data.members.length === 0) {
         setMembers([]);
         return;
