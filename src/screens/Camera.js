@@ -1,11 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, ActivityIndicator, Text, TouchableOpacity, Image, Alert, useWindowDimensions, ScrollView, Modal, StyleSheet } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import {
+  View,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  useWindowDimensions,
+  ScrollView,
+  Modal,
+  StyleSheet,
+  RefreshControl
+} from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import { launchCamera } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../components/layout/MembersStyle';
 import Subscription from './Subscription';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -36,48 +49,73 @@ const TabContent = ({ locationId, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMeetId, setSelectedMeetId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
-  const [modalMessage, setModalMessage] = useState(''); // Modal message state
-  const [modalTitle, setModalTitle] = useState(''); // Modal title state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(false);
+
+  const fetchMembers = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/list-memberscamera`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ LocationID: locationId, userId }),
+      });
+            if (!response.ok) {
+        if (response.status === 404) {
+          setMembers([]);
+          return;
+        }
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Members data:========================', data); 
+      if (!data.members || data.members.length === 0) {
+        setMembers([]);
+        setError(true);
+        setLoading(false);
+        return;
+      }
+      const updatedMembers = await Promise.all(data.members.map(async (member) => {
+        let totalStars = 0;
+        if (member.ratings?.length > 0) {
+          totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
+          member.totalAverage = totalStars / member.ratings.length;
+        } else {
+          member.totalAverage = 0;
+        }
+        const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+        } else {
+          member.profileImage = null;
+        }
+
+        return member;
+      }));
+
+      setMembers(updatedMembers);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+      setError(true);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [locationId, userId]);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/list-memberscamera`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ LocationID: locationId, userId }),
-        });
-        if (!response.ok) throw new Error('Failed to fetch members');
-        const data = await response.json();
-        const updatedMembers = await Promise.all(data.members.map(async (member) => {
-          let totalStars = 0;
-          if (member.ratings?.length > 0) {
-            totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
-            member.totalAverage = totalStars / member.ratings.length;
-          } else {
-            member.totalAverage = 0;
-          }
-          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
-          if (imageResponse.ok) {
-            const imageData = await imageResponse.json();
-            member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
-          } else {
-            member.profileImage = null;
-          }
-
-          return member;
-        }));
-
-        setMembers(updatedMembers);
-      } catch (error) {
-        console.error('Error fetching members:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMembers();
-  }, [locationId, userId]);
+  }, [fetchMembers]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchMembers();
+  }, [fetchMembers]);
 
   const filteredMembers = members.filter((member) =>
     member.Username.toLowerCase().includes(searchQuery.toLowerCase())
@@ -159,6 +197,23 @@ const TabContent = ({ locationId, navigation }) => {
     </TouchableOpacity>
   );
 
+  const renderEmptyComponent = () => {
+    if (loading) return null;
+    
+    return (
+      <View style={styles.emptyContainer}>
+        <Icon name="users" size={50} color="#cccccc" />
+        <Text style={styles.emptyText}>
+          {error ? "No members found" : "No members found"}
+        </Text>
+        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+          <Icon name="refresh" size={16} color="#ffffff" />
+          <Text style={styles.refreshButtonText}>Refresh</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f5f7ff' }}>
       <View style={styles.searchContainer}>
@@ -178,11 +233,26 @@ const TabContent = ({ locationId, navigation }) => {
       <FlatList
         data={filteredMembers}
         keyExtractor={(item) => item.UserId.toString()}
-        contentContainerStyle={styles.memberList}
+        contentContainerStyle={[
+          styles.memberList,
+          filteredMembers.length === 0 && { flex: 1, justifyContent: 'center' }
+        ]}
         renderItem={renderItem}
+        ListEmptyComponent={renderEmptyComponent}
+        refreshControl={
+          <RefreshControl 
+            refreshing={refreshing} 
+            onRefresh={onRefresh}
+            colors={['#2e3192']} 
+          />
+        }
       />
 
-      {/* Custom Modal */}
+      {loading && !refreshing && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#2e3192" />
+        </View>
+      )}
       <CustomModal 
         visible={modalVisible} 
         onClose={() => setModalVisible(false)} 
@@ -192,6 +262,7 @@ const TabContent = ({ locationId, navigation }) => {
     </View>
   );
 };
+
 export default function TabViewExample({ navigation }) {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -199,31 +270,46 @@ export default function TabViewExample({ navigation }) {
   const userId = useSelector((state) => state.UserId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchBusinessInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
-        const data = await response.json();
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(false);
 
-        if (response.ok) {
-          const updatedRoutes = data.map((business, index) => ({
-            key: `business${index + 1}`,
-            title: business.BD,
-            locationId: business.L,
-          }));
-          setRoutes(updatedRoutes);
-          setBusinessInfo(data);
-        } else {
-          console.error('Error fetching business info:', data.message);
-        }
-      } catch (error) {
-        console.error('API call error:', error);
-      } finally {
-        setLoading(false);
+  const fetchBusinessInfo = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        const updatedRoutes = data.map((business, index) => ({
+          key: `business${index + 1}`,
+          title: business.BD,
+          locationId: business.L,
+        }));
+        setRoutes(updatedRoutes);
+        setBusinessInfo(data);
+      } else {
+        console.error('Error fetching business info:', data.message);
+        setError(true);
       }
-    };
-    fetchBusinessInfo();
+    } catch (error) {
+      console.error('API call error:', error);
+      setError(true);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, [userId]);
+
+  useEffect(() => {
+    fetchBusinessInfo();
+  }, [fetchBusinessInfo]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchBusinessInfo();
+  }, [fetchBusinessInfo]);
+
   const renderScene = ({ route }) => {
     const business = businessInfo.find((b) => b.BD === route.title);
     if (business?.IsPaid === 0) {
@@ -245,6 +331,7 @@ export default function TabViewExample({ navigation }) {
       />
     );
   };
+
   const renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -255,16 +342,220 @@ export default function TabViewExample({ navigation }) {
       labelStyle={{ fontSize: 14 }}
     />
   );
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+
+  if (loading && !refreshing) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2e3192" />
+      </View>
+    );
   }
+
+  if (error && routes.length === 0) {
+    return (
+      <View style={styles.errorContainer}>
+        <Icon name="exclamation-triangle" size={50} color="#ff6b6b" />
+        <Text style={styles.errorText}>Unable to load businesses</Text>
+        <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+          <Icon name="refresh" size={16} color="#ffffff" />
+          <Text style={styles.refreshButtonText}>Refresh</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
-    />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f7ff' }}>
+      {refreshing && (
+        <View style={styles.refreshingIndicator}>
+          <ActivityIndicator size="small" color="#2e3192" />
+        </View>
+      )}
+      
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        renderTabBar={renderTabBar}
+      />
+      
+      {routes.length === 0 && !loading && !error && (
+        <View style={styles.noBusinessContainer}>
+          <Icon name="building" size={50} color="#cccccc" />
+          <Text style={styles.noBusinessText}>No businesses found</Text>
+          <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+            <Icon name="refresh" size={16} color="#ffffff" />
+            <Text style={styles.refreshButtonText}>Refresh</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#2e3192',
+  },
+  modalMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+  },
+  button: {
+    backgroundColor: '#2e3192',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    margin: 10,
+    borderRadius: 10,
+    elevation: 2,
+    alignItems: 'center',
+    paddingRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+  },
+  searchIconContainer: {
+    padding: 5,
+  },
+  memberList: {
+    padding: 10,
+  },
+  memberItem: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+    elevation: 2,
+  },
+  imageColumn: {
+    marginRight: 10,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f0f0f0',
+  },
+  textColumn: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  memberName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2e3192',
+  },
+  memberRole: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  alarmContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  refreshButton: {
+    backgroundColor: '#2e3192',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  refreshButtonText: {
+    color: '#ffffff',
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f7ff',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 247, 255, 0.7)',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f7ff',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  noBusinessContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f7ff',
+  },
+  noBusinessText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  refreshingIndicator: {
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f7ff',
+  },
+});

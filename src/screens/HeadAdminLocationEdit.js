@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   placeDetailsContainer: {
     paddingHorizontal: 20,
     paddingVertical: 20,
-    backgroundColor: '#f0e1eb',
+    backgroundColor: '#F5F7FE',
     borderRadius: 10,
     marginHorizontal: 20,
     alignItems: 'center',

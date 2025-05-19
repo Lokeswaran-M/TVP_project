@@ -18,7 +18,7 @@ import { API_BASE_URL } from '../constants/Config';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import styles from '../components/layout/HomeStyles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import Subscription from './Subscription';
@@ -386,8 +386,31 @@ useEffect(() => {
     );
   }
   return (
-    <ScrollView>
+       <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={PRIMARY_COLOR}
+        />
+      }
+    >
       <View style={styles.container}>
+         {/* <View style={styles.headerContainer}>
+          <View style={styles.headerLeft} />
+          <TouchableOpacity 
+            style={styles.refreshButton} 
+            onPress={onRefresh}
+            disabled={refreshing}
+          >
+            <Icon 
+              name="refresh" 
+              size={20} 
+              color={PRIMARY_COLOR} 
+              style={styles.refreshIcon} 
+            />
+          </TouchableOpacity>
+        </View> */}
         <View style={styles.cards}>
       <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
       <View style={styles.home}>
