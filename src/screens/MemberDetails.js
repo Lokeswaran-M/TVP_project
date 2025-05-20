@@ -125,7 +125,6 @@ const MemberDetails = () => {
       </View>
     );
   }
-
   const { businessInfo: memberInfo, ratings } = userDetails;
 
   return (
@@ -230,7 +229,7 @@ const MemberDetails = () => {
           )}
         </View>
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>TVP Score</Text>
+          <Text style={styles.sectionTitle}>TPV Score</Text>
           
           {ratings && ratings.length > 0 ? (
             ratings.map((rating) => (
