@@ -11,10 +11,11 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform, 
-  ActivityIndicator
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_BASE_URL } from '../constants/Config';
@@ -30,7 +31,7 @@ const AnimatedTextInput = React.forwardRef((props, ref) => {
   );
 });
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ route }) => {
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +51,7 @@ const RegisterScreen = () => {
   const [passwordVisible1, setPasswordVisible1] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [referMembers, setreferMembers] = useState([]);
+  const [showAlreadyRegisteredModal, setShowAlreadyRegisteredModal] = useState(false);
 
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -66,6 +68,18 @@ const RegisterScreen = () => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const usernameInputRef = useRef(null);
+  
+  // Check if returning from OTP screen
+  useFocusEffect(
+    React.useCallback(() => {
+      // Check if the user is coming back from the OTP screen
+      if (route.params?.fromOtp) {
+        setShowAlreadyRegisteredModal(true);
+      }
+      return () => {};
+    }, [route.params])
+  );
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -73,12 +87,14 @@ const RegisterScreen = () => {
   const togglePasswordVisibility1 = () => {
     setPasswordVisible1(!passwordVisible1);
   };
+  
   useEffect(() => {
     fetch(`${API_BASE_URL}/execute-profession`)
       .then((response) => response.json())
       .then((data) => setProfession(data.executeprofession))
       .catch((error) => console.error(error));
   }, []);
+  
   const fetchLocationsByProfession = async (selectedProfession) => {
     try {
       const encodedProfession = encodeURIComponent(selectedProfession);
@@ -104,6 +120,7 @@ const RegisterScreen = () => {
       console.error('Error fetching locations:', error);
     }
   };
+  
   const fetchReferMembers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/ReferMembers`);
@@ -118,11 +135,13 @@ const RegisterScreen = () => {
   useEffect(() => {
     fetchReferMembers();
   }, []);
+  
   const handleProfessionChange = (profession) => {
     setSelectedProfession(profession);
     setSelectedLocation(null);
     fetchLocationsByProfession(profession);
   };
+  
   const handleReferredByChange = (itemValue) => {
     setReferredBy(itemValue);
     const selectedMember = referMembers.find((member) => member.UserId === itemValue);
@@ -135,8 +154,9 @@ const RegisterScreen = () => {
   const handlelocationChange = (selectedLocation) => {
     setSelectedLocation(selectedLocation);
   };
+  
   const handleRegister = async () => {
-      if (isLoading) return;
+    if (isLoading) return;
     setUsernameError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -274,6 +294,11 @@ const RegisterScreen = () => {
         Alert.alert("Error", "Registration failed. Please try again.");
       }
     }
+  };
+
+  const handleLoginPress = () => {
+    setShowAlreadyRegisteredModal(false);
+    navigation.navigate('Login');
   };
 
   return (
@@ -493,10 +518,10 @@ const RegisterScreen = () => {
               disabled={isLoading}
             >
               {isLoading ? (
-    <ActivityIndicator color="#fff" />
-  ) : (
-    <Text style={styles.registerButtonText}>Register</Text>
-  )}
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.registerButtonText}>Register</Text>
+              )}
             </TouchableOpacity>
             
             <View style={styles.loginPrompt}>
@@ -508,6 +533,30 @@ const RegisterScreen = () => {
           </View>
         </ScrollView>
       </LinearGradient>
+
+      {/* Already Registered Modal */}
+      <Modal
+        transparent={true}
+        visible={showAlreadyRegisteredModal}
+        animationType="fade"
+        onRequestClose={() => setShowAlreadyRegisteredModal(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Icon name="info-circle" size={50} color="#2e3192" style={styles.modalIcon} />
+            <Text style={styles.modalTitle}>Already Registered</Text>
+            <Text style={styles.modalText}>
+              You have already registered. Please login and activate your account.
+            </Text>
+            <TouchableOpacity 
+              style={styles.modalButton}
+              onPress={handleLoginPress}
+            >
+              <Text style={styles.modalButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
@@ -553,8 +602,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // borderWidth: 0.5,
-    // borderColor: '#2e3192',
     borderRadius: 10,
     backgroundColor: '#F5F7FE',
     paddingHorizontal: 12,
@@ -583,8 +630,6 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 55,
-    // borderWidth: 1.5,
-    // borderColor: '#e0e0e0',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingLeft: 40,
@@ -650,5 +695,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  // Modal styles
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalIcon: {
+    marginBottom: 15,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2e3192',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#2e3192',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
+
 export default RegisterScreen;
