@@ -9,7 +9,8 @@ import {
   Image,
   ActivityIndicator,
   SafeAreaView,
-  StatusBar
+  StatusBar,
+  RefreshControl
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -32,7 +33,9 @@ const MemberDetails = () => {
   const [adminRollID, setAdminRollID] = useState(null);
   const [memberRollID, setMemberRollID] = useState(null);
   const [refreshToggle, setRefreshToggle] = useState(false);
-
+ const refreshData = () => {
+    setRefreshToggle(prev => !prev);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -87,10 +90,10 @@ const MemberDetails = () => {
         setMemberRollID(newRollId);
         setRefreshToggle(!refreshToggle);
       } else {
-        Alert.alert('Error', data.error || 'Failed to update role');
+        // Alert.alert('Error', data.error || 'Failed to update role');
       }
     } catch (error) {
-      Alert.alert('Error', 'Network error, please try again');
+      // Alert.alert('Error', 'Network error, please try again');
     }
   };
 
@@ -130,7 +133,17 @@ const MemberDetails = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.container}>
+         <ScrollView 
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refreshData}
+            colors={['#2e3192']}
+            tintColor="#2e3192"
+          />
+        }
+      >
         <View style={styles.headerContainer}>
           <View style={styles.profileContainer}>
             {profileImageUrl ? (

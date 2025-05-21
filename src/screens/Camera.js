@@ -54,6 +54,8 @@ const TabContent = ({ locationId, navigation }) => {
   const [modalTitle, setModalTitle] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
+  // Add a key to force re-render of images
+  const [imageKey, setImageKey] = useState(Date.now());
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -64,7 +66,7 @@ const TabContent = ({ locationId, navigation }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ LocationID: locationId, userId }),
       });
-            if (!response.ok) {
+      if (!response.ok) {
         if (response.status === 404) {
           setMembers([]);
           return;
@@ -79,6 +81,10 @@ const TabContent = ({ locationId, navigation }) => {
         setLoading(false);
         return;
       }
+      
+      // Update imageKey for fresh image rendering
+      setImageKey(Date.now());
+      
       const updatedMembers = await Promise.all(data.members.map(async (member) => {
         let totalStars = 0;
         if (member.ratings?.length > 0) {
@@ -87,10 +93,12 @@ const TabContent = ({ locationId, navigation }) => {
         } else {
           member.totalAverage = 0;
         }
+        
         const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
         if (imageResponse.ok) {
           const imageData = await imageResponse.json();
-          member.profileImage = `${imageData.imageUrl}?t=${new Date().getTime()}`;
+          // Store the base URL without cache busting
+          member.profileImage = imageData.imageUrl;
         } else {
           member.profileImage = null;
         }
@@ -164,6 +172,8 @@ const TabContent = ({ locationId, navigation }) => {
         setModalTitle('Success');
         setModalMessage('Photo and data uploaded successfully!');
         setModalVisible(true);
+        // Refresh the member list to update any images
+        fetchMembers();
       } else {
         setModalTitle('Error');
         setModalMessage('Photo and data upload failed');
@@ -180,10 +190,19 @@ const TabContent = ({ locationId, navigation }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
       <View style={styles.imageColumn}>
-        <Image
-          source={{ uri: item.profileImage }}
-          style={styles.profileImage}
-        />
+        {item.profileImage ? (
+          <Image
+            // Add cache busting using the global imageKey to ensure image refresh
+            source={{ uri: `${item.profileImage}?t=${imageKey}` }}
+            style={styles.profileImage}
+            // Set a default key to force re-render when the image changes
+            key={`${item.UserId}-${imageKey}`}
+          />
+        ) : (
+          <View style={[styles.profileImage, { backgroundColor: '#e1e1e1', justifyContent: 'center', alignItems: 'center' }]}>
+            <Icon name="user" size={24} color="#999999" />
+          </View>
+        )}
       </View>
       <View style={styles.textColumn}>
         <Text style={styles.memberName}>{item.Username}</Text>
@@ -232,7 +251,7 @@ const TabContent = ({ locationId, navigation }) => {
 
       <FlatList
         data={filteredMembers}
-        keyExtractor={(item) => item.UserId.toString()}
+        keyExtractor={(item) => `${item.UserId}-${imageKey}`}
         contentContainerStyle={[
           styles.memberList,
           filteredMembers.length === 0 && { flex: 1, justifyContent: 'center' }
@@ -246,6 +265,7 @@ const TabContent = ({ locationId, navigation }) => {
             colors={['#2e3192']} 
           />
         }
+        extraData={imageKey} // Add this to ensure FlatList re-renders when imageKey changes
       />
 
       {loading && !refreshing && (
