@@ -15,6 +15,8 @@ const StopWatch = ({ route, navigation }) => {
     const [isTimeoutModalVisible, setIsTimeoutModalVisible] = useState(false);
     const [isStarReviewModalVisible, setIsStarReviewModalVisible] = useState(false);
     const [rating, setRating] = useState(0);
+    const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
+    const [currentProfession, setCurrentProfession] = useState(member.professions[0] || member.Profession);
     
     const alarmSound = useRef(null);
 
@@ -34,6 +36,11 @@ const StopWatch = ({ route, navigation }) => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        // Update current profession whenever the index changes
+        setCurrentProfession(member.professions[currentProfessionIndex] || member.Profession);
+    }, [currentProfessionIndex, member.professions, member.Profession]);
 
     const playAlarm = () => {
         if (alarmSound.current) {
@@ -78,13 +85,11 @@ const StopWatch = ({ route, navigation }) => {
             setIsPaused(false);
         }
     };
-
     const handleStop = () => {
         setIsRunning(false);
         setIsPaused(false);
         clearInterval(intervalId);
     };
-
     const handleRestart = () => {
         setSeconds(6);
         setIsRunning(false);
@@ -97,19 +102,22 @@ const StopWatch = ({ route, navigation }) => {
         const seconds = secs % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     };
-    const handleSubmitRating = () => {
+
+    const handleSubmitRating = async () => {
         if (rating === 0) {
             return;
         }
-        postRating(); // Call the function to post the rating
-    
-        // Close the star review modal
-        setIsStarReviewModalVisible(false);
-
+        await postRating(currentProfession);
+        if (member.professions && member.professions.length > 1 && currentProfessionIndex < member.professions.length - 1) {
+            setCurrentProfessionIndex(currentProfessionIndex + 1);
+            setRating(0);
+        } else {
+            setIsStarReviewModalVisible(false);
+            navigation.goBack();
+        }
     };
     
-    const postRating = async () => {
-      
+    const postRating = async (profession) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/ratings`, {
                 method: 'POST',
@@ -119,31 +127,29 @@ const StopWatch = ({ route, navigation }) => {
                 body: JSON.stringify({
                     UserId: member.UserId,
                     Stars: rating,
-                    Profession: member.Profession,
+                    Profession: profession,
                     RatingId: 2,
                     LocationId: member.LocationId,
-                   
                 })
             });
-            console.log('--------------------post data -------------------',response);
+            console.log(`--------------------post data for ${profession}-------------------`, response);
             const result = await response.json();
-            if (response.ok) {
-               
-                navigation.goBack();
-            } else {
-              
-            }
+            return response.ok;
         } catch (error) {
-            console.error('Error posting rating:', error);
+            console.error(`Error posting rating for ${profession}:`, error);
+            return false;
         }
     };
-   
 
     return (
         <View style={styles.container}>
             <View style={styles.memberDetailsContainer}>
                 <Text style={styles.memberName}>{member.Username}</Text>
-                <Text style={styles.memberRole}>{member.Profession}</Text>
+                <Text style={styles.memberRole}>
+                    {member.professions && member.professions.length > 0 
+                        ? member.professions.join(' and ') 
+                        : member.Profession}
+                </Text>
             </View>
             <View style={styles.contentcontainer}>
                 <Text style={styles.timer}>{formatTime(seconds)}</Text>
@@ -191,6 +197,9 @@ const StopWatch = ({ route, navigation }) => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalText}>Review</Text>
+                        <Text style={styles.professionText}>
+                            {currentProfession}
+                        </Text>
                         <View style={styles.starContainer}>
                             {Array.from({ length: 5 }, (_, index) => (
                                 <TouchableOpacity key={index} onPress={() => setRating(index + 1)}>
@@ -217,7 +226,7 @@ const StopWatch = ({ route, navigation }) => {
 };
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#CCC',
+        backgroundColor: '#f5f7ff',
         flex: 1,
     },
     contentcontainer: {
@@ -265,6 +274,12 @@ const styles = StyleSheet.create({
         color: 'red',
         marginBottom:20,
     },
+    professionText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#2e3192',
+        marginBottom: 10,
+    },
     modalButton: {
         backgroundColor: '#2e3192',
         paddingVertical: 10,
@@ -290,7 +305,7 @@ const styles = StyleSheet.create({
         color: '#2e3192',
     },
     memberRole: {
-        fontSize: 18,
+        fontSize: 14,
         color: '#555',
     },
     starContainer: {

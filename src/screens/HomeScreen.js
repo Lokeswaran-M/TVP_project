@@ -201,6 +201,7 @@ useEffect(() => {
       console.log("Location ID in fetchEventData:-------------", locationId);
       const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&UserId=${userId}&Profession=${Profession}`);
       const data = await response.json();
+      console.log("Event Data received:=====================", data);
       if (response.ok) {
         setEventData(data.events || []);
       } else {
