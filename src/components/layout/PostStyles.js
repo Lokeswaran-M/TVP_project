@@ -1,13 +1,11 @@
 import { StyleSheet } from 'react-native';
 
-
 export default StyleSheet.create({
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor:'#e7e7e7',
-
   },
   errorContainer: {
     flex: 1,
@@ -17,13 +15,56 @@ export default StyleSheet.create({
     backgroundColor:'#e7e7e7',
   },
   errorText: {
-    color: 'red',
+    // color: 'red',
     fontSize: 16,
   },
   gridContainer: {
-    padding:0,
-    backgroundColor:'#f5f7ff',
-   
+    padding: 0,
+    backgroundColor: '#f5f7ff',
+  },
+  emptyGridContainer: {
+    flexGrow: 1,
+    padding: 0,
+    backgroundColor: '#f5f7ff',
+  },
+  noPostsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    height: 400,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: 'Black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  noPostsText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2e3192',
+    marginTop: 20,
+  },
+  noPostsSubText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  refreshButton: {
+    backgroundColor: '#2e3192',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginTop: 10,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   postContainer: {
     marginBottom: 20,
@@ -73,7 +114,6 @@ export default StyleSheet.create({
     paddingRight: 8,
     fontWeight: '500',
     color: '#2e3192',
-
   },
   profileNameUser: {
     marginLeft: 12,
@@ -121,30 +161,26 @@ export default StyleSheet.create({
     fontSize: 12,
     color:'rgb(21, 24, 206)',
   },
-    filterContainer:{
-    justifyContent:'center',
-    backgroundColor:'#f5f7ff',
+  filterContainer: {
+    justifyContent: 'center',
+    backgroundColor: '#f5f7ff',
+    flex: 1,
   },
-filterButton:{
-backgroundColor:'#FFFFFF',
-flexDirection:'row',
-justifyContent:'center',
-borderRadius:25,
-alignItems:'flex-end',
-padding:10,
-margin:5,
+  filterButton: {
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    borderRadius: 25,
+    alignItems: 'flex-end',
+    padding: 10,
+    margin: 5,
   },
-  filterButtonText:{
-color:"#2e3192",
-fontWeight: '800',
-justifyContent:'center',
-alignItems:'center',
-fontSize: 16,
-top:-2,
+  filterButtonText: {
+    color: "#2e3192",
+    fontWeight: '800',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 16,
+    top: -2,
   },
-
 });
-
-
-
-

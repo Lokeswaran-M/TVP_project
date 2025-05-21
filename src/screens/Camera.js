@@ -43,7 +43,7 @@ const CustomModal = ({ visible, onClose, message, title }) => {
   );
 };
 
-const TabContent = ({ locationId, navigation }) => {
+const TabContent = ({ locationId, navigation, Profession }) => {
   const userId = useSelector((state) => state.UserId);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,6 @@ const TabContent = ({ locationId, navigation }) => {
   const [modalTitle, setModalTitle] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(false);
-  // Add a key to force re-render of images
   const [imageKey, setImageKey] = useState(Date.now());
 
   const fetchMembers = useCallback(async () => {
@@ -81,8 +80,6 @@ const TabContent = ({ locationId, navigation }) => {
         setLoading(false);
         return;
       }
-      
-      // Update imageKey for fresh image rendering
       setImageKey(Date.now());
       
       const updatedMembers = await Promise.all(data.members.map(async (member) => {
@@ -97,7 +94,6 @@ const TabContent = ({ locationId, navigation }) => {
         const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
         if (imageResponse.ok) {
           const imageData = await imageResponse.json();
-          // Store the base URL without cache busting
           member.profileImage = imageData.imageUrl;
         } else {
           member.profileImage = null;
@@ -161,6 +157,7 @@ const TabContent = ({ locationId, navigation }) => {
       });
       formData.append('MeetId', meetId);  
       formData.append('LocationID', locationId);
+      formData.append('Profession', Profession);
 
       const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
         method: 'POST',
@@ -172,7 +169,6 @@ const TabContent = ({ locationId, navigation }) => {
         setModalTitle('Success');
         setModalMessage('Photo and data uploaded successfully!');
         setModalVisible(true);
-        // Refresh the member list to update any images
         fetchMembers();
       } else {
         setModalTitle('Error');
@@ -192,10 +188,8 @@ const TabContent = ({ locationId, navigation }) => {
       <View style={styles.imageColumn}>
         {item.profileImage ? (
           <Image
-            // Add cache busting using the global imageKey to ensure image refresh
             source={{ uri: `${item.profileImage}?t=${imageKey}` }}
             style={styles.profileImage}
-            // Set a default key to force re-render when the image changes
             key={`${item.UserId}-${imageKey}`}
           />
         ) : (
@@ -265,7 +259,7 @@ const TabContent = ({ locationId, navigation }) => {
             colors={['#2e3192']} 
           />
         }
-        extraData={imageKey} // Add this to ensure FlatList re-renders when imageKey changes
+        extraData={imageKey}
       />
 
       {loading && !refreshing && (
@@ -346,6 +340,7 @@ export default function TabViewExample({ navigation }) {
     return (
       <TabContent
         locationId={business?.L}
+        Profession={business?.BD}
         userId={userId}
         navigation={navigation}
       />

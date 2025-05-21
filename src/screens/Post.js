@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, ActivityIndicator, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, Image, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useSelector } from 'react-redux';
 import DatePicker from 'react-native-date-picker';
 import styles from '../components/layout/PostStyles';
-import { TabView, TabBar } from 'react-native-tab-view';
-import Subscription from './Subscription';
-const Post = ({ locationId, navigation }) => {
+
+const Post = ({ navigation }) => {
   const [photos, setPhotos] = useState([]);
   const [filteredPhotos, setFilteredPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,53 +16,91 @@ const Post = ({ locationId, navigation }) => {
   const [endDate, setEndDate] = useState(null);
   const [monthYearVisible, setMonthYearVisible] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const userId = useSelector((state) => state.UserId);
+  
+  useEffect(() => {
+    const fetchBusinessInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+        const data = await response.json();    
+        if (response.ok && data.length > 0) {
+          const paidBusiness = data.find(business => business.IsPaid === 1) || data[0];
+          setSelectedBusiness({
+            locationId: paidBusiness.L,
+            profession: paidBusiness.BD,
+            isPaid: paidBusiness.IsPaid
+          });
+        } else {
+          setError('No business information found');
+        }
+      } catch (error) {
+        console.error('API call error:', error);
+        setError('Failed to fetch business information');
+      }
+    };
+    
+    fetchBusinessInfo();
+  }, [userId]);
+  
+  useEffect(() => {
+    if (selectedBusiness?.locationId && selectedBusiness?.profession) {
+      fetchPhotos();
+    }
+  }, [selectedBusiness, startDate, endDate]);
 
-  // Function to fetch photos from the API
   const fetchPhotos = async () => {
+    if (!selectedBusiness?.locationId || selectedBusiness?.isPaid === 0) {
+      return;
+    }
+    
     setRefreshing(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-subadmin?locationId=${locationId}`);
+      const response = await fetch(
+        `${API_BASE_URL}/getOneOnOneMeeting-subadmin?locationId=${selectedBusiness.locationId}&Profession=${selectedBusiness.profession}`
+      );
       const data = await response.json();
+      console.log('Photos data:-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-', data);
 
       if (response.ok && data.data) {
-        const photosWithProfileData = await Promise.all(
-          data.data.map(async (item) => {
-            // Fetch User Profile Image
-            const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.UserId}`);
-            const profileData = await profileResponse.json();
-
-            // Fetch Meet Profile Image
-            const meetProfileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.MeetId}`);
-            const meetProfileData = await meetProfileResponse.json();
-
-            // Fetch Post Image
-            const ProfileResponseImgPath = await fetch(`${API_BASE_URL}/one-profile-image?userId=${item.Img_Path}`);
-            const ProfileDataImgPath = await ProfileResponseImgPath.json();
-
-            return {
-              ...item,
-              profileImage: profileData.imageUrl,
-              meetProfileImage: meetProfileData.imageUrl,
-              postimage: ProfileDataImgPath.imageUrl,
-              userName: item.Username || item.UserId,
-              meetUsername: item.MeetUsername,
-              userProfession: item.UserProfession,
-              meetProfession: item.MeetProfession,
-              userBusinessName: item.userbuisnessname,
-              dateTime: item.DateTime,
-            };
-          })
-        );
-        photosWithProfileData.sort((a, b) => {
-          const dateA = new Date(a.dateTime);
-          const dateB = new Date(b.dateTime);
-          return dateB - dateA; // Descending order (most recent first)
-        });
-        if (startDate && endDate) {
-          filterPhotosByDateRange(startDate, endDate, photosWithProfileData);
+        if (data.data.length === 0) {
+          setPhotos([]);
+          setFilteredPhotos([]);
         } else {
-          setPhotos(photosWithProfileData);
-          setFilteredPhotos(photosWithProfileData);
+          const photosWithProfileData = await Promise.all(
+            data.data.map(async (item) => {
+              const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.UserId}`);
+              const profileData = await profileResponse.json();
+              const meetProfileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${item.MeetId}`);
+              const meetProfileData = await meetProfileResponse.json();
+              const ProfileResponseImgPath = await fetch(`${API_BASE_URL}/one-profile-image?userId=${item.Img_Path}`);
+              const ProfileDataImgPath = await ProfileResponseImgPath.json();
+
+              return {
+                ...item,
+                profileImage: profileData.imageUrl,
+                meetProfileImage: meetProfileData.imageUrl,
+                postimage: ProfileDataImgPath.imageUrl,
+                userName: item.Username || item.UserId,
+                meetUsername: item.MeetUsername,
+                userProfession: item.Profession,
+                meetProfession: item.MeetProfession,
+                userBusinessName: item.userbuisnessname,
+                dateTime: item.DateTime,
+              };
+            })
+          );
+          photosWithProfileData.sort((a, b) => {
+            const dateA = new Date(a.dateTime);
+            const dateB = new Date(b.dateTime);
+            return dateB - dateA;
+          });
+          if (startDate && endDate) {
+            filterPhotosByDateRange(startDate, endDate, photosWithProfileData);
+          } else {
+            setPhotos(photosWithProfileData);
+            setFilteredPhotos(photosWithProfileData);
+          }
         }
       } else {
         setError(data.error || 'Failed to fetch data.');
@@ -75,8 +112,7 @@ const Post = ({ locationId, navigation }) => {
       setRefreshing(false);
     }
   };
-
-  // Filtering photos based on selected date range
+  
   const filterPhotosByDateRange = (start, end, photosToFilter) => {
     const filtered = photosToFilter.filter(photo => {
       const photoDate = new Date(photo.dateTime);
@@ -84,36 +120,33 @@ const Post = ({ locationId, navigation }) => {
     });
     setFilteredPhotos(filtered);
   };
-
-  // Handle start date change
+  
   const handleStartDateChange = (date) => {
     setStartDate(date);
     if (endDate) {
       filterPhotosByDateRange(date, endDate, photos);
     }
   };
-
-  // Handle end date change
+  
   const handleEndDateChange = (date) => {
     setEndDate(date);
     if (startDate) {
       filterPhotosByDateRange(startDate, date, photos);
     }
   };
-
-  // Handle month/year change
+  
   const handleMonthYearChange = (date) => {
     const selectedMonthYear = new Date(date);
     setSelectedMonth(selectedMonthYear);
     filterPhotosByMonthYear(selectedMonthYear);
   };
-
-  // Filter photos by selected month and year
+  
   const filterPhotosByMonthYear = (monthYear) => {
     const filtered = photos.filter(photo => {
       const photoDate = new Date(photo.dateTime);
       return (
-        photoDate.getMonth() === monthYear.getMonth() && photoDate.getFullYear() === monthYear.getFullYear()
+        photoDate.getMonth() === monthYear.getMonth() && 
+        photoDate.getFullYear() === monthYear.getFullYear()
       );
     });
     setFilteredPhotos(filtered);
@@ -123,12 +156,17 @@ const Post = ({ locationId, navigation }) => {
     setRefreshing(true);
     fetchPhotos();
   };
-
-  useEffect(() => {
-    if (locationId) {
-      fetchPhotos();
-    }
-  }, [locationId, startDate, endDate]);
+  if (selectedBusiness?.isPaid === 0) {
+    return <Subscription 
+      navigation={navigation}
+      route={{ 
+        params: { 
+          locationId: selectedBusiness.locationId, 
+          Profession: selectedBusiness.profession 
+        } 
+      }} 
+    />;
+  }
 
   if (loading && !refreshing) {
     return (
@@ -139,14 +177,9 @@ const Post = ({ locationId, navigation }) => {
   }
 
   if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
-      </View>
-    );
+    renderEmptyComponent
   }
-
-  // Render each photo item
+  
   const renderItem = ({ item }) => {
     const formattedDate = item.dateTime
       ? new Date(item.dateTime).toLocaleDateString('en-IN', {
@@ -214,6 +247,24 @@ const Post = ({ locationId, navigation }) => {
     );
   };
 
+  const renderEmptyComponent = () => {
+    return (
+      <View style={styles.noPostsContainer}>
+        <MaterialIcons name="image-not-supported" size={60} color="#2e3192" />
+        <Text style={styles.noPostsText}>No posts available</Text>
+        <Text style={styles.noPostsSubText}>
+          {selectedMonth ? 'No posts found for the selected month.' : 'There are no posts to display.'}
+        </Text>
+        <TouchableOpacity 
+          style={styles.refreshButton} 
+          onPress={handleRefresh}
+        >
+          <Text style={styles.refreshButtonText}>Refresh</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.filterContainer}>
       <View>
@@ -221,107 +272,34 @@ const Post = ({ locationId, navigation }) => {
           <Text style={styles.filterButtonText}>Month/Year</Text>
         </TouchableOpacity>
       </View>
+      
       {monthYearVisible && (
         <DatePicker
           modal
           open={monthYearVisible}
-          date={selectedMonth || new Date(new Date().getFullYear(), new Date().getMonth(), 1)} // Default to 1st of current month
+          date={selectedMonth || new Date(new Date().getFullYear(), new Date().getMonth(), 1)}
           mode="date"
           onConfirm={(date) => {
             handleMonthYearChange(date);
-            setMonthYearVisible(false); // Close after selection
+            setMonthYearVisible(false);
           }}
           onCancel={() => setMonthYearVisible(false)}
         />
       )}
-
-      {/* Display the filtered photos */}
+      
       <FlatList
         data={filteredPhotos}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.gridContainer}
+        contentContainerStyle={filteredPhotos.length === 0 ? styles.emptyGridContainer : styles.gridContainer}
         refreshing={refreshing}
         onRefresh={handleRefresh}
         showsVerticalScrollIndicator={false} 
-        showsHorizontalScrollIndicator={false} 
+        showsHorizontalScrollIndicator={false}
+        ListEmptyComponent={renderEmptyComponent}
       />
     </View>
   );
 };
-export default function TabViewExample({ navigation }) {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
-  const [routes, setRoutes] = useState([]);
-  const userId = useSelector((state) => state.UserId);
-  const [businessInfo, setBusinessInfo] = useState([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    const fetchBusinessInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
-        const data = await response.json();
-        console.log("Data in the Home Screen Drawer-----------------------------", data);
-        if (response.ok) {
-          const updatedRoutes = data.map((business, index) => ({
-            key: `business${index + 1}`,
-            title: business.BD,
-            locationId: business.L,
-            isPaid: business.IsPaid,
-          }));
-          setRoutes(updatedRoutes);
-          setBusinessInfo(data);
-        } else {
-          console.error('Error fetching business info:', data.message);
-        }
-      } catch (error) {
-        console.error('API call error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBusinessInfo();
-  }, [userId]);
-  const renderScene = ({ route }) => {
-    const business = businessInfo.find((b) => b.BD === route.title);
-    if (business?.IsPaid === 0) {
-      return <Subscription 
-      navigation={navigation}
-      route={{ 
-        ...route, 
-        params: { 
-          locationId: business?.L, 
-          Profession: business?.BD 
-        } 
-      }} />;
-    }
-    return (
-      <Post
-        locationId={business?.L}
-        navigation={navigation}
-      />
-    );
-  };
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: '#2e3192' }}
-      style={{ backgroundColor: '#f5f7ff' }}
-      activeColor="#2e3192"
-      inactiveColor="gray"
-      labelStyle={{ fontSize: 14 }}
-    />
-  );
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-  return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      renderTabBar={renderTabBar}
-    />
-  );
-}
+
+export default Post;
