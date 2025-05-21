@@ -15,13 +15,13 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const PaymentHistory = () => {
+const HeadAdminPaymentsPage = () => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
-  const userId = useSelector((state) => state.UserId);
+   const userId = useSelector((state) => state.UserId);
 
   const fetchPaymentHistory = async () => {
     try {
@@ -79,11 +79,13 @@ const PaymentHistory = () => {
           <Text style={styles.eventIdLabel}>
             <Icon name="calendar" size={14} color="#2e3192" /> Event #{item.EventId}
           </Text>
-          <Text style={styles.date}>
-            <Icon name="time-outline" size={14} color="#2e3192" /> {formatDate(item.CreatedAt)}
-          </Text>
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  <Icon name="time-outline" size={14} color="#2e3192" style={{ marginRight: 5 }} />
+  <Text style={styles.date}>{formatDate(item.CreatedAt)}</Text>
+</View>
+
         </View>
-        
+        <View style={styles.userInfocon}>
         <View style={styles.userInfo}>
           <Text style={styles.username}>
             <Icon name="person" size={14} color="#2e3192" /> {item.Username}
@@ -95,6 +97,7 @@ const PaymentHistory = () => {
           <Text style={styles.statusText}>
             <Icon name="checkmark-circle" size={14} color="green" /> Payment Successful
           </Text>
+        </View>
         </View>
       </View>
     </LinearGradient>
@@ -161,7 +164,7 @@ const PaymentHistory = () => {
   );
 };
 
-export default PaymentHistory;
+export default HeadAdminPaymentsPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -218,9 +221,18 @@ const styles = StyleSheet.create({
   date: {
     color: '#2e3192',
     fontSize: 13,
+    fontWeight: '500',
+    
   },
   userInfo: {
-    marginBottom: 8,
+   flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  userInfocon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   username: {
     color: '#2e3192',

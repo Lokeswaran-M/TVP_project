@@ -1,324 +1,303 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Dimensions,
-  BackHandler,
-  ActivityIndicator,Image,
+import React, { useEffect, useState } from 'react';
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  ActivityIndicator, 
+  StyleSheet, 
+  TouchableOpacity, 
+  RefreshControl,
+  StatusBar
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
+import { useSelector } from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const { width, height } = Dimensions.get('window'); // Get screen dimensions
+const HeadAdminPaymentsPage = () => {
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
 
-const HeadAdminPaymentsPage = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [members, setMembers] = useState([]); // State to store the new members
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-
-  // Fetch members from the API
-  const fetchMembers = async () => {
+  const fetchPaymentHistory = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/last-month`);
-      const data = await response.json();
-      console.log("Data for new sub----------------------",data);
-    //   data.members.forEach(member => {
-    //     console.log("ROLLID IN MEMBERS LIST SCREEN---------------------------------", member.UserId);
-    // });
-  
-      if (response.ok) {
-        // Fetch profile images for each member
-        const updatedMembers = await Promise.all(data.map(async (member) => {
-          try {
-            // Fetch profile image for each member
-            const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
-  
-            if (imageResponse.ok) {
-              const imageData = await imageResponse.json();
-              const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
-              member.profileImage = uniqueImageUrl; // Assign image URL to member
-              
-              // Print the image URL to the console
-              console.log(`Profile Image URL for ${member.Username}: ${member.profileImage}`); // Log image URL
-            } else {
-              console.error('Failed to fetch profile image:', member.UserId);
-              member.profileImage = null; // Set image to null if fetch fails
-            }
-          } catch (error) {
-            console.error('Error fetching image:', error); // Log image fetch errors
-            member.profileImage = null; // Set image to null if there is an error
-          }
-          return member; // Return member with updated profile image
-        }));
-  
-        setMembers(updatedMembers); // Set members data with profile images
-      } else {
-        throw new Error(data.message || 'Failed to fetch members.');
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/EventPaymentViewAdmin`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
       }
+      const data = await response.json();
+      console.log('Payment History:==================', data);
+      setPaymentHistory(data);
+      setError('');
     } catch (err) {
-      setError(err.message); // Set error if something goes wrong
+      console.error(err);
+      setError('Something went wrong while fetching payment history.');
     } finally {
-      setLoading(false); // Set loading to false once the API call is done
+      setLoading(false);
+      setRefreshing(false);
     }
   };
-  
 
-  // Fetch data when the component mounts
   useEffect(() => {
-    fetchMembers(); // Fetch new members when the component mounts
+    fetchPaymentHistory();
+  }, []);
 
-    // Set the tabBar to be shown when the screen is focused
-    const unsubscribe = navigation.addListener('focus', () => {
-      navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-    });
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchPaymentHistory();
+  };
 
-    // Handle back button press to manage the tab bar and search field visibility
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (searchQuery) {
-        // If searchQuery is not empty, clear the search and show the tab bar
-        setSearchQuery(''); // Clear search query
-        navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-        return true; // Prevent default back button behavior
-      }
-      return false; // Allow default back button behavior if no search query
-    });
-
-    return () => {
-      unsubscribe(); // Cleanup the navigation listener
-      backHandler.remove(); // Cleanup the back button listener
+  const formatDate = (dateString) => {
+    const options = { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric', 
+      hour: '2-digit', 
+      minute: '2-digit' 
     };
-  }, [navigation, searchQuery]);
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
-  // Filter members based on the search query
-  const filteredMembers = members
-  .filter((member) =>
-    member.Username.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  .sort((a, b) => b.UserId - a.UserId);
+  const renderItem = ({ item, index }) => (
+    <LinearGradient
+      colors={['#F5F7FE', '#F5F7FE']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={[styles.card, { marginTop: index === 0 ? 5 : 15 }]}
+    >
+      <View style={styles.iconContainer}>
+        <MaterialIcon name="credit-card-check-outline" size={24} color="#2e3192" />
+      </View>
+      
+      <View style={styles.cardContent}>
+        <View style={styles.topRow}>
+          <Text style={styles.eventIdLabel}>
+            <Icon name="calendar" size={14} color="#2e3192" /> Event #{item.EventId}
+          </Text>
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  <Icon name="time-outline" size={14} color="#2e3192" style={{ marginRight: 5 }} />
+  <Text style={styles.date}>{formatDate(item.CreatedAt)}</Text>
+</View>
 
-  // Render member item
-  const renderMember = ({ item }) => (
-    <View style={styles.memberItem}>
-      <View style={styles.memberDetails}>
-        <ProfilePic image={item.profileImage} name={item.Username} />
-        <View style={styles.memberText}>
-          <Text style={styles.memberName}>{item.Username}</Text>
+        </View>
+        <View style={styles.userInfocon}>
+        <View style={styles.userInfo}>
+          <Text style={styles.username}>
+            <Icon name="person" size={14} color="#2e3192" /> {item.Username}
+          </Text>
+          <Text style={styles.userId}>ID: {item.UserId}</Text>
+        </View>
+        
+        <View style={styles.paymentStatus}>
+          <Text style={styles.statusText}>
+            <Icon name="checkmark-circle" size={14} color="green" /> Payment Successful
+          </Text>
+        </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 
-  const handleFocus = () => {
-    navigation.setOptions({ tabBarStyle: { display: 'none' } });
-  };
-
-  const handleBlur = () => {
-    navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-  };
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Icon name="receipt-outline" size={60} color="#2e3192" />
+      <Text style={styles.emptyText}>No payment records found</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-
-      {/* Search Input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search members"
-          placeholderTextColor="black"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          color="#2e3192"
-        />
-        <View style={styles.searchIconContainer}>
-          <Icon name="search" size={23} color="#2e3192" />
+      <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
+      
+      <LinearGradient
+        colors={['#2e3192', '#2e3192']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <Text style={styles.headerTitle}>Payment History</Text>
+        <TouchableOpacity onPress={fetchPaymentHistory} style={styles.refreshButton}>
+          <Icon name="refresh" size={22} color="#fff" />
+        </TouchableOpacity>
+      </LinearGradient>
+      
+      {loading && !refreshing ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#3957E8" />
+          <Text style={styles.loadingText}>Loading payment history...</Text>
         </View>
-      </View>
-
-      {/* Loading or Members List */}
-      {loading ? (
-        <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Icon name="alert-circle" size={50} color="#ff6b6b" />
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={fetchPaymentHistory}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
       ) : (
-        <>
-          {/* Error Handling */}
-          {error ? (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          ) : (
-            <>
-              {/* Members List */}
-              <FlatList
-                data={filteredMembers}
-                renderItem={renderMember}
-               
-                contentContainerStyle={styles.memberList}
-              />
-
-              {/* Member Count */}
-              <View style={styles.memberCountContainer}>
-                <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
-              </View>
-            </>
-          )}
-        </>
+        <FlatList
+          data={paymentHistory}
+          keyExtractor={(item, index) => `payment-${index}`}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={renderEmptyComponent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={['#3957E8']}
+              tintColor="#3957E8"
+            />
+          }
+        />
       )}
     </View>
   );
 };
-
-// Profile Pic Component
-const ProfilePic = ({ image, name }) => {
-  const initial = name.charAt(0).toUpperCase();
-
-  return (
-    <View style={styles.profilePicContainer}>
-      {image ? (
-        <Image source={{ uri: image }} style={styles.profileImage} />
-      ) : (
-        <Text style={styles.profilePicText}>{initial}</Text>
-      )}
-    </View>
-  );
-};
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#CCC',
-    flex: 1,
-  },
-
-  searchContainer: {
-    flexDirection: 'row',
-    padding: 0,
-    backgroundColor: '#FFFFFF',
-    position: 'relative',
-    color: '#2e3192',
-    borderRadius: 10,
-    margin: 10,
-    marginHorizontal: width * 0.1, // Use width as percentage
-  },
-  searchInput: {
-    flex: 1,
-    borderRadius: 25,
-    paddingLeft: 50,
-    fontSize: 16,
-    paddingVertical: 8,
-  },
-  searchIconContainer: {
-    position: 'absolute',
-    left: 21,
-    top: '50%',
-    transform: [{ translateY: -12 }],
-  },
-
-  memberList: {
-    flexGrow: 1,
-    paddingHorizontal: 10,
-    margin: 10,
-    paddingBottom: 20,
-  },
-  memberItem: {
-    backgroundColor: '#FFFFFF',
-    padding: 8,
-    paddingVertical:20,
-    borderRadius: 10,
-    marginBottom: 8,
-    elevation: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  memberDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  memberText: {
-    marginLeft: 10,
-  },
-  memberName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color:'black',
-  },
-  memberCountContainer: {
-    position: 'absolute',
-    bottom: 40,
-    left: width * 0.75,
-    backgroundColor: 'rgba(250, 250, 250, 0.8)',
-    padding: 10,
-    borderRadius: 19,
-    borderColor: '#2e3192',
-    borderWidth: 2,
-  },
-  memberCountText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2e3192',
-  },
-  errorContainer: {
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 16,
-  },
-  profilePicContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profilePicText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-});
 
 export default HeadAdminPaymentsPage;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  refreshButton: {
+    padding: 5,
+  },
+  listContent: {
+    padding: 16,
+    paddingTop: 10,
+    flexGrow: 1,
+  },
+  card: {
+    borderRadius: 12,
+    elevation: 3,
+    overflow: 'hidden',
+    flexDirection: 'row',
+  },
+  iconContainer: {
+    backgroundColor: 'rgba(22, 143, 87, 0.1)',
+    padding: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardContent: {
+    flex: 1,
+    padding: 16,
+  },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  eventIdLabel: {
+    color: '#2e3192',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  date: {
+    color: '#2e3192',
+    fontSize: 13,
+    fontWeight: '500',
+    
+  },
+  userInfo: {
+   flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  userInfocon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  username: {
+    color: '#2e3192',
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  userId: {
+    color: '#2e3192',
+    fontSize: 12,
+    marginLeft: 18,
+  },
+  paymentStatus: {
+    backgroundColor: 'rgba(125, 196, 125, 0.1)',
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  statusText: {
+    color: 'green',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#2e3192',
+    fontSize: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: '#555',
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 10,
+  },
+  retryButton: {
+    backgroundColor: '#2e3192',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  retryText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  emptyText: {
+    marginTop: 10,
+    color: '#555',
+    fontSize: 16,
+  },
+});
