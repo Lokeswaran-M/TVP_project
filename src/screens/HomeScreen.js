@@ -197,7 +197,10 @@ useEffect(() => {
   const fetchEventData = async () => {
     try {
       const locationId = route.params.locationId;
-      const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&UserId=${userId}`);
+      const Profession = route.params.Profession;
+      console.log("Profession in fetchEventData:-------------", Profession);
+      console.log("Location ID in fetchEventData:-------------", locationId);
+      const response = await fetch(`${API_BASE_URL}/getUpcomingEvents?LocationID=${locationId}&UserId=${userId}&Profession=${Profession}`);
       const data = await response.json();
       if (response.ok) {
         setEventData(data.events || []);
@@ -802,6 +805,7 @@ export default function TabViewExample({ navigation }) {
           ...route, 
           params: { 
             locationId: business?.L, 
+                  Profession: business?.BD 
           } 
         }}
       />
