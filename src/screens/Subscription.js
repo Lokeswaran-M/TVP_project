@@ -1,9 +1,45 @@
+const PRIMARY_COLOR = '#2e3091';
+const SECONDARY_COLOR = '#3d3fa3';
+const LIGHT_PRIMARY = '#eaebf7';
+const ACCENT_COLOR = '#ff6b6b';
+const BACKGROUND_COLOR = '#f5f7ff';
+const WHITE = '#ffffff';
+const DARK_TEXT = '#333333';
+const LIGHT_TEXT = '#6c7293';
+
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
+const CustomModal = ({ visible, title, message, onCancel, onConfirm, confirmText, cancelText }) => {
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
+      <View style={modalStyles.centeredView}>
+        <View style={modalStyles.modalView}>
+          <Text style={modalStyles.modalTitle}>{title}</Text>
+          <Text style={modalStyles.modalText}>{message}</Text>
+          <View style={modalStyles.buttonContainer}>
+            {onCancel && (
+              <TouchableOpacity style={modalStyles.cancelButton} onPress={onCancel}>
+                <Text style={modalStyles.cancelButtonText}>{cancelText || "Cancel"}</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={modalStyles.confirmButton} onPress={onConfirm}>
+              <Text style={modalStyles.confirmButtonText}>{confirmText || "OK"}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const Subscription = ({ route }) => {
   const { locationId, Profession } = route.params;
@@ -12,6 +48,11 @@ const Subscription = ({ route }) => {
   const [isOffMonth, setIsOffMonth] = useState(false);
   const navigation = useNavigation();
   const userId = useSelector((state) => state.UserId);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
 
   useEffect(() => {
     const fetchBusinessCount = async () => {
@@ -27,53 +68,77 @@ const Subscription = ({ route }) => {
       } catch (error) {
         console.error('Error fetching business count:', error);
         setErrorMessage('An error occurred while fetching business count.');
+        showErrorModal('Error', 'An error occurred while fetching business count.');
       }
     };
     fetchBusinessCount();
-  }, [ locationId, Profession]);  
+  }, [locationId, Profession]);
+  const showErrorModal = (title, message) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setErrorModalVisible(true);
+  };
+  const showSuccessModal = (title, message) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setSuccessModalVisible(true);
+  };
 
   const handleDeleteBusiness = () => {
-    Alert.alert(
-      "Confirm Delete",
-      "Do you want to delete this business and add another?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          onPress: async () => {
-            try {
-              const response = await fetch(`${API_BASE_URL}/updateBusinessStatus`, {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  Profession,
-                  LocationID: locationId,
-                  UserId: userId,
-                }),
-              });
-              const data = await response.json();
-              console.log("Data in insert the business status------------------------",data);
-              if (response.ok) {
-                Alert.alert("Success", "Business status updated successfully.");
-                navigation.navigate('UpdateBusiness', {
-                              locationId: locationId,
-                              Profession: Profession,
-                            });
-              } else {
-                Alert.alert("Error", data.error || "Failed to update business status.");
-              }
-            } catch (error) {
-              console.error("Error updating business status:", error);
-              Alert.alert("Error", "An unexpected error occurred.");
-            }
-          },
-        },
-      ]
-    );
-  };  
+    setDeleteModalVisible(true);
+  };
 
+  const confirmDeleteBusiness = async () => {
+    setDeleteModalVisible(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/updateBusinessStatus`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Profession,
+          LocationID: locationId,
+          UserId: userId,
+        }),
+      });
+      const data = await response.json();
+      console.log("Data in insert the business status------------------------",data);
+      if (response.ok) {
+        showSuccessModal("Success", "Business status updated successfully.");
+      } else {
+        showErrorModal("Error", data.error || "Failed to update business status.");
+      }
+    } catch (error) {
+      console.error("Error updating business status:", error);
+      showErrorModal("Error", "An unexpected error occurred.");
+    }
+  };
+
+  const handleSuccessModalClose = () => {
+    setSuccessModalVisible(false);
+    navigation.navigate('UpdateBusiness', {
+      locationId: locationId,
+      Profession: Profession,
+    });
+  };
+
+  const handlePayment = () => {
+    try {
+      const paymentAmount = isOffMonth ? 1500 : 3000;
+      const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}`;
+
+      console.log('Payment URL:', paymentUrl);
+      navigation.navigate('PaymentWebview', { paymentUrl });
+    } catch (error) {
+      console.error('Error during payment initiation:', error);
+      showErrorModal('Payment Error', 'An error occurred during the payment initiation. Please try again.');
+    }
+  };
+  
+  const handleContinue = () => {
+    navigation.navigate('Pay');
+  };  
   if (businessCount > 0) {
     return (
       <View style={styles.container}>
@@ -83,27 +148,34 @@ const Subscription = ({ route }) => {
         <TouchableOpacity style={styles.button1} onPress={handleDeleteBusiness}>
           <Text style={styles.buttonText}>Delete Business and Add Another</Text>
         </TouchableOpacity>
+        <CustomModal
+          visible={deleteModalVisible}
+          title="Confirm Delete"
+          message="Do you want to delete this business and add another?"
+          onCancel={() => setDeleteModalVisible(false)}
+          onConfirm={confirmDeleteBusiness}
+          confirmText="Delete"
+          cancelText="Cancel"
+        />
+        
+        {/* Success Modal */}
+        <CustomModal
+          visible={successModalVisible}
+          title={modalTitle}
+          message={modalMessage}
+          onConfirm={handleSuccessModalClose}
+          confirmText="OK"
+        />
+        <CustomModal
+          visible={errorModalVisible}
+          title={modalTitle}
+          message={modalMessage}
+          onConfirm={() => setErrorModalVisible(false)}
+          confirmText="OK"
+        />
       </View>
     );
-  } 
-  const handlePayment = () => {
-    try {
-      const paymentAmount = isOffMonth ? 1500 : 3000;
-      const paymentUrl = `https://www.smartzensolutions.com/Payments/dataFrom.php?amount=${paymentAmount}&userid=${userId}`;
-
-      console.log('Payment URL:', paymentUrl);
-
-      // Navigate to a WebView for payment processing
-      navigation.navigate('PaymentWebview', { paymentUrl });
-    } catch (error) {
-      console.error('Error during payment initiation:', error);
-      Alert.alert('Payment Error', 'An error occurred during the payment initiation. Please try again.');
-    }
-  };
-  const handleContinue = () => {
-    // Navigate to the Pay component
-    navigation.navigate('Pay');
-  };  
+  }
 
   return ( 
     <ScrollView contentContainerStyle={styles.container}>
@@ -153,7 +225,7 @@ const Subscription = ({ route }) => {
           After one year without renewal :
           </Text>
           <Text style={styles.termsText1}>
-          1. Member’s name is removed from the location member list.
+          1. Member's name is removed from the location member list.
       2.Access to the TPV portal login is revoked.
           </Text>
           <Text style={styles.termsText}>
@@ -164,9 +236,17 @@ const Subscription = ({ route }) => {
       2.They can join another location if a category is available.
           </Text>
       </View>
+      <CustomModal
+        visible={errorModalVisible}
+        title={modalTitle}
+        message={modalMessage}
+        onConfirm={() => setErrorModalVisible(false)}
+        confirmText="OK"
+      />
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -303,6 +383,77 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 14,
     color: 'black',
+  },
+});
+
+// Modal specific styles
+const modalStyles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: WHITE,
+    borderRadius: 15,
+    padding: 25,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+    color: PRIMARY_COLOR,
+  },
+  modalText: {
+    marginBottom: 20,
+    textAlign: 'center',
+    fontSize: 16,
+    color: DARK_TEXT,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  confirmButton: {
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    marginRight: 10,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  confirmButtonText: {
+    color: WHITE,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  cancelButtonText: {
+    color: DARK_TEXT,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

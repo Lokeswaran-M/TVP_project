@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect, useNavigation, CommonActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItem, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import { Image, Text, TouchableOpacity, View, StyleSheet, Alert } from 'react-native';
+import { Image, Text, TouchableOpacity, View, StyleSheet, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
@@ -30,7 +30,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
-
+const PRIMARY_COLOR = '#2e3091';
+const SECONDARY_COLOR = '#3d3fa3';
+const LIGHT_PRIMARY = '#eaebf7';
+const ACCENT_COLOR = '#ff6b6b';
+const BACKGROUND_COLOR = '#f5f7ff';
+const WHITE = '#ffffff';
+const DARK_TEXT = '#333333';
+const LIGHT_TEXT = '#6c7293';
 const ProfileStack = createStackNavigator();
 
 function ProfileStackNavigator() {
@@ -285,31 +292,19 @@ const HeaderWithoutImage = ({ navigation }) => ({
 
 function DrawerNavigator() {
   const dispatch = useDispatch();
-const user = useSelector((state) => state);
-// console.log("User in Drawer------------------", user);
-const userId = useSelector((state) => state.UserId);
-// console.log("UserID----------", userId);
+  const user = useSelector((state) => state);
+  const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
-  // useEffect(() => {
-  //   if (user === null) { 
-  //     console.log("User has logged out:", user);
-  //     // navigation.navigate('Auth');
-  //   }
-  // }, [user, navigation]);
+  
+  // State for logout modal
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  
   const handleLogout = () => {
-    // Show a confirmation dialog before logging out
-    Alert.alert(
-      'Confirm Logout',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Yes', onPress: () => confirmLogout() }
-      ],
-      { cancelable: true }
-    );
+    setShowLogoutModal(true);
   };
 
   const confirmLogout = () => {
+    setShowLogoutModal(false);
     dispatch(logoutUser());
     console.log("User has logged out:", user);
     navigation.dispatch(
@@ -319,12 +314,14 @@ const userId = useSelector((state) => state.UserId);
       })
     );
   };
-  // console.log('rollId====================',user?.RollId)
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
+  };
   
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState({});
-  console.log('CATEGORY ID INSIDE THE DRAWER NAVIGATION----------',profileData?.CategoryId);
-  console.log('PROFESSION INSIDE DRAWER FUNCTION-----------------',profileData?.Profession);
+  
   const fetchProfileData = async () => {
     setLoading(true);
     try {
@@ -333,7 +330,6 @@ const userId = useSelector((state) => state.UserId);
         throw new Error('Failed to fetch profile data');
       }
       const data = await response.json();
-      console.log('DATA INSIDE THE DRAWER NAVIGATOR FUNCTION-------------------',data);
       if (response.status === 404) {
         setProfileData({});
       } else {
@@ -352,38 +348,38 @@ const userId = useSelector((state) => state.UserId);
     }, [userId])
   );
   return (
-    <Drawer.Navigator
-      initialRouteName="Home"
-      drawerContent={(props) => (
-        <DrawerContentScrollView {...props}>
-            <DrawerContent {...props} />
-            <DrawerItem
-                label="Logout"
-                icon={({ color, size }) => <Icon name="sign-out" color={color} size={size} />}
-                onPress={handleLogout}
-            />
-        </DrawerContentScrollView>
-    )}
-      // drawerContent={(props) => <DrawerContent {...props} />} 
-      screenOptions={{
-        drawerActiveTintColor: '#2e3192', 
-        drawerInactiveTintColor: 'black', 
-        drawerStyle: {
-          backgroundColor: '#f5f7ff', 
-        },
-      }}
-    >
+      <>
+      <Drawer.Navigator
+        initialRouteName="Home"
+        drawerContent={(props) => (
+          <DrawerContentScrollView {...props}>
+              <DrawerContent {...props} />
+              <DrawerItem
+                  label="Logout"
+                  icon={({ color, size }) => <Icon name="sign-out" color={color} size={size} />}
+                  onPress={handleLogout}
+              />
+          </DrawerContentScrollView>
+        )}
+        screenOptions={{
+          drawerActiveTintColor: '#2e3192', 
+          drawerInactiveTintColor: 'black', 
+          drawerStyle: {
+            backgroundColor: '#f5f7ff', 
+          },
+        }}
+      >
       <Drawer.Screen 
-  name="Home" 
-  component={TabNavigator} 
-  options={({ navigation }) => ({
-    drawerLabel: 'Home',
-    drawerIcon: ({ color, size }) => (
-      <FontAwesome name="home" color={color} size={size} />
-    ),
-    ...HeaderWithImage({ navigation }),
-  })}
-/>
+          name="Home" 
+          component={TabNavigator} 
+          options={({ navigation }) => ({
+            drawerLabel: 'Home',
+            drawerIcon: ({ color, size }) => (
+              <FontAwesome name="home" color={color} size={size} />
+            ),
+            ...HeaderWithImage({ navigation }),
+          })}
+        />
       {profileData?.CategoryId === 1 && (
         <>
       <Drawer.Screen 
@@ -546,6 +542,34 @@ const userId = useSelector((state) => state.UserId);
       </>
       )}
     </Drawer.Navigator>
+        <Modal
+        visible={showLogoutModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={cancelLogout}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Logout</Text>
+            <Text style={styles.modalMessage}>Are you sure you want to log out?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]} 
+                onPress={cancelLogout}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.confirmButton]} 
+                onPress={confirmLogout}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 function AppNavigator() {
@@ -768,6 +792,49 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     marginLeft: 10,
+  },
+   modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: WHITE,
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: DARK_TEXT,
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: DARK_TEXT,
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  modalButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  cancelButton: {
+    backgroundColor: LIGHT_TEXT,
+  },
+  confirmButton: {
+    backgroundColor: ACCENT_COLOR,
+  },
+  buttonText: {
+    color: WHITE,
+    fontWeight: 'bold',
   },
 });
 export default AppNavigator;
