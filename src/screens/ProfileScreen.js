@@ -98,6 +98,10 @@ const Profile = () => {
   const userId = useSelector((state) => state.UserId);
   const navigation = useNavigation();
 
+
+
+
+
   const fetchProfileImage = async () => {
     const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
       method: 'GET',

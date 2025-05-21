@@ -24,7 +24,7 @@ const MemberDetails = () => {
   const route = useRoute();
   const { userId, Profession } = route.params;
   const AdminUserID = useSelector((state) => state.UserId);
-  
+  const [isUpdating, setIsUpdating] = useState(false);
   const [businessInfo, setBusinessInfo] = useState(null);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,10 +33,12 @@ const MemberDetails = () => {
   const [adminRollID, setAdminRollID] = useState(null);
   const [memberRollID, setMemberRollID] = useState(null);
   const [refreshToggle, setRefreshToggle] = useState(false);
- const refreshData = () => {
-    setRefreshToggle(prev => !prev);
-  };
+
   useEffect(() => {
+    if (AdminUserID) {
+      fetchData();
+    }
+  }, [AdminUserID, userId, Profession, refreshToggle]);
     const fetchData = async () => {
       try {
         const adminResponse = await fetch(`${API_BASE_URL}/api/user/Admin-info/${AdminUserID}`);
@@ -70,32 +72,60 @@ const MemberDetails = () => {
       }
     };
 
-    if (AdminUserID) {
-      fetchData();
-    }
-  }, [AdminUserID, userId, Profession, refreshToggle]);
 
-  const handleRoleChange = async (newRollId) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/tbluser/${userId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ RollId: newRollId }),
-      });
-      
+
+const handleRoleChange = async (newRollId) => {
+  if (isUpdating) {
+    console.log('Update already in progress, skipping...');
+    return;
+  }
+  
+  setIsUpdating(true);
+  console.log('handleRoleChange called with newRollId:', newRollId);
+  console.log('Before fetch call');
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/tbluser/${userId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ RollId: newRollId }),
+    });
+
+    console.log('After fetch call');
+    console.log('Fetch completed. Response status:', response.status);
+
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
       const data = await response.json();
-      
+      console.log('Parsed JSON data:', data);
+
       if (response.ok) {
-        Alert.alert('Success', data.message);
         setMemberRollID(newRollId);
-        setRefreshToggle(!refreshToggle);
+        setRefreshToggle(prev => !prev);
+
       } else {
-        // Alert.alert('Error', data.error || 'Failed to update role');
+   
       }
-    } catch (error) {
-      // Alert.alert('Error', 'Network error, please try again');
+    } else {
+      const text = await response.text();
+      console.log('Response is not JSON, raw text:', text);
     }
+  } catch (error) {
+    console.log('Fetch error caught:', error);
+    Alert.alert('Network Error', 'Something went wrong. Please try again.');
+  } finally {
+    setIsUpdating(false);
+  }
+};
+
+
+useEffect(() =>{
+  const handleGoBack = () => {
+    navigation.goBack();
   };
+}
+,[handleRoleChange]);
+
 
   const handleCall = () => {
     if (userDetails?.businessInfo?.Mobileno) {
@@ -135,14 +165,6 @@ const MemberDetails = () => {
       <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
          <ScrollView 
         contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={refreshData}
-            colors={['#2e3192']}
-            tintColor="#2e3192"
-          />
-        }
       >
         <View style={styles.headerContainer}>
           <View style={styles.profileContainer}>
@@ -261,29 +283,24 @@ const MemberDetails = () => {
             </View>
           )}
         </View>
-        {adminRollID === 1 && memberRollID && (
-          <View style={styles.adminActionsCard}>
-            <Text style={styles.sectionTitle}>Admin Actions</Text>
-            
-            {memberRollID === 3 ? (
-              <TouchableOpacity 
-                style={[styles.roleButton, styles.promoteButton]} 
-                onPress={() => handleRoleChange(2)}
-              >
-                <Icon name="arrow-up" size={18} color="#fff" />
-                <Text style={styles.roleButtonText}>Promote to Admin</Text>
-              </TouchableOpacity>
-            ) : memberRollID === 2 ? (
-              <TouchableOpacity 
-                style={[styles.roleButton, styles.demoteButton]} 
-                onPress={() => handleRoleChange(3)}
-              >
-                <Icon name="arrow-down" size={18} color="#fff" />
-                <Text style={styles.roleButtonText}>Demote to User</Text>
-              </TouchableOpacity>
-            ) : null}
-          </View>
-        )}
+{adminRollID === 1 && memberRollID && (
+  <View style={styles.adminActionsCard}>
+    <Text style={styles.sectionTitle}>Admin Actions</Text>
+
+<TouchableOpacity
+  style={[styles.roleButton, memberRollID === 3 ? styles.promoteButton : styles.demoteButton, isUpdating && {opacity: 0.6}]}
+  onPress={() => handleRoleChange(memberRollID === 3 ? 2 : 3)}
+  disabled={isUpdating}
+>
+  <Icon name={memberRollID === 3 ? "arrow-up" : "arrow-down"} size={18} color="#fff" />
+  <Text style={styles.roleButtonText}>
+    {memberRollID === 3 ? 'Promote to Admin' : 'Demote to User'}
+  </Text>
+</TouchableOpacity>
+
+  </View>
+)}
+
       </ScrollView>
     </SafeAreaView>
   );

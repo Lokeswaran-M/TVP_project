@@ -78,7 +78,7 @@ const HeadAdminMembersPage = ({ navigation }) => {
 
   useEffect(() => {
     fetchMembersData();
-  }, []);
+  }, [ ]);
 
   const applyFilters = () => {
     let filtered = members;
