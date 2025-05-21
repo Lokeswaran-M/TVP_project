@@ -102,7 +102,7 @@ const HeadAdminLocationCreate = () => {
         </View>
       </ScrollView>
 
-      {/* Modal for alert messages */}
+     
       <Modal
         visible={modalVisible}
         transparent={true}

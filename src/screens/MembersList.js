@@ -9,7 +9,6 @@ import {
   TouchableOpacity, 
   Image,
   RefreshControl,
-  Alert,
   StyleSheet,
   SafeAreaView,
   StatusBar
@@ -311,11 +310,6 @@ export default function MembersList() {
     } catch (error) {
       console.error('API call error:', error);
       setError('Failed to load business information');
-      Alert.alert(
-        'Error',
-        'Failed to load business information. Please try again later.',
-        [{ text: 'OK' }]
-      );
     } finally {
       setLoading(false);
       setRefreshing(false);

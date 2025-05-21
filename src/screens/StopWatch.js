@@ -99,7 +99,6 @@ const StopWatch = ({ route, navigation }) => {
     };
     const handleSubmitRating = () => {
         if (rating === 0) {
-            Alert.alert('Error', 'Please select a rating before submitting');
             return;
         }
         postRating(); // Call the function to post the rating
@@ -129,14 +128,13 @@ const StopWatch = ({ route, navigation }) => {
             console.log('--------------------post data -------------------',response);
             const result = await response.json();
             if (response.ok) {
-                Alert.alert('Success', result.message);
+               
                 navigation.goBack();
             } else {
-                Alert.alert('Error', result.error || 'Something went wrong');
+              
             }
         } catch (error) {
             console.error('Error posting rating:', error);
-            Alert.alert('Error', 'Failed to submit rating');
         }
     };
    

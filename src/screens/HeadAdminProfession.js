@@ -188,8 +188,6 @@ const HeadAdminProfession = () => {
           </View>
         </>
       )}
-
-      {/* Modal for Alert */}
       <Modal
         visible={modalVisible}
         transparent

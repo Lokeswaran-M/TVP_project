@@ -82,7 +82,7 @@ const HeadAdminLocationEdit = ({ route, navigation }) => {
         </View>
       </View>
 
-      {/* Modal for alerts */}
+
       <Modal
         visible={modalVisible}
         transparent={true}

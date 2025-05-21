@@ -5,7 +5,6 @@ import {
   Text,
   PermissionsAndroid,
   StyleSheet,
-  Alert,
   Platform,
 } from 'react-native';
 import { RNCamera as BarCodeScanner } from 'react-native-camera';
@@ -39,7 +38,6 @@ const Scanner = ({ navigation }) => {
     const [eventId, locationId] = data.split('_');
 
     if (!eventId || !locationId) {
-      Alert.alert('Error', 'Invalid QR Code format');
       setIsScanning(true);
       scanningRef.current = true;
       return;
@@ -62,13 +60,12 @@ const Scanner = ({ navigation }) => {
       const result = await response.json();
 
       if (response.ok) {
-        Alert.alert('Success', 'Attendance recorded successfully');
+       
       } else {
-        Alert.alert('Error', result.message || 'Failed to record attendance');
+        
       }
     } catch (error) {
       console.error('Error:', error);
-      Alert.alert('Error', 'Something went wrong');
     } finally {
       setIsScanning(false); // Disable scanning to stop the camera
       scanningRef.current = true;
@@ -91,7 +88,7 @@ const Scanner = ({ navigation }) => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           setIsScanning(true);
         } else {
-          Alert.alert('Permission Denied', 'Camera access is required to scan QR codes.');
+         
         }
       } catch (error) {
         console.log('Error requesting camera permission:', error);

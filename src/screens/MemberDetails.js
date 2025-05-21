@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Linking,
   Image,
   ActivityIndicator,
@@ -66,7 +65,6 @@ const MemberDetails = () => {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-        Alert.alert('Error', 'Unable to load user data. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -112,7 +110,6 @@ const handleRoleChange = async (newRollId) => {
     }
   } catch (error) {
     console.log('Fetch error caught:', error);
-    Alert.alert('Network Error', 'Something went wrong. Please try again.');
   } finally {
     setIsUpdating(false);
   }

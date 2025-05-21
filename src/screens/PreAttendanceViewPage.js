@@ -12,7 +12,6 @@ import {
   TouchableOpacity,
   ToastAndroid,
   Platform,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
@@ -30,8 +29,6 @@ const PreAttendanceViewPage = ({ route, navigation }) => {
   const showMessage = (message) => {
     if (Platform.OS === 'android') {
       ToastAndroid.show(message, ToastAndroid.SHORT);
-    } else {
-      Alert.alert('', message);
     }
   };
 
