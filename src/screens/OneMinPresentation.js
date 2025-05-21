@@ -8,7 +8,8 @@ import {
   ActivityIndicator, 
   Image,
   Modal,
-  StyleSheet,RefreshControl
+  StyleSheet,
+  RefreshControl
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -22,16 +23,37 @@ const OneMinPresentation = ({ route, navigation }) => {
   console.log("Event ID and Location ID:", eventId, locationId);
   const [searchQuery, setSearchQuery] = useState('');
   const [attendanceData, setAttendanceData] = useState([]);
-  console.log("Attendance Data:=============", attendanceData);
+  const [processedData, setProcessedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', message: '' });
   const [paidModalVisible, setPaidModalVisible] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  
   useEffect(() => {
     fetchAttendanceData();
   }, [eventId, locationId]);
+  useEffect(() => {
+    if (attendanceData.length > 0) {
+      const userMap = new Map();
+      attendanceData.forEach(member => {
+        if (!userMap.has(member.UserId)) {
+          userMap.set(member.UserId, {
+            ...member,
+            professions: [member.Profession]
+          });
+        } else {
+          const existingUser = userMap.get(member.UserId);
+          if (!existingUser.professions.includes(member.Profession)) {
+            existingUser.professions.push(member.Profession);
+          }
+        }
+      });
+      setProcessedData(Array.from(userMap.values()));
+      console.log("Processed Data:", Array.from(userMap.values()));
+    }
+  }, [attendanceData]);
 
   const fetchAttendanceData = async () => {
     setRefreshing(true);
@@ -39,42 +61,43 @@ const OneMinPresentation = ({ route, navigation }) => {
 
     try {
       const response = await fetch(`${API_BASE_URL}/attendance/${eventId}/${locationId}`);
-const data = await response.json();
+      const data = await response.json();
+      console.log("Attendance Data:=======================", data);
 
-if (!Array.isArray(data)) {
-  setAttendanceData([]);
-  setLoading(false);
-  setRefreshing(false);
-  return;
-}
+      if (!Array.isArray(data)) {
+        setAttendanceData([]);
+        setLoading(false);
+        setRefreshing(false);
+        return;
+      }
 
-const updatedMembers = await Promise.all(data.map(async (member) => {
-  try {
-    const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
-    const imageData = imageResponse.ok ? await imageResponse.json() : {};
-    member.profileImage = imageResponse.ok ? `${imageData.imageUrl}?t=${new Date().getTime()}` : null;
-  } catch {
-    member.profileImage = null;
-  }
-  const inTime = new Date(member.InTime);
-  member.formattedInTime = inTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  try {
-    const paymentRes = await fetch(`${API_BASE_URL}/api/EventPaymentView?UserId=${member.UserId}&eventId=${eventId}`);
-    const paymentData = await paymentRes.json();
-    if (paymentRes.ok && paymentData.length > 0) {
-      member.isPaid = true;
-      member.paidDate = new Date(paymentData[0].CreatedAt).toLocaleDateString();
-    } else {
-      member.isPaid = false;
-      member.paidDate = null;
-    }
-  } catch {
-    member.isPaid = false;
-    member.paidDate = null;
-  }
+      const updatedMembers = await Promise.all(data.map(async (member) => {
+        try {
+          const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
+          const imageData = imageResponse.ok ? await imageResponse.json() : {};
+          member.profileImage = imageResponse.ok ? `${imageData.imageUrl}?t=${new Date().getTime()}` : null;
+        } catch {
+          member.profileImage = null;
+        }
+        const inTime = new Date(member.InTime);
+        member.formattedInTime = inTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        try {
+          const paymentRes = await fetch(`${API_BASE_URL}/api/EventPaymentView?UserId=${member.UserId}&eventId=${eventId}`);
+          const paymentData = await paymentRes.json();
+          if (paymentRes.ok && paymentData.length > 0) {
+            member.isPaid = true;
+            member.paidDate = new Date(paymentData[0].CreatedAt).toLocaleDateString();
+          } else {
+            member.isPaid = false;
+            member.paidDate = null;
+          }
+        } catch {
+          member.isPaid = false;
+          member.paidDate = null;
+        }
 
-  return member;
-}));
+        return member;
+      }));
 
       setAttendanceData(updatedMembers);
     } catch (error) {
@@ -82,11 +105,10 @@ const updatedMembers = await Promise.all(data.map(async (member) => {
     } finally {
       setRefreshing(false);
       setLoading(false);
-    
     }
   };
 
-  const filteredMembers = attendanceData.filter(member =>
+  const filteredMembers = processedData.filter(member =>
     member.Username && member.Username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -115,10 +137,14 @@ const updatedMembers = await Promise.all(data.map(async (member) => {
       const result = await response.json();
       
       if (response.ok) {
-        const updatedData = attendanceData.map(member => 
+        const updatedProcessedData = processedData.map(member => 
           member.UserId === selectedUserId ? {...member, isPaid: true} : member
         );
-        setAttendanceData(updatedData);
+        setProcessedData(updatedProcessedData);
+        const updatedAttendanceData = attendanceData.map(member => 
+          member.UserId === selectedUserId ? {...member, isPaid: true} : member
+        );
+        setAttendanceData(updatedAttendanceData);
       }
       showModal('Success', 'Payment recorded successfully');
       setPaidModalVisible(false);
@@ -149,13 +175,14 @@ const updatedMembers = await Promise.all(data.map(async (member) => {
         <Text style={styles.memberName}>{item.Username}</Text>
         <View style={styles.professionContainer}>
           <MaterialCommunityIcons name="briefcase-outline" size={16} color="#666" style={styles.professionIcon} />
-          <Text style={styles.memberRole} numberOfLines={1}>
-            {item.Profession || 'Member'}
+          <Text style={styles.memberRole} numberOfLines={2}>
+            {item.professions && item.professions.length > 0 
+              ? item.professions.join(', ') 
+              : 'Member'}
           </Text>
         </View>
       </View>
       <View style={styles.alarmContainer}>
-       
         <TouchableOpacity
           style={styles.paidButton}
           onPress={() => handlePaidPress(item.UserId)}
@@ -167,22 +194,22 @@ const updatedMembers = await Promise.all(data.map(async (member) => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-         {item.isPaid ? (
-  <View style={styles.paidStatusContainer}>
-    <Ionicons name="checkmark-circle" size={16} color="#fff" />
-    <View>
-      <Text style={styles.paidButtonText}>Paid</Text>
-    </View>
-  </View>
-) : (
-  <View style={styles.paidStatusContainer}>
-    <MaterialIcons name="payment" size={16} color="#fff" />
-    <Text style={styles.paidButtonText}>Mark as Paid</Text>
-  </View>
-)}
+            {item.isPaid ? (
+              <View style={styles.paidStatusContainer}>
+                <Ionicons name="checkmark-circle" size={16} color="#fff" />
+                <View>
+                  <Text style={styles.paidButtonText}>Paid</Text>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.paidStatusContainer}>
+                <MaterialIcons name="payment" size={16} color="#fff" />
+                <Text style={styles.paidButtonText}>Mark as Paid</Text>
+              </View>
+            )}
           </LinearGradient>
         </TouchableOpacity>
-         <TouchableOpacity style={styles.timeContainer} onPress={() => handleAlarmPress(item)}>
+        <TouchableOpacity style={styles.timeContainer} onPress={() => handleAlarmPress(item)}>
           <MaterialIcons name="alarm" size={28} color="#2e3091" />
           <Text style={styles.memberTime}>{item.formattedInTime}</Text>
         </TouchableOpacity>
@@ -224,13 +251,13 @@ const updatedMembers = await Promise.all(data.map(async (member) => {
                 renderItem={renderMember}
                 keyExtractor={(item) => item.UserId.toString()}
                 contentContainerStyle={styles.memberList}
-                   refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={fetchAttendanceData}
-                      tintColor="#2e3192"
-                    />
-                  }
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={fetchAttendanceData}
+                    tintColor="#2e3192"
+                  />
+                }
               />
             )}
             <View style={styles.memberCountContainer}>
@@ -399,7 +426,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   memberRole: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666',
     flex: 1,
   },
@@ -527,11 +554,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   paidDateText: {
-  fontSize: 10,
-  color: '#fff',
-  marginTop: 2,
-  marginLeft: 4
-}
+    fontSize: 10,
+    color: '#fff',
+    marginTop: 2,
+    marginLeft: 4
+  }
 });
 
 export default OneMinPresentation;
