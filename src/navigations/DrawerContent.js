@@ -1,5 +1,14 @@
+const PRIMARY_COLOR = '#2e3091';
+const SECONDARY_COLOR = '#3d3fa3';
+const LIGHT_PRIMARY = '#eaebf7';
+const ACCENT_COLOR = '#ff6b6b';
+const BACKGROUND_COLOR = '#f5f7ff';
+const WHITE = '#ffffff';
+const DARK_TEXT = '#333333';
+const LIGHT_TEXT = '#6c7293';
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
@@ -13,14 +22,24 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { compressImage } from 'react-native-compressor'; 
 
 const CustomDrawerContent = (props) => {
-const user = useSelector((state) => state);
-console.log("User in Drawer------------------", user);
-const userId = useSelector((state) => state.UserId);
-console.log("UserID----------", userId);
+  const user = useSelector((state) => state);
+  console.log("User in Drawer------------------", user);
+  const userId = useSelector((state) => state.UserId);
+  console.log("UserID----------", userId);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isMessageModalVisible, setMessageModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
   const [profileImage, setProfileImage] = useState(require('../../assets/images/DefaultProfile.jpg'));
   const [previousProfileImageUri, setPreviousProfileImageUri] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const showMessageModal = (title, message) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setMessageModalVisible(true);
+  };
+
   const fetchProfileImage = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`, {
@@ -38,6 +57,7 @@ console.log("UserID----------", userId);
       console.error("Error fetching profile image:", error);
     }
   };  
+
   const requestCameraPermission = async () => {
     try {
       const cameraPermission = await request(PERMISSIONS.ANDROID.CAMERA);
@@ -50,6 +70,7 @@ console.log("UserID----------", userId);
       console.error('Permission request error:', error);
     }
   };
+
   const handleImagePicker = async (type) => {
     await requestCameraPermission();
     try {
@@ -82,6 +103,7 @@ console.log("UserID----------", userId);
     }
     setModalVisible(false);
   };
+
   const uploadImage = async (uri, fileType) => {
     setLoading(true);
     const formData = new FormData();
@@ -98,26 +120,28 @@ console.log("UserID----------", userId);
         },
         body: formData,
       });
-// f
+
       const data = await response.json();
       console.log("Data in the uploaded Profile--------------------",data);
       if (data.newFilePath) {
         fetchProfileImage();
+        showMessageModal('Success', 'Profile picture updated successfully.');
       } else {
         console.warn('No new file path returned from server');
+        showMessageModal('Error', 'Failed to update profile picture.');
       }
     } catch (error) {
       console.error('Profile picture update failed:', error);
       setProfileImage(previousProfileImageUri);
-      Alert.alert(
+      showMessageModal(
         'Update Failed',
-        'Failed to update profile picture due to network issues. Please try again later.',
-        [{ text: 'OK' }]
+        'Failed to update profile picture due to network issues. Please try again later.'
       );
     } finally {
       setLoading(false);
     }
   };
+
   const handleRemoveProfilePicture = async () => {
     setLoading(true);
     try {
@@ -131,23 +155,25 @@ console.log("UserID----------", userId);
       if (response.ok) {
         setProfileImage(require('../../assets/images/DefaultProfile.jpg'));
         setPreviousProfileImageUri(null);
-        Alert.alert('Success', 'Profile picture deleted successfully.');
+        showMessageModal('Success', 'Profile picture deleted successfully.');
       } else {
-        Alert.alert('Error', 'Failed to delete profile picture.');
+        showMessageModal('Error', 'Failed to delete profile picture.');
       }
     } catch (error) {
       console.error('Error deleting profile image:', error);
-      Alert.alert('Error', 'Failed to delete profile picture. Please try again later.');
+      showMessageModal('Error', 'Failed to delete profile picture. Please try again later.');
     } finally {
       setLoading(false);
     }
     setModalVisible(false);
   };
+
   useFocusEffect(
     useCallback(() => {
       fetchProfileImage();
     }, [userId])
   );
+
   return (
     <DrawerContentScrollView {...props}>
       <LinearGradient
@@ -179,6 +205,8 @@ console.log("UserID----------", userId);
       <View style={styles.container}>
         <DrawerItemList {...props} />
       </View>
+      
+      {/* Image Selection Modal */}
       <Modal
         isVisible={isModalVisible}
         onBackdropPress={() => setModalVisible(false)}
@@ -202,6 +230,26 @@ console.log("UserID----------", userId);
           <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
             <Icon name="times" size={20} color="#2e3192" />
             <Text style={styles.modalButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      
+      {/* Message Modal */}
+      <Modal
+        isVisible={isMessageModalVisible}
+        onBackdropPress={() => setMessageModalVisible(false)}
+        style={styles.messageModal}
+        useNativeDriver={true}
+        useNativeDriverForBackdrop={true}
+      >
+        <View style={styles.messageModalContent}>
+          <Text style={styles.messageModalTitle}>{modalTitle}</Text>
+          <Text style={styles.messageModalText}>{modalMessage}</Text>
+          <TouchableOpacity 
+            style={styles.messageModalButton}
+            onPress={() => setMessageModalVisible(false)}
+          >
+            <Text style={styles.messageModalButtonText}>OK</Text>
           </TouchableOpacity>
         </View>
       </Modal>
@@ -293,6 +341,39 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginHorizontal: 10,
+  },
+  // Message Modal Styles
+  messageModal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 20,
+  },
+  messageModalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '100%',
+  },
+  messageModalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: PRIMARY_COLOR,
+    marginBottom: 10,
+  },
+  messageModalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    color: DARK_TEXT,
+  },
+  messageModalButton: {
+    backgroundColor: PRIMARY_COLOR,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  messageModalButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
