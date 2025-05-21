@@ -10,7 +10,8 @@ import {
   Image,
   Keyboard,
   KeyboardAvoidingView,
-  Platform
+  Platform, 
+  ActivityIndicator
 } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
@@ -135,6 +136,7 @@ const RegisterScreen = () => {
     setSelectedLocation(selectedLocation);
   };
   const handleRegister = async () => {
+      if (isLoading) return;
     setUsernameError('');
     setPasswordError('');
     setConfirmPasswordError('');
@@ -491,10 +493,10 @@ const RegisterScreen = () => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <Text style={styles.registerButtonText}>Processing...</Text>
-              ) : (
-                <Text style={styles.registerButtonText}>Register</Text>
-              )}
+    <ActivityIndicator color="#fff" />
+  ) : (
+    <Text style={styles.registerButtonText}>Register</Text>
+  )}
             </TouchableOpacity>
             
             <View style={styles.loginPrompt}>
