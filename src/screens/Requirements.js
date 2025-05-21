@@ -6,7 +6,6 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -187,7 +186,7 @@ const Requirements = ({ route }) => {
             >
               <Picker.Item label="Choose Member" value="" />
               {members.map((member) => (
-                <Picker.Item key={member.UserId} label={member.Username} value={member.UserId} />
+                <Picker.Item key={member.UserId} label={member.UserProfession} value={member.UserId} />
               ))}
             </Picker>
           </View>

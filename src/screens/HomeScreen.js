@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  Alert, 
   ActivityIndicator,
   Modal, 
   ScrollView,
@@ -306,12 +305,9 @@ useEffect(() => {
           const data = await response.json();
           if (response.ok) {
             console.log("Attendance confirmed successfully");
-          } else {
-            Alert.alert('Error', data.error || 'Failed to confirm attendance');
           }
         } catch (error) {
           console.error("Network or server error:", error);
-          Alert.alert('Error', 'Network or server issue. Please try again later.');
         }
       };  
       const hideModal = () => setModalVisible(false);
@@ -335,7 +331,6 @@ useEffect(() => {
           const data = await response.json();
           console.log("Data in the requirement homescreen---------------------", data);
           if (response.ok) {
-            Alert.alert('Success', 'Requirement acknowledged successfully');
             refreshRequirements();
             const acknowledgeResponse = await fetch(`${API_BASE_URL}/acknowledge`, {
               method: 'POST',
@@ -347,12 +342,9 @@ useEffect(() => {
             });
             const acknowledgeData = await acknowledgeResponse.json();
             console.log("Acknowledge Data-----------------------------",acknowledgeData);
-          } else {
-            Alert.alert('Error', data.error || 'Failed to acknowledge requirement');
           }
         } catch (error) {
           console.error('Acknowledge Error:', error);
-          Alert.alert('Error', 'Network or server issue');
         }
       };   
       const renderData = (data) => {
@@ -399,21 +391,6 @@ useEffect(() => {
       }
     >
       <View style={styles.container}>
-         {/* <View style={styles.headerContainer}>
-          <View style={styles.headerLeft} />
-          <TouchableOpacity 
-            style={styles.refreshButton} 
-            onPress={onRefresh}
-            disabled={refreshing}
-          >
-            <Icon 
-              name="refresh" 
-              size={20} 
-              color={PRIMARY_COLOR} 
-              style={styles.refreshIcon} 
-            />
-          </TouchableOpacity>
-        </View> */}
         <View style={styles.cards}>
       <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
       <View style={styles.home}>
@@ -744,8 +721,62 @@ useEffect(() => {
   </View>
 )}
         </View>
-        {/* ================================================ */}
       </View>
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={hideModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>Are you sure you want to confirm this event?</Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={hideModal}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => handleConfirmClick(selectedEvent.EventId, selectedEvent.LocationID)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+           {/* Acknowledge Requirement Modal */}
+      <Modal
+        visible={showModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View style={styles.modalContainer1}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Are you sure you want to acknowledge this requirement?
+            </Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButtonCancel}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButtonOK}
+                onPress={() => handleAcknowledgeClick(selectedRequirement)}
+              >
+                <Text style={styles.modalButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };

@@ -5,13 +5,13 @@ import {
   StyleSheet, 
   TouchableOpacity, 
   TextInput, 
-  Alert,
   ActivityIndicator,
   SafeAreaView,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
-  Dimensions
+  Dimensions,
+  Modal
 } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
 import { useSelector } from 'react-redux';
@@ -24,6 +24,41 @@ const { width, height } = Dimensions.get('window');
 const scale = width / 375;
 const verticalScale = height / 812;
 const normalize = (size) => Math.round(size * scale);
+const PRIMARY_COLOR = '#2e3091';
+const SECONDARY_COLOR = '#3d3fa3';
+const LIGHT_PRIMARY = '#eaebf7';
+const ACCENT_COLOR = '#ff6b6b';
+const BACKGROUND_COLOR = '#f5f7ff';
+const WHITE = '#ffffff';
+const DARK_TEXT = '#333333';
+const LIGHT_TEXT = '#6c7293';
+const CustomModal = ({ visible, title, message, onClose, isSuccess = false }) => {
+  return (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <View style={[styles.modalHeader, isSuccess ? styles.successHeader : styles.errorHeader]}>
+            <Text style={styles.modalTitle}>{title}</Text>
+          </View>
+          <View style={styles.modalBody}>
+            <Text style={styles.modalMessage}>{message}</Text>
+          </View>
+          <TouchableOpacity 
+            style={[styles.modalButton, isSuccess ? styles.successButton : styles.errorButton]} 
+            onPress={onClose}
+          >
+            <Text style={styles.modalButtonText}>OK</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const AnimatedInput = ({ 
   label, 
@@ -39,7 +74,7 @@ const AnimatedInput = ({
   return (
     <View style={styles.inputWrapper}>
       <Text style={styles.inputLabelTop}>
-        {icon && <Icon name={icon} size={normalize(14)} color="#555" />} {label}
+        {icon && <Icon name={icon} size={normalize(14)} color={LIGHT_TEXT} />} {label}
       </Text>
       <View style={[
         styles.inputContainer,
@@ -71,7 +106,6 @@ const AddBusiness = () => {
   const [address, setAddress] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [profession, setProfession] = useState([]);
-  console.log("Profession---------------------------", profession);
   const [filteredProfessions, setFilteredProfessions] = useState([]);
   const [selectedProfession, setSelectedProfession] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -83,6 +117,28 @@ const AddBusiness = () => {
   const [selectedLocationError, setSelectedLocationError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIsSuccess, setModalIsSuccess] = useState(false);
+  const [modalCallback, setModalCallback] = useState(null);
+  const showModal = (title, message, isSuccess = false, callback = null) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalIsSuccess(isSuccess);
+    setModalVisible(true);
+    if (callback) {
+      setModalCallback(() => callback);
+    } else {
+      setModalCallback(null);
+    }
+  };
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (modalCallback) {
+      modalCallback();
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -135,7 +191,7 @@ const AddBusiness = () => {
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      Alert.alert('Error', 'Failed to load data. Please try again.');
+      showModal('Error', 'Failed to load data. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +218,7 @@ const AddBusiness = () => {
       setLocations(data);
     } catch (error) {
       console.error('Error fetching locations:', error);
-      Alert.alert('Error', 'Failed to load locations. Please try again.');
+      showModal('Error', 'Failed to load locations. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -247,17 +303,15 @@ const AddBusiness = () => {
       
       await response.json();
       
-      Alert.alert(
+      showModal(
         'Success',
         'Business added successfully!',
-        [{ 
-          text: 'OK',
-          onPress: () => navigation.pop(2)
-        }]
+        true,
+        () => navigation.pop(2)
       );
     } catch (error) {
       console.error('Error registering business:', error);
-      Alert.alert('Error', error.message || 'Failed to add business. Please try again.');
+      showModal('Error', error.message || 'Failed to add business. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -266,10 +320,10 @@ const AddBusiness = () => {
   if (isLoading) {
     return (
       <LinearGradient
-        colors={['#2e3192', '#3957E8']}
+        colors={[PRIMARY_COLOR, SECONDARY_COLOR]}
         style={styles.loadingContainer}
       >
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator size="large" color={WHITE} />
         <Text style={styles.loadingText}>Loading...</Text>
       </LinearGradient>
     );
@@ -277,10 +331,10 @@ const AddBusiness = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <StatusBar backgroundColor="#2e3192" barStyle="light-content" />
+      <StatusBar backgroundColor={PRIMARY_COLOR} barStyle="light-content" />
       
       <LinearGradient
-        colors={['#2e3192', '#3957E8']}
+        colors={[PRIMARY_COLOR, SECONDARY_COLOR]}
         style={styles.headerGradient}
       >
         <View style={styles.headerContent}>
@@ -332,7 +386,7 @@ const AddBusiness = () => {
               
               <View style={styles.inputWrapper}>
                 <Text style={styles.inputLabelTop}>
-                  <Icon name="list" size={normalize(14)} color="#555" /> Select Profession
+                  <Icon name="list" size={normalize(14)} color={LIGHT_TEXT} /> Select Profession
                 </Text>
                 <Dropdown
                   style={[styles.dropdown, selectedProfessionError ? styles.dropdownError : null]}
@@ -351,6 +405,7 @@ const AddBusiness = () => {
                   valueField="value"
                   inputSearchStyle={styles.inputSearchStyle}
                   maxHeight={normalize(300)}
+                  activeColor={LIGHT_PRIMARY}
                   renderItem={(item) => (
                     <View style={styles.dropdownItem}>
                       <Text style={styles.dropdownItemText}>{item.label}</Text>
@@ -375,7 +430,7 @@ const AddBusiness = () => {
                 locations.length > 0 && (
                   <View style={styles.inputWrapper}>
                     <Text style={styles.inputLabelTop}>
-                      <Icon name="location-arrow" size={normalize(14)} color="#555" /> Select Location
+                      <Icon name="location-arrow" size={normalize(14)} color={LIGHT_TEXT} /> Select Location
                     </Text>
                     <Dropdown
                       style={[styles.dropdown, selectedLocationError ? styles.dropdownError : null]}
@@ -397,6 +452,7 @@ const AddBusiness = () => {
                       valueField="value"
                       inputSearchStyle={styles.inputSearchStyle}
                       maxHeight={normalize(300)}
+                      activeColor={LIGHT_PRIMARY}
                       renderItem={(item) => (
                         <View style={styles.dropdownItem}>
                           <Text style={styles.dropdownItemText}>{item.label}</Text>
@@ -414,7 +470,7 @@ const AddBusiness = () => {
           </View>
           
           <LinearGradient
-            colors={['#2e3192', '#3957E8']}
+            colors={[PRIMARY_COLOR, SECONDARY_COLOR]}
             style={styles.registerButtonGradient}
           >
             <TouchableOpacity 
@@ -426,7 +482,7 @@ const AddBusiness = () => {
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={WHITE} />
               ) : (
                 <Text style={styles.registerButtonText}>
                   <Icon name="plus" size={normalize(16)} /> Add Business
@@ -436,6 +492,15 @@ const AddBusiness = () => {
           </LinearGradient>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Custom Modal */}
+      <CustomModal
+        visible={modalVisible}
+        title={modalTitle}
+        message={modalMessage}
+        onClose={handleModalClose}
+        isSuccess={modalIsSuccess}
+      />
     </SafeAreaView>
   );
 };
@@ -443,7 +508,7 @@ const AddBusiness = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F7FE',
+    backgroundColor: BACKGROUND_COLOR,
   },
   keyboardAvoidView: {
     flex: 1,
@@ -461,7 +526,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: normalize(10),
-    color: '#fff',
+    color: WHITE,
     fontSize: normalize(12),
     fontWeight: '500',
   },
@@ -483,7 +548,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: normalize(20),
     fontWeight: 'bold',
-    color: '#fff',
+    color: WHITE,
     marginBottom: normalize(5),
   },
   headerSubtitle: {
@@ -495,7 +560,7 @@ const styles = StyleSheet.create({
     marginTop: normalize(10),
   },
   formCard: {
-    backgroundColor: '#fff',
+    backgroundColor: WHITE,
     borderRadius: normalize(15),
     padding: normalize(20),
     marginBottom: normalize(20),
@@ -510,7 +575,7 @@ const styles = StyleSheet.create({
   },
   inputLabelTop: {
     fontSize: normalize(12),
-    color: '#555',
+    color: LIGHT_TEXT,
     marginBottom: normalize(8),
     fontWeight: '500',
   },
@@ -518,13 +583,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: normalize(10),
-    backgroundColor: '#fff',
+    backgroundColor: WHITE,
     overflow: 'hidden',
     height: normalize(50),
     justifyContent: 'center',
   },
   inputContainerError: {
-    borderColor: '#ff3b30',
+    borderColor: ACCENT_COLOR,
   },
   inputContainerDisabled: {
     backgroundColor: '#f9f9f9',
@@ -532,12 +597,12 @@ const styles = StyleSheet.create({
   },
   textInput: {
     fontSize: normalize(14),
-    color: '#333',
+    color: DARK_TEXT,
     paddingHorizontal: normalize(15),
     height: '100%',
   },
   errorText: {
-    color: '#ff3b30',
+    color: ACCENT_COLOR,
     fontSize: normalize(10),
     marginTop: normalize(4),
     marginLeft: normalize(5),
@@ -548,10 +613,10 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: normalize(10),
     paddingHorizontal: normalize(15),
-    backgroundColor: '#fff',
+    backgroundColor: WHITE,
   },
   dropdownError: {
-    borderColor: '#ff3b30',
+    borderColor: ACCENT_COLOR,
   },
   placeholderStyle: {
     fontSize: normalize(14),
@@ -559,7 +624,7 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: normalize(14),
-    color: '#333',
+    color: DARK_TEXT,
   },
   inputSearchStyle: {
     height: normalize(40),
@@ -573,7 +638,7 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     fontSize: normalize(14),
-    color: '#333',
+    color: DARK_TEXT,
   },
   registerButtonGradient: {
     borderRadius: normalize(10),
@@ -595,9 +660,70 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   registerButtonText: {
-    color: '#fff',
+    color: WHITE,
     fontSize: normalize(16),
     fontWeight: '600',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: normalize(20),
+  },
+  modalContainer: {
+    width: '85%',
+    backgroundColor: WHITE,
+    borderRadius: normalize(15),
+    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  modalHeader: {
+    padding: normalize(15),
+    alignItems: 'center',
+  },
+  successHeader: {
+    backgroundColor: PRIMARY_COLOR,
+  },
+  errorHeader: {
+    backgroundColor: ACCENT_COLOR,
+  },
+  modalTitle: {
+    fontSize: normalize(18),
+    fontWeight: 'bold',
+    color: WHITE,
+  },
+  modalBody: {
+    padding: normalize(20),
+    alignItems: 'center',
+  },
+  modalMessage: {
+    fontSize: normalize(14),
+    color: DARK_TEXT,
+    textAlign: 'center',
+    lineHeight: normalize(20),
+  },
+  modalButton: {
+    padding: normalize(15),
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  successButton: {
+    backgroundColor: LIGHT_PRIMARY,
+  },
+  errorButton: {
+    backgroundColor: '#ffe6e6',
+  },
+  modalButtonText: {
+    fontSize: normalize(16),
+    fontWeight: '600',
+    color: DARK_TEXT,
   }
 });
 
