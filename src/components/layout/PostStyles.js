@@ -80,7 +80,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    padding: 10,
+    padding: 15,
   },
   profileContainer: {
     flexDirection: 'row',
@@ -116,13 +116,13 @@ export default StyleSheet.create({
     color: '#2e3192',
   },
   profileNameUser: {
-    marginLeft: 12,
+    marginLeft: 5,
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2e3192',
   },
   profileNameMeet: {
-    marginLeft: 12,
+    marginLeft: 5,
     marginRight: 0,
     fontSize: 16,
     fontWeight: 'bold',

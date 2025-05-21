@@ -39,9 +39,16 @@ const OneMinPresentation = ({ route, navigation }) => {
 
     try {
       const response = await fetch(`${API_BASE_URL}/attendance/${eventId}/${locationId}`);
-      const data = await response.json();
+const data = await response.json();
 
-     const updatedMembers = await Promise.all(data.map(async (member) => {
+if (!Array.isArray(data)) {
+  setAttendanceData([]);
+  setLoading(false);
+  setRefreshing(false);
+  return;
+}
+
+const updatedMembers = await Promise.all(data.map(async (member) => {
   try {
     const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
     const imageData = imageResponse.ok ? await imageResponse.json() : {};

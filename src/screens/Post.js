@@ -195,20 +195,20 @@ const Post = ({ navigation }) => {
             <Image source={{ uri: item.meetProfileImage }} style={styles.profileImageUser} />
             <Image source={{ uri: item.profileImage }} style={styles.profileImageMeet} />
             <View>
-              <TouchableOpacity 
+              {/* <TouchableOpacity 
                 onPress={() =>
                   navigation.navigate('MemberDetails', {
                     userId: item.UserId,
                     Profession: item.UserProfession,
                   })
                 }
-              >
+              > */}
+                            <View style={styles.businessContainer}>  
+               <MaterialIcons name="business-center" size={16} color="#908f90" />
                 <Text style={styles.profileNameUser}>{item.userName}</Text> 
-              </TouchableOpacity>
-              <View style={styles.businessContainer}>  
-                <MaterialIcons name="business-center" size={16} color="#908f90" />
-                <Text style={styles.userProfession}>{item.userProfession}</Text>
               </View>
+              {/* </TouchableOpacity> */}
+
             </View>
           </View>
           <View>
@@ -216,20 +216,20 @@ const Post = ({ navigation }) => {
           </View>
           <View style={styles.profileContainer}>
             <View>
-              <TouchableOpacity 
+              {/* <TouchableOpacity 
                 onPress={() =>
                   navigation.navigate('MemberDetails', {
                     userId: item.MeetId,
                     Profession: item.meetProfession,
                   })
                 }
-              >
-                <Text style={styles.profileNameMeet}>{item.meetUsername}</Text> 
-              </TouchableOpacity>
-              <View style={styles.businessContainer}>  
+              > */}
+                              <View style={styles.businessContainer}>  
                 <MaterialIcons name="business-center" size={16} color="#908f90" />
-                <Text style={styles.meetProfession}>{item.meetProfession}</Text>
+                <Text style={styles.profileNameMeet}>{item.meetUsername}</Text> 
               </View>
+              {/* </TouchableOpacity> */}
+
             </View>
           </View>
         </View>
