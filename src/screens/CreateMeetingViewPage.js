@@ -77,7 +77,6 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
   
     if (!hasPermission) {
       setIsLoading(false);
-      Alert.alert('Permission Denied', 'Storage permission is required to save the poster.');
       return;
     }
     
@@ -97,7 +96,6 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
       );
     } catch (error) {
       console.error('Error saving poster:', error);
-      Alert.alert('Error', 'Failed to save the poster. Please try again.');
     } finally {
       setIsLoading(false);
     }

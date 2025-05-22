@@ -7,14 +7,12 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  useWindowDimensions,
   ScrollView,
   Modal,
   StyleSheet,
   RefreshControl
 } from 'react-native';
 import { API_BASE_URL } from '../constants/Config';
-import { TabView, TabBar } from 'react-native-tab-view';
 import { useSelector } from 'react-redux';
 import { launchCamera } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -42,8 +40,7 @@ const CustomModal = ({ visible, onClose, message, title }) => {
   );
 };
 
-const TabContent = ({ locationId, navigation, Profession }) => {
-  const userId = useSelector((state) => state.UserId);
+const MembersList = ({ businesses, navigation, userId, businessInfo }) => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,30 +55,75 @@ const TabContent = ({ locationId, navigation, Profession }) => {
   const fetchMembers = useCallback(async () => {
     setLoading(true);
     setError(false);
+    
     try {
-      const response = await fetch(`${API_BASE_URL}/list-memberscamera`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ LocationID: locationId, userId }),
-      });
-      if (!response.ok) {
-        if (response.status === 404) {
-          setMembers([]);
-          return;
+      const allMembersPromises = businesses.map(async (business) => {
+        const response = await fetch(`${API_BASE_URL}/list-memberscamera`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ LocationID: business.L, userId }),
+        });
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            return [];
+          }
+          throw new Error(`Server responded with status: ${response.status}`);
         }
-        throw new Error(`Server responded with status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('Members data:========================', data); 
-      if (!data.members || data.members.length === 0) {
+        
+        const data = await response.json();
+        return data.members || [];
+      });
+
+      const allMembersArrays = await Promise.all(allMembersPromises);
+      const allMembers = allMembersArrays.flat();
+
+      console.log('All members data:========================', allMembers);
+
+      if (allMembers.length === 0) {
         setMembers([]);
         setError(true);
         setLoading(false);
         return;
       }
+
       setImageKey(Date.now());
+      const groupedMembers = {};
       
-      const updatedMembers = await Promise.all(data.members.map(async (member) => {
+      allMembers.forEach(member => {
+        if (groupedMembers[member.UserId]) {
+          const existingProfessions = groupedMembers[member.UserId].Profession.split(', ');
+          if (!existingProfessions.includes(member.Profession)) {
+            groupedMembers[member.UserId].Profession += `, ${member.Profession}`;
+          }
+          if (member.ratings && member.ratings.length > 0) {
+            const currentRatings = groupedMembers[member.UserId].ratings || [];
+            groupedMembers[member.UserId].ratings = [...currentRatings, ...member.ratings];
+          }
+          if (!groupedMembers[member.UserId].businessLocations) {
+            groupedMembers[member.UserId].businessLocations = [];
+          }
+          const memberBusiness = businesses.find(b => 
+            allMembers.some(m => m.UserId === member.UserId && m.LocationID === b.L)
+          );
+          
+          if (memberBusiness && !groupedMembers[member.UserId].businessLocations.some(bl => bl.L === memberBusiness.L)) {
+            groupedMembers[member.UserId].businessLocations.push(memberBusiness);
+          }
+        } else {
+          groupedMembers[member.UserId] = { ...member };
+          const memberBusiness = businesses.find(b => 
+            allMembers.some(m => m.UserId === member.UserId && m.LocationID === b.L)
+          );
+          
+          if (memberBusiness) {
+            groupedMembers[member.UserId].businessLocations = [memberBusiness];
+          }
+        }
+      });
+
+      const uniqueMembers = Object.values(groupedMembers);
+      const updatedMembers = await Promise.all(uniqueMembers.map(async (member) => {
         let totalStars = 0;
         if (member.ratings?.length > 0) {
           totalStars = member.ratings.reduce((acc, rating) => acc + parseFloat(rating.average), 0);
@@ -109,10 +151,12 @@ const TabContent = ({ locationId, navigation, Profession }) => {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [locationId, userId]);
+  }, [businesses, userId]);
 
   useEffect(() => {
-    fetchMembers();
+    if (businesses && businesses.length > 0) {
+      fetchMembers();
+    }
   }, [fetchMembers]);
 
   const onRefresh = useCallback(() => {
@@ -127,87 +171,135 @@ const TabContent = ({ locationId, navigation, Profession }) => {
   const handleMemberClick = (member) => {
     const meetId = member.UserId;
     setSelectedMeetId(meetId);
-    openCamera(meetId);
+    openCamera(meetId, member);
   };
 
-  const openCamera = (meetId) => {
-    if (!meetId) {
-      setModalTitle('Error');
-      setModalMessage('Please select a member first.');
-      setModalVisible(true);
-      return;
-    }
-    const options = { mediaType: 'photo', cameraType: 'front' };
-    launchCamera(options, async (response) => {
-      if (response.didCancel || response.errorCode) return;
-      const photoUri = response.assets[0].uri;
-      console.log("Uploading photo for MeetId:", meetId);
-      await insertMeetingData(userId, meetId, locationId, photoUri);
-    });
+const openCamera = (meetId, member) => {
+  if (!meetId) {
+    setModalTitle('Error');
+    setModalMessage('Please select a member first.');
+    setModalVisible(true);
+    return;
+  }
+  
+  const options = { mediaType: 'photo', cameraType: 'front' };
+  launchCamera(options, async (response) => {
+    if (response.didCancel || response.errorCode) return;
+    const photoUri = response.assets[0].uri;
+    console.log("Uploading photo for MeetId:", meetId);
+    await insertMeetingData(userId, meetId, member, photoUri);
+  });
+};
+  const getAllProfessionsForLocation = (locationId) => {
+    const businessesForLocation = businessInfo.filter(business => business.L === locationId);
+    const professions = businessesForLocation.map(business => business.BD);
+    return professions;
   };
+const insertMeetingData = async (userId, meetId, member, photoUri) => {
+  try {
+    const businessLocations = member.businessLocations || [];
+    let successCount = 0;
+    let totalUploads = businessLocations.length;
+    
+    console.log(`Uploading to ${totalUploads} businesses for member:`, member.Username);
+    
+    for (const business of businessLocations) {
+      try {
+        // Get all professions for this business location
+        // You can get this from your business info data or fetch it separately
+        const allProfessionsForLocation = getAllProfessionsForLocation(business.L);
+        
+        const formData = new FormData();
+        formData.append('image', {
+          uri: photoUri,
+          type: 'image/jpeg',
+          name: `${userId}_${meetId}_${business.L}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
+        });
+        formData.append('MeetId', meetId);  
+        formData.append('LocationID', business.L);
+        
+        // Send all professions for this location as JSON string
+        formData.append('Professions', JSON.stringify(allProfessionsForLocation));
 
-  const insertMeetingData = async (userId, meetId, locationId, photoUri) => {
-    try {
-      const formData = new FormData();
-      formData.append('image', {
-        uri: photoUri,
-        type: 'image/jpeg',
-        name: `${userId}_${new Date().toISOString().replace(/[-:.]#/g, '').slice(0, 12)}.jpeg`,
-      });
-      formData.append('MeetId', meetId);  
-      formData.append('LocationID', locationId);
-      formData.append('Profession', Profession);
+        console.log(`Uploading to business: ${business.BD} (LocationID: ${business.L})`);
+        console.log(`Professions for this location:`, allProfessionsForLocation);
 
-      const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
-        method: 'POST',
-        body: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      const result = await uploadResponse.json();
-      if (result.message === 'Member details and image uploaded successfully!') {
-        setModalTitle('Success');
-        setModalMessage('Photo and data uploaded successfully!');
-        setModalVisible(true);
-        fetchMembers();
-      } else {
-        setModalTitle('Error');
-        setModalMessage('Photo and data upload failed');
-        setModalVisible(true);
+        const uploadResponse = await fetch(`${API_BASE_URL}/upload-member-details?userId=${userId}`, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        
+        const result = await uploadResponse.json();
+        if (result.message === 'Member details and image uploaded successfully!') {
+          successCount++;
+          console.log(`✓ Successfully uploaded to ${business.BD} with ${result.processedProfessions} professions`);
+        } else {
+          console.error(`✗ Failed to upload to ${business.BD}:`, result);
+        }
+      } catch (businessError) {
+        console.error(`Error uploading to business ${business.BD}:`, businessError);
       }
-    } catch (error) {
-      console.error('Error during upload:', error);
-      setModalTitle('Error');
-      setModalMessage('Something went wrong while uploading data');
-      setModalVisible(true);
     }
-  };
+    
+    if (successCount === totalUploads) {
+      setModalTitle('Success');
+      setModalMessage(`Photo uploaded successfully!`);
+    } else if (successCount > 0) {
+      setModalTitle('Partial Success');
+      setModalMessage(`Photo uploaded to ${successCount} out of ${totalUploads} businesses. Some uploads failed.`);
+    } else {
+      setModalTitle('Error');
+      setModalMessage('Photo and data upload failed for all businesses');
+    }
+    
+    setModalVisible(true);
+    fetchMembers(); 
+    
+  } catch (error) {
+    console.error('Error during upload:', error);
+    setModalTitle('Error');
+    setModalMessage('Something went wrong while uploading data');
+    setModalVisible(true);
+  }
+};
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
-      <View style={styles.imageColumn}>
-        {item.profileImage ? (
-          <Image
-            source={{ uri: `${item.profileImage}?t=${imageKey}` }}
-            style={styles.profileImage}
-            key={`${item.UserId}-${imageKey}`}
-          />
-        ) : (
-          <View style={[styles.profileImage, { backgroundColor: '#e1e1e1', justifyContent: 'center', alignItems: 'center' }]}>
-            <Icon name="user" size={24} color="#999999" />
-          </View>
-        )}
-      </View>
-      <View style={styles.textColumn}>
-        <Text style={styles.memberName}>{item.Username}</Text>
-        <Text style={styles.memberRole} numberOfLines={1}>
-          {item.Profession}
+const renderItem = ({ item }) => (
+  <TouchableOpacity style={styles.memberItem} onPress={() => handleMemberClick(item)}>
+    <View style={styles.imageColumn}>
+      {item.profileImage ? (
+        <Image
+          source={{ uri: `${item.profileImage}?t=${imageKey}` }}
+          style={styles.profileImage}
+          key={`${item.UserId}-${imageKey}`}
+        />
+      ) : (
+        <View style={[styles.profileImage, { backgroundColor: '#e1e1e1', justifyContent: 'center', alignItems: 'center' }]}>
+          <Icon name="user" size={24} color="#999999" />
+        </View>
+      )}
+      {item.businessLocations && item.businessLocations.length > 1 && (
+        <View style={styles.businessBadge}>
+          <Text style={styles.businessBadgeText}>{item.businessLocations.length}</Text>
+        </View>
+      )}
+    </View>
+    <View style={styles.textColumn}>
+      <Text style={styles.memberName}>{item.Username}</Text>
+      <Text style={styles.memberRole} numberOfLines={2}>
+        {item.Profession}
+      </Text>
+      {item.businessLocations && item.businessLocations.length > 1 && (
+        <Text style={styles.businessCount}>
+          Will upload to {item.businessLocations.length} businesses
         </Text>
-      </View>
-      <View style={styles.alarmContainer}>
-        <Icon name="camera" size={24} color="#2e3192" />
-      </View>
-    </TouchableOpacity>
-  );
+      )}
+    </View>
+    <View style={styles.alarmContainer}>
+      <Icon name="camera" size={24} color="#2e3192" />
+    </View>
+  </TouchableOpacity>
+);
 
   const renderEmptyComponent = () => {
     if (loading) return null;
@@ -276,10 +368,7 @@ const TabContent = ({ locationId, navigation, Profession }) => {
   );
 };
 
-export default function TabViewExample({ navigation }) {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
-  const [routes, setRoutes] = useState([]);
+export default function ProfessionView({ navigation }) {
   const userId = useSelector((state) => state.UserId);
   const [businessInfo, setBusinessInfo] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -292,14 +381,9 @@ export default function TabViewExample({ navigation }) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
       const data = await response.json();
+      console.log('Business info data:==================', data);
 
       if (response.ok) {
-        const updatedRoutes = data.map((business, index) => ({
-          key: `business${index + 1}`,
-          title: business.BD,
-          locationId: business.L,
-        }));
-        setRoutes(updatedRoutes);
         setBusinessInfo(data);
       } else {
         console.error('Error fetching business info:', data.message);
@@ -322,40 +406,8 @@ export default function TabViewExample({ navigation }) {
     setRefreshing(true);
     fetchBusinessInfo();
   }, [fetchBusinessInfo]);
-
-  const renderScene = ({ route }) => {
-    const business = businessInfo.find((b) => b.BD === route.title);
-    if (business?.IsPaid === 0) {
-      return <Subscription 
-      navigation={navigation}
-      route={{ 
-        ...route, 
-        params: { 
-          locationId: business?.L, 
-          Profession: business?.BD 
-        } 
-      }} />;
-    }
-    return (
-      <TabContent
-        locationId={business?.L}
-        Profession={business?.BD}
-        userId={userId}
-        navigation={navigation}
-      />
-    );
-  };
-
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: '#2e3192' }}
-      style={{ backgroundColor: '#f5f7ff' }}
-      activeColor="#2e3192"
-      inactiveColor="gray"
-      labelStyle={{ fontSize: 14 }}
-    />
-  );
+  const hasPaidBusiness = businessInfo.some(business => business.IsPaid === 1);
+  const paidBusinesses = businessInfo.filter(business => business.IsPaid === 1);
 
   if (loading && !refreshing) {
     return (
@@ -365,7 +417,7 @@ export default function TabViewExample({ navigation }) {
     );
   }
 
-  if (error && routes.length === 0) {
+  if (error && businessInfo.length === 0) {
     return (
       <View style={styles.errorContainer}>
         <Icon name="exclamation-triangle" size={50} color="#ff6b6b" />
@@ -386,23 +438,36 @@ export default function TabViewExample({ navigation }) {
         </View>
       )}
       
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-        renderTabBar={renderTabBar}
-      />
-      
-      {routes.length === 0 && !loading && !error && (
-        <View style={styles.noBusinessContainer}>
-          <Icon name="building" size={50} color="#cccccc" />
-          <Text style={styles.noBusinessText}>No businesses found</Text>
-          <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
-            <Icon name="refresh" size={16} color="#ffffff" />
-            <Text style={styles.refreshButtonText}>Refresh</Text>
-          </TouchableOpacity>
-        </View>
+      {businessInfo.length > 0 ? (
+        hasPaidBusiness ? (
+          <MembersList
+            businesses={paidBusinesses}
+            userId={userId}
+            navigation={navigation}
+            businessInfo={businessInfo}
+          />
+        ) : (
+          <Subscription 
+            navigation={navigation}
+            route={{ 
+              params: { 
+                locationId: businessInfo[0].L, 
+                Profession: businessInfo[0].BD 
+              } 
+            }} 
+          />
+        )
+      ) : (
+        !loading && !error && (
+          <View style={styles.noBusinessContainer}>
+            <Icon name="building" size={50} color="#cccccc" />
+            <Text style={styles.noBusinessText}>No businesses found</Text>
+            <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+              <Icon name="refresh" size={16} color="#ffffff" />
+              <Text style={styles.refreshButtonText}>Refresh</Text>
+            </TouchableOpacity>
+          </View>
+        )
       )}
     </SafeAreaView>
   );
@@ -444,6 +509,45 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  businessSelectorContainer: {
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    elevation: 2,
+  },
+  businessSelectorItem: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    marginHorizontal: 5,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+  },
+  selectedBusinessItem: {
+    backgroundColor: '#2e3192',
+  },
+  businessSelectorText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
+  },
+  selectedBusinessText: {
+    color: 'white',
+  },
+  professionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 15,
+    marginHorizontal: 10,
+    marginVertical: 10,
+    borderRadius: 10,
+    elevation: 2,
+  },
+  professionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2e3192',
+    marginLeft: 10,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -494,6 +598,12 @@ const styles = StyleSheet.create({
   memberRole: {
     fontSize: 14,
     color: 'gray',
+  },
+  businessCount: {
+    fontSize: 12,
+    color: '#2e3192',
+    fontStyle: 'italic',
+    marginTop: 2,
   },
   alarmContainer: {
     justifyContent: 'center',
@@ -571,5 +681,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f5f7ff',
+  },
+    businessBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#ff6b6b',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'white',
+  },
+  businessBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  businessCount: {
+    fontSize: 12,
+    color: '#ff6b6b',
+    fontStyle: 'italic',
+    marginTop: 2,
+    fontWeight: '500',
   },
 });

@@ -189,7 +189,6 @@ const RegisterScreen = ({ route }) => {
       if (data.count !== undefined) {
         if (data.count > 0) {
           setUsernameError('Username already taken');
-          Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -291,7 +290,6 @@ const RegisterScreen = ({ route }) => {
       } catch (error) {
         setIsLoading(false);
         console.error('Error registering user:', error);
-        Alert.alert("Error", "Registration failed. Please try again.");
       }
     }
   };
