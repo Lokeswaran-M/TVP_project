@@ -34,7 +34,7 @@ const photosWithProfileData = await Promise.all(
     const profileResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${userId}`);
     const profileData = await profileResponse.json();
 
-    const usernameResponse = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-admin?userId=${userId}`);
+    const usernameResponse = await fetch(`${API_BASE_URL}/getOneOnOneMeeting-admin?filename=${filename}`);
     const usernameData = await usernameResponse.json();
 
     const oneonone = usernameData?.oneononeData?.[0];
@@ -67,7 +67,7 @@ const photosWithProfileData = await Promise.all(
         photosWithProfileData.sort((a, b) => {
           const dateA = new Date(a.dateTime);
           const dateB = new Date(b.dateTime);
-          return dateB - dateA; // Descending order (most recent first)
+          return dateB - dateA; 
         });
 
         setPhotos(photosWithProfileData);
@@ -159,13 +159,13 @@ const photosWithProfileData = await Promise.all(
             <Image source={{ uri: item.meetProfileImage }} style={styles.profileImageUser} />
             <Image source={{ uri: item.profileImage }} style={styles.profileImageMeet} />
             <View>
-              <TouchableOpacity 
-                onPress={() => navigation.navigate('MemberDetails', { userId: item.userId, Profession: item.userProfession })}>
-                <Text style={styles.profileNameUser}>{item.username}</Text> 
-              </TouchableOpacity>
+              {/* <TouchableOpacity 
+                onPress={() => navigation.navigate('MemberDetails', { userId: item.userId, Profession: item.userProfession })}> */}
+           
+              {/* </TouchableOpacity> */}
               <View style={styles.businessContainer}>  
                 <MaterialIcons name="business-center" size={16} color="#908f90" />
-                <Text style={styles.userProfession}>{item.userProfession}</Text>
+                 <Text style={styles.profileNameUser}>{item.username}</Text> 
               </View>
             </View>
           </View>
@@ -174,13 +174,13 @@ const photosWithProfileData = await Promise.all(
           </View>
           <View style={styles.profileContainer}>
             <View>
-              <TouchableOpacity 
-                onPress={() => navigation.navigate('MemberDetails', { userId: item.meetId, Profession: item.meetProfession })}>
-                <Text style={styles.profileNameMeet}>{item.meetusername}</Text> 
-              </TouchableOpacity>
+              {/* <TouchableOpacity 
+                onPress={() => navigation.navigate('MemberDetails', { userId: item.meetId, Profession: item.meetProfession })}> */}
+               
+              {/* </TouchableOpacity> */}
               <View style={styles.businessContainer}>  
                 <MaterialIcons name="business-center" size={16} color="#908f90" />
-                <Text style={styles.meetProfession}>{item.meetProfession}</Text>
+               <Text style={styles.profileNameMeet}>{item.meetusername}</Text> 
               </View>
             </View>
           </View>
