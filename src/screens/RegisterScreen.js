@@ -68,11 +68,8 @@ const RegisterScreen = ({ route }) => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const usernameInputRef = useRef(null);
-  
-  // Check if returning from OTP screen
   useFocusEffect(
     React.useCallback(() => {
-      // Check if the user is coming back from the OTP screen
       if (route.params?.fromOtp) {
         setShowAlreadyRegisteredModal(true);
       }
@@ -282,7 +279,7 @@ const RegisterScreen = ({ route }) => {
           const data = await response.json();
           console.log('Registration successful:', data);
           setIsLoading(false);
-          navigation.navigate('Otpscreen', { Mobileno });
+          navigation.navigate('Otpscreen', { Mobileno, username,LocationID: selectedLocation, LocationList: LocationID });
         } else {
           setIsLoading(false);
           console.error('No UserId found in the response!');

@@ -344,7 +344,7 @@ const storeUserId = async (userId, rollId) => {
             {loginError === 'User already exists but is not activated.' && (
               <TouchableOpacity 
                 style={styles.activateButton}
-                onPress={() => navigation.navigate('Otpscreen', { Mobileno })}
+                onPress={() => navigation.navigate('Otpscreen', { Mobileno, username })}
               >
                 <Text style={styles.activateButtonText}>
                   Activate Account

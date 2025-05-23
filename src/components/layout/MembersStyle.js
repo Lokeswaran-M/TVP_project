@@ -12,6 +12,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
   },
+  dropdown: {
+  height: 50,
+  borderRadius: 8,
+  paddingHorizontal: 10,
+  backgroundColor: 'white',
+},
+dropdownItem: {
+  padding: 15,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+},
+dropdownItemText: {
+  fontSize: 16,
+  color: 'black',
+},
   searchContainer: {
     flexDirection: 'row',
     padding: 0,
@@ -254,7 +270,7 @@ const styles = StyleSheet.create({
   memberCountText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#2e3192',
   },
     noResultsTextcon:{
       justifyContent:'center',
