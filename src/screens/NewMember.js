@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -14,16 +14,55 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { API_BASE_URL } from '../constants/Config';
+import { useSelector } from 'react-redux';
 
 const { width, height } = Dimensions.get('window'); 
 
-const HeadAdminNewSubscribers = ({ navigation }) => {
+const NewMember = ({ navigation }) => {
+  const userId = useSelector((state) => state.UserId);
+  console.log('User ID from Redux:-------------------', userId);
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [members, setMembers] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [approvingId, setApprovingId] = useState(null);
+  const [businessInfo, setBusinessInfo] = useState([]);
+  const [LocationID, setLocationID] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  console.log('Business Info:=========', businessInfo[0]?.L);
+  console.log('LocationID:=========', LocationID);
   
+  const fetchBusinessInfo = useCallback(async () => {
+    try {
+      setError(null);
+      const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Business Info:=========', data);
+      
+      if (!Array.isArray(data) || data.length === 0) {
+        setBusinessInfo([]);
+        setLocationID(null);
+        return;
+      }
+      
+      setBusinessInfo(data);
+      setLocationID(data[0].L);
+    } catch (error) {
+      console.error('API call error:', error);
+      setError('Failed to load business information');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [userId]);
+
   const decodeIsApproved = (buffer) => {
     if (!buffer || !buffer.data) return 0;
     return buffer.data[0];
@@ -33,12 +72,12 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
     try {
       setApprovingId(userId);
       
-     const response = await fetch(`${API_BASE_URL}/api/approve/${userId}`, { 
-  method: 'PUT',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+      const response = await fetch(`${API_BASE_URL}/api/approve/${userId}`, { 
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (response.ok) {
         setMembers(prevMembers => 
@@ -60,11 +99,15 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
       setApprovingId(null);
     }
   };
+  const fetchMembers = useCallback(async () => {
+    if (!LocationID) {
+      console.log('LocationID not available yet');
+      return;
+    }
 
-  const fetchMembers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/users/last-month`);
+      const response = await fetch(`${API_BASE_URL}/api/users/last-month/${LocationID}`);
       const data = await response.json();
       
       if (!response.ok) {
@@ -94,14 +137,23 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [LocationID]);
 
   useEffect(() => {
-    fetchMembers();
-    
+    fetchBusinessInfo();
+  }, [fetchBusinessInfo]);
+  useEffect(() => {
+    if (LocationID) {
+      fetchMembers();
+    }
+  }, [LocationID, fetchMembers]);
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       navigation.setOptions({ tabBarStyle: { display: 'flex' } });
-      fetchMembers();
+      if (LocationID) {
+        fetchMembers();
+      }
     });
     
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -117,7 +169,7 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
       unsubscribe();
       backHandler.remove();
     };
-  }, [navigation]);
+  }, [navigation, LocationID, fetchMembers]);
 
   const filteredMembers = members
     .filter((member) =>
@@ -156,6 +208,7 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
       </View>
     );
   };
+
   const handleFocus = () => {
     navigation.setOptions({ tabBarStyle: { display: 'none' } });
   };
@@ -181,6 +234,7 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
           <Icon name="search" size={23} color="#2e3192" />
         </View>
       </View>
+      
       {loading ? (
         <ActivityIndicator size="large" color="#2e3192" style={styles.loader} />
       ) : (
@@ -191,15 +245,23 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
             </View>
           ) : (
             <>
-              <FlatList
-                data={filteredMembers}
-                renderItem={renderMember}
-               
-                contentContainerStyle={styles.memberList}
-              />
-              <View style={styles.memberCountContainer}>
-                <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
-              </View>
+              {!LocationID ? (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>Location information not available</Text>
+                </View>
+              ) : (
+                <>
+                  <FlatList
+                    data={filteredMembers}
+                    renderItem={renderMember}
+                    contentContainerStyle={styles.memberList}
+                    keyExtractor={(item) => item.UserId.toString()}
+                  />
+                  <View style={styles.memberCountContainer}>
+                    <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
+                  </View>
+                </>
+              )}
             </>
           )}
         </>
@@ -207,6 +269,7 @@ const HeadAdminNewSubscribers = ({ navigation }) => {
     </View>
   );
 };
+
 const ProfilePic = ({ image, name }) => {
   const initial = name.charAt(0).toUpperCase();
 
@@ -215,17 +278,19 @@ const ProfilePic = ({ image, name }) => {
       {image ? (
         <Image source={{ uri: image }} style={styles.profileImage} />
       ) : (
-        <Text style={styles.profilePicText}>{initial}</Text>
+        <View style={[styles.profilePicContainer, { backgroundColor: '#2e3192' }]}>
+          <Text style={styles.profilePicText}>{initial}</Text>
+        </View>
       )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#CCC',
     flex: 1,
   },
-
   searchContainer: {
     flexDirection: 'row',
     padding: 0,
@@ -249,7 +314,6 @@ const styles = StyleSheet.create({
     top: '50%',
     transform: [{ translateY: -12 }],
   },
-
   memberList: {
     flexGrow: 1,
     paddingHorizontal: 10,
@@ -259,7 +323,7 @@ const styles = StyleSheet.create({
   memberItem: {
     backgroundColor: '#FFFFFF',
     padding: 8,
-    paddingVertical:20,
+    paddingVertical: 20,
     borderRadius: 10,
     marginBottom: 8,
     elevation: 2,
@@ -277,7 +341,7 @@ const styles = StyleSheet.create({
   memberName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color:'black',
+    color: 'black',
   },
   memberCountContainer: {
     position: 'absolute',
@@ -302,6 +366,11 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
   },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   profilePicContainer: {
     width: 40,
     height: 40,
@@ -320,22 +389,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   acceptButton: {
-  backgroundColor: '#4CAF50',
-  padding: 8,
-  borderRadius: 5,
-  marginLeft: 10,
-},
-declineButton: {
-  backgroundColor: '#F44336',
-  padding: 8,
-  borderRadius: 5,
-  marginLeft: 10,
-},
-buttonText: {
-  color: 'white',
-  fontWeight: 'bold',
-},
-  acceptButton: {
     backgroundColor: '#4CAF50',
     padding: 8,
     borderRadius: 5,
@@ -352,5 +405,10 @@ buttonText: {
     minWidth: 80,
     alignItems: 'center',
   },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
-export default HeadAdminNewSubscribers;
+
+export default NewMember;

@@ -24,7 +24,11 @@ const { width } = Dimensions.get('window');
 
 const OtpScreen = ({ navigation }) => {
   const route = useRoute();
-  const { Mobileno } = route.params || {};
+  const { Mobileno,  username, LocationID, LocationList } = route.params || {};
+  console.log('Received Mobileno:=================', Mobileno);
+  console.log('Received username:================', username); 
+  console.log('Received LocationID:==============', LocationID); 
+  console.log('Received LocationID:==============', LocationList);
   const [otp, setOtp] = useState(['', '', '', '']);
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -90,99 +94,112 @@ const OtpScreen = ({ navigation }) => {
       inputRefs.current[index - 1].current.focus();
     }
   };
-  const handleSendOTP = async () => {
-    if (!Mobileno || Mobileno.length < 10) {
-      Toast.show({
-        type: 'error',
-        text1: 'Invalid Phone Number',
-        text2: 'Please enter a valid phone number.',
-        position: 'top',
-        config: toastConfig,
-      });
-      return;
-    }
+
+const handleSendOTP = async () => {
+  if (!Mobileno || Mobileno.length < 10) {
+    Toast.show({
+      type: 'error',
+      text1: 'Invalid Phone Number',
+      text2: 'Please enter a valid phone number.',
+      position: 'top',
+      config: toastConfig,
+    });
+    return;
+  }
+  
+  setLoading(true);
+  const generatedOtp = generateOtp();
+  const message = `Your OTP is: ${generatedOtp}`;
+
+  let locationName = '';
+  if (LocationList && LocationID) {
+    const selectedLocation = LocationList.find(loc => loc.value === LocationID);
+    locationName = selectedLocation ? selectedLocation.label : '';
+    console.log('Selected Location:', selectedLocation);
+    console.log('Location Name:', locationName);
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/sendOtp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Mobileno,
+        message,
+        username: username || '',
+        location: locationName || '', 
+      }),
+    });
     
-    setLoading(true);
-    const generatedOtp = generateOtp();
-    const message = `Your OTP is: ${generatedOtp}`;
+    const data = await response.json();
     
-    try {
-      const response = await fetch(`${API_BASE_URL}/sendOtp`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          Mobileno,
-          message,
+    if (response.ok) {
+      setOtpSent(true);
+      setOtpExpired(false);
+      setTimer(60);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
         }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setOtpSent(true);
-        setOtpExpired(false);
-        setTimer(60);
+        Animated.timing(slideAnim, {
+          toValue: 30,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
         Animated.parallel([
           Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 300,
+            toValue: 1,
+            duration: 500,
             useNativeDriver: true,
           }),
           Animated.timing(slideAnim, {
-            toValue: 30,
-            duration: 300,
+            toValue: 0,
+            duration: 500,
             useNativeDriver: true,
           }),
-        ]).start(() => {
-          Animated.parallel([
-            Animated.timing(fadeAnim, {
-              toValue: 1,
-              duration: 500,
-              useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-              toValue: 0,
-              duration: 500,
-              useNativeDriver: true,
-            }),
-          ]).start();
-        });
-        
-        Toast.show({
-          type: 'success',
-          text1: 'OTP Sent',
-          text2: `Check your WhatsApp for the OTP code.`,
-          position: 'top',
-          config: toastConfig,
-        });
-        if (inputRefs.current[0]?.current) {
-          setTimeout(() => {
-            inputRefs.current[0].current.focus();
-          }, 800);
-        }
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Failed to Send OTP',
-          text2: data.message || 'Please try again later.',
-          position: 'top',
-          config: toastConfig,
-        });
-      }
-    } catch (error) {
+        ]).start();
+      });
+      
       Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Something went wrong. Please try again.',
+        type: 'success',
+        text1: 'OTP Sent',
+        text2: `Check your WhatsApp for the OTP code.`,
         position: 'top',
         config: toastConfig,
       });
-    } finally {
-      setLoading(false);
+      
+      if (inputRefs.current[0]?.current) {
+        setTimeout(() => {
+          inputRefs.current[0].current.focus();
+        }, 800);
+      }
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to Send OTP',
+        text2: data.message || 'Please try again later.',
+        position: 'top',
+        config: toastConfig,
+      });
     }
-  };
+  } catch (error) {
+    console.error('OTP Send Error:', error);
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'Something went wrong. Please try again.',
+      position: 'top',
+      config: toastConfig,
+    });
+  } finally {
+    setLoading(false);
+  }
+};
   const handleOtpVerification = async () => {
     const otpString = otp.join('');
     

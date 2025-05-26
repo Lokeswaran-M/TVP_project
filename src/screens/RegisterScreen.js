@@ -68,11 +68,8 @@ const RegisterScreen = ({ route }) => {
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
   const usernameInputRef = useRef(null);
-  
-  // Check if returning from OTP screen
   useFocusEffect(
     React.useCallback(() => {
-      // Check if the user is coming back from the OTP screen
       if (route.params?.fromOtp) {
         setShowAlreadyRegisteredModal(true);
       }
@@ -189,7 +186,6 @@ const RegisterScreen = ({ route }) => {
       if (data.count !== undefined) {
         if (data.count > 0) {
           setUsernameError('Username already taken');
-          Alert.alert("Error", "Username already taken");
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
@@ -283,7 +279,7 @@ const RegisterScreen = ({ route }) => {
           const data = await response.json();
           console.log('Registration successful:', data);
           setIsLoading(false);
-          navigation.navigate('Otpscreen', { Mobileno });
+          navigation.navigate('Otpscreen', { Mobileno, username,LocationID: selectedLocation, LocationList: LocationID });
         } else {
           setIsLoading(false);
           console.error('No UserId found in the response!');
@@ -291,7 +287,6 @@ const RegisterScreen = ({ route }) => {
       } catch (error) {
         setIsLoading(false);
         console.error('Error registering user:', error);
-        Alert.alert("Error", "Registration failed. Please try again.");
       }
     }
   };

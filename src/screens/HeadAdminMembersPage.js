@@ -18,20 +18,18 @@ import styles from '../components/layout/MembersStyle';
 import Stars from '../screens/Stars';
 import { API_BASE_URL } from '../constants/Config';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-
+import { Dropdown } from 'react-native-element-dropdown';
 
 const HeadAdminMembersPage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [members, setMembers] = useState([]); // All fetched members
-  const [filteredMembers, setFilteredMembers] = useState([]); // Filtered members after submit
+  const [members, setMembers] = useState([]);
+  const [filteredMembers, setFilteredMembers] = useState([]);
   const [isFilterPressed, setIsFilterPressed] = useState(false);
   const [locationOptions, setLocationOptions] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedIcons, setSelectedIcons] = useState({ sunActive: false, moonActive: false });
-  const [selectedOption, setSelectedOption] = useState(''); // Tracks the selected filter option
+  const [selectedOption, setSelectedOption] = useState(''); 
   const [refreshing, setRefreshing] = useState(false);
-
-  // Fetch members data and location names only once
   const fetchMembersData = async () => {
     setRefreshing(true);
     try {
@@ -41,7 +39,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
       }
       const data = await response.json();
      console.log('----------------------------All data Headadmin MemberPage ',data);
-      // Calculate star ratings and add it to each member
       const updatedMembers = await Promise.all(data.map(async (member) => {
         let totalStars = 0;
         if (member.Ratings.length > 0) {
@@ -53,8 +50,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
         } else {
           member.totalAverage = 0;
         }
-
-        // Fetch profile image
         const imageResponse = await fetch(`${API_BASE_URL}/profile-image?userId=${member.UserId}`);
         const imageData = await imageResponse.json();
         const uniqueImageUrl = `${imageData.imageUrl}?t=${new Date().getTime()}`;
@@ -63,16 +58,14 @@ const HeadAdminMembersPage = ({ navigation }) => {
         return member;
       }));
 
-      setMembers(updatedMembers); // Store all members
-      setFilteredMembers(updatedMembers); // Initially, set filtered members to all members
-
-      // Extract and set unique locations
+      setMembers(updatedMembers);
+      setFilteredMembers(updatedMembers);
       const locations = Array.from(new Set(data.map(member => member.LocationName)));
       setLocationOptions(locations);
     } catch (error) {
       console.error('Error fetching members location data:', error);
     } finally {
-      setRefreshing(false); // Set refreshing state to false
+      setRefreshing(false);
     }
   };
 
@@ -82,15 +75,11 @@ const HeadAdminMembersPage = ({ navigation }) => {
 
   const applyFilters = () => {
     let filtered = members;
-
-    // Filter based on RollId if selected
     if (selectedOption === 'members') {
       filtered = filtered.filter((member) => member.RollId === 3);
     } else if (selectedOption === 'admin') {
       filtered = filtered.filter((member) => member.RollId === 2);
     }
-
-    // Filter based on location if selected
     if (selectedLocation) {
       filtered = filtered.filter((member) => member.LocationName === selectedLocation);
     }
@@ -102,42 +91,23 @@ const HeadAdminMembersPage = ({ navigation }) => {
 
     return filtered;
   };
-
-  // Automatically apply filters when the search query or selected options change
   useEffect(() => {
     const filtered = applyFilters();
     setFilteredMembers(filtered);
   }, [searchQuery, selectedLocation, selectedIcons, selectedOption, members]);
-
-  // Handle clear filter
   const handleClearFilter = () => {
     setSelectedLocation('');
-    setSelectedIcons({ sunActive: false, moonActive: false }); // Reset icon selection
-    setSelectedOption(''); // Reset selected option
-    setSearchQuery(''); // Clear search query
-    setFilteredMembers(members); // Reset to show all members
+    setSelectedIcons({ sunActive: false, moonActive: false });
+    setSelectedOption('');
+    setSearchQuery('');
+    setFilteredMembers(members);
   };
-
-  // Handle Sun Icon Click
-  const handleSunClick = () => {
-    const newSunActiveState = !selectedIcons.sunActive;
-    setSelectedIcons({ ...selectedIcons, sunActive: newSunActiveState });
-  };
-
-  // Handle Moon Icon Click
-  const handleMoonClick = () => {
-    const newMoonActiveState = !selectedIcons.moonActive;
-    setSelectedIcons({ ...selectedIcons, moonActive: newMoonActiveState });
-  };
-
-  // Handle Button Click to select "members" or "admin"
   const handleButtonPress = (option) => {
-    setSelectedOption(option); // Set the selected option
+    setSelectedOption(option);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Search Bar */}
       <View style={[styles.searchContainer, isFilterPressed ? styles.searchContainerActive : null]}>
         <TextInput
           style={[styles.searchInput, isFilterPressed ? styles.searchInputActive : null]}
@@ -158,56 +128,38 @@ const HeadAdminMembersPage = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Filter Section */}
       {isFilterPressed && (
         <View style={styles.filterContainer}>
           <View style={styles.filterSearchInputContainer}>
-            {/* <View style={styles.filterIconContainer}>
-             
-              <TouchableOpacity
-                style={[styles.iconWrapper, { backgroundColor: selectedIcons.sunActive ? '#2e3192' : 'transparent' }]}
-                onPress={handleSunClick}
-              >
-                <Icon
-                  name="sun-o"
-                  size={25}
-                  color={selectedIcons.sunActive ? '#FFFFFF' : '#2e3192'}
-                  style={styles.sunIcon}
-                />
-              </TouchableOpacity>
-
-             
-              <TouchableOpacity
-                style={[styles.iconWrapper, { backgroundColor: selectedIcons.moonActive ? '#2e3192' : 'transparent' }]}
-                onPress={handleMoonClick}
-              >
-                <Icon
-                  name="moon-o"
-                  size={25}
-                  color={selectedIcons.moonActive ? '#FFFFFF' : '#2e3192'}
-                  style={styles.moonIcon}
-                />
-              </TouchableOpacity>
-            </View> */}
 
             <View style={styles.filterSearchInput}>
-              <Picker
-                selectedValue={selectedLocation}
-                onValueChange={(itemValue) => setSelectedLocation(itemValue)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Select location..." value="" />
-                {locationOptions.map((location, index) => (
-                  <Picker.Item key={index} label={location} value={location} />
-                ))}
-              </Picker>
+<Dropdown
+  style={styles.dropdown}
+  data={locationOptions.map(location => ({ 
+    label: location, 
+    value: location 
+  }))}
+  labelField="label"
+  valueField="value"
+  placeholder="Select location..."
+  value={selectedLocation}
+  onChange={(item) => {
+    setSelectedLocation(item.value);
+  }}
+  renderItem={(item, index) => (
+    <View style={[
+      styles.dropdownItem,
+      { backgroundColor: index % 2 === 0 ? '#f5f7ff' : '#ffffff' }
+    ]}>
+      <Text style={styles.dropdownItemText}>{item.label}</Text>
+    </View>
+  )}
+/>
               <View style={styles.searchIconContainer}>
                 <Icon name="search" size={23} color="#100E09" />
               </View>
             </View>
           </View>
-
-          {/* Filter Options */}
           <TouchableOpacity
             style={[styles.filterOption, selectedOption === 'members' && styles.activeButton]}
             onPress={() => handleButtonPress('members')}
@@ -237,8 +189,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
           </View>
         </View>
       )}
-
-      {/* Members List */}
       <FlatList 
   
         data={filteredMembers.sort((a, b) => b.LocationID - a.LocationID)}
@@ -247,7 +197,6 @@ const HeadAdminMembersPage = ({ navigation }) => {
             style={styles.memberItem}
             onPress={() => navigation.navigate('MemberDetails', { userId: item.UserId, Profession: item.Profession })}
           >
-           {/* Image and Icon Column */}
         <View style={styles.imageColumn}>
           {item.RollId === 2 && (
             <View style={styles.crownContainer}>
@@ -262,16 +211,13 @@ const HeadAdminMembersPage = ({ navigation }) => {
             ]}
           />
         </View>
-  
-        {/* Text Column */}
+
         <View style={styles.textColumn}>
           <Text style={styles.memberName}>{item.Username}</Text>
           <Text style={styles.memberRole} numberOfLines={1}>
             {item.Profession}
           </Text>
         </View>
-  
-        {/* Rating Column */}
         <View style={styles.ratingColumn}>
           <Stars averageRating={item.totalAverage} />
         </View>
@@ -286,12 +232,10 @@ const HeadAdminMembersPage = ({ navigation }) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={fetchMembersData} // Call fetchMembersData when refreshed
+            onRefresh={fetchMembersData}
           />
         }
       />
-
-      {/* Member Count */}
       {filteredMembers.length > 0 && (
         <View style={styles.memberCountContainer}>
           <Text style={styles.memberCountText}>Count: {filteredMembers.length}</Text>
@@ -302,5 +246,3 @@ const HeadAdminMembersPage = ({ navigation }) => {
 };
 
 export default HeadAdminMembersPage;
-
-

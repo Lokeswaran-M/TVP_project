@@ -49,7 +49,7 @@
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-otp-textinput": "^1.1.6",
     "react-native-pager-view": "^6.4.1",
-    "react-native-paper": "^5.12.5",
+    "react-native-paper": "^5.14.5",
     "react-native-permissions": "^4.1.5",
     "react-native-push-notification": "^8.1.1",
     "react-native-qrcode-svg": "^6.3.12",

@@ -8,7 +8,7 @@ import { API_BASE_URL } from '../constants/Config';
 const StopWatch = ({ route, navigation }) => {
     const { member } = route.params;
     console.log('------------------------User Data------------------------', member);
-    const [seconds, setSeconds] = useState(6);
+    const [seconds, setSeconds] = useState(60);
     const [isRunning, setIsRunning] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [intervalId, setIntervalId] = useState(null);
@@ -63,7 +63,7 @@ const StopWatch = ({ route, navigation }) => {
                         setIsRunning(false);
                         setIsTimeoutModalVisible(true);
                         playAlarm();
-                        return 6;
+                        return 60;
                     }
                     console.log(`Seconds left: ${prev - 1}`);
                     return prev - 1;
@@ -91,7 +91,7 @@ const StopWatch = ({ route, navigation }) => {
         clearInterval(intervalId);
     };
     const handleRestart = () => {
-        setSeconds(6);
+        setSeconds(60);
         setIsRunning(false);
         setIsPaused(false);
         clearInterval(intervalId);

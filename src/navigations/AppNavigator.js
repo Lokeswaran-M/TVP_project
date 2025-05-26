@@ -30,6 +30,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
+import NewMember from '../screens/NewMember';
 const PRIMARY_COLOR = '#2e3091';
 const SECONDARY_COLOR = '#3d3fa3';
 const LIGHT_PRIMARY = '#eaebf7';
@@ -534,6 +535,30 @@ function DrawerNavigator() {
                       <Icon name="comments" size={28} color="#FFFFFF" />
                     </View>
                     <Text style={styles.NavbuttonText}>CREATE MEETING</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+            <Drawer.Screen
+            name="NewMember"
+            component={NewMember}
+            options={({ navigation }) => ({
+              drawerLabel: 'New Member',
+              drawerIcon: ({ color, size }) => (
+                <Icon name="users" color={color} size={size} />
+              ),
+              headerShown: false,
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icon name="users" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>NEW MEMBER</Text>
                   </TouchableOpacity>
                 </View>
               ),

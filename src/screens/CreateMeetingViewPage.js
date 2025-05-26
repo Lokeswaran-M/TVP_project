@@ -4,23 +4,95 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   Platform,
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
-  StatusBar
+  StatusBar,
+  Modal,
+  Pressable
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import RNFS from 'react-native-fs';
 import ViewShot from 'react-native-view-shot';
 import { PERMISSIONS, request, check, RESULTS, openSettings } from 'react-native-permissions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FAB } from 'react-native-paper';
+import { API_BASE_URL } from '../constants/Config';
 
 const CreateMeetingViewPage = ({ route, navigation }) => {
   const { userId, eventId, locationId, location, dateTime } = route.params;
+  console.log("Location ID:==================", locationId);
   const viewShotRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingNotifications, setIsSendingNotifications] = useState(false);
+  const [notificationModalVisible, setNotificationModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+  const [downloadSuccessModalVisible, setDownloadSuccessModalVisible] = useState(false);
+  const [modalContent, setModalContent] = useState({
+    title: '',
+    message: '',
+    failedUsers: []
+  });
+
+  const sendNotifications = async () => {
+    setIsSendingNotifications(true);
+    setNotificationModalVisible(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          LocationID: locationId
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        if (data.failedUsers && data.failedUsers.length > 0) {
+          const failedUserNames = data.failedUsers.map(user => user.UserName).join('\n• ');
+          setModalContent({
+            title: 'Notifications Partially Sent',
+            message: `Successfully sent to ${data.successCount} of ${data.totalUsers} users.\n\nFailed to send to:\n• ${failedUserNames}`,
+            failedUsers: data.failedUsers
+          });
+        } else {
+          setModalContent({
+            title: 'Success',
+            message: `All notifications (${data.totalUsers}) sent successfully!`,
+            failedUsers: []
+          });
+        }
+        setSuccessModalVisible(true);
+      } else {
+        throw new Error(data.error || 'Failed to send notifications');
+      }
+    } catch (error) {
+      console.error('Error sending notifications:', error);
+      setModalContent({
+        title: 'Error',
+        message: error.message || 'Failed to send notifications',
+        failedUsers: []
+      });
+      setErrorModalVisible(true);
+    } finally {
+      setIsSendingNotifications(false);
+    }
+  };
+
+  const handleSendNotifications = () => {
+    setModalContent({
+      title: 'Send Notifications',
+      message: 'Are you sure you want to send notifications to all users at this location?',
+      failedUsers: []
+    });
+    setNotificationModalVisible(true);
+  };
+
   const formatDateTime = (dateTimeStr) => {
     const options = { 
       weekday: 'long',
@@ -41,14 +113,12 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
         if (status === RESULTS.GRANTED) return true;
         if (status === RESULTS.DENIED) return (await request(PERMISSIONS.ANDROID.MANAGE_EXTERNAL_STORAGE)) === RESULTS.GRANTED;
         if (status === RESULTS.BLOCKED) {
-          Alert.alert(
-            'Permission Required',
-            'Storage permission is needed to save the QR Code. Please enable it in settings.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Open Settings', onPress: () => openSettings() },
-            ]
-          );
+          setModalContent({
+            title: 'Permission Required',
+            message: 'Storage permission is needed to save the QR Code. Please enable it in settings.',
+            failedUsers: []
+          });
+          setPermissionModalVisible(true);
           return false;
         }
       } else {
@@ -56,20 +126,19 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
         if (status === RESULTS.GRANTED) return true;
         if (status === RESULTS.DENIED) return (await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE)) === RESULTS.GRANTED;
         if (status === RESULTS.BLOCKED) {
-          Alert.alert(
-            'Permission Required',
-            'Storage permission is needed to save the QR Code. Please enable it in settings.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Open Settings', onPress: () => openSettings() },
-            ]
-          );
+          setModalContent({
+            title: 'Permission Required',
+            message: 'Storage permission is needed to save the QR Code. Please enable it in settings.',
+            failedUsers: []
+          });
+          setPermissionModalVisible(true);
           return false;
         }
       }
     }
     return true;
   };
+
   const downloadPoster = async () => {
     setIsLoading(true);
     
@@ -77,12 +146,9 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
   
     if (!hasPermission) {
       setIsLoading(false);
-      Alert.alert('Permission Denied', 'Storage permission is required to save the poster.');
       return;
     }
-    
     const uniqueFileName = `event_poster_${Date.now()}.png`;
-  
     try {
       const uri = await viewShotRef.current.capture();
       const filePath = `${RNFS.DownloadDirectoryPath}/${uniqueFileName}`;
@@ -90,19 +156,57 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
       await RNFS.moveFile(uri.replace('file://', ''), filePath);
       
       console.log(`Poster saved at: ${filePath}`);
-      Alert.alert(
-        'Success', 
-        'Poster has been saved to your downloads folder.',
-        [{ text: 'OK' }]
-      );
+      setDownloadSuccessModalVisible(true);
     } catch (error) {
       console.error('Error saving poster:', error);
-      Alert.alert('Error', 'Failed to save the poster. Please try again.');
+      setModalContent({
+        title: 'Error',
+        message: 'Failed to save poster',
+        failedUsers: []
+      });
+      setErrorModalVisible(true);
     } finally {
       setIsLoading(false);
     }
   };
-  
+  const CustomModal = ({ visible, onClose, title, message, showCancel = false, onConfirm }) => {
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>{title}</Text>
+            <Text style={styles.modalMessage}>{message}</Text>
+            
+            <View style={styles.modalButtonContainer}>
+              {showCancel && (
+                <Pressable
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={onClose}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </Pressable>
+              )}
+              
+              <Pressable
+                style={[styles.modalButton, styles.confirmButton]}
+                onPress={onConfirm || onClose}
+              >
+                <Text style={styles.confirmButtonText}>
+                  {showCancel ? 'Confirm' : 'OK'}
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="#4051B5" barStyle="light-content" />
@@ -124,10 +228,6 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
       >
         <ViewShot ref={viewShotRef} options={{ format: 'png', quality: 0.9 }}>
           <View style={styles.posterContainer}>
-            {/* <View style={styles.posterHeader}>
-              <Text style={styles.posterTitle}>Event Invitation</Text>
-            </View> */}
-            
             <View style={styles.contentRow}>
               <View style={styles.iconContainer}>
                 <Icon name="calendar-clock" size={24} color="#4051B5" />
@@ -200,10 +300,54 @@ const CreateMeetingViewPage = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      
+      <FAB
+        style={styles.fab}
+        icon="bell"
+        color="#EBB866"
+        onPress={handleSendNotifications}
+        loading={isSendingNotifications}
+        disabled={isSendingNotifications}
+      />
+      <CustomModal
+        visible={notificationModalVisible}
+        onClose={() => setNotificationModalVisible(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+        showCancel={true}
+        onConfirm={sendNotifications}
+      />
+      <CustomModal
+        visible={successModalVisible}
+        onClose={() => setSuccessModalVisible(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+      />
+      <CustomModal
+        visible={errorModalVisible}
+        onClose={() => setErrorModalVisible(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+      />
+      <CustomModal
+        visible={permissionModalVisible}
+        onClose={() => setPermissionModalVisible(false)}
+        title={modalContent.title}
+        message={modalContent.message}
+        onConfirm={() => {
+          setPermissionModalVisible(false);
+          openSettings();
+        }}
+      />
+      <CustomModal
+        visible={downloadSuccessModalVisible}
+        onClose={() => setDownloadSuccessModalVisible(false)}
+        title="Success"
+        message="Poster has been saved to your downloads folder."
+      />
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -344,6 +488,62 @@ const styles = StyleSheet.create({
   },
   buttonIcon: {
     marginRight: 8,
+  },
+    fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fcf5e8',
+  },
+    modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4051B5',
+    marginBottom: 10,
+  },
+  modalMessage: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginLeft: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+  },
+  cancelButtonText: {
+    color: '#666',
+    fontWeight: '600',
+  },
+  confirmButton: {
+    backgroundColor: '#4051B5',
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
 });
 
