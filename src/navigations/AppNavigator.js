@@ -25,8 +25,10 @@ import EditMeeting from '../screens/EditMeeting';
 import AddBusiness from '../screens/AddBusiness';
 import Requirements from '../screens/Requirements';
 import Review from '../screens/Review';
+import TotalOfferedReceivedPage from '../screens/TotalOfferedReceivedPage';
 import Notification from '../screens/Notification';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
@@ -290,7 +292,18 @@ const HeaderWithoutImage = ({ navigation }) => ({
   ),
   headerTintColor: '#000',
 });
-
+const CustomHeaderTotalOR = () => {
+  return (
+    <View style={styles.topNav}>
+      <View style={styles.buttonNavtop}>
+        <View style={styles.topNavlogo}>
+        <MaterialIcons name="business-center" size={27} color="white" style={styles.icon} />
+        </View>
+        <Text style={styles.NavbuttonText}>TotalOfferedReceivedPage</Text>
+      </View>
+    </View>
+  );
+};
 function DrawerNavigator() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state);
@@ -635,6 +648,13 @@ const user = useSelector((state) => state);
           ),
         }}
       />
+
+
+
+
+       <Stack.Screen name="TotalOfferedReceivedPage" component={TotalOfferedReceivedPage} options={{ headerShown: true, header: () => <CustomHeaderTotalOR/>, headerLeft: () => null, }} />
+
+       
       <Stack.Screen
         name="Review"
         component={Review}

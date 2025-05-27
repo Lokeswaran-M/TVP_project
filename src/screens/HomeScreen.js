@@ -54,17 +54,38 @@ const HomeScreen = ({ route }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedRequirement, setSelectedRequirement] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showData, setShowData] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  
+
+
+useFocusEffect(
+  React.useCallback(() => {
+   onRefresh();
+    return () => {
+    };
+  }, [])
+);
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     Promise.all([
       fetchTopFiveData(),
       fetchEventData(),
       refreshRequirements(),
-      fetchReviewsData()
+      fetchReviewsData(),
+      fetchTotalAmount(),
     ]).finally(() => {
       setRefreshing(false);
     });
   }, [route.params.locationId, userId]);
+
+
+const toggleDataVisibility = () => {
+  setShowData(!showData);
+};
+
+
 
   const refreshRequirements = async () => {
     setRequirementsLoading(true);
@@ -174,6 +195,29 @@ useEffect(() => {
     });
   }, [requirementsData, reviewsData, processedData, processedReviewerData]);  
 
+
+
+const fetchTotalAmount = async () => {
+  try {
+    const locationId = route.params.locationId;
+    const response = await fetch(`${API_BASE_URL}/api/total-amount?locationID=${locationId}`);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log("Total Amount Data received:=====================", data);
+    setTotalAmount(data.totalAmount);
+  } catch (err) {
+    setError('Failed to load data');
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   const fetchTopFiveData = async () => {
     try {
       const locationId = route.params.locationId;
@@ -182,6 +226,7 @@ useEffect(() => {
       console.log("Top Five Data received:=====================", data);
       if (response.ok) {
         setTopFiveData(data);
+        
       } else {
         settopFiveError(data.error);
       }
@@ -237,6 +282,7 @@ useEffect(() => {
     fetchEventData();
     refreshRequirements();
     fetchReviewsData();
+    fetchTotalAmount();
   }, [userId, route.params.locationId]);
 
   useEffect(() => {
@@ -391,43 +437,78 @@ useEffect(() => {
         />
       }
     >
-      <View style={styles.container}>
+
+
+
+    <View style={styles.container}>
         <View style={styles.cards}>
       <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
-      <View style={styles.home}>
-        <TouchableOpacity
+<View style={styles.amtBox}>
+  <Text style={styles.amtLabel}>
+    Total Biz Txns:
+    <Text style={styles.amtValue}> ₹ {Number(totalAmount).toLocaleString('en-IN')}</Text>
+  </Text>
+
+<TouchableOpacity
+  style={styles.viewBtn}
+  onPress={() => navigation.navigate('TotalOfferedReceivedPage', {
+    userId,
+    locationId: route.params.locationId,
+  })}
+>
+  <Text style={styles.viewBtnText}>View</Text>
+</TouchableOpacity>
+
+</View>
+
+
+
+       <View style={styles.home}>
+      <TouchableOpacity
+        style={[
+          styles.addButton1,
+          buttonClicked === 'taken' && styles.disabledButton,
+        ]}
+        onPress={() => setButtonClicked('given')}
+      >
+        <Text
           style={[
-            styles.addButton1,
-            buttonClicked === 'taken' && styles.disabledButton,
+            styles.buttonText1,
+            buttonClicked === 'taken' && styles.disabledButtonText,
           ]}
-          onPress={() => handleButtonClick('given')}
         >
-          <Text
-            style={[
-              styles.buttonText1,
-              buttonClicked === 'taken' && styles.disabledButtonText,
-            ]}
-          >
-            OFFERED
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          OFFERED
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.addButton2,
+          buttonClicked === 'given' && styles.disabledButton,
+        ]}
+        onPress={() => setButtonClicked('taken')}
+      >
+        <Text
           style={[
-            styles.addButton2,
-            buttonClicked === 'given' && styles.disabledButton,
+            styles.buttonText1,
+            buttonClicked === 'given' && styles.disabledButtonText,
           ]}
-          onPress={() => handleButtonClick('taken')}
         >
-          <Text
-            style={[
-              styles.buttonText1,
-              buttonClicked === 'given' && styles.disabledButtonText,
-            ]}
-          >
-            RECEIVED
-          </Text>
-        </TouchableOpacity>
-      </View>
+          RECEIVED
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    <TouchableOpacity onPress={toggleDataVisibility}>
+      <Icon
+        name={showData ? 'angle-up' : 'angle-down'}  // ← toggle icon
+        size={24}
+        color="#2e3091"
+        style={styles.arrowIcon}
+      />
+    </TouchableOpacity>
+
+    {showData && (
       <View style={styles.rankingTable}>
         <View style={styles.tableHeader}>
           <Text style={styles.tableHeaderText}>#RANK</Text>
@@ -443,8 +524,16 @@ useEffect(() => {
           )}
         </View>
       </View>
+    )}
     </View>
-        {/* =======================Meetings=========================== */}
+
+
+
+
+
+
+
+        {/* =======================Dashboard=========================== */}
         <View style={styles.cards}>
       <View style={styles.dashboardContainer}>
         <Text style={styles.dashboardTitle}>Dashboard</Text>
@@ -482,43 +571,40 @@ useEffect(() => {
                 <Icon name="map-marker" size={18} color="#6C757D" />
                 <Text style={styles.locationText}>{event.Place || 'Unknown Location'}</Text>
               </View>
-              <View>
+              {/* <View>
                 <Text style={styles.note}>Note: You cannot confirm the event if it is within 12 hours.</Text>
-              </View>
-              <View style={styles.buttonRow}>
-                {event.TimeDifferenceGreaterThan12 === 1 && (
-                  <TouchableOpacity
-                    style={[
-                      styles.confirmButton,
-                      isConfirmed[event.EventId] || event.Isconfirm === 1 || isWithin12Hours ? styles.disabledButton : null,
-                    ]}
-                    onPress={() => {
-                      if (!isConfirmed[event.EventId] && !event.Isconfirm && !isWithin12Hours) {
-                        setSelectedEvent(event);
-                        setModalVisible(true);
-                      }
-                    }}
-                    disabled={isConfirmed[event.EventId] || event.Isconfirm === 1 || isWithin12Hours}
-                  >
-                    <Icon
-                      name="check-circle"
-                      size={24}
-                      color={isConfirmed[event.EventId] || event.Isconfirm === 1 || isWithin12Hours ? "#B0B0B0" : "#28A745"} 
-                    />
-                    <Text style={styles.buttonText}>
-                      {isConfirmed[event.EventId] || event.Isconfirm === 1 || isWithin12Hours
-                        ? "Confirmed"
-                        : "Click to Confirm"}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                {isWithin12Hours && (
-                  <View style={styles.confirmButton}>
-                    <Icon name="check-circle" size={24} color="#e86d6c" />
-                    <Text style={styles.disabledText}>Disabled</Text>
-                  </View>
-                )}
-              </View>
+              </View> */}
+<View style={styles.buttonRow}>
+  <TouchableOpacity
+    style={[
+      styles.confirmButton,
+      isConfirmed[event.EventId] || event.Isconfirm === 1 ? styles.disabledButton : null,
+    ]}
+    onPress={() => {
+      if (!isConfirmed[event.EventId] && event.Isconfirm !== 1) {
+        setSelectedEvent(event);
+        setModalVisible(true);
+      }
+    }}
+    disabled={isConfirmed[event.EventId] || event.Isconfirm === 1}
+  >
+    <Icon
+      name="check-circle"
+      size={24}
+      color={
+        isConfirmed[event.EventId] || event.Isconfirm === 1
+          ? "#B0B0B0"
+          : "#28A745"
+      }
+    />
+    <Text style={styles.buttonText}>
+      {isConfirmed[event.EventId] || event.Isconfirm === 1
+        ? "Confirmed"
+        : "Click to Confirm"}
+    </Text>
+  </TouchableOpacity>
+</View>
+
               <Modal
                 visible={modalVisible}
                 transparent={true}

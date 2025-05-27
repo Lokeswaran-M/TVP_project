@@ -20,6 +20,7 @@ import HeadAdminLocation from '../screens/HeadAdminLocation';
 import HeadAdminLocationCreate from '../screens/HeadAdminLocationCreate';
 import HeadAdminLocationEdit from '../screens/HeadAdminLocationEdit';
 import HeadAdminLocationView from '../screens/HeadAdminLocationView';
+import AdminTotalOfferedReceivedPage from '../screens/AdminTotalOfferedReceivedPage';
 import { View, Text, StyleSheet, Dimensions,Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -125,6 +126,20 @@ const CustomAdminProfession = () => {
     </View>
   );
 };
+
+const CustomHeaderAdminTotalOfferedReceivedPage = () => {
+  return (
+    <View style={styles.topNav}>
+      <View style={styles.buttonNavtop}>
+        <View style={styles.topNavlogo}>
+        <MaterialIcons name="business-center" size={27} color="white" style={styles.icon} />
+        </View>
+        <Text style={styles.NavbuttonText}>profession</Text>
+      </View>
+    </View>
+  );
+};
+
 const Stack = createStackNavigator();
 const headerOptions = {
   headerStyle: { backgroundColor: '#2e3192' },
@@ -148,7 +163,7 @@ const AuthNavigator = () => {
         <Stack.Screen name="AdminProfessionstack" component={AdminProfessionstack} options={{headerShown: false, headerLeft: () => null,  }}/> 
         <Stack.Screen name="HeadAdminPostPage" component={HeadAdminPostPage} options={{headerShown: true,header: () => <CustomHeaderPost/>, headerLeft: () => null,  }}/> 
         <Stack.Screen name="MemberDetails" component={MemberDetails} options={{ headerShown: true, header: () => <CustomHeaderMembers/>, headerLeft: () => null, }} />
-     
+        <Stack.Screen name="AdminTotalOfferedReceivedPage" component={AdminTotalOfferedReceivedPage} options={{ headerShown: true, header: () => <CustomHeaderAdminTotalOfferedReceivedPage/>, headerLeft: () => null, }} />
     </Stack.Navigator>
 
   );

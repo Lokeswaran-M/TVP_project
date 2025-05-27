@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { green } from 'react-native-reanimated/lib/typescript/Colors';
 
 const { width, height } = Dimensions.get('window');
 const PRIMARY_COLOR = '#2e3091';
@@ -329,10 +330,56 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
     textAlign: 'center',
     color: PRIMARY_COLOR,
   },
+amtBox: {
+  backgroundColor: '#f0fdf4',
+  padding: 12,
+  borderRadius: 10,
+  marginVertical: 10,
+  marginHorizontal: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 3,
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+amtLabel: {
+  flex: 0.8,          
+  fontSize: 14,
+  fontWeight: '600',
+  color: '#333',
+},
+
+amtValue: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: 'green',
+},
+
+viewBtn: {
+  flex: 0.2,      
+  borderWidth: 2,
+  paddingVertical: 4,
+  paddingHorizontal: 5,
+  borderRadius:25,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderColor: 'green',
+},
+
+viewBtnText: {
+  color: 'green',
+  fontSize: 14,
+  fontWeight: '600',
+},
+
+
   buttonContainer: {
     flexDirection: 'row',  
     justifyContent: 'space-between',

@@ -28,12 +28,33 @@ const AdminPage = () => {
   const [processedData, setProcessedData] = useState([]);
   const [processedReviewerData, setProcessedReviewerData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+const [showContainer, setShowContainer] = useState(false);
 
 
 
 
 
 
+
+const fetchTotalAmount = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/total-amount/Admin`);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log("Total Amount Data received:=====================", data);
+    setTotalAmount(data.totalAmount);
+  } catch (err) {
+    setError('Failed to load data');
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
@@ -45,6 +66,7 @@ const fetchAllData = async () => {
     await Promise.all([
       fetchLocationData(),
       fetchRequirementsData(),
+      fetchTotalAmount(),
     ]);
   } catch (error) {
     console.error("Error refreshing data", error);
@@ -171,6 +193,7 @@ const fetchAllData = async () => {
   useEffect(() => {
     fetchLocationData();
     fetchRequirementsData();
+    fetchTotalAmount();
   }, []);
 
   useEffect(() => {
@@ -249,8 +272,125 @@ const fetchAllData = async () => {
           <Image source={require('../../assets/images/Homepage_TPV.jpg')} style={styles.image} />
         </View> */}
 
+        <View style={styles.topcards}>
 
-        {/* Requirements Section */}
+          <View style={styles.dropdownContainer}>
+
+            <Picker
+              selectedValue={selectedLocation}
+              onValueChange={(itemValue) => {
+                setSelectedLocation(itemValue); // Update location
+                fetchTopFiveData(); // Fetch top 5 data after selecting location
+              }}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Location" value="" />
+              {locations.map((location) => (
+                <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
+              ))}
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+  style={{ flexDirection: 'row', alignItems: 'center',justifyContent: 'center', marginBottom: 10, }}
+  onPress={() => setShowContainer(!showContainer)}
+>
+  <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
+  <Ionicons
+    name={showContainer ? 'chevron-up' : 'chevron-down'}
+    size={24}
+    color="black"
+    style={{ marginLeft: 8 }}
+  />
+</TouchableOpacity>
+
+{showContainer && (
+  <>
+    <View style={styles.amtBox}>
+      <Text style={styles.amtLabel}>
+        Total Biz Txns:
+        <Text style={styles.amtValue}> ₹ {Number(totalAmount).toLocaleString('en-IN')}</Text>
+      </Text>
+      <TouchableOpacity
+        style={styles.viewBtn}
+        onPress={() => navigation.navigate('AdminTotalOfferedReceivedPage')}
+      >
+        <Text style={styles.viewBtnText}>View</Text>
+      </TouchableOpacity>
+    </View>
+
+    <View style={styles.home}>
+      <TouchableOpacity
+        style={[styles.addButton, buttonClicked === 'taken' && styles.disabledButton]}
+        onPress={() => handleButtonClick('given')}
+      >
+        <Text style={[styles.buttonText1, buttonClicked === 'taken' && styles.disabledButtonText]}>
+          OFFERED
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.addButton, buttonClicked === 'given' && styles.disabledButton]}
+        onPress={() => handleButtonClick('taken')}
+      >
+        <Text style={[styles.buttonText1, buttonClicked === 'given' && styles.disabledButtonText]}>
+          RECEIVED
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+    <View style={styles.rankingTable}>
+      <View style={styles.tableHeader}>
+        <Text style={styles.tableHeaderText}>#RANK</Text>
+        <Text style={styles.tableHeaderText}>#AMOUNT</Text>
+      </View>
+      <View style={styles.container1}>
+        {buttonClicked === 'given' || buttonClicked === 'taken' ? (
+          renderData(buttonClicked === 'given' ? processedData : processedReviewerData)
+        ) : (
+          renderData(processedData)
+        )}
+      </View>
+    </View>
+  </>
+)}
+
+        </View>
+
+
+<View style={styles.buttonContainer}>
+          <View style={styles.leftButtons}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
+              <Icon name="users" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Members</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLocationstack')}>
+              <Feather name="map-pin" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Locations</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminProfessionstack')}>
+              <MaterialIcons name="business-center" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Profession</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.rightButtons}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminNewSubscribers')}>
+              <Feather name="users" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>New Sub</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
+              <Icon name="money" size={20} color="#2e3192" style={styles.icon} />
+              <Text style={styles.buttonText}>Payments</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPostPage')}>
+            <Ionicons name="chatbubble-ellipses" size={20} color="#2e3192" />
+              <Text style={styles.buttonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+
+                {/* Requirements Section */}
         <View style={styles.cards}>
           <View style={styles.header}>
             <Text style={styles.headerText}>Requirements</Text>
@@ -297,13 +437,13 @@ const fetchAllData = async () => {
               <View key={index} style={styles.card}>
                 <View style={styles.profileSection}>
                   <Image
-                    source={{ uri: profileImages[review.UserId] || 'https://via.placeholder.com/50' }}
+                    source={{ uri: profileImages[review.UserId]}}
                     style={styles.profileImage}
                   />
                 </View>
                 <View style={styles.requirementSection}>
-                  <Text style={styles.profileName}>{review.Username || "Unknown User"}</Text>
-                  <Text style={styles.requirementText}>{review.Description || "No description provided."}</Text>
+                  <Text style={styles.profileName}>{review.Username}</Text>
+                  <Text style={styles.requirementText}>{review.Description}</Text>
                 </View>
               </View>
             ))
@@ -313,89 +453,9 @@ const fetchAllData = async () => {
             </View>
           )}
         </View>
-<View style={styles.buttonContainer}>
-          <View style={styles.leftButtons}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminMemberstack')}>
-              <Icon name="users" size={20} color="#2e3192" style={styles.icon} />
-              <Text style={styles.buttonText}>Members</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminLocationstack')}>
-              <Feather name="map-pin" size={20} color="#2e3192" style={styles.icon} />
-              <Text style={styles.buttonText}>Locations</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('AdminProfessionstack')}>
-              <MaterialIcons name="business-center" size={20} color="#2e3192" style={styles.icon} />
-              <Text style={styles.buttonText}>Profession</Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.rightButtons}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminNewSubscribers')}>
-              <Feather name="users" size={20} color="#2e3192" style={styles.icon} />
-              <Text style={styles.buttonText}>New Sub</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPaymentsPage')}>
-              <Icon name="money" size={20} color="#2e3192" style={styles.icon} />
-              <Text style={styles.buttonText}>Payments</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HeadAdminPostPage')}>
-            <Ionicons name="chatbubble-ellipses" size={20} color="#2e3192" />
-              <Text style={styles.buttonText}>Post</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.topcards}>
 
-          <View style={styles.dropdownContainer}>
-
-            <Picker
-              selectedValue={selectedLocation}
-              onValueChange={(itemValue) => {
-                setSelectedLocation(itemValue); // Update location
-                fetchTopFiveData(); // Fetch top 5 data after selecting location
-              }}
-              style={styles.picker}
-            >
-              <Picker.Item label="Select Location" value="" />
-              {locations.map((location) => (
-                <Picker.Item key={location.LocationID} label={location.LocationName} value={location.LocationID} />
-              ))}
-            </Picker>
-          </View>
-
-          <Text style={styles.title}>WEEKLY TOP RANKING MEMBERS</Text>
-          <View style={styles.home}>
-            <TouchableOpacity
-              style={[styles.addButton, buttonClicked === 'taken' && styles.disabledButton]}
-              onPress={() => handleButtonClick('given')}
-            >
-              <Text style={[styles.buttonText1, buttonClicked === 'taken' && styles.disabledButtonText]}>
-                OFFERED
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.addButton, buttonClicked === 'given' && styles.disabledButton]}
-              onPress={() => handleButtonClick('taken')}
-            >
-              <Text style={[styles.buttonText1, buttonClicked === 'given' && styles.disabledButtonText]}>
-                RECEIVED
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.rankingTable}>
-            <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderText}>#RANK</Text>
-              <Text style={styles.tableHeaderText}>#AMOUNT</Text>
-            </View>
-            <View style={styles.container1}>
-              {buttonClicked === 'given' || buttonClicked === 'taken' ? (
-                renderData(buttonClicked === 'given' ? processedData : processedReviewerData)
-              ) : (
-                renderData(processedData)
-              )}
-            </View>
-          </View>
-        </View>
+        
 
       </View>
 
@@ -429,7 +489,7 @@ const styles = StyleSheet.create({
     borderColor:'#2e3192',
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#2e3192',
     marginBottom: 10,
@@ -446,11 +506,51 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 20,
   },
-  // buttonText: {
-  //   color: '#fff',
-  //   fontWeight: 'bold',
-  //   textAlign: 'center',
-  // },
+  
+amtBox: {
+  backgroundColor: '#f0fdf4',
+  padding: 12,
+  borderRadius: 10,
+  marginVertical: 10,
+  marginHorizontal: 16,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.1,
+  shadowRadius: 3,
+  elevation: 3,
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+amtLabel: {
+  flex: 0.8,          
+  fontSize: 14,
+  fontWeight: '600',
+  color: '#333',
+},
+
+amtValue: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: 'green',
+},
+
+viewBtn: {
+  flex: 0.2,      
+  borderWidth: 2,
+  paddingVertical: 4,
+  paddingHorizontal: 5,
+  borderRadius:25,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderColor: 'green',
+},
+
+viewBtnText: {
+  color: 'green',
+  fontSize: 14,
+  fontWeight: '600',
+},
   disabledButton: {
     backgroundColor:'rgb(116, 134, 190)',
   },
@@ -510,11 +610,13 @@ const styles = StyleSheet.create({
     width: 100,
   },
   dropdownContainer: {
-    marginBottom: 20,
-    paddingHorizontal: 15,
+    marginBottom: 10,
+    paddingHorizontal:5,
     flexDirection: "row",
     justifyContent: 'space-between',
-
+    borderWidth: 2,
+    borderColor: '#e4e5fd',
+    borderRadius: 15,
   },
   dropdownLabel: {
     fontSize: 16,
@@ -527,7 +629,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 15,
-    marginBottom: 20,
     paddingLeft: 10, 
     color: '#2e3192',
     
@@ -563,27 +664,27 @@ const styles = StyleSheet.create({
   arrowIcon: {
     marginLeft: 10,
   },
-  addButton: {
-    flexDirection: 'row',
-    backgroundColor: '#2e3192',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconStyle: {
-    marginRight: 5,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+  // addButton: {
+  //   flexDirection: 'row',
+  //   backgroundColor: '#2e3192',
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 15,
+  //   borderRadius: 30,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
+  // buttonContent: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // iconStyle: {
+  //   marginRight: 5,
+  // },
+  // addButtonText: {
+  //   color: '#fff',
+  //   fontSize: 14,
+  //   fontWeight: 'bold',
+  // },
 
   line: {
     marginVertical: 15,
@@ -597,11 +698,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: 'red',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
   },
   profileSection: {
     flexDirection: 'row',
@@ -611,30 +709,32 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+    justifyContent: 'center',
   },
   profileName: {
     fontSize: 16,
-    marginLeft: 10,
     color: '#2e3192',
     fontWeight: 'bold',
   },
   requirementSection: {
     marginLeft: 15,
     flex: 1,
+    justifyContent: 'center',
   },
   requirementText: {
     fontSize: 14,
     color: '#100E09',
-    marginBottom: 5,
-  },
-  acknowledgeButton: {
-    backgroundColor: '#2e3192',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    alignItems: 'center',
     justifyContent: 'center',
+    // marginBottom: 5,
   },
+  // acknowledgeButton: {
+  //   backgroundColor: '#2e3192',
+  //   paddingVertical: 5,
+  //   paddingHorizontal: 10,
+  //   borderRadius: 5,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
   buttonText1: {
     color: '#fff',
     fontSize: 14,

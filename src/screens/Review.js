@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
 import { Picker } from '@react-native-picker/picker';
 import { MaskedTextInput } from 'react-native-mask-text';
-
+import { CommonActions } from '@react-navigation/native';
 const Review = ({ route }) => {
   const userId = useSelector((state) => state.UserId);
   const { businessName, locationId } = route.params;
@@ -142,7 +142,7 @@ const Review = ({ route }) => {
   };
   const handleModalClose = () => {
     setModalVisible(false);
-    navigation.goBack(); // Navigate back after modal closes
+    navigation.navigate('Dashboard')
   };
   return (
     <View style={styles.container}>
@@ -213,7 +213,7 @@ const Review = ({ route }) => {
               style={styles.textInput1}
               value={amount}
               placeholder="₹ Enter the amount"
-              placeholderTextColor="black"
+              placeholderTextColor="#000"
               keyboardType="numeric"
               onChangeText={handleChange}
             />
@@ -228,7 +228,7 @@ const Review = ({ route }) => {
           numberOfLines={4}
           value={review}
           placeholder="Write your comment here"
-          placeholderTextColor="black"
+          placeholderTextColor="#000"
           onChangeText={(text) => {
             setReview(text);
             setErrors((prevErrors) => ({ ...prevErrors, review: '' }));
@@ -296,6 +296,7 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
+    color: '#000',
   },
   title: {
     fontSize: 20,
@@ -333,6 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     backgroundColor: '#fff',
+    color: '#000',
   },
   textInput: {
     height: 100,
@@ -343,6 +345,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginBottom: 20,
     textAlignVertical: 'top',
+    color: '#000',
   },
   ratingContainer: {
     flexDirection: 'row',
