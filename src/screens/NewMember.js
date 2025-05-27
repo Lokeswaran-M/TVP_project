@@ -89,12 +89,12 @@ const NewMember = ({ navigation }) => {
         );
       } else {
         const errorData = await response.json();
-        Alert.alert('Error', errorData.message || 'Failed to approve user');
+        // Alert.alert('Error', errorData.message || 'Failed to approve user');
         throw new Error(errorData.message);
       }
     } catch (error) {
       console.error('Error approving user:', error);
-      Alert.alert('Error', 'Failed to approve user. Please try again.');
+      // Alert.alert('Error', 'Failed to approve user. Please try again.');
     } finally {
       setApprovingId(null);
     }
