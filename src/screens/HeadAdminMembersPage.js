@@ -146,6 +146,13 @@ const HeadAdminMembersPage = ({ navigation }) => {
   onChange={(item) => {
     setSelectedLocation(item.value);
   }}
+  textStyle={{
+    color: selectedLocation ? '#000' : '#000', // Black for both value and placeholder
+    fontSize: 16,
+  }}
+  selectedTextStyle={{
+    color: '#000', // Ensure selected value is also black
+  }}
   renderItem={(item, index) => (
     <View style={[
       styles.dropdownItem,
@@ -155,6 +162,8 @@ const HeadAdminMembersPage = ({ navigation }) => {
     </View>
   )}
 />
+
+
               <View style={styles.searchIconContainer}>
                 <Icon name="search" size={23} color="#100E09" />
               </View>

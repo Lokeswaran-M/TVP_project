@@ -173,7 +173,7 @@ const renderInvoice = (item) => (
       </View>
       <View style={styles.invoiceRow}>
         <Text style={styles.invoiceLabel}>Amount:</Text>
-        <Text style={styles.invoiceValue}>${item.Amount || '0.00'}</Text>
+        <Text style={styles.invoiceValue}>₹{item.Amount || '650.00'}</Text>
       </View>
       <View style={styles.invoiceRow}>
         <Text style={styles.invoiceLabel}>Status:</Text>

@@ -23,6 +23,7 @@ dropdownItem: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
+    color: 'black',
 },
 dropdownItemText: {
   fontSize: 16,
