@@ -127,7 +127,7 @@ const renderItem = ({ item }) => {
         contentContainerStyle={{ padding: 16 }}
         refreshing={refreshing}
         onRefresh={onRefresh}
-        ListHeaderComponent={<Text style={styles.header}>Review Approval</Text>}
+        // ListHeaderComponent={<Text style={styles.header}>Review Approval</Text>}
       />
 
       {/* Confirmation Modal */}

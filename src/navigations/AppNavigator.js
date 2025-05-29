@@ -559,21 +559,21 @@ function DrawerNavigator() {
             name="NewMember"
             component={NewMember}
             options={({ navigation }) => ({
-              drawerLabel: 'New Member',
+              drawerLabel: 'New Members',
               drawerIcon: ({ color, size }) => (
                 <Icon name="users" color={color} size={size} />
               ),
                headerShown: true,
               header: () => (
                 <View style={styles.topNav}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                  {/* <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
                     <Icon name="navicon" size={20} color="black" />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                   <TouchableOpacity style={styles.buttonNavtop}>
                     <View style={styles.topNavlogo}>
                       <Icon name="users" size={28} color="#FFFFFF" />
                     </View>
-                    <Text style={styles.NavbuttonText}>NEW MEMBER</Text>
+                    <Text style={styles.NavbuttonText}>NEW MEMBERS</Text>
                   </TouchableOpacity>
                 </View>
               ),
@@ -590,9 +590,9 @@ function DrawerNavigator() {
               headerShown: true,
               header: () => (
                 <View style={styles.topNav}>
-                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                  {/* <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
                     <Icon name="navicon" size={20} color="black" />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                   <TouchableOpacity style={styles.buttonNavtop}>
                     <View style={styles.topNavlogo}>
                       <Icons name="reviews" size={28} color="#FFFFFF" />
