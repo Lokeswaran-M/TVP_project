@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator, DrawerItem, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Image, Text, TouchableOpacity, View, StyleSheet, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Icons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 import SplashScreen from '../components/common/SplashScreen';
@@ -33,6 +34,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
 import NewMember from '../screens/NewMember';
+import ReviewApprovalPage from '../screens/ReviewApprovalPage';
 const PRIMARY_COLOR = '#2e3091';
 const SECONDARY_COLOR = '#3d3fa3';
 const LIGHT_PRIMARY = '#eaebf7';
@@ -561,7 +563,7 @@ function DrawerNavigator() {
               drawerIcon: ({ color, size }) => (
                 <Icon name="users" color={color} size={size} />
               ),
-              headerShown: false,
+               headerShown: true,
               header: () => (
                 <View style={styles.topNav}>
                   <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
@@ -572,6 +574,30 @@ function DrawerNavigator() {
                       <Icon name="users" size={28} color="#FFFFFF" />
                     </View>
                     <Text style={styles.NavbuttonText}>NEW MEMBER</Text>
+                  </TouchableOpacity>
+                </View>
+              ),
+            })}
+          />
+                      <Drawer.Screen
+            name="ReviewApprovalPage"
+            component={ReviewApprovalPage}
+            options={({ navigation }) => ({
+              drawerLabel: 'Review Approval',
+              drawerIcon: ({ color, size }) => (
+                <Icons name="reviews" color={color} size={size} />
+              ),
+              headerShown: true,
+              header: () => (
+                <View style={styles.topNav}>
+                  <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                    <Icon name="navicon" size={20} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.buttonNavtop}>
+                    <View style={styles.topNavlogo}>
+                      <Icons name="reviews" size={28} color="#FFFFFF" />
+                    </View>
+                    <Text style={styles.NavbuttonText}>Review Approval</Text>
                   </TouchableOpacity>
                 </View>
               ),
