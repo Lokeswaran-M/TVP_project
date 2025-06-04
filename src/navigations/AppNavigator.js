@@ -35,6 +35,7 @@ import { API_BASE_URL } from '../constants/Config';
 import { setUser, logoutUser } from '../Redux/action';
 import NewMember from '../screens/NewMember';
 import ReviewApprovalPage from '../screens/ReviewApprovalPage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const PRIMARY_COLOR = '#2e3091';
 const SECONDARY_COLOR = '#3d3fa3';
 const LIGHT_PRIMARY = '#eaebf7';
@@ -319,17 +320,25 @@ function DrawerNavigator() {
     setShowLogoutModal(true);
   };
 
-  const confirmLogout = () => {
-    setShowLogoutModal(false);
+const confirmLogout = async () => {
+  setShowLogoutModal(false);
+
+  try {
+    await AsyncStorage.removeItem('userId');
+    await AsyncStorage.removeItem('rollId');
     dispatch(logoutUser());
-    console.log("User has logged out:", user);
+    console.log("User has logged out");
+
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
         routes: [{ name: 'Auth', params: { screen: 'Login' } }],
       })
     );
-  };
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
 
   const cancelLogout = () => {
     setShowLogoutModal(false);

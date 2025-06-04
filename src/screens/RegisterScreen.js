@@ -177,7 +177,7 @@ const lastNameInputRef = useRef(null);
     setLastNameError('');
     
     let isValid = true;
-const nameRegex = /^[A-Za-z ]+$/;
+const nameRegex = /^[A-Za-z]+$/;
 const usernameRegex = /^(?=.{4,20}$)(?![_.])[a-z0-9._]+(?<![_.])$/;
 
 
@@ -195,7 +195,7 @@ if (!firstName.trim()) {
   setFirstNameError('First Name is required');
   isValid = false;
 } else if (!nameRegex.test(firstName.trim())) {
-  setFirstNameError('Only letters and spaces are allowed');
+  setFirstNameError('Only letters are allowed');
   isValid = false;
 } else {
   setFirstNameError('');
@@ -205,7 +205,7 @@ if (!lastName.trim()) {
   setLastNameError('Last Name is required');
   isValid = false;
 } else if (!nameRegex.test(lastName.trim())) {
-  setLastNameError('Only letters and spaces are allowed');
+  setLastNameError('Only letters are allowed');
   isValid = false;
 } else {
   setLastNameError('');

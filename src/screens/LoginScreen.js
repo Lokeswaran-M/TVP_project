@@ -39,6 +39,54 @@ const LoginScreen = ({ navigation }) => {
   const [passwordPlaceholderTop] = useState(new Animated.Value(11));
   const [passwordLabelScale] = useState(new Animated.Value(1));
   
+
+
+
+
+
+useEffect(() => {
+  const checkLoginStatus = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const rollId = await AsyncStorage.getItem('rollId');
+
+      if (userId && rollId) {
+        console.log('Auto login with userId:', userId, 'rollId:', rollId);
+        
+        // Optional: dispatch to redux store if needed
+        dispatch(setUser({ UserId: userId, RollId: rollId }));
+
+        // Navigate based on role
+        if (rollId === '1') {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'AdminPage' }],
+          });
+        } else if (rollId === '2' || rollId === '3') {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'DrawerNavigator' }],
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+    }
+  };
+
+  checkLoginStatus();
+}, []);
+
+
+
+
+
+
+
+
+
+
+
   const logintype = '1';
   const dispatch = useDispatch();
   useEffect(() => {

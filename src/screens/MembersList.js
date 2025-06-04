@@ -270,13 +270,9 @@ const TabContent = ({ locationId, userId }) => {
     </View>
   );
 };
-
 export default function MembersList() {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(0);
-  const [routes, setRoutes] = useState([]);
   const userId = useSelector((state) => state.UserId);
-  const [businessInfo, setBusinessInfo] = useState([]);
+  const [business, setBusiness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -286,27 +282,19 @@ export default function MembersList() {
     try {
       setError(null);
       const response = await fetch(`${API_BASE_URL}/api/user/business-infodrawer/${userId}`);
-      
       if (!response.ok) {
         throw new Error(`Server responded with status: ${response.status}`);
       }
-      
+
       const data = await response.json();
 
       if (!Array.isArray(data) || data.length === 0) {
-        setRoutes([]);
-        setBusinessInfo([]);
+        setBusiness(null);
         return;
       }
 
-      const updatedRoutes = data.map((business, index) => ({
-        key: `business${index + 1}`,
-        title: business.BD || `Business ${index + 1}`,
-        locationId: business.L,
-      }));
-      
-      setRoutes(updatedRoutes);
-      setBusinessInfo(data);
+      // Pick the first business (or customize as needed)
+      setBusiness(data[0]);
     } catch (error) {
       console.error('API call error:', error);
       setError('Failed to load business information');
@@ -325,64 +313,13 @@ export default function MembersList() {
     fetchBusinessInfo();
   }, [fetchBusinessInfo]);
 
-  const renderScene = ({ route }) => {
-    const business = businessInfo.find((b) => b.BD === route.title);
-    if (!business) {
-      return (
-        <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={50} color="#FF6B6B" />
-          <Text style={styles.errorText}>Business information not found</Text>
-          <TouchableOpacity 
-            style={styles.retryButton}
-            onPress={fetchBusinessInfo}>
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-    
-    if (business?.IsPaid === 0) {
-      return (
-        <Subscription 
-          navigation={navigation}
-          route={{ 
-            ...route, 
-            params: { 
-              locationId: business?.L, 
-              Profession: business?.BD 
-            } 
-          }} 
-        />
-      );
-    }
-    
-    return (
-      <TabContent
-        title={route.title}
-        locationId={business?.L}
-        userId={userId}
-      />
-    );
-  };
-
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: '#2e3192' }}
-      style={{ backgroundColor: '#f5f7ff' }}
-      activeColor="#2e3192"
-      inactiveColor="gray"
-      labelStyle={{ fontSize: 14 }}
-    />
-  );
-
   if (loading && !refreshing) {
     return (
       <SafeAreaView style={styles.mainContainer}>
         <StatusBar backgroundColor="#f5f7ff" barStyle="dark-content" />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#2e3192" />
-          <Text style={styles.loadingText}>Loading your businesses...</Text>
+          <Text style={styles.loadingText}>Loading your business...</Text>
         </View>
       </SafeAreaView>
     );
@@ -393,30 +330,22 @@ export default function MembersList() {
       <SafeAreaView style={styles.mainContainer}>
         <StatusBar backgroundColor="#f5f7ff" barStyle="dark-content" />
         <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={70} color="#FF6B6B" />
-          <Text style={styles.errorTitle}>Oops!</Text>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity 
-            style={styles.retryButton}
-            onPress={fetchBusinessInfo}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
+          <TouchableOpacity onPress={fetchBusinessInfo} style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  if (routes.length === 0) {
+  if (!business) {
     return (
       <SafeAreaView style={styles.mainContainer}>
         <StatusBar backgroundColor="#f5f7ff" barStyle="dark-content" />
         <View style={styles.emptyContainer}>
-          <MaterialIcons name="business" size={70} color="#BDBDBD" />
-          <Text style={styles.emptyTitle}>No Businesses Found</Text>
-          <Text style={styles.emptyText}>You don't have any registered businesses yet</Text>
-          <TouchableOpacity 
-            style={styles.addBusinessButton}
-            onPress={() => navigation.navigate('AddBusiness')}>
+          <Text style={styles.emptyTitle}>No Business Found</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AddBusiness')} style={styles.addBusinessButton}>
             <Text style={styles.addBusinessText}>Add Business</Text>
           </TouchableOpacity>
         </View>
@@ -424,26 +353,28 @@ export default function MembersList() {
     );
   }
 
+  if (business?.IsPaid === 0) {
+    return (
+      <Subscription
+        navigation={navigation}
+        route={{
+          params: {
+            locationId: business?.L,
+            Profession: business?.BD,
+          },
+        }}
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.mainContainer}>
       <StatusBar backgroundColor="#f5f7ff" barStyle="dark-content" />
-      {refreshing && (
-        <View style={styles.refreshIndicator}>
-          <ActivityIndicator size="small" color="#2e3192" />
-          <Text style={styles.refreshText}>Refreshing...</Text>
-        </View>
-      )}
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-        renderTabBar={renderTabBar}
-        swipeEnabled={true}
-      />
+      <TabContent locationId={business?.L} userId={userId} />
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   mainContainer: {
