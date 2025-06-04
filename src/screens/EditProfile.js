@@ -12,11 +12,15 @@ import {
   Platform,
   StatusBar,
   SafeAreaView,
+  Image
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useSelector } from 'react-redux';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { API_BASE_URL } from '../constants/Config';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Dropdown } from 'react-native-element-dropdown';
+
 const EditProfile = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -28,16 +32,70 @@ const EditProfile = () => {
   const userId = useSelector((state) => state.UserId);
   const [username, setName] = useState('');
   const [professionForm, setProfession] = useState('');
+  const [AllProfession, setAllProfession] = useState([]);
+  const [selectedProfession, setSelectedProfession] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [description, setDescription] = useState('');
   const [address, setAddress] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [descriptionWordCount, setDescriptionWordCount] = useState(0);
+  const [posterImage, setPosterImage] = useState(null);
+
   useEffect(() => {
     const words = description.trim() ? description.trim().split(/\s+/).length : 0;
     setDescriptionWordCount(words);
   }, [description]);
+
+
+useEffect(() =>{
+fetchProfileData();
+},[ ]);
+
+
+
+
+  const selectPosterImage = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.8,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      selectionLimit: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorMessage) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+        setModalMessage('Failed to select image');
+        setModalVisible(true);
+      } else {
+        const asset = response.assets[0];
+        setPosterImage({
+          uri: asset.uri,
+          type: asset.type || 'image/jpeg',
+          name: asset.fileName || `profile_${Date.now()}.jpg`,
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/execute-profession`)
+      .then((response) => response.json())
+      .then((data) => setAllProfession(data.executeprofession))
+      .catch((error) => console.error(error));
+  }, []);
+
+
+  const handleProfessionChange = (AllProfession) => {
+    setSelectedProfession(AllProfession);
+  };
+
+
+
 
   const fetchProfileData = async () => {
     setLoading(true);
@@ -77,66 +135,95 @@ const EditProfile = () => {
     }
   };
 
-  const handleSave = async () => {
-    if (!businessName.trim()) {
-      setModalMessage('Please enter your business name');
-      setModalVisible(true);
-      return;
-    }
-    if (descriptionWordCount > 25) {
-      setModalMessage('Description exceeds 25 words limit');
-      setModalVisible(true);
-      return;
-    }
-    setLoading(true);
-    try {
-      let response;
-      if (categoryID === 2) {
-        response = await fetch(`${API_BASE_URL}/update-Multiprofile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: userId,
-            username,
-            professionForm: profession,
-            businessName,
-            description,
-            address,
-          }),
-        });
+
+
+
+
+
+const handleSave = async () => {
+  if (!businessName.trim()) {
+    setModalMessage('Please enter your business name');
+    setModalVisible(true);
+    return;
+  }
+  if (descriptionWordCount > 25) {
+    setModalMessage('Description exceeds 25 words limit');
+    setModalVisible(true);
+    return;
+  }
+
+  setLoading(true);
+  let uploadedImageFileName = null;
+
+  try {
+    // Step 1: Upload image first if exists
+    if (posterImage) {
+      const imageForm = new FormData();
+      imageForm.append('userId', userId);
+      imageForm.append('posterImage', {
+        uri: posterImage.uri,
+        type: posterImage.type,
+        name: posterImage.name,
+      });
+
+      const imageResponse = await fetch(`${API_BASE_URL}/upload-post-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        body: imageForm,
+      });
+
+      const imageData = await imageResponse.json();
+      if (imageResponse.ok && imageData.success) {
+        uploadedImageFileName = imageData.imageUrl.split('/').pop(); // Extract filename
       } else {
-        response = await fetch(`${API_BASE_URL}/update-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: userId,
-            username,
-            professionForm: profession,
-            businessName,
-            description,
-            address,
-          }),
-        });
+        setModalMessage(imageData.message || 'Image upload failed');
+        setModalVisible(true);
+        setLoading(false);
+        return;
       }
-      
-      if (response.ok) {
-        setModalMessage('Profile updated successfully');
-      } else {
-        const errorData = await response.json();
-        setModalMessage(errorData.message || 'Failed to update profile. Please Fill all fields');
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      setModalMessage('Network Error');
-    } finally {
-      setLoading(false);
-      setModalVisible(true);
     }
-  };
+
+    // Step 2: Send profile details including uploaded image file name
+    const profileForm = new FormData();
+    profileForm.append('userId', userId);
+    profileForm.append('username', username);
+    profileForm.append('professionForm', professionForm);
+    profileForm.append('businessName', businessName);
+    profileForm.append('description', description);
+    profileForm.append('address', address);
+    profileForm.append('selectedProfession',selectedProfession);
+
+    if (uploadedImageFileName) {
+      profileForm.append('Post_Img', uploadedImageFileName);
+    }
+
+    const profileResponse = await fetch(`${API_BASE_URL}/update-Multiprofile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: profileForm,
+    });
+
+    const profileData = await profileResponse.json();
+    if (profileResponse.ok) {
+      setModalMessage('Profile updated successfully');
+    } else {
+      setModalMessage(profileData.message || 'Failed to update profile');
+    }
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    setModalMessage('Network Error');
+  } finally {
+    setLoading(false);
+    setModalVisible(true);
+  }
+};
+
+
 
   useFocusEffect(
     useCallback(() => {
@@ -173,18 +260,60 @@ const EditProfile = () => {
                 <FontAwesome name="lock" size={16} color="#888" style={styles.inputIcon} />
               </View>
             </View>
+{professionForm !== ' Others' ? (
+  // Render read-only profession view if NOT "Others"
+  <View style={styles.inputGroup}>
+    <Text style={styles.label}>Profession</Text>
+    <View style={styles.inputReadOnly}>
+      <TextInput
+        style={styles.textInput}
+        value={professionForm}
+        editable={false}
+      />
+      <FontAwesome name="briefcase" size={16} color="#888" style={styles.inputIcon} />
+    </View>
+  </View>
+) : (
+  // Render dropdown + editable text field if "Others"
+  <View style={styles.inputGroup2}>
+    <Text style={styles.label2}>Profession <Text style={styles.required}>*</Text></Text>
+    <View style={styles.inputReadOnly1}>
+      <Dropdown
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        placeholder="Select Profession"
+        search
+        searchPlaceholder="Search Profession"
+        labelField="label"
+        valueField="value"
+        inputSearchStyle={styles.inputSearchStyle}
+        value={selectedProfession}
+        onChange={(item) => handleProfessionChange(item.value)}
+        data={AllProfession
+          .slice()
+          .sort((a, b) => a.ProfessionName.localeCompare(b.ProfessionName))
+          .map((item, index) => ({
+            label: item.ProfessionName,
+            value: item.ProfessionName,
+            backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
+          }))}
+        renderItem={(item) => (
+          <View style={[styles.item1, { backgroundColor: item.backgroundColor }]}>
+            <Text style={styles.itemText1}>{item.label}</Text>
+          </View>
+        )}
+      />
+      {/* <TextInput
+        style={styles.textInput1}
+        value={professionForm}
+        onChangeText={(text) => setProfessionForm(text)} // You can handle input change here
+      /> */}
+      <FontAwesome name="briefcase" size={16} color="#888" style={styles.inputIcon1} />
+    </View>
+  </View>
+)}
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Profession</Text>
-              <View style={styles.inputReadOnly}>
-                <TextInput
-                  style={styles.textInput}
-                  value={professionForm}
-                  editable={false}
-                />
-                <FontAwesome name="briefcase" size={16} color="#888" style={styles.inputIcon} />
-              </View>
-            </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Business Name <Text style={styles.required}>*</Text></Text>
@@ -223,6 +352,55 @@ const EditProfile = () => {
                 />
               </View>
             </View>
+
+
+
+
+
+
+
+  <View style={styles.inputGroup1}>
+            <Text style={styles.label1}>Poster Image</Text>
+            <View style={styles.imageUploadContainer}>
+              {posterImage?.uri ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Image 
+                    source={{ uri: posterImage.uri }} 
+                    style={styles.imagePreview}
+                    resizeMode="cover"
+                  />
+                  <TouchableOpacity 
+                    style={styles.changeImageButton}
+                    onPress={selectPosterImage}
+                  >
+                    <Text style={styles.changeImageText}>Change Image</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity 
+                  style={styles.imagePickerButton1} 
+                  onPress={selectPosterImage}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.buttonContent}>
+                    <FontAwesome name="image" size={20} color="#2e3192" />
+                    <Text style={styles.imagePickerText1}>Select Post Image</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
+            {posterImage?.name && (
+              <Text style={styles.fileNameText} numberOfLines={1}>
+                Selected: {posterImage.name}
+              </Text>
+            )}
+          </View>
+
+
+
+
+
+
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Business Address <Text style={styles.required}>*</Text></Text>
@@ -336,6 +514,23 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
+
+
+
+  imagePickerButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: '#C23A8A',
+  padding: 10,
+  borderRadius: 5,
+  marginTop: 10,
+},
+
+imagePickerText: {
+  color: '#fff',
+  fontSize: 16,
+},
+
   labelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -488,6 +683,119 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+    inputGroup1: {
+    marginBottom: 24,
+  },
+  
+
+
+    inputGroup1: {
+    marginBottom: 25,
+  },
+  label1: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 10,
+  },
+  imageUploadContainer: {
+    marginTop: 5,
+  },
+  imagePickerButton1: {
+    borderWidth: 1,
+    borderColor: '#2e3192',
+    borderRadius: 8,
+    paddingVertical: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f9fa',
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  imagePickerText1: {
+    color: '#2e3192',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  imagePreviewContainer: {
+    alignItems: 'center',
+  },
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  changeImageButton: {
+    padding: 10,
+    backgroundColor: '#2e3192',
+    borderRadius: 6,
+  },
+  changeImageText: {
+    color: '#fff',
+    fontWeight: '500',
+  },
+  fileNameText: {
+    marginTop: 5,
+    fontSize: 14,
+    color: 'green',
+
+  },
+    inputGroup2: {
+    marginBottom: 20,
+  },
+  label2: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 10,
+  },
+
+  dropdown: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#fff',
+  },
+  placeholderStyle: {
+    color: '#999',
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#333',
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    borderRadius: 8,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    marginBottom: 8,
+  },
+  item1: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  itemText1: {
+    fontSize: 16,
+    color: '#333',
+  },
+  textInput1: {
+    height: 0, // Hide if not editable, or change height if needed
+    opacity: 0,
+  },
+  inputIcon1: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
   },
 });
 

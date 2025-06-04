@@ -17,7 +17,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import { API_BASE_URL } from '../constants/Config';
-
+import { useFocusEffect } from '@react-navigation/native';
 const OneMinPresentation = ({ route, navigation }) => {
   const { eventId, locationId } = route.params;
   console.log("Event ID and Location ID:", eventId, locationId);
@@ -31,29 +31,56 @@ const OneMinPresentation = ({ route, navigation }) => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   
+
+
+
+useFocusEffect(
+  React.useCallback(() => {
+   onRefresh();
+    return () => {
+    };
+  }, [])
+);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    Promise.all([
+      fetchAttendanceData(),
+    ]).finally(() => {
+      setRefreshing(false);
+    });
+  }, [eventId, locationId]);
+
+
   useEffect(() => {
     fetchAttendanceData();
   }, [eventId, locationId]);
-  useEffect(() => {
-    if (attendanceData.length > 0) {
-      const userMap = new Map();
-      attendanceData.forEach(member => {
-        if (!userMap.has(member.UserId)) {
-          userMap.set(member.UserId, {
-            ...member,
-            professions: [member.Profession]
-          });
-        } else {
-          const existingUser = userMap.get(member.UserId);
-          if (!existingUser.professions.includes(member.Profession)) {
-            existingUser.professions.push(member.Profession);
-          }
+useEffect(() => {
+  if (attendanceData.length > 0) {
+    const userMap = new Map();
+    attendanceData.forEach(member => {
+      if (!userMap.has(member.UserId)) {
+        userMap.set(member.UserId, {
+          ...member,
+          professions: [member.Profession]
+        });
+      } else {
+        const existingUser = userMap.get(member.UserId);
+        if (!existingUser.professions.includes(member.Profession)) {
+          existingUser.professions.push(member.Profession);
         }
-      });
-      setProcessedData(Array.from(userMap.values()));
-      console.log("Processed Data:", Array.from(userMap.values()));
-    }
-  }, [attendanceData]);
+      }
+    });
+    
+    // Convert to array and sort - IsConfirmed: 0 first, then IsConfirmed: 1
+    const sortedData = Array.from(userMap.values()).sort((a, b) => {
+      if (a.IsConfirmed === b.IsConfirmed) return 0;
+      return a.IsConfirmed ? 1 : -1;
+    });
+    
+    setProcessedData(sortedData);
+    console.log("Processed Data:", sortedData);
+  }
+}, [attendanceData]);
 
   const fetchAttendanceData = async () => {
     setRefreshing(true);
@@ -113,7 +140,7 @@ const OneMinPresentation = ({ route, navigation }) => {
   );
 
   const handleAlarmPress = (member) => {
-    navigation.navigate('StopWatch', { member });
+    navigation.navigate('StopWatch', { member, Post_Img: member.Post_Img , eventId });
   };
 
   const handlePaidPress = (userId) => {
@@ -161,61 +188,78 @@ const OneMinPresentation = ({ route, navigation }) => {
   };
 
   const renderMember = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.memberItem} 
-      onPress={() => handleAlarmPress(item)}
-    >
-      <View style={styles.imageColumn}>
-        <Image
-          source={item.profileImage ? { uri: item.profileImage } : require('../../assets/images/DefaultProfile.jpg')}
-          style={styles.profileImage}
-        />
+  <TouchableOpacity 
+    style={[
+      styles.memberItem,
+      item.IsConfirmed === 1 && styles.disabledMemberItem
+    ]} 
+    onPress={() => !item.IsConfirmed && handleAlarmPress(item)}
+  >
+    <View style={styles.imageColumn}>
+      <Image
+        source={item.profileImage ? { uri: item.profileImage } : require('../../assets/images/DefaultProfile.jpg')}
+        style={styles.profileImage}
+      />
+    </View>
+    <View style={styles.textColumn}>
+      <Text style={styles.memberName}>{item.Username}</Text>
+      <View style={styles.professionContainer}>
+        <MaterialCommunityIcons name="briefcase-outline" size={16} color="#666" style={styles.professionIcon} />
+        <Text style={styles.memberRole} numberOfLines={2}>
+          {item.professions && item.professions.length > 0 
+            ? item.professions.join(', ') 
+            : 'Member'}
+        </Text>
       </View>
-      <View style={styles.textColumn}>
-        <Text style={styles.memberName}>{item.Username}</Text>
-        <View style={styles.professionContainer}>
-          <MaterialCommunityIcons name="briefcase-outline" size={16} color="#666" style={styles.professionIcon} />
-          <Text style={styles.memberRole} numberOfLines={2}>
-            {item.professions && item.professions.length > 0 
-              ? item.professions.join(', ') 
-              : 'Member'}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.alarmContainer}>
-        <TouchableOpacity
-          style={styles.paidButton}
-          onPress={() => handlePaidPress(item.UserId)}
-          disabled={item.isPaid}
+    </View>
+    <View style={styles.alarmContainer}>
+      <TouchableOpacity
+        style={styles.paidButton}
+        onPress={() => handlePaidPress(item.UserId)}
+        disabled={item.isPaid}
+      >
+        <LinearGradient
+          colors={item.isPaid ? ['#28a745', '#218838'] : ['#2e3192', '#3957E8']}
+          style={styles.gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
         >
-          <LinearGradient
-            colors={item.isPaid ? ['#28a745', '#218838'] : ['#2e3192', '#3957E8']}
-            style={styles.gradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          >
-            {item.isPaid ? (
-              <View style={styles.paidStatusContainer}>
-                <Ionicons name="checkmark-circle" size={16} color="#fff" />
-                <View>
-                  <Text style={styles.paidButtonText}>Paid</Text>
-                </View>
+          {item.isPaid ? (
+            <View style={styles.paidStatusContainer}>
+              <Ionicons name="checkmark-circle" size={16} color="#fff" />
+              <View>
+                <Text style={styles.paidButtonText}>Paid</Text>
               </View>
-            ) : (
-              <View style={styles.paidStatusContainer}>
-                <MaterialIcons name="payment" size={16} color="#fff" />
-                <Text style={styles.paidButtonText}>Mark as Paid</Text>
-              </View>
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.timeContainer} onPress={() => handleAlarmPress(item)}>
-          <MaterialIcons name="alarm" size={28} color="#2e3091" />
-          <Text style={styles.memberTime}>{item.formattedInTime}</Text>
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
+            </View>
+          ) : (
+            <View style={styles.paidStatusContainer}>
+              <MaterialIcons name="payment" size={16} color="#fff" />
+              <Text style={styles.paidButtonText}>Mark as Paid</Text>
+            </View>
+          )}
+        </LinearGradient>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.timeContainer} 
+        onPress={() => !item.IsConfirmed && handleAlarmPress(item)}
+        disabled={item.IsConfirmed === 1}
+      >
+        <MaterialIcons 
+          name="alarm" 
+          size={28} 
+          color={item.IsConfirmed === 1 ? "#ccc" : "#2e3091"} 
+        />
+        <Text style={[
+          styles.memberTime,
+          item.IsConfirmed === 1 && styles.disabledTime
+        ]}>
+          {item.formattedInTime}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
+);
+
 
   return (
     <LinearGradient
@@ -558,7 +602,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 2,
     marginLeft: 4
-  }
+  },
+    disabledMemberItem: {
+    opacity: 0.7,
+  },
+  disabledTime: {
+    color: '#ccc',
+  },
 });
 
 export default OneMinPresentation;

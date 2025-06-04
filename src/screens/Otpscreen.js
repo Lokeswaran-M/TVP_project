@@ -24,11 +24,12 @@ const { width } = Dimensions.get('window');
 
 const OtpScreen = ({ navigation }) => {
   const route = useRoute();
-  const { Mobileno,  username, LocationID, LocationList } = route.params || {};
+  const { Mobileno,  firstName, businessName, LocationID, LocationList } = route.params || {};
   console.log('Received Mobileno:=================', Mobileno);
-  console.log('Received username:================', username); 
+  console.log('Received first Name:================', firstName); 
   console.log('Received LocationID:==============', LocationID); 
-  console.log('Received LocationID:==============', LocationList);
+  console.log('Received LocationList:==============', LocationList);
+    console.log('Received businessName:==============', businessName);
   const [otp, setOtp] = useState(['', '', '', '']);
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -120,16 +121,27 @@ const handleSendOTP = async () => {
   }
   
   try {
+    console.log('Sending OTP with payload:', {
+      Mobileno,
+      message,
+      businessName,
+      LocationID,
+      firstName: firstName || '',
+      location: locationName || '',
+    });
+
     const response = await fetch(`${API_BASE_URL}/sendOtp`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        Mobileno,
-        message,
-        username: username || '',
-        location: locationName || '', 
+      Mobileno,
+      message,
+      businessName,
+      LocationID,
+      firstName: firstName || '',
+      location: locationName || '', 
       }),
     });
     
@@ -200,6 +212,18 @@ const handleSendOTP = async () => {
     setLoading(false);
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
   const handleOtpVerification = async () => {
     const otpString = otp.join('');
     
@@ -232,9 +256,12 @@ const handleSendOTP = async () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          Mobileno,
-          enteredOtp: otpString,
+      body: JSON.stringify({
+      Mobileno,
+      enteredOtp: otpString,
+      businessName,
+      LocationID,
+      firstName: firstName || '',
         }),
       });
   
@@ -280,18 +307,25 @@ const handleSendOTP = async () => {
           config: toastConfig,
         });
       }
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Something went wrong. Please try again.',
-        position: 'top',
-        config: toastConfig,
-      });
-    } finally {
+} catch (error) {
+  console.error("Error during OTP verification fetch:", error);
+
+  Toast.show({
+    type: 'error',
+    text1: 'Error',
+    text2: error.message || 'Something went wrong. Please try again.',
+    position: 'top',
+    config: toastConfig,
+  });
+}
+ finally {
       setLoading(false);
     }
   };
+
+
+
+  
   const formatMobile = (number) => {
     if (!number) return '';
     const cleaned = number.replace(/\D/g, '');
@@ -323,10 +357,11 @@ const handleSendOTP = async () => {
             {!otpSent ? (
               <>
                 <View style={styles.headerContainer}>
-                  <Icon name="shield" size={40} color="#2e3192" style={styles.headerIcon} />
+                <Icon name="whatsapp" size={40} color="#25D366"  style={styles.headerIcon} />
+                  {/* <Icon name="shield" size={40} color="#2e3192" style={styles.headerIcon} /> */}
                   <Text style={styles.title}>Verify Your Phone</Text>
                   <Text style={styles.subtitle}>
-                    We'll send a verification code to your WhatsApp
+                    We'll send a verification code to your <Text style={{ color:"#25D366" , fontWeight:"bold" ,}} >WhatsApp</Text>
                   </Text>
                 </View>
                 

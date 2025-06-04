@@ -32,6 +32,7 @@ const fetchReviews = useCallback(async (isRefresh = false) => {
 
     const response = await fetch(`${API_BASE_URL}/ReviewApproval?locationId=${locationId}`);
     const data = await response.json();
+    console.log('Reviews data:', data); 
     if (response.ok) {
       setReviewsData(data);
       setError(null);

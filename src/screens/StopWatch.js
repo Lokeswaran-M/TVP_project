@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal,Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Sound from 'react-native-sound';
 import { API_BASE_URL } from '../constants/Config';
 
 const StopWatch = ({ route, navigation }) => {
-    const { member } = route.params;
-    console.log('------------------------User Data------------------------', member);
+    const { member , Post_Img} = route.params;
+    console.log('------------------------User Data =================', member, Post_Img);
     const [seconds, setSeconds] = useState(60);
     const [isRunning, setIsRunning] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
@@ -17,8 +17,17 @@ const StopWatch = ({ route, navigation }) => {
     const [rating, setRating] = useState(0);
     const [currentProfessionIndex, setCurrentProfessionIndex] = useState(0);
     const [currentProfession, setCurrentProfession] = useState(member.professions[0] || member.Profession);
-    
+    const [postImageUrl, setPostImageUrl] = useState(null);
+
     const alarmSound = useRef(null);
+
+
+useEffect(() => {
+    if (Post_Img) {
+        const url = `${API_BASE_URL}/get-post-image?filename=${Post_Img}`;
+        setPostImageUrl(url);
+    }
+}, [Post_Img]);
 
     useEffect(() => {
         Sound.setCategory('Playback');
@@ -127,6 +136,7 @@ const StopWatch = ({ route, navigation }) => {
                 body: JSON.stringify({
                     UserId: member.UserId,
                     Stars: rating,
+                    EventId: member.EventId,
                     Profession: profession,
                     RatingId: 2,
                     LocationId: member.LocationId,
@@ -155,16 +165,32 @@ const StopWatch = ({ route, navigation }) => {
                 <Text style={styles.timer}>{formatTime(seconds)}</Text>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity onPress={handleStart} style={styles.button}>
-                        <Icon name='play' size={20} color='#fff' />
+                        <Icon name='play' size={18} color='#fff' />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleStop} style={styles.button}>
-                        <Icon name='stop' size={20} color='#fff' />
+                        <Icon name='stop' size={18} color='#fff' />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handleRestart} style={styles.button}>
-                        <Icon name='refresh' size={20} color='#fff' />
+                        <Icon name='refresh' size={18} color='#fff' />
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {postImageUrl && (
+    <View style={styles.imageContainer}>
+<Image
+  source={{ uri: postImageUrl }}
+  style={{
+    width: '84%',
+    height: '84%',
+    borderRadius: 10,
+    aspectRatio: 1,
+  }}
+  resizeMode="contain"
+/>
+    </View>
+)}
+
             <Modal
                 visible={isTimeoutModalVisible}
                 transparent={true}
@@ -230,30 +256,37 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     contentcontainer: {
-        padding: 30,
+        padding: 5,
         backgroundColor: '#fff',
         marginHorizontal: 30,
-        marginVertical: 100,
         borderRadius: 20,
         alignItems:'center',
+        marginBottom: 5,
+        flexDirection: 'row',
+        
     },
     timer: {
-        fontSize: 98,
+        fontSize: 58,
         fontWeight: 'bold',
         color: 'black',
-        marginVertical: 15,
+        marginHorizontal: 20,
+        padding: 5,
     },
     buttonContainer: {
         flexDirection: 'row',
-        marginTop: 55,
+        // marginTop: 25,
         marginVertical: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        
     },
     button: {
         backgroundColor: '#2e3192',
-        paddingVertical: 10,
-        paddingHorizontal: 25,
+        paddingVertical: 8,
+        paddingHorizontal: 20,
         borderRadius: 25,
-        marginHorizontal: 10,
+        marginHorizontal: 5,
     },
     modalContainer: {
         flex: 1,
@@ -292,7 +325,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     memberDetailsContainer: {
-        padding: 20,
+        padding: 10,
         backgroundColor: '#fff',
         borderRadius: 10,
         marginHorizontal: 30,
@@ -312,5 +345,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginVertical: 15,
     },
+    imageContainer: {
+  margin: 5,
+  alignItems: 'center',
+},
+
 });
 export default StopWatch;

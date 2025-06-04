@@ -10,7 +10,7 @@ import {
   Keyboard,
   ScrollView,
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,Pressable
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
@@ -152,7 +152,7 @@ const storeUserId = async (userId, rollId) => {
     
     let isValid = true;
     if (!username) {
-      setUsernameError('Username is required');
+      setUsernameError('Username or Mobile Number is required');
       isValid = false;
     }
     if (!password) {
@@ -254,6 +254,8 @@ const storeUserId = async (userId, rollId) => {
           
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
+              <Pressable onPress={() => inputRef.current?.focus()}>
+
               <Animated.Text
                 style={[
                   styles.placeholder,
@@ -264,8 +266,9 @@ const storeUserId = async (userId, rollId) => {
                   },
                 ]}
               >
-                Username
+                 Username or Mobile Number
               </Animated.Text>
+               </Pressable>
               <TextInput
                 value={username}
                 onChangeText={setUsername}
@@ -294,6 +297,8 @@ const storeUserId = async (userId, rollId) => {
             }
             
             <View style={[styles.inputContainer, {marginTop: 16}]}>
+                    <Pressable onPress={() => inputRef.current?.focus()}>
+
               <Animated.Text
                 style={[
                   styles.placeholder,
@@ -306,6 +311,7 @@ const storeUserId = async (userId, rollId) => {
               >
                 Password
               </Animated.Text>
+               </Pressable>
               <TextInput
                 value={password}
                 onChangeText={setPassword}

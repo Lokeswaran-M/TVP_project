@@ -7,7 +7,7 @@ import { toastConfig } from './utils/toastConfig';
 import { Provider } from 'react-redux';
 import store from './Redux/store';
 import PushController from './components/common/PushController';
-
+import AppUpdateChecker from './components/common/AppUpdateChecker';
 const App = () => {
   useEffect(() => {
     const requestPermissions = async () => {
@@ -75,6 +75,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
+         <AppUpdateChecker />
         <PushController />
         <AppNavigator />
         <Toast ref={(ref) => Toast.setRef(ref)} />

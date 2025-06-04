@@ -54,6 +54,7 @@ const RegisterScreen = ({ route }) => {
   const [showAlreadyRegisteredModal, setShowAlreadyRegisteredModal] = useState(false);
 
   const [usernameError, setUsernameError] = useState('');
+  const [usernametakenError, setUsernametakenError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [MobilenoError, setMobilenoError] = useState('');
@@ -64,9 +65,16 @@ const RegisterScreen = ({ route }) => {
   const [selectedLocationError, setSelectedLocationError] = useState('');
   const [referredByError, setReferredByError] = useState('');
   const [isUsernameValid, setIsUsernameValid] = useState(false);
+const [firstName, setFirstName] = useState('');
+const [lastName, setLastName] = useState('');
+const [firstNameError, setFirstNameError] = useState('');
+const [lastNameError, setLastNameError] = useState('');
+const firstNameInputRef = useRef(null);
+const lastNameInputRef = useRef(null);
 
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
+
   const usernameInputRef = useRef(null);
   useFocusEffect(
     React.useCallback(() => {
@@ -155,6 +163,7 @@ const RegisterScreen = ({ route }) => {
   const handleRegister = async () => {
     if (isLoading) return;
     setUsernameError('');
+    setUsernametakenError('');
     setPasswordError('');
     setConfirmPasswordError('');
     setMobilenoError('');
@@ -164,13 +173,44 @@ const RegisterScreen = ({ route }) => {
     setSelectedProfessionError('');
     setSelectedLocationError('');
     setReferredByError('');
+    setFirstNameError('');
+    setLastNameError('');
     
     let isValid = true;
-    if (!username) {
-      setUsernameError('Username is required');
-      isValid = false;
-    }
-    
+const nameRegex = /^[A-Za-z ]+$/;
+const usernameRegex = /^(?=.{4,20}$)(?![_.])[a-z0-9._]+(?<![_.])$/;
+
+
+if (!username.trim()) {
+  setUsernameError('Username is required');
+  isValid = false;
+} else if (!usernameRegex.test(username)) {
+  setUsernameError('Only lowercase letters, digits, underscores (_), and periods (.) are allowed. Cannot start or end with _ or .');
+  isValid = false;
+} else {
+  setUsernameError('');
+}
+
+if (!firstName.trim()) {
+  setFirstNameError('First Name is required');
+  isValid = false;
+} else if (!nameRegex.test(firstName.trim())) {
+  setFirstNameError('Only letters and spaces are allowed');
+  isValid = false;
+} else {
+  setFirstNameError('');
+}
+
+if (!lastName.trim()) {
+  setLastNameError('Last Name is required');
+  isValid = false;
+} else if (!nameRegex.test(lastName.trim())) {
+  setLastNameError('Only letters and spaces are allowed');
+  isValid = false;
+} else {
+  setLastNameError('');
+}
+
     if (!password) {
       setPasswordError('Password is required');
       isValid = false;
@@ -185,20 +225,20 @@ const RegisterScreen = ({ route }) => {
     
       if (data.count !== undefined) {
         if (data.count > 0) {
-          setUsernameError('Username already taken');
+          setUsernametakenError('Username already taken');
           setIsUsernameValid(false);
           usernameInputRef.current?.focus();
           scrollViewRef.current?.scrollTo({ y: 0, animated: true });
           isValid = false;
         } else {
-          setUsernameError('');
+          setUsernametakenError('');
           setIsUsernameValid(true);
         }
       } else {
-        setUsernameError('Invalid response from server');
+        setUsernametakenError('Invalid response from server');
       }
     } catch (err) {
-      setUsernameError('Username is required');
+      setUsernametakenError('Username is required');
       isValid = false;
     }
     
@@ -261,6 +301,8 @@ const RegisterScreen = ({ route }) => {
               user: {
                 userId: generatedUserId,
                 username,
+                firstName,
+                lastName,
                 Password: password,
                 Mobileno,
               },
@@ -279,7 +321,7 @@ const RegisterScreen = ({ route }) => {
           const data = await response.json();
           console.log('Registration successful:', data);
           setIsLoading(false);
-          navigation.navigate('Otpscreen', { Mobileno, username,LocationID: selectedLocation, LocationList: LocationID });
+          navigation.navigate('Otpscreen', { Mobileno, firstName,businessName,LocationID: selectedLocation, LocationList: LocationID });
         } else {
           setIsLoading(false);
           console.error('No UserId found in the response!');
@@ -327,6 +369,7 @@ const RegisterScreen = ({ route }) => {
                 />
               </View>
               {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+              {usernametakenError ? <Text style={styles.errorText}>{usernametakenError}</Text> : null}
             </View>
 
             <View style={styles.formGroup}>
@@ -360,6 +403,33 @@ const RegisterScreen = ({ route }) => {
               </View>
               {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
             </View>
+
+<View style={styles.formGroup}>
+  <View style={styles.inputContainer}>
+    <Icon name="user" size={20} color="#2e3192" style={styles.inputIcon} />
+    <AnimatedTextInput
+      ref={firstNameInputRef}
+      placeholder="First Name"
+      value={firstName}
+      onChangeText={setFirstName}
+    />
+  </View>
+  {firstNameError ? <Text style={styles.errorText}>{firstNameError}</Text> : null}
+</View>
+
+<View style={styles.formGroup}>
+  <View style={styles.inputContainer}>
+    <Icon name="user" size={20} color="#2e3192" style={styles.inputIcon} />
+    <AnimatedTextInput
+      ref={lastNameInputRef}
+      placeholder="Last Name"
+      value={lastName}
+      onChangeText={setLastName}
+    />
+  </View>
+  {lastNameError ? <Text style={styles.errorText}>{lastNameError}</Text> : null}
+</View>
+
 
             <View style={styles.formGroup}>
               <View style={styles.inputContainer}>
@@ -421,11 +491,15 @@ const RegisterScreen = ({ route }) => {
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   placeholder="Select Profession"
-                  data={profession.map((item, index) => ({
-                    label: item.ProfessionName,
-                    value: item.ProfessionName,
-                    backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
-                  }))}
+      data={profession
+  .sort((a, b) => a.ProfessionName.localeCompare(b.ProfessionName)) 
+  .map((item, index) => ({
+    label: item.ProfessionName,
+    value: item.ProfessionName,
+    backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
+  }))
+}
+
                   value={selectedProfession}
                   onChange={(item) => handleProfessionChange(item.value)}
                   search
@@ -451,7 +525,9 @@ const RegisterScreen = ({ route }) => {
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   placeholder="Select Location"
-                  data={Array.isArray(LocationID) && LocationID.length > 0 ? LocationID.map((item, index) => ({
+                  data={Array.isArray(LocationID) && LocationID.length > 0 ? LocationID
+                   .sort((a, b) => a.label.localeCompare(b.label)) 
+                     .map((item, index) => ({
                     label: item.label,
                     value: item.value,
                     backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',
@@ -483,7 +559,9 @@ const RegisterScreen = ({ route }) => {
                   placeholder="Referred By (Optional)"
                   data={
                     Array.isArray(referMembers)
-                      ? referMembers.map((member, index) => ({
+                      ? referMembers
+                      .sort((a, b) => a.UserInfo.localeCompare(b.UserInfo))
+                      .map((member, index) => ({
                           label: member.UserInfo,
                           value: member.UserId,
                           backgroundColor: index % 2 === 0 ? 'white' : '#F5F7FE',

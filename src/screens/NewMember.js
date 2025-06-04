@@ -68,37 +68,57 @@ const NewMember = ({ navigation }) => {
     return buffer.data[0];
   };
 
-  const handleAccept = async (userId) => {
-    try {
-      setApprovingId(userId);
-      
-      const response = await fetch(`${API_BASE_URL}/api/approve/${userId}`, { 
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  const handleAccept = async (userId,Mobileno) => {
+  try {
+    setApprovingId(userId);
 
-      if (response.ok) {
-        setMembers(prevMembers => 
-          prevMembers.map(member => 
-            member.UserId === userId 
-              ? { ...member, IsApproved: { data: [1] } } 
-              : member
-          )
-        );
-      } else {
-        const errorData = await response.json();
-        // Alert.alert('Error', errorData.message || 'Failed to approve user');
-        throw new Error(errorData.message);
-      }
-    } catch (error) {
-      console.error('Error approving user:', error);
-      // Alert.alert('Error', 'Failed to approve user. Please try again.');
-    } finally {
-      setApprovingId(null);
+    // Step 1: Approve the user
+    const response = await fetch(`${API_BASE_URL}/api/approve/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message);
     }
-  };
+
+    // Step 2: Update UI
+    setMembers(prevMembers =>
+      prevMembers.map(member =>
+        member.UserId === userId
+          ? { ...member, IsApproved: { data: [1] } }
+          : member
+      )
+    );
+
+    // Step 3: Send WhatsApp message
+    const whatsappResponse = await fetch(`${API_BASE_URL}/api/send-whatsapp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+  body: JSON.stringify({
+    mobileno: Mobileno,
+    message: "🎉 Congratulations! Your registration has been successfully approved. 🌟Welcome aboard!",
+  }),
+    });
+
+    if (!whatsappResponse.ok) {
+      console.warn('WhatsApp message failed to send');
+    }
+  } catch (error) {
+    console.error('Error approving user or sending WhatsApp message:', error);
+  } finally {
+    setApprovingId(null);
+  }
+};
+
+
+
+
   const fetchMembers = useCallback(async () => {
     if (!LocationID) {
       console.log('LocationID not available yet');
@@ -109,7 +129,7 @@ const NewMember = ({ navigation }) => {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/users/last-month/${LocationID}`);
       const data = await response.json();
-      
+      console.log('Members data:', data);
       if (!response.ok) {
         throw new Error(data.message || 'Failed to fetch members.');
       }
@@ -138,6 +158,11 @@ const NewMember = ({ navigation }) => {
       setLoading(false);
     }
   }, [LocationID]);
+
+
+
+
+
 
   useEffect(() => {
     fetchBusinessInfo();
@@ -191,7 +216,7 @@ const NewMember = ({ navigation }) => {
         {isApproved === 0 ? (
           <TouchableOpacity 
             style={styles.acceptButton}
-            onPress={() => handleAccept(item.UserId)}
+            onPress={() => handleAccept(item.UserId, item.Mobileno)}
             disabled={approvingId === item.UserId}
           >
             {approvingId === item.UserId ? (
